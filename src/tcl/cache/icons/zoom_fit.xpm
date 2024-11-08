@@ -1,0 +1,34 @@
+/* XPM */
+static char *zoom_fit[] = {
+/* width height num_colors chars_per_pixel */
+"    22    22        5            1",
+/* colors */
+". c #000000",
+"# c #800000",
+"a c #808080",
+"b c #c0c0c0",
+"c c #ffffff",
+/* pixels */
+"bbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbb",
+"bbbbb#####cbbbbbbbbbbb",
+"bbbb#ccccc#cbbbbbbbbbb",
+"bbb#ccccccc#cbbbbbbbbb",
+"bb#cc.....cc#cbbbbbbbb",
+"bb#cc.....cc#cbbbbbbbb",
+"bb#cc.....cc#cbbbbbbbb",
+"bb#cc.....cc#cbbbbbbbb",
+"bb#cc.....cc#cbbbbbbbb",
+"bbc#ccccccc#ccbbbbbbbb",
+"bbbc#ccccc##cbbbbbbbbb",
+"bbbbc#####cc.aacbbbbbb",
+"bbbbbccccccb.aaacbbbbb",
+"bbbbbbbbbbbb..aaacbbbb",
+"bbbbbbbbbbbbc..aaacbbb",
+"bbbbbbbbbbbbbc..aaacbb",
+"bbbbbbbbbbbbbbc..aacbb",
+"bbbbbbbbbbbbbbbc..acbb",
+"bbbbbbbbbbbbbbbbcccbbb",
+"bbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbb"
+};

@@ -1,0 +1,55 @@
+
+
+ 
+ 
+
+
+module sparc_ifu_ifqctl(
+      ifu_lsu_inv_clear, ifu_lsu_ibuf_busy, ifu_lsu_asi_ack, 
+   ifu_lsu_ldxa_illgl_va_w2, ifu_lsu_fwd_wr_ack, ifu_lsu_pcxreq_d, 
+   ifu_lsu_destid_s, ifu_tlu_l2imiss, ifq_fcl_stallreq, 
+   ifq_swl_stallreq, ifq_fcl_flush_sonly_e, ifq_fcl_wrreq_bf, 
+   ifq_fcl_rdreq_bf, ifq_fcl_icd_wrreq_bf, ifq_fcl_ictv_wrreq_bf, 
+   ifq_erb_fwdrd_bf, ifq_erb_rdtag_f, ifq_erb_rdinst_f, 
+   ifq_erb_asi_erren_i2, ifq_erb_asi_errstat_i2, 
+   ifq_erb_asi_errinj_i2, ifq_erb_asi_erraddr_i2, 
+   ifq_erb_asi_imask_i2, ifq_erb_asiwr_i2, ifq_fcl_asird_bf, 
+   ifq_fcl_asi_tid_bf, ifq_erb_ue_rep, ifq_erb_ce_rep, ifq_erb_l2_ue, 
+   ifq_erb_io_ue, ifq_erb_ifet_ce, ifq_erb_l2err_tid, 
+   ifq_icv_wrdata_bf, ifq_icd_worden_bf, ifq_fcl_fill_thr, 
+   ifq_dtu_thrrdy, ifq_dtu_pred_rdy, ifc_ifd_filladdr4_i2, 
+   ifc_ifd_reqvalid_e, ifc_ifd_idx_sel_fwd_i2, ifc_ifd_errinv_e, 
+   ifc_ifd_uncached_e, ifc_ifd_thrid_e, ifc_ifd_pcxline_adj_d, 
+   ifc_inv_asireq_i2, ifc_ifd_repway_s, ifq_sscan_data, 
+   ifc_ifd_milfill_sel_i2_l, ifc_ifd_finst_sel_l, 
+   ifc_ifd_milreq_sel_d_l, ifc_ifd_ifqbyp_sel_fwd_l, 
+   ifc_ifd_ifqbyp_sel_inq_l, ifc_ifd_ifqbyp_sel_asi_l, 
+   ifc_ifd_ifqbyp_sel_lsu_l, ifc_ifd_ifqbyp_en_l, 
+   ifc_ifd_addr_sel_bist_i2_l, ifc_ifd_addr_sel_asi_i2_l, 
+   ifc_ifd_addr_sel_old_i2_l, ifc_ifd_addr_sel_fill_i2_l, 
+   ifq_icd_data_sel_bist_i2, ifq_icd_data_sel_fill_i2, 
+   ifq_icd_data_sel_old_i2, ifc_ifd_ldmil_sel_new, ifc_ifd_ld_inq_i1, 
+   ifc_inv_ifqadv_i2, so, 
+      lsu_ifu_cpxpkt_wayvld_i1, ifd_ifc_milhit_s, ifd_ifc_instoffset0, ifd_ifc_instoffset1, 
+   ifd_ifc_instoffset2, ifd_ifc_instoffset3, ifd_ifc_cpxvalid_i1, 
+   ifd_ifc_cpxreq_i1, ifd_ifc_cpxreq_nxt, ifd_ifc_cpxthr_nxt, 
+   ifd_ifc_cpxvld_i2, ifd_ifc_iobpkt_i2, ifd_ifc_4bpkt_i2, 
+   ifd_ifc_cpxnc_i2, ifd_ifc_fwd2ic_i2, ifd_ifc_cpxce_i2, 
+   ifd_ifc_cpxue_i2, ifd_ifc_cpxms_i2, ifd_ifc_miladdr4_i2, 
+   ifd_ifc_asiaddr_i2, ifd_ifc_asi_vachklo_i2, ifd_ifc_destid0, 
+   ifd_ifc_destid1, ifd_ifc_destid2, ifd_ifc_destid3, 
+   ifd_ifc_newdestid_s, ifd_ifc_pcxline_d, inv_ifc_inv_pending, 
+   fcl_ifq_icmiss_s1, fcl_ifq_rdreq_s1, fcl_ifq_thr_s1, 
+   fcl_ifq_canthr, fcl_ifq_grant_bf, dtu_ifq_kill_latest_d, 
+   erb_ifq_ifeterr_d1, erb_ifq_itlberr_s1, lsu_ifu_pcxpkt_ack_d, 
+   lsu_ifu_direct_map_l1, lsu_ifu_asi_vld, lsu_ifu_asi_state, 
+   lsu_ifu_asi_load, lsu_ifu_asi_thrid, fcl_ifq_icache_en_s_l, 
+   mbist_ifq_run_bist, mbist_icache_write, mbist_icache_read, 
+   ctu_sscan_tid, rclk, se, si, gdbginit_l, arst_l, grst_l, 
+   rst_tri_en, sehold
+   );
+
+   input          lsu_ifu_cpxpkt_wayvld_i1;
+   input [3:0]	  ifd_ifc_milhit_s;         input [1:0]    ifd_ifc_instoffset0;    input [1:0]    ifd_ifc_instoffset1;    input [1:0]    ifd_ifc_instoffset2;    input [1:0]    ifd_ifc_instoffset3; 
+   input         ifd_ifc_cpxvalid_i1;
+   input [:

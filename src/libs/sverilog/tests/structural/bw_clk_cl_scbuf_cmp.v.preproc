@@ -1,0 +1,160 @@
+module bw_clk_cl_scbuf_cmp (
+      dbginit_l, cluster_grst_l, rclk, so, 
+      gclk, cluster_cken, arst_l, grst_l, adbginit_l, gdbginit_l, si, 
+   se
+   );
+
+input       gclk;
+input       cluster_cken;
+input       arst_l;
+input       grst_l;
+input       adbginit_l;
+input       gdbginit_l;
+output      dbginit_l;
+output      cluster_grst_l;
+output      rclk;
+
+input       si;
+input       se;
+output      so;
+
+
+
+cluster_header  (/*AUTOINST*/
+                   // Outputs
+                   .dbginit_l           (dbginit_l),
+                   .cluster_grst_l      (cluster_grst_l),
+                   .rclk                (rclk),
+                   .so                  (so),
+                   // Inputs
+                   .gclk                (gclk),
+                   .cluster_cken        (cluster_cken),
+                   .arst_l              (arst_l),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+ (
+                                      .dbginit_l           (),
+                   .cluster_grst_l      (cluster_grst_l),
+                   .rclk                (rclk),
+                   .so                  (so),
+                   // Inputs
+                   .gclk                (gclk),
+                   .cluster_cken        (cluster_cken),
+                   .arst_l              (arst_l),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .cluster_grst_l      (),
+                   .rclk                (rclk),
+                   .so                  (so),
+                   // Inputs
+                   .gclk                (gclk),
+                   .cluster_cken        (cluster_cken),
+                   .arst_l              (arst_l),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .rclk                (),
+                   .so                  (so),
+                   // Inputs
+                   .gclk                (gclk),
+                   .cluster_cken        (cluster_cken),
+                   .arst_l              (arst_l),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .so                  (),
+                   // Inputs
+                   .gclk                (gclk),
+                   .cluster_cken        (cluster_cken),
+                   .arst_l              (arst_l),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                                      .gclk                (),
+                   .cluster_cken        (cluster_cken),
+                   .arst_l              (arst_l),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .cluster_cken        (),
+                   .arst_l              (arst_l),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .arst_l              (),
+                   .grst_l              (grst_l),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .grst_l              (),
+                   .adbginit_l          (adbginit_l),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .adbginit_l          (),
+                   .gdbginit_l          (gdbginit_l),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .gdbginit_l          (),
+                   .si                  (si),
+                   .se                  (se));
+
+endmodule
+),
+                   .si                  (),
+                   .se                  (se));
+
+endmodule
+),
+                   .se                  ());
+
+endmodule
+));
+
+endmodule

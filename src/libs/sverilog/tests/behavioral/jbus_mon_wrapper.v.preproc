@@ -1,0 +1,57 @@
+
+ 
+   
+
+module jbus_monitor(
+        jbus_j_ad,
+        jbus_j_req_out_l_0,
+        jbus_j_req_out_l_1,
+        jbus_j_req_out_l_2,
+        jbus_j_req_out_l_3,
+        jbus_j_req_out_l_4,
+        jbus_j_req_out_l_5,
+        jbus_j_req_out_l_6,
+        jbus_j_adp,
+        jbus_j_adtype,
+        jbus_j_pack0,
+        jbus_j_pack1,
+        jbus_j_pack2,
+        jbus_j_pack3,
+        jbus_j_pack4,
+        jbus_j_pack5,
+        jbus_j_pack6,
+        jbus_j_par,
+        jbus_j_rst,
+        jbus_j_por,
+        jbus_j_clk,
+        jbus_j_err,
+        jbus_j_change_l,
+        local_ports
+);
+
+input [5:0] jbus_j_req_out_l_0;
+input [5:0] jbus_j_req_out_l_1;
+input [5:0] jbus_j_req_out_l_2;
+input [5:0] jbus_j_req_out_l_3;
+input [5:0] jbus_j_req_out_l_4;
+input [5:0] jbus_j_req_out_l_5;
+input [5:0] jbus_j_req_out_l_6;
+inout [127:0] jbus_j_ad;
+inout [7:0] jbus_j_adtype;
+inout [3:0] jbus_j_adp;
+input [2:0] jbus_j_pack0;
+input [2:0] jbus_j_pack1;
+input [2:0] jbus_j_pack2;
+input [2:0] jbus_j_pack3;
+input [2:0] jbus_j_pack4;
+input [2:0] jbus_j_pack5;
+input [2:0] jbus_j_pack6;
+input jbus_j_par;
+input jbus_j_rst;
+input jbus_j_por;
+input jbus_j_clk;
+input [6:0] local_ports;
+input [6:0] jbus_j_err;
+input jbus_j_change_l;
+
+reg

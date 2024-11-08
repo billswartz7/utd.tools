@@ -1,0 +1,47 @@
+#!/bin/sh
+# This comment make this script an executable.  Do *NOT* delete \
+eval exec ${UTDTOOLS}/bin/cometFlow -s h -dir highlevel -n -v -f -do ${UTDTOOLS}/scripts/flow/simhls ${1+"$@"}
+
+
+# The defaults settings.
+
+if {!([info exists env(UTDTOOLS)])} {
+  puts stderr "ERROR:cannot get UTD Tools environment variable:UTDTOOLS"
+  exit 1
+}
+
+set dsn $::utdtools::designNameS
+utdmsg imsg null "Welcome to the SimHLS Program...\n"
+
+# Now do some functionality
+
+# We should be in the highlevel directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s h -dir highlevel .... 
+set dirname [pwd]
+set folder [file tail $dirname]
+if {$folder != "highlevel"} {
+  utdmsg errmg simhls "we are not in the proper directory:$folder\n"
+  utdwait
+  exit 1
+}
+
+::utdtools::check_do_file $dsn h ../../
+
+set input_name "${dsn}.c"
+set fpath [::utdtools::search_input $input_name [list . ../ ../../] true]
+utdmsg imsg null "fpath is $fpath\n"
+if {$fpath == ""} {
+    utdmsg errmsg simhls "No input file named ${dsn}.c found. Aborting\n"
+    utdwait
+    exit 1
+}
+utdmsg imsg simhls "reading C file:$fpath\n"
+
+# create the output directory.
+::utdtools::backup_directory output
+utdmsg imsg simhls "simulating the creation of Verilog.\n"
+utdmsg imsg simhls "generating Behavioural Verilog ${dsn}.v...\n"
+::utdtools::write_output output/${dsn}.v
+utdmsg imsg null "\nEnter 'orcontinue' to go to next program...\n"
+# utdwait
+exit 0

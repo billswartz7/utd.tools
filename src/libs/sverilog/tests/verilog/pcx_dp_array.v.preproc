@@ -1,0 +1,65 @@
+
+
+	 			
+ 
+
+
+ 
+
+module pcx_dp_array(
+      pcx_scache3_data_px_l, pcx_scache2_data_px_l, 
+   pcx_scache1_data_px_l, pcx_scache0_data_px_l, pcx_fpio_data_px_l, 
+   pcx_dp_array134_so_0, pcx_dp_array02_so_1, 
+      spc7_pcx_data_pa, spc6_pcx_data_pa, spc5_pcx_data_pa, 
+   spc4_pcx_data_pa, spc3_pcx_data_pa, spc2_pcx_data_pa, 
+   spc1_pcx_data_pa, spc0_pcx_data_pa, si_1, si_0, se_buf1_top, 
+   se_buf1_bottom, rclk, arbpc4_pcxdp_shift_px, 
+   arbpc4_pcxdp_qsel1_pa, arbpc4_pcxdp_qsel0_pa, 
+   arbpc4_pcxdp_q0_hold_pa, arbpc4_pcxdp_grant_pa, 
+   arbpc3_pcxdp_shift_px, arbpc3_pcxdp_qsel1_pa, 
+   arbpc3_pcxdp_qsel0_pa, arbpc3_pcxdp_q0_hold_pa, 
+   arbpc3_pcxdp_grant_pa, arbpc2_pcxdp_shift_px, 
+   arbpc2_pcxdp_qsel1_pa, arbpc2_pcxdp_qsel0_pa, 
+   arbpc2_pcxdp_q0_hold_pa, arbpc2_pcxdp_grant_pa, 
+   arbpc1_pcxdp_shift_px, arbpc1_pcxdp_qsel1_pa, 
+   arbpc1_pcxdp_qsel0_pa, arbpc1_pcxdp_q0_hold_pa, 
+   arbpc1_pcxdp_grant_pa, arbpc0_pcxdp_shift_px, 
+   arbpc0_pcxdp_qsel1_pa, arbpc0_pcxdp_qsel0_pa, 
+   arbpc0_pcxdp_q0_hold_pa, arbpc0_pcxdp_grant_pa
+   );
+
+   
+      output		pcx_dp_array02_so_1;	   output		pcx_dp_array134_so_0;	   output [-1:0]pcx_fpio_data_px_l;	   output [-1:0]pcx_scache0_data_px_l;   output [-1:0]pcx_scache1_data_px_l;   output [-1:0]pcx_scache2_data_px_l;   output [-1:0]pcx_scache3_data_px_l;   
+   
+      input [7:0]		arbpc0_pcxdp_grant_pa;	   input [7:0]		arbpc0_pcxdp_q0_hold_pa;   input [7:0]		arbpc0_pcxdp_qsel0_pa;	   input [7:0]		arbpc0_pcxdp_qsel1_pa;	   input [7:0]		arbpc0_pcxdp_shift_px;	   input [7:0]		arbpc1_pcxdp_grant_pa;	   input [7:0]		arbpc1_pcxdp_q0_hold_pa;   input [7:0]		arbpc1_pcxdp_qsel0_pa;	   input [7:0]		arbpc1_pcxdp_qsel1_pa;	   input [7:0]		arbpc1_pcxdp_shift_px;	   input [7:0]		arbpc2_pcxdp_grant_pa;	   input [7:0]		arbpc2_pcxdp_q0_hold_pa;   input [7:0]		arbpc2_pcxdp_qsel0_pa;	   input [7:0]		arbpc2_pcxdp_qsel1_pa;	   input [7:0]		arbpc2_pcxdp_shift_px;	   input [7:0]		arbpc3_pcxdp_grant_pa;	   input [7:0]		arbpc3_pcxdp_q0_hold_pa;   input [7:0]		arbpc3_pcxdp_qsel0_pa;	   input [7:0]		arbpc3_pcxdp_qsel1_pa;	   input [7:0]		arbpc3_pcxdp_shift_px;	   input [7:0]		arbpc4_pcxdp_grant_pa;	   input [7:0]		arbpc4_pcxdp_q0_hold_pa;   input [7:0]		arbpc4_pcxdp_qsel0_pa;	   input [7:0]		arbpc4_pcxdp_qsel1_pa;	   input [7:0]		arbpc4_pcxdp_shift_px;	   input		rclk;			   input		se_buf1_bottom;		   input		se_buf1_top;		   input		si_0;			   input		si_1;			   input [-1:0]spc0_pcx_data_pa;	   input [-1:0]spc1_pcx_data_pa;	   input [-1:0]spc2_pcx_data_pa;	   input [-1:0]spc3_pcx_data_pa;	   input [-1:0]spc4_pcx_data_pa;	   input [-1:0]spc5_pcx_data_pa;	   input [-1:0]spc6_pcx_data_pa;	   input [-1:0]spc7_pcx_data_pa;	   
+   
+      
+         
+                        
+                 
+   pcx_dp_array02 (/*AUTOINST*/
+				 // Outputs
+				 .pcx_scache0_data_px_l(pcx_scache0_data_px_l[`PCX_WIDTH-1:0]),
+				 .pcx_scache2_data_px_l(pcx_scache2_data_px_l[`PCX_WIDTH-1:0]),
+				 .scan_out(pcx_dp_array02_so_1), // Templated
+				 // Inputs
+				 .arbpc0_pcxdp_grant_pa(arbpc0_pcxdp_grant_pa[7:0]),
+				 .arbpc0_pcxdp_q0_hold_pa(arbpc0_pcxdp_q0_hold_pa[7:0]),
+				 .arbpc0_pcxdp_qsel0_pa(arbpc0_pcxdp_qsel0_pa[7:0]),
+				 .arbpc0_pcxdp_qsel1_pa(arbpc0_pcxdp_qsel1_pa[7:0]),
+				 .arbpc0_pcxdp_shift_px(arbpc0_pcxdp_shift_px[7:0]),
+				 .arbpc2_pcxdp_grant_pa(arbpc2_pcxdp_grant_pa[7:0]),
+				 .arbpc2_pcxdp_q0_hold_pa(arbpc2_pcxdp_q0_hold_pa[7:0]),
+				 .arbpc2_pcxdp_qsel0_pa(arbpc2_pcxdp_qsel0_pa[7:0]),
+				 .arbpc2_pcxdp_qsel1_pa(arbpc2_pcxdp_qsel1_pa[7:0]),
+				 .arbpc2_pcxdp_shift_px(arbpc2_pcxdp_shift_px[7:0]),
+				 .rclk	(rclk),
+				 .shiftenable(se_buf1_top),	 // Templated
+				 .spc0_pcx_data_pa(spc0_pcx_data_pa[`PCX_WIDTH-1:0]),
+				 .spc1_pcx_data_pa(spc1_pcx_data_pa[`PCX_WIDTH-1:0]),
+				 .spc2_pcx_data_pa(spc2_pcx_data_pa[`PCX_WIDTH-1:0]),
+				 .spc3_pcx_data_pa(spc3_pcx_data_pa[`PCX_WIDTH-1:0]),
+				 .spc4_pcx_data_pa(spc4_pcx_data_pa[`PCX_WIDTH-1:0]),
+				 .spc5_pcx_data_pa(spc5_pcx_data_pa[`PCX_WIDTH-1:0]),
+				 .spc6_pcx_d(
+				 				 .pcx_scache0_data_px_l(

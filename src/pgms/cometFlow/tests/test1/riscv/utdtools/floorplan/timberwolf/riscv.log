@@ -1,0 +1,30 @@
+####################################################
+time 1571770793 Tue Oct 22 13:59:53 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do riscv_final.tdo riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80764 PVERSION v2.0.0pre46
+[readpar]:riscv.par read.
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+no syntax errors in library:riscv.lib
+Library file:riscv.lib read successfully.
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+no syntax problem in circuit file.
+Circuit file:riscv.ckt read successfully.
+
+Constraint file:floorplan/output/itools.con read successfully.
+
+[icread_con]:floorplan/output/itools.con read.
+[write_def]:../output/riscv.def written.
+
+itranslate terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+

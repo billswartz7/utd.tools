@@ -1,0 +1,23 @@
+
+
+ 
+
+module sparc_ifu_thrfsm(
+      so, thr_state, 
+      completion, schedule, spec_ld, ldhit, stall, int_activate, 
+   start_thread, thaw_thread, nuke_thread, rst_thread, switch_out, 
+   halt_thread, sw_cond, clk, se, si, reset
+   );
+
+      input  completion,   	        schedule,     	        spec_ld,      	        ldhit,        	        stall,        	        int_activate,           halt_thread,
+	        start_thread,    	        nuke_thread,
+          thaw_thread,
+	        rst_thread;      
+      input  switch_out,   	        sw_cond;	
+   input       clk, se, si, reset;
+
+   output      so;
+
+   output [4:0] thr_state;
+
+      reg

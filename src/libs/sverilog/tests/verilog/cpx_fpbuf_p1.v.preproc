@@ -1,0 +1,2280 @@
+module cpx_fpbuf_p1(
+      fp_cpx_req_bufp1_cq, arbcp0_cpxdp_grant_bufp1_ca_l_1, 
+   arbcp0_cpxdp_q0_hold_bufp1_ca_1, arbcp0_cpxdp_qsel0_bufp1_ca_l_1, 
+   arbcp0_cpxdp_qsel1_bufp1_ca_1, arbcp0_cpxdp_shift_bufp1_cx_l_1, 
+   arbcp1_cpxdp_grant_bufp1_ca_l_1, arbcp1_cpxdp_q0_hold_bufp1_ca_1, 
+   arbcp1_cpxdp_qsel0_bufp1_ca_l_1, arbcp1_cpxdp_qsel1_bufp1_ca_1, 
+   arbcp1_cpxdp_shift_bufp1_cx_l_1, arbcp2_cpxdp_grant_bufp1_ca_l_1, 
+   arbcp2_cpxdp_q0_hold_bufp1_ca_1, arbcp2_cpxdp_qsel0_bufp1_ca_l_1, 
+   arbcp2_cpxdp_qsel1_bufp1_ca_1, arbcp2_cpxdp_shift_bufp1_cx_l_1, 
+   arbcp3_cpxdp_grant_bufp1_ca_l_1, arbcp3_cpxdp_q0_hold_bufp1_ca_1, 
+   arbcp3_cpxdp_qsel0_bufp1_ca_l_1, arbcp3_cpxdp_qsel1_bufp1_ca_1, 
+   arbcp3_cpxdp_shift_bufp1_cx_l_1, arbcp4_cpxdp_grant_bufp1_ca_l_1, 
+   arbcp4_cpxdp_q0_hold_bufp1_ca_1, arbcp4_cpxdp_qsel0_bufp1_ca_l_1, 
+   arbcp4_cpxdp_qsel1_bufp1_ca_1, arbcp4_cpxdp_shift_bufp1_cx_l_1, 
+   arbcp5_cpxdp_grant_bufp1_ca_l_1, arbcp5_cpxdp_q0_hold_bufp1_ca_1, 
+   arbcp5_cpxdp_qsel0_bufp1_ca_l_1, arbcp5_cpxdp_qsel1_bufp1_ca_1, 
+   arbcp5_cpxdp_shift_bufp1_cx_l_1, arbcp6_cpxdp_grant_bufp1_ca_l_1, 
+   arbcp6_cpxdp_q0_hold_bufp1_ca_1, arbcp6_cpxdp_qsel0_bufp1_ca_l_1, 
+   arbcp6_cpxdp_qsel1_bufp1_ca_1, arbcp6_cpxdp_shift_bufp1_cx_l_1, 
+   arbcp7_cpxdp_grant_bufp1_ca_l_1, arbcp7_cpxdp_q0_hold_bufp1_ca_1, 
+   arbcp7_cpxdp_qsel0_bufp1_ca_l_1, arbcp7_cpxdp_qsel1_bufp1_ca_1, 
+   arbcp7_cpxdp_shift_bufp1_cx_l_1, 
+      fp_cpx_req_bufp0_cq, arbcp0_cpxdp_grant_arbbf_ca_1, 
+   arbcp0_cpxdp_q0_hold_arbbf_ca_l_1, arbcp0_cpxdp_qsel0_arbbf_ca_1, 
+   arbcp0_cpxdp_qsel1_arbbf_ca_l_1, arbcp0_cpxdp_shift_arbbf_cx_1, 
+   arbcp1_cpxdp_grant_arbbf_ca_1, arbcp1_cpxdp_q0_hold_arbbf_ca_l_1, 
+   arbcp1_cpxdp_qsel0_arbbf_ca_1, arbcp1_cpxdp_qsel1_arbbf_ca_l_1, 
+   arbcp1_cpxdp_shift_arbbf_cx_1, arbcp2_cpxdp_grant_arbbf_ca_1, 
+   arbcp2_cpxdp_q0_hold_arbbf_ca_l_1, arbcp2_cpxdp_qsel0_arbbf_ca_1, 
+   arbcp2_cpxdp_qsel1_arbbf_ca_l_1, arbcp2_cpxdp_shift_arbbf_cx_1, 
+   arbcp3_cpxdp_grant_arbbf_ca_1, arbcp3_cpxdp_q0_hold_arbbf_ca_l_1, 
+   arbcp3_cpxdp_qsel0_arbbf_ca_1, arbcp3_cpxdp_qsel1_arbbf_ca_l_1, 
+   arbcp3_cpxdp_shift_arbbf_cx_1, arbcp4_cpxdp_grant_arbbf_ca_1, 
+   arbcp4_cpxdp_q0_hold_arbbf_ca_l_1, arbcp4_cpxdp_qsel0_arbbf_ca_1, 
+   arbcp4_cpxdp_qsel1_arbbf_ca_l_1, arbcp4_cpxdp_shift_arbbf_cx_1, 
+   arbcp5_cpxdp_grant_arbbf_ca_1, arbcp5_cpxdp_q0_hold_arbbf_ca_l_1, 
+   arbcp5_cpxdp_qsel0_arbbf_ca_1, arbcp5_cpxdp_qsel1_arbbf_ca_l_1, 
+   arbcp5_cpxdp_shift_arbbf_cx_1, arbcp6_cpxdp_grant_arbbf_ca_1, 
+   arbcp6_cpxdp_q0_hold_arbbf_ca_l_1, arbcp6_cpxdp_qsel0_arbbf_ca_1, 
+   arbcp6_cpxdp_qsel1_arbbf_ca_l_1, arbcp6_cpxdp_shift_arbbf_cx_1, 
+   arbcp7_cpxdp_grant_arbbf_ca_1, arbcp7_cpxdp_q0_hold_arbbf_ca_l_1, 
+   arbcp7_cpxdp_qsel0_arbbf_ca_1, arbcp7_cpxdp_qsel1_arbbf_ca_l_1, 
+   arbcp7_cpxdp_shift_arbbf_cx_1
+   );
+
+
+output	[7:0]	fp_cpx_req_bufp1_cq;
+
+input	[7:0]	fp_cpx_req_bufp0_cq;
+
+   output               arbcp0_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp0_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp0_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp0_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp0_cpxdp_shift_bufp1_cx_l_1         ;
+
+   output               arbcp1_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp1_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp1_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp1_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp1_cpxdp_shift_bufp1_cx_l_1         ;
+
+   output               arbcp2_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp2_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp2_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp2_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp2_cpxdp_shift_bufp1_cx_l_1         ;
+
+   output               arbcp3_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp3_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp3_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp3_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp3_cpxdp_shift_bufp1_cx_l_1         ;
+
+   output               arbcp4_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp4_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp4_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp4_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp4_cpxdp_shift_bufp1_cx_l_1         ;
+
+   output               arbcp5_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp5_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp5_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp5_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp5_cpxdp_shift_bufp1_cx_l_1         ;
+
+   output               arbcp6_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp6_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp6_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp6_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp6_cpxdp_shift_bufp1_cx_l_1         ;
+
+   output               arbcp7_cpxdp_grant_bufp1_ca_l_1         ;
+   output               arbcp7_cpxdp_q0_hold_bufp1_ca_1         ;
+   output               arbcp7_cpxdp_qsel0_bufp1_ca_l_1         ;
+   output               arbcp7_cpxdp_qsel1_bufp1_ca_1           ;
+   output               arbcp7_cpxdp_shift_bufp1_cx_l_1         ;
+
+   input                arbcp0_cpxdp_grant_arbbf_ca_1;
+   input                arbcp0_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp0_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   input                arbcp1_cpxdp_grant_arbbf_ca_1;
+   input                arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   input                arbcp2_cpxdp_grant_arbbf_ca_1;
+   input                arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   input                arbcp3_cpxdp_grant_arbbf_ca_1;
+   input                arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   input                arbcp4_cpxdp_grant_arbbf_ca_1;
+   input                arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   input                arbcp5_cpxdp_grant_arbbf_ca_1;
+   input                arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   input                arbcp6_cpxdp_grant_arbbf_ca_1;
+   input                arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   input                arbcp7_cpxdp_grant_arbbf_ca_1;
+   input                arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   input                arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   input                arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   input                arbcp7_cpxdp_shift_arbbf_cx_1;
+
+
+assign               [7:0]                =   [7:0];
+
+
+
+   assign                   =       ~  arbcp0_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp0_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp0_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp0_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp0_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp0_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp0_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp0_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp0_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp0_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp0_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp0_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp0_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp0_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp0_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp0_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp0_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp0_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp0_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp0_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp0_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+   assign               arbcp1_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+
+   assign                   =       ~  arbcp1_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp1_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp1_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp1_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp1_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp1_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp1_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp1_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp1_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+   assign               arbcp2_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+
+   assign                   =       ~  arbcp2_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp2_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp2_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp2_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp2_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp2_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp2_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp2_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp2_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+   assign               arbcp3_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+
+   assign                   =       ~  arbcp3_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp3_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp3_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp3_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp3_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp3_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp3_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp3_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp3_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+   assign               arbcp4_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+
+   assign                   =       ~  arbcp4_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp4_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp4_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp4_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp4_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp4_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp4_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp4_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp4_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+   assign               arbcp5_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+
+   assign                   =       ~  arbcp5_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp5_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp5_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp5_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp5_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp5_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp5_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp5_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp5_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+   assign               arbcp6_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+
+   assign                   =       ~  arbcp6_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp6_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp6_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp6_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp6_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp6_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp6_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp6_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp6_cpxdp_shift_arbbf_cx_1;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+   assign               arbcp7_cpxdp_grant_bufp1_ca_l_1    =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+
+   assign                   =       ~  arbcp7_cpxdp_grant_arbbf_ca_1;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~  ;
+   assign               arbcp7_cpxdp_q0_hold_bufp1_ca_1    =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp7_cpxdp_q0_hold_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp7_cpxdp_qsel0_bufp1_ca_l_1    =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp7_cpxdp_qsel0_arbbf_ca_1;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+   assign               arbcp7_cpxdp_qsel1_bufp1_ca_1      =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                     =       ~ arbcp7_cpxdp_qsel1_arbbf_ca_l_1;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+      =       ~ ;
+   assign               arbcp7_cpxdp_shift_bufp1_cx_l_1    =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+;
+   assign                   =       ~ arbcp7_cpxdp_shift_arbbf_cx_1;
+
+endmodule
+    =       ~ ;
+
+endmodule
+;
+
+endmodule

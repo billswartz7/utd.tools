@@ -1,0 +1,1102 @@
+module dram_sstl_dq_pad(
+      bso, to_core, serial_out, 
+      pad, 
+      test_mode, se, vrefcode, bsi, cbd, cbu, clock_dr, data_in, hiz_n, 
+   mode_ctrl, oe, shift_dr, update_dr, vdd_h, odt_enable_mask, 
+   bypass_in, serial_in, bypass_enable, ps_select, clk, out_type
+   );
+
+inout			pad;
+
+
+output			bso;			output			to_core;		output			serial_out;		
+
+input			test_mode;		input			se;			input [7:0]		vrefcode;		input			bsi;			input [8:1]		cbd;			input [8:1]		cbu;			input			clock_dr;		input			data_in;		input			hiz_n;			input			mode_ctrl;		input			oe;			input			shift_dr;		input			update_dr;		input			vdd_h;			input			odt_enable_mask;	input			bypass_in;		input			serial_in;		input			bypass_enable;		input			ps_select;		input			clk;			input			out_type;		
+
+wire			;		// From bw_io_sstl_dq_bscan of bw_io_sstl_dq_bscan.v
+wire			data_out;		// From bw_io_sstl_dq_bscan of bw_io_sstl_dq_bscan.v
+wire			odt_enable;		// From bw_io_sstl_dq_bscan of bw_io_sstl_dq_bscan.v
+wire			rx_out;			// From bw_io_ddr_pad_txrx of bw_io_ddr_pad_txrx.v
+// End of automatics
+
+
+/////////////////////
+// TRANSCEIVER module
+/////////////////////
+
+/* bw_io_ddr_pad_txrx AUTO_TEMPLATE(
+                            // Outputs
+                            .out        (rx_out),
+                            // Inputs
+                            .data       (data_out),
+                            .oe         (bscan_oe));
+*/
+
+bw_io_ddr_pad_txrx bw_io_ddr_pad_txrx(/*AUTOINST*/
+				      // Outputs
+				      .out(rx_out),		 // Templated
+				      // Inouts
+				      .pad(pad),
+				      // Inputs
+				      .vrefcode(vrefcode[7:0]),
+				      .odt_enable(odt_enable),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+;		wire			;		// From bw_io_sstl_dq_bscan of bw_io_sstl_dq_bscan.v
+wire			odt_enable;		// From bw_io_sstl_dq_bscan of bw_io_sstl_dq_bscan.v
+wire			rx_out;			// From bw_io_ddr_pad_txrx of bw_io_ddr_pad_txrx.v
+// End of automatics
+
+
+/////////////////////
+// TRANSCEIVER module
+/////////////////////
+
+/* bw_io_ddr_pad_txrx AUTO_TEMPLATE(
+                            // Outputs
+                            .out        (rx_out),
+                            // Inputs
+                            .data       (data_out),
+                            .oe         (bscan_oe));
+*/
+
+bw_io_ddr_pad_txrx bw_io_ddr_pad_txrx(/*AUTOINST*/
+				      // Outputs
+				      .out(rx_out),		 // Templated
+				      // Inouts
+				      .pad(pad),
+				      // Inputs
+				      .vrefcode(vrefcode[7:0]),
+				      .odt_enable(odt_enable),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+;		wire			;		// From bw_io_sstl_dq_bscan of bw_io_sstl_dq_bscan.v
+wire			rx_out;			// From bw_io_ddr_pad_txrx of bw_io_ddr_pad_txrx.v
+// End of automatics
+
+
+/////////////////////
+// TRANSCEIVER module
+/////////////////////
+
+/* bw_io_ddr_pad_txrx AUTO_TEMPLATE(
+                            // Outputs
+                            .out        (rx_out),
+                            // Inputs
+                            .data       (data_out),
+                            .oe         (bscan_oe));
+*/
+
+bw_io_ddr_pad_txrx bw_io_ddr_pad_txrx(/*AUTOINST*/
+				      // Outputs
+				      .out(rx_out),		 // Templated
+				      // Inouts
+				      .pad(pad),
+				      // Inputs
+				      .vrefcode(vrefcode[7:0]),
+				      .odt_enable(odt_enable),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+;		wire			;			// From bw_io_ddr_pad_txrx of bw_io_ddr_pad_txrx.v
+// End of automatics
+
+
+/////////////////////
+// TRANSCEIVER module
+/////////////////////
+
+/* bw_io_ddr_pad_txrx AUTO_TEMPLATE(
+                            // Outputs
+                            .out        (rx_out),
+                            // Inputs
+                            .data       (data_out),
+                            .oe         (bscan_oe));
+*/
+
+bw_io_ddr_pad_txrx bw_io_ddr_pad_txrx(/*AUTOINST*/
+				      // Outputs
+				      .out(rx_out),		 // Templated
+				      // Inouts
+				      .pad(pad),
+				      // Inputs
+				      .vrefcode(vrefcode[7:0]),
+				      .odt_enable(odt_enable),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+;			
+
+
+
+
+bw_io_ddr_pad_txrx (/*AUTOINST*/
+				      // Outputs
+				      .out(rx_out),		 // Templated
+				      // Inouts
+				      .pad(pad),
+				      // Inputs
+				      .vrefcode(vrefcode[7:0]),
+				      .odt_enable(odt_enable),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+(
+				      				      .out(),		 // Templated
+				      // Inouts
+				      .pad(pad),
+				      // Inputs
+				      .vrefcode(vrefcode[7:0]),
+				      .odt_enable(odt_enable),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),		 				      				      .pad(),
+				      // Inputs
+				      .vrefcode(vrefcode[7:0]),
+				      .odt_enable(odt_enable),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+				      				      .vrefcode([7:0]),
+				      .odt_enable(),
+				      .vdd_h(vdd_h),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+				      .vdd_h(),
+				      .cbu(cbu[8:1]),
+				      .cbd(cbd[8:1]),
+				      .data(data_out),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+				      .cbu([8:1]),
+				      .cbd([8:1]),
+				      .data(),		 // Templated
+				      .oe(bscan_oe));		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),		 				      .oe());		 // Templated
+/////////////////////
+// SCAN & JTAG module
+/////////////////////
+
+/*bw_io_sstl_dq_bscan    AUTO_TEMPLATE(
+                                           // Outputs
+                                           .oe(bscan_oe),
+                                           // Inputs
+					   .hiz_l(hiz_n),
+                                           .rcv_in(rx_out),
+                                           .drv_oe(oe));
+*/
+
+bw_io_sstl_dq_bscan	bw_io_sstl_dq_bscan(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+));		 
+
+
+bw_io_sstl_dq_bscan	(/*AUTOINST*/
+					    // Outputs
+					    .data_out(data_out),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+(
+					    					    .data_out(),
+					    .serial_out(serial_out),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .serial_out(),
+					    .bso(bso),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .bso(),
+					    .odt_enable(odt_enable),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .odt_enable(),
+					    .oe(bscan_oe),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .oe(),	 // Templated
+					    .to_core(to_core),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),	 					    .to_core(),
+					    // Inputs
+					    .update_dr(update_dr),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    					    .update_dr(),
+					    .out_type(out_type),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .out_type(),
+					    .clk(clk),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .clk(),
+					    .shift_dr(shift_dr),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .shift_dr(),
+					    .bypass_in(bypass_in),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .bypass_in(),
+					    .serial_in(serial_in),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .serial_in(),
+					    .bypass_enable(bypass_enable),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .bypass_enable(),
+					    .data_in(data_in),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .data_in(),
+					    .ps_select(ps_select),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .ps_select(),
+					    .rcv_in(rx_out),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .rcv_in(),	 // Templated
+					    .drv_oe(oe),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),	 					    .drv_oe(),	 // Templated
+					    .odt_enable_mask(odt_enable_mask),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),	 					    .odt_enable_mask(),
+					    .se(se),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .se(),
+					    .test_mode(test_mode),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .test_mode(),
+					    .hiz_l(hiz_n),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .hiz_l(),	 // Templated
+					    .clock_dr(clock_dr),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),	 					    .clock_dr(),
+					    .bsi(bsi),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .bsi(),
+					    .mode_ctrl(mode_ctrl));
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+),
+					    .mode_ctrl());
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../pad_common/rtl/") 
+));
+endmodule

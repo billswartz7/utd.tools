@@ -1,0 +1,16 @@
+
+ 
+ 
+ 
+
+module bus_snooper(
+    input [31:0]        safe_buslines,
+    input [31:0]  bus_lines_1,
+    input [31:0]  bus_lines_2
+);
+
+ 
+
+ 
+
+endmodule

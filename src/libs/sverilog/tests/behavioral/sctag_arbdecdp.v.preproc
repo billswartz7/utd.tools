@@ -1,0 +1,36 @@
+
+
+
+ 	
+ 	
+
+
+
+module sctag_arbdecdp( 
+      so, arbdp_inst_c8, arbdp_inst_way_c1, arbdp_tecc_c1, 
+   arbdp_poison_c1, arbdp_inst_mb_entry_c1, arbdp_inst_fb_c1, 
+   arbdp_inst_mb_c1, arbdp_evict_c1, arbdp_inst_rqtyp_c1, 
+   arbdp_inst_rsvd_c1, arbdp_inst_nc_c1, arbdp_inst_size_c1, 
+   arbdp_inst_bufidhi_c1, arbdp_inst_bufid1_c1, arbdp_inst_ctrue_c1, 
+   arbdp_inst_fb_c2, arbdp_inst_mb_c2, arbdp_rdma_entry_c3, 
+   arbdp_rdma_inst_c1, arbdp_rdma_inst_c2, arbdp_inst_dep_c2, 
+   arbdp_inst_way_c2, arbdp_inst_rqtyp_c2, arbdp_inst_bufidlo_c2, 
+   arbdp_inst_rqtyp_c6, arbdp_inst_way_c3, arbdp_inst_fb_c3, 
+   arbdp_inst_mb_c3, arbdp_inst_tecc_c3, arbdp_inst_nc_c3, 
+   arbdp_l1way_c3, arbdec_dbgdp_inst_c3, arbdp_cpuid_c3, 
+   arbdp_cpuid_c4, arbdp_cpuid_c5, arbdp_cpuid_c6, 
+   arbdp_int_bcast_c5, arbdp_inst_l1way_c7, arbdp_inst_size_c7, 
+   arbdp_inst_tid_c7, arbdp_inst_cpuid_c7, arbdp_inst_nc_c7, 
+   arbdec_ctag_c6, arbdp_async_bit_c8, size_field_c8, 
+      snpq_arbdp_inst_px2, iq_arbdp_inst_px2, mb_data_read_data, 
+   mbctl_arbdp_ctrue_px2, mbctl_arb_l2rd_en, fbctl_arbdp_entry_px2, 
+   fbctl_arbdp_tecc_px2, l2_steering_tid, fbctl_arbdp_way_px2, 
+   mux1_mbsel_px2, mux2_snpsel_px2, mux3_bufsel_px2, mux4_c1sel_px2, 
+   prim_req_c3, write_req_c3, atomic_req_c3, si, se, rclk, 
+   arbdp_byte_addr_c6
+   );
+
+
+  input [-1:0]        snpq_arbdp_inst_px2; 
+  input 	[18:0]	iq_arbdp_inst_px2 ; 
+  input [:

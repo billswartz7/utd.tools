@@ -1,0 +1,148 @@
+*** tkCmds.c.old	2023-03-16 11:58:05.000000000 -0500
+--- tkCmds.c	2023-03-16 11:57:10.000000000 -0500
+***************
+*** 56,61 ****
+--- 56,67 ----
+  #endif
+  
+  /*
++  * Definition for static variables.
++  */
++ static int tk_XBusyS = 0 ;
++ 
++ 
++ /*
+   * Table of tk subcommand names and implementations.
+   */
+  
+***************
+*** 1003,1016 ****
+      int done, index;
+      int code = TCL_OK;
+      static const char *const optionStrings[] = {
+! 	"variable", "visibility", "window", NULL
+      };
+      enum options {
+! 	TKWAIT_VARIABLE, TKWAIT_VISIBILITY, TKWAIT_WINDOW
+      };
+  
+      if (objc != 3) {
+! 	Tcl_WrongNumArgs(interp, 1, objv, "variable|visibility|window name");
+  	return TCL_ERROR;
+      }
+  
+--- 1009,1022 ----
+      int done, index;
+      int code = TCL_OK;
+      static const char *const optionStrings[] = {
+! 	"mapped", "variable", "visibility", "window", NULL
+      };
+      enum options {
+! 	TKWAIT_MAPPED, TKWAIT_VARIABLE, TKWAIT_VISIBILITY, TKWAIT_WINDOW
+      };
+  
+      if (objc != 3) {
+! 	Tcl_WrongNumArgs(interp, 1, objv, "mapped|variable|visibility|window name");
+  	return TCL_ERROR;
+      }
+  
+***************
+*** 1020,1025 ****
+--- 1026,1047 ----
+      }
+  
+      switch ((enum options) index) {
++ 	case TKWAIT_MAPPED : {
++ 	    Tk_Window window;
++ 
++ 	    window = Tk_NameToWindow(interp, Tcl_GetString(objv[2]), tkwin);
++ 	    if (window == NULL) {
++ 		return TCL_ERROR;
++ 	    }
++ 	    done = 0;
++ 	    while (!done) {
++ 		Tcl_DoOneEvent(0);
++ 		if ( Tk_MappedWindow( window ) ){
++ 		  break ;
++ 		}
++ 	    }
++ 	    break;
++ 	}
+      case TKWAIT_VARIABLE:
+  	if (Tcl_TraceVar2(interp, Tcl_GetString(objv[2]),
+  		NULL, TCL_GLOBAL_ONLY|TCL_TRACE_WRITES|TCL_TRACE_UNSETS,
+***************
+*** 1190,1195 ****
+--- 1212,1219 ----
+      static const char *const updateOptions[] = {"idletasks", NULL};
+      int flags, index;
+      TkDisplay *dispPtr;
++     int save_X ;
++ 
+      int code = TCL_OK;
+  
+      if (objc == 1) {
+***************
+*** 1212,1218 ****
+       * handler that occurs during the update. Thus, don't use any information
+       * from tkwin after calling Tcl_DoOneEvent.
+       */
+! 
+      while (1) {
+  	while (Tcl_DoOneEvent(flags) != 0) {
+  	    if (Tcl_Canceled(interp, TCL_LEAVE_ERR_MSG) == TCL_ERROR) {
+--- 1236,1243 ----
+       * handler that occurs during the update. Thus, don't use any information
+       * from tkwin after calling Tcl_DoOneEvent.
+       */
+!     save_X = tk_XBusyS ;
+!     tk_XBusyS = 1 ;
+      while (1) {
+  	while (Tcl_DoOneEvent(flags) != 0) {
+  	    if (Tcl_Canceled(interp, TCL_LEAVE_ERR_MSG) == TCL_ERROR) {
+***************
+*** 1248,1253 ****
+--- 1273,1279 ----
+  	    break;
+  	}
+      }
++     tk_XBusyS = save_X ;
+  
+      /*
+       * Must clear the interpreter's result because event handlers could have
+***************
+*** 2156,2163 ****
+--- 2182,2214 ----
+      }
+      return winPtr;
+  }
++ 
+  
+  /*
++  *----------------------------------------------------------------------
++  *
++  * Tk_XBusy --
++  *
++  *	Get/Set the X Busy Flag.
++  *
++  * Results:
++  *	Returns the current state of the flag.
++  *
++  * Side effects:
++  *	None.
++  *
++  *----------------------------------------------------------------------
++  */
++ 
++ int Tk_XBusy(int flag)
++ {
++     if( flag >= 0 ){
++       tk_XBusyS = flag ;
++     }
++     return(tk_XBusyS) ;
++ } /* end Tk_XBusy() */
++ 
++ /*
+   * Local Variables:
+   * mode: c
+   * c-basic-offset: 4

@@ -1,0 +1,360 @@
+
+module ctu_clsp_clkgn_ddiv (
+dom_div0, align_edge, align_edge_b, dom_div1, so, 
+pll_clk_out, pll_clk_out_l, rst_l, rst_b_l, div_dec, stretch_l, 
+stretch_b_l, se, si
+);
+
+
+      input                                pll_clk_out;
+   input                                pll_clk_out_l;
+   input 				rst_l;
+   input 				rst_b_l;
+   
+      input [14:0] 			div_dec	;
+
+      input 				stretch_l;
+   input                                stretch_b_l;
+
+      output                               dom_div0;
+   output                               align_edge;
+   output                               align_edge_b;
+   output                               dom_div1;
+   
+   input                                si;
+   input 				se;
+   output				so;
+
+   
+
+
+ctu_clsp_clkgn_1div (
+			// Outputs
+			.dom_div	(dom_div0),
+			.align_edge	(align_edge),
+			.align_edge_b	(align_edge_b),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out),
+			.pll_clk_l	(pll_clk_out_l),
+			.init_l		(rst_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_l),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+(
+						.dom_div	(),
+			.align_edge	(align_edge),
+			.align_edge_b	(align_edge_b),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out),
+			.pll_clk_l	(pll_clk_out_l),
+			.init_l		(rst_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_l),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.align_edge	(),
+			.align_edge_b	(align_edge_b),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out),
+			.pll_clk_l	(pll_clk_out_l),
+			.init_l		(rst_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_l),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out),
+			.pll_clk_l	(pll_clk_out_l),
+			.init_l		(rst_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_l),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.so		(),
+						.pll_clk	(),
+			.pll_clk_l	(pll_clk_out_l),
+			.init_l		(rst_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_l),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.pll_clk_l	(),
+			.init_l		(rst_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_l),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.init_l		(),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_l),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.div_dec	([14:0]),
+			.stretch_l	(),
+			.se		(se),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.se		(),
+			.si		());
+
+ctu_clsp_clkgn_1div neg(
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.si		());
+
+ctu_clsp_clkgn_1div (
+			// Outputs
+			.dom_div	(dom_div1),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+(
+						.dom_div	(),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+			// Inputs
+			.pll_clk	(pll_clk_out_l),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.align_edge	(),
+			.align_edge_b	(),
+			.so		(),
+						.pll_clk	(),
+			.pll_clk_l	(pll_clk_out),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.pll_clk_l	(),
+			.init_l		(rst_b_l),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.init_l		(),
+			.div_dec	(div_dec[14:0]),
+			.stretch_l	(stretch_b_l),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.div_dec	([14:0]),
+			.stretch_l	(),
+			.se		(se),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.se		(),
+			.si		());
+
+
+endmodule // clk_ddiv
+),
+			.si		());
+
+
+endmodule 

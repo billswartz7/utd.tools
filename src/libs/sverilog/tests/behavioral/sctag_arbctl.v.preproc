@@ -1,0 +1,134 @@
+ 	
+	
+
+
+
+module sctag_arbctl( 
+      arbctl_mbctl_inval_inst_c2, arbctl_acc_vd_c2, arbctl_acc_ua_c2, 
+   so, mux1_mbsel_px2, mux2_snpsel_px2, mux3_bufsel_px2, 
+   mux4_c1sel_px2, data_ecc_idx_en, data_ecc_idx_reset, 
+   sel_tecc_addr_px2, sel_decc_addr_px2, sel_diag_addr_px2, 
+   sel_diag_tag_addr_px2, inc_tag_ecc_cnt_c3_n, 
+   sel_lkup_stalled_tag_px2, bist_or_diag_acc_c1, 
+   sel_decc_or_bist_idx, sel_vuad_bist_px2, arbctl_mbctl_inst_vld_c2, 
+   arbctl_fbctl_inst_vld_c2, arbctl_inst_vld_c2, 
+   arbctl_tagctl_inst_vld_c2, arbctl_wbctl_inst_vld_c2, 
+   arbctl_imiss_hit_c10, arbctl_imiss_hit_c4, arbctl_evict_c3, 
+   arbctl_evict_c4, sel_c2_stall_idx_c1, arbctl_vuad_acc_px2, 
+   arbctl_tag_wr_px2, arbctl_vuad_idx2_sel_px2_n, 
+   arbctl_mb_camen_px2, arbctl_fbctl_fbsel_c1, arbctl_mbctl_mbsel_c1, 
+   arbctl_iqsel_px2, arbctl_evict_vld_c2, arbctl_inst_diag_c1, 
+   arbctl_inst_vld_c1, scdata_fbrd_c3, arbctl_mbctl_ctrue_c9, 
+   arbctl_mbctl_cas1_hit_c8, arbctl_decc_data_sel_c9, 
+   arbctl_tecc_way_c2, arbctl_l2tag_vld_c4, dword_mask_c8, 
+   arbctl_fill_vld_c2, arbctl_imiss_vld_c2, arbctl_normal_tagacc_c2, 
+   arbctl_tagdp_tecc_c2, arbctl_dir_vld_c3_l, arbctl_dc_rd_en_c3, 
+   arbctl_ic_rd_en_c3, arbctl_dc_wr_en_c3, arbctl_ic_wr_en_c3, 
+   arbctl_dir_panel_dcd_c3, arbctl_dir_panel_icd_c3, 
+   arbctl_lkup_bank_ena_dcd_c3, arbctl_lkup_bank_ena_icd_c3, 
+   arbctl_inval_mask_dcd_c3, arbctl_inval_mask_icd_c3, 
+   arbctl_wr_dc_dir_entry_c3, arbctl_wr_ic_dir_entry_c3, dir_addr_c9, 
+   arbctl_dir_wr_en_c4, arbctl_csr_wr_en_c7, arbctl_csr_rd_en_c7, 
+   arbctl_evict_c5, arbctl_waysel_gate_c2, arbctl_data_diag_st_c2, 
+   arbctl_inval_inst_c2, arbctl_inst_diag_c2, decdp_ld64_inst_c1, 
+   arbctl_waysel_inst_vld_c2, arbctl_coloff_inst_vld_c2, 
+   arbctl_rdwr_inst_vld_c2, ic_inval_vld_c7, dc_inval_vld_c7, 
+   arbctl_inst_l2data_vld_c6, arbctl_csr_wr_en_c3, 
+   arbctl_csr_rd_en_c3, arbctl_diag_complete_c3, 
+   arbctl_tagctl_pst_with_ctrue_c1, arbctl_csr_st_c2, 
+   arbctl_mbctl_hit_off_c1, arbctl_pst_ctrue_en_c8, 
+   arbctl_evict_tecc_vld_c2, arbctl_fbctl_hit_off_c1, 
+   arbctl_wbctl_hit_off_c1, arbctl_inst_l2vuad_vld_c6, 
+   arbctl_inst_l2tag_vld_c6, arbctl_snpsel_c1, 
+   arbctl_dbgdp_inst_vld_c3, decdp_tagctl_wr_c1, decdp_pst_inst_c2, 
+   decdp_fwd_req_c2, decdp_swap_inst_c2, decdp_imiss_inst_c2, 
+   decdp_inst_int_c2, decdp_inst_int_c1, decdp_ld64_inst_c2, 
+   decdp_bis_inst_c3, decdp_rmo_st_c3, decdp_strst_inst_c2, 
+   decdp_wr8_inst_c2, decdp_wr64_inst_c2, decdp_st_inst_c2, 
+   decdp_st_inst_c3, decdp_st_with_ctrue_c2, decdp_ld_inst_c2, 
+   arbdp_dword_st_c2, arbdp_pst_with_ctrue_c2, decdp_cas1_inst_c2, 
+   decdp_cas2_inst_c2, decdp_cas2_from_mb_c2, 
+   decdp_cas2_from_mb_ctrue_c2, arbctl_inst_l2vuad_vld_c3, 
+   write_req_c3, atomic_req_c3, prim_req_c3, decdp_pf_inst_c5, 
+   decdp_strld_inst_c6, decdp_atm_inst_c6, store_err_c8, 
+   arbdp_tecc_inst_mb_c8, arbctl_tagdp_perr_vld_c2, 
+   arbdp_tagctl_pst_no_ctrue_c2, arbdp_mbctl_pst_no_ctrue_c2, 
+   arbdp_vuadctl_pst_no_ctrue_c2, arbctl_tecc_c2, 
+   vuadctl_no_bypass_px2, sel_way_px2, diag_or_tecc_write_px2, 
+   arbctl_tag_rd_px2, arbctl_tag_way_px2, mux1_mbsel_px1, 
+   wr8_inst_no_ctrue_c1, 
+      oqctl_arbctl_full_px2, mbctl_arbctl_vld_px1, 
+   mbctl_arbctl_cnt12_px2_prev, mbctl_arbctl_snp_cnt8_px1, 
+   wbctl_arbctl_full_px1, mbctl_arbctl_hit_c3, fbctl_arbctl_vld_px1, 
+   iq_arbctl_vld_px2, iq_arbctl_vbit_px2, iq_arbctl_atm_px2, 
+   iq_arbctl_csr_px2, iq_arbctl_st_px2, snpq_arbctl_vld_px1, 
+   tagctl_decc_data_sel_c8, tagctl_rdma_vld_px1, data_ecc_active_c3, 
+   decc_tag_acc_en_px2, mbctl_nondep_fbhit_c3, mbist_arb_l2d_en, 
+   bist_vuad_rd_en_px1, arbdp_inst_fb_c2, arbdp_ioaddr_c1_39to37, 
+   arbdp_ioaddr_c1_35to33, size_field_c8, word_lower_cmp_c8, 
+   word_upper_cmp_c8, arbaddrdp_addr2_c8, arbdp_inst_size_c7, 
+   arbdp_diag_wr_way_c2, arbdp_inst_byte_addr_c7, arbdp_inst_way_c1, 
+   arbdp_tecc_c1, fbctl_arbdp_way_px2, arbdp_inst_mb_c2, 
+   arbdp_inst_fb_c1, arbdp_inst_dep_c2, tagctl_hit_l2orfb_c3, 
+   tagdp_arbctl_par_err_c3, invalid_evict_c3, arbdp_inst_nc_c3, 
+   arbdp_cpuid_c3, arbdp_cpuid_c4, arbdp_cpuid_c5, arbdp_cpuid_c6, 
+   arbdp_l1way_c3, arbdp_addr11to8_c3, arbdp_new_addr5to4_px2, 
+   arbdp_addr5to4_c1, arbdp_addr5to4_c2, arbdp_addr5to4_c3, 
+   arbdp_inst_fb_c3, arbdp_inst_mb_c3, arbdp_inst_tecc_c3, 
+   arbdp_inst_bufidhi_c1, arbdp_inst_bufid1_c1, arbdp_inst_mb_c1, 
+   arbdp_evict_c1, arbdp_inst_rqtyp_c1, arbdp_inst_rsvd_c1, 
+   arbdp_inst_nc_c1, arbdp_word_addr_c1, arbdp_inst_ctrue_c1, 
+   arbdp_inst_size_c1, arbdp_addr_start_c2, arbdp_rdma_inst_c2, 
+   arbdp_inst_bufidlo_c2, arbdp_inst_rqtyp_c2, arbdp_inst_rqtyp_c6, 
+   arbaddr_addr22_c2, bist_acc_vd_px1, mbist_arbctl_l2t_write, 
+   l2_bypass_mode_on, rclk, grst_l, arst_l, dbginit_l, si, se, 
+   sehold
+   );
+
+ input	oqctl_arbctl_full_px2; 
+ input	mbctl_arbctl_vld_px1;  input	mbctl_arbctl_cnt12_px2_prev;  input	mbctl_arbctl_snp_cnt8_px1; 
+ input	wbctl_arbctl_full_px1; 	 			
+ input  mbctl_arbctl_hit_c3 ;  output arbctl_mbctl_inval_inst_c2 ; 
+ input	fbctl_arbctl_vld_px1; 
+ input	iq_arbctl_vld_px2;  input	iq_arbctl_vbit_px2;  input	iq_arbctl_atm_px2;  input	iq_arbctl_csr_px2;  input	iq_arbctl_st_px2; 
+ input	snpq_arbctl_vld_px1; 
+ 
+
+
+ input	tagctl_decc_data_sel_c8;  input	tagctl_rdma_vld_px1;
+ input 	data_ecc_active_c3;  input	decc_tag_acc_en_px2;  input	mbctl_nondep_fbhit_c3; 
+
+
+
+ 
+ input	mbist_arb_l2d_en;  input	bist_vuad_rd_en_px1;
+ 
+
+ input	arbdp_inst_fb_c2;  
+ input	[39:37] arbdp_ioaddr_c1_39to37 ; 				  input	[35:33] arbdp_ioaddr_c1_35to33 ;                                  
+
+  input	[1:0]	size_field_c8;  input		word_lower_cmp_c8;  input		word_upper_cmp_c8;  input		arbaddrdp_addr2_c8;  
+  input	[2:0]	arbdp_inst_size_c7;
+
+ input	[3:0]   arbdp_diag_wr_way_c2;   input	[2:0]	arbdp_inst_byte_addr_c7; 
+ input	[3:0]	arbdp_inst_way_c1 ;   input		arbdp_tecc_c1 ;
+
+ input	[3:0]	fbctl_arbdp_way_px2; 
+
+
+ input	arbdp_inst_mb_c2;
+ input	arbdp_inst_fb_c1;
+ input	arbdp_inst_dep_c2;
+
+ input	tagctl_hit_l2orfb_c3 ;
+ input	tagdp_arbctl_par_err_c3;  input  invalid_evict_c3 ;  input	arbdp_inst_nc_c3 ;
+ input	[2:0]	arbdp_cpuid_c3, arbdp_cpuid_c4, arbdp_cpuid_c5, arbdp_cpuid_c6;  input	[1:0]	arbdp_l1way_c3;
+
+ input	[7:4]	arbdp_addr11to8_c3 ; 
+
+
+ input	[1:0]	arbdp_new_addr5to4_px2;  input	[1:0]	arbdp_addr5to4_c1;  input	[1:1]	arbdp_addr5to4_c2;  input	[1:0]	arbdp_addr5to4_c3; 
+input	arbdp_inst_fb_c3, arbdp_inst_mb_c3, arbdp_inst_tecc_c3;
+
+input   arbdp_inst_bufidhi_c1 ; input	arbdp_inst_bufid1_c1; 
+input   arbdp_inst_mb_c1 ; input   arbdp_evict_c1; input	[:

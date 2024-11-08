@@ -1,0 +1,14 @@
+
+
+module sparc_ifu_lfsr5 (
+      out, 
+      advance, clk, se, si, so, reset
+   );
+
+   input 	advance;
+   
+   input 	clk, se, si, so, reset;
+
+   output [1:0] out;
+
+   reg

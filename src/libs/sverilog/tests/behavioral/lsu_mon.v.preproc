@@ -1,0 +1,9 @@
+
+ 
+ 
+ 
+
+module lsu_mon ( clk, rst_l);
+  input clk;		  input rst_l;		
+
+   reg

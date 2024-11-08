@@ -1,0 +1,41 @@
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 14:01:50 2019
+icread_itools::state groute
+# [readpar]:riscv.par read.
+# 
+# [look_for_hints]:Found hints in <riscv.stat> file
+# [look_for_hints]:Number of insts:5221
+# [look_for_hints]:Number of nets :5039
+# [look_for_hints]:Number of gpins:16869
+# 
+# no syntax errors in library:riscv.lib
+# Library file:riscv.lib read successfully.
+# 
+# 
+# [look_for_hints]:Found hints in <riscv.stat> file
+# [look_for_hints]:Number of insts:5221
+# [look_for_hints]:Number of nets :5039
+# [look_for_hints]:Number of gpins:16869
+# 
+# no syntax problem in circuit file.
+# Circuit file:riscv.ckt read successfully.
+# 
+# Constraint file:riscv.con read successfully.
+# 
+# [icread_con]:riscv.con read.
+# [read_placement]:groute/output/riscv.pl2 read.
+icwrite_def [file join ../ output riscv.def] -placed  -sections {rows nocoresites vias components pins nets}
+# [write_def]:../output/riscv.def written.
+# Copy over the .guide file
+set guide_path [file join groute output riscv.guide]
+# groute/output/riscv.guide
+if {[file exists $guide_path]} {
+  set output_guide [file join ../output riscv.guide]
+  file copy $guide_path $output_guide
+}
+exit
+
+# itranslate terminated normally at Tue Oct 22 14:01:51 2019
+# with no errors and 0 warning[s]
+

@@ -1,0 +1,94 @@
+
+
+module sparc_exu_aluzcmp64
+  (
+   in,
+   zero64,
+   zero32
+   );
+
+   input [63:0] in;         
+   output zero64;                  output zero32;               
+   wire   ;					// low 32 is nonzero
+   wire   high_nonzero;         // high 32 is nonzero
+
+   // evaluate each half of the input
+   sparc_exu_aluor32 lowcmp(.in(in[31:0]), .out(low_nonzero));
+   sparc_exu_aluor32 highcmp(.in(in[63:32]), .out(high_nonzero));
+
+   assign zero32 = ~low_nonzero;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+;					   wire   ;         // high 32 is nonzero
+
+   // evaluate each half of the input
+   sparc_exu_aluor32 lowcmp(.in(in[31:0]), .out(low_nonzero));
+   sparc_exu_aluor32 highcmp(.in(in[63:32]), .out(high_nonzero));
+
+   assign zero32 = ~low_nonzero;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+;         
+      sparc_exu_aluor32 (.in(in[31:0]), .out(low_nonzero));
+   sparc_exu_aluor32 highcmp(.in(in[63:32]), .out(high_nonzero));
+
+   assign zero32 = ~low_nonzero;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+(.in([31:0]), .out());
+   sparc_exu_aluor32 highcmp(.in(in[63:32]), .out(high_nonzero));
+
+   assign zero32 = ~low_nonzero;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+));
+   sparc_exu_aluor32 (.in(in[63:32]), .out(high_nonzero));
+
+   assign zero32 = ~low_nonzero;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+(.in([63:32]), .out());
+
+   assign zero32 = ~low_nonzero;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+));
+
+   assign  = ~low_nonzero;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+ = ~;
+   assign zero64 = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+;
+   assign  = ~(low_nonzero | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+ = ~( | high_nonzero);
+
+endmodule // sparc_exu_aluzcmp64
+   
+ | );
+
+endmodule // sparc_exu_aluzcmp64
+   
+);
+
+endmodule    

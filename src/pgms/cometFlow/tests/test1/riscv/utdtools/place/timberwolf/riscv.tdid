@@ -1,0 +1,37 @@
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 14:00:53 2019
+icread_itools::state place
+# [readpar]:riscv.par read.
+# 
+# [look_for_hints]:Found hints in <riscv.stat> file
+# [look_for_hints]:Number of insts:5221
+# [look_for_hints]:Number of nets :5039
+# [look_for_hints]:Number of gpins:16869
+# 
+# no syntax errors in library:riscv.lib
+# Library file:riscv.lib read successfully.
+# 
+# 
+# [look_for_hints]:Found hints in <riscv.stat> file
+# [look_for_hints]:Number of insts:5221
+# [look_for_hints]:Number of nets :5039
+# [look_for_hints]:Number of gpins:16869
+# 
+# no syntax problem in circuit file.
+# Circuit file:riscv.ckt read successfully.
+# 
+# Constraint file:place/output/itools.con read successfully.
+# 
+# [icread_con]:place/output/itools.con read.
+# Constraint file:riscv.con read successfully.
+# 
+# [icread_con]:riscv.con read.
+# [read_placement]:place/output/riscv.pl1 read.
+icwrite_def [file join ../ output riscv.def] -placed  -sections {rows nocoresites vias components pins nets}
+# [write_def]:../output/riscv.def written.
+exit
+
+# itranslate terminated normally at Tue Oct 22 14:00:53 2019
+# with no errors and 0 warning[s]
+

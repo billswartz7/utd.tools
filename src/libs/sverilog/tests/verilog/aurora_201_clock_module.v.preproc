@@ -1,0 +1,643 @@
+
+     
+
+module aurora_201_CLOCK_MODULE
+(
+    GTP_CLK,
+    GTP_CLK_LOCKED,
+    USER_CLK,
+    SYNC_CLK,
+    DCM_NOT_LOCKED
+
+);
+
+ 
+
+
+    input       GTP_CLK;
+    input       GTP_CLK_LOCKED;
+    output      USER_CLK;
+    output      SYNC_CLK;
+    output      DCM_NOT_LOCKED;
+
+
+    wire    [15:0]  ;
+    wire            gtp_clk_not_locked_i;
+    wire            clkfb_i;
+    wire            clkdv_i;
+    wire            clk0_i;
+    wire            locked_i;
+
+
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // Invert gtp clock locked
+    assign  gtp_clk_not_locked_i    =   !GTP_CLK_LOCKED;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+;
+    wire            ;
+    wire            clkfb_i;
+    wire            clkdv_i;
+    wire            clk0_i;
+    wire            locked_i;
+
+
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // Invert gtp clock locked
+    assign  gtp_clk_not_locked_i    =   !GTP_CLK_LOCKED;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+;
+    wire            ;
+    wire            clkdv_i;
+    wire            clk0_i;
+    wire            locked_i;
+
+
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // Invert gtp clock locked
+    assign  gtp_clk_not_locked_i    =   !GTP_CLK_LOCKED;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+;
+    wire            ;
+    wire            clk0_i;
+    wire            locked_i;
+
+
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // Invert gtp clock locked
+    assign  gtp_clk_not_locked_i    =   !GTP_CLK_LOCKED;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+;
+    wire            ;
+    wire            locked_i;
+
+
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // Invert gtp clock locked
+    assign  gtp_clk_not_locked_i    =   !GTP_CLK_LOCKED;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+;
+    wire            ;
+
+
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // Invert gtp clock locked
+    assign  gtp_clk_not_locked_i    =   !GTP_CLK_LOCKED;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+;
+
+
+
+
+
+
+        assign      =   !GTP_CLK_LOCKED;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+    =   !;
+
+
+    // Instantiate a DCM module to divide the reference clock.
+    DCM #
+    (
+        .CLKDV_DIVIDE               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule
+;
+
+
+        DCM #
+    (
+        .               (2.0),
+        .DFS_FREQUENCY_MODE         ("LOW"),
+        .DLL_FREQUENCY_MODE         ("LOW")
+    )
+    clock_divider_i
+    (        
+        .CLK0                        (clk0_i),                 // 0 degree DCM CLK ouptput
+        .CLK180                      (not_connected_i[0]),     // 180 degree DCM CLK output
+        .CLK270                      (not_connected_i[1]),     // 270 degree DCM CLK output
+        .CLK2X                       (not_connected_i[2]),     // 2X DCM CLK output
+        .CLK2X180                    (not_connected_i[3]),     // 2X, 180 degree DCM CLK out
+        .CLK90                       (not_connected_i[4]),     // 90 degree DCM CLK output
+        .CLKDV                       (clkdv_i),                // Divided DCM CLK out (CLKDV_DIVIDE)
+        .CLKFX                       (not_connected_i[5]),     // DCM CLK synthesis out (M/D)
+        .CLKFX180                    (not_connected_i[6]),     // 180 degree CLK synthesis out
+        .LOCKED                      (locked_i),               // DCM LOCK status output 
+        .PSDONE                      (not_connected_i[7]),     // Dynamic phase adjust done output
+        .STATUS                      (not_connected_i[15:8]),  
+        .CLKFB                       (clkfb_i),                // DCM clock feedback 
+        .CLKIN                       (GTP_CLK),                // Clock input (from IBUFG, BUFG or DCM)
+        .DSSEN                       (1'b0),
+        .PSCLK                       (1'b0),                   // Dynamic phase adjust clock input
+        .PSEN                        (1'b0),                   // Dynamic phase adjust enable input
+        .PSINCDEC                    (1'b0),                   // Dynamic phase adjust increment/decrement
+        .RST                         (gtp_clk_not_locked_i)    // DCM asynchronous reset input	
+    );
+
+   // The DCM_NOT_LOCKED signal is created by inverting the DCM's locked signal.
+    assign  DCM_NOT_LOCKED  =   ~locked_i;
+
+    // BUFG for the feedback clock.  The feedback signal is phase aligned to the input
+    // and must come from the CLK0 or CLK2X output of the DCM.  In this case, we use
+    // the CLK0 output.
+    BUFG feedback_clock_net_i
+    (
+        .I(clk0_i),
+        .O(clkfb_i)
+    );
+
+
+    assign  SYNC_CLK =   clkfb_i;
+
+
+    // The User Clock is distributed on a global clock net.
+    BUFG user_clk_net_i
+    (
+        .I(clkdv_i),
+        .O(USER_CLK)
+    );
+
+
+ 
+
+endmodule

@@ -1,0 +1,41 @@
+
+     
+
+module aurora_201_IDLE_AND_VER_GEN
+(
+        GEN_VER,
+
+    DID_VER,
+
+
+        GEN_A,
+    GEN_K,
+    GEN_R,
+    GEN_V,
+
+
+        RESET,
+    USER_CLK
+);
+
+ 
+
+
+
+        input              GEN_VER;
+
+    output             DID_VER;
+
+
+        output             GEN_A;
+    output  [0:1]      GEN_K;
+    output  [0:1]      GEN_R;
+    output  [0:1]      GEN_V;
+
+
+        input              RESET;
+    input              USER_CLK;
+
+
+
+    reg

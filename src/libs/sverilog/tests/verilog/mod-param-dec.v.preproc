@@ -1,0 +1,4 @@
+
+module mod_param_dec_1
+  #(parameter    DATA_WIDTH    = 8,
+                 ADDRESS_WIDTH

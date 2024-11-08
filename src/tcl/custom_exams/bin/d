@@ -1,0 +1,12 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+echo "Syntax: db2xcel <SQLdatabase> <CSVfilename>"
+echo "        creates new csv files which the grades have been updated."
+echo "        from the database information."
+exit 1  ;
+fi
+
+exec ${ICDIR}/bin/icos ICtclsh -i -v -A -do ./dbx.tcl -a ${1+"$@"}
+

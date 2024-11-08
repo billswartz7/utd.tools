@@ -1,0 +1,1919 @@
+module dram_dq_pad(
+      serial_out, io_dram_data_in_hi, io_dram_data_in, dq_pad_clk_so, 
+   bso, afi, 
+      pad, 
+      vrefcode, vdd_h, update_dr, testmode_l, test_mode, shift_dr, 
+   serial_in, rst_l, arst_l, ps_select, pad_pos_cnt, pad_neg_cnt, out_type, 
+   mode_ctrl, hiz_n, dram_io_ptr_clk_inv, dram_io_pad_enable, 
+   dram_io_drive_enable, dqs_read, dq_pad_clk_si, dq_pad_clk_se, 
+   data_pos, data_neg, clock_dr, clk, cbu, cbd, bypass_in, 
+   bypass_enable, burst_length_four, bsi, afo
+   );
+
+
+input			afo;			input			bsi;			input			burst_length_four;	input			bypass_enable;		input			bypass_in;		input [8:1]		cbd;			input [8:1]		cbu;			input			clk;			input			clock_dr;		input			data_neg;		input			data_pos;		input			dq_pad_clk_se;		input			dq_pad_clk_si;		input			dqs_read;		input			dram_io_drive_enable;	input			dram_io_pad_enable;	input [1:0]		dram_io_ptr_clk_inv;	input			hiz_n;			input			mode_ctrl;		input			out_type;		input [1:0]		pad_neg_cnt;		input [1:0]		pad_pos_cnt;		input			ps_select;		input			rst_l;			input			arst_l;			input			serial_in;		input			shift_dr;		input			test_mode;		input			testmode_l;		input			update_dr;		input			vdd_h;			input [7:0]		vrefcode;		
+inout			pad;
+
+
+output			afi;			output			bso;			output			dq_pad_clk_so;		output			io_dram_data_in;	output			io_dram_data_in_hi;	output			serial_out;		
+
+wire			;			// From dq_edgelogic of dram_dq_edgelogic.v
+wire			to_core;		// From sstl_dq_pad of dram_sstl_dq_pad.v
+wire			to_pad;			// From dq_edgelogic of dram_dq_edgelogic.v
+// End of automatics
+
+// EDGE LOGIC
+/*dram_dq_edgelogic AUTO_TEMPLATE(
+		  .tp_out_type			(out_type));
+*/
+
+dram_dq_edgelogic dq_edgelogic(
+			       .dram_io_ptr_clk_inv(dram_io_ptr_clk_inv[1]),
+				/*AUTOINST*/
+			       // Outputs
+			       .io_dram_data_in_hi(io_dram_data_in_hi),
+			       .io_dram_data_in(io_dram_data_in),
+			       .dq_pad_clk_so(dq_pad_clk_so),
+			       .to_pad	(to_pad),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+;			wire			;		// From sstl_dq_pad of dram_sstl_dq_pad.v
+wire			to_pad;			// From dq_edgelogic of dram_dq_edgelogic.v
+// End of automatics
+
+// EDGE LOGIC
+/*dram_dq_edgelogic AUTO_TEMPLATE(
+		  .tp_out_type			(out_type));
+*/
+
+dram_dq_edgelogic dq_edgelogic(
+			       .dram_io_ptr_clk_inv(dram_io_ptr_clk_inv[1]),
+				/*AUTOINST*/
+			       // Outputs
+			       .io_dram_data_in_hi(io_dram_data_in_hi),
+			       .io_dram_data_in(io_dram_data_in),
+			       .dq_pad_clk_so(dq_pad_clk_so),
+			       .to_pad	(to_pad),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+;		wire			;			// From dq_edgelogic of dram_dq_edgelogic.v
+// End of automatics
+
+// EDGE LOGIC
+/*dram_dq_edgelogic AUTO_TEMPLATE(
+		  .tp_out_type			(out_type));
+*/
+
+dram_dq_edgelogic dq_edgelogic(
+			       .dram_io_ptr_clk_inv(dram_io_ptr_clk_inv[1]),
+				/*AUTOINST*/
+			       // Outputs
+			       .io_dram_data_in_hi(io_dram_data_in_hi),
+			       .io_dram_data_in(io_dram_data_in),
+			       .dq_pad_clk_so(dq_pad_clk_so),
+			       .to_pad	(to_pad),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+;			
+
+
+dram_dq_edgelogic (
+			       .dram_io_ptr_clk_inv(dram_io_ptr_clk_inv[1]),
+				/*AUTOINST*/
+			       // Outputs
+			       .io_dram_data_in_hi(io_dram_data_in_hi),
+			       .io_dram_data_in(io_dram_data_in),
+			       .dq_pad_clk_so(dq_pad_clk_so),
+			       .to_pad	(to_pad),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+(
+			       .dram_io_ptr_clk_inv([1]),
+				
+			       			       .io_dram_data_in_hi(),
+			       .io_dram_data_in(io_dram_data_in),
+			       .dq_pad_clk_so(dq_pad_clk_so),
+			       .to_pad	(to_pad),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .io_dram_data_in(),
+			       .dq_pad_clk_so(dq_pad_clk_so),
+			       .to_pad	(to_pad),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .dq_pad_clk_so(),
+			       .to_pad	(to_pad),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .to_pad	(),
+			       .oe	(oe),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .oe	(),
+			       .afi	(afi),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .afi	(),
+			       // Inputs
+			       .clk	(clk),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       			       .clk	(),
+			       .rst_l	(rst_l),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .rst_l	(),
+			       .arst_l	(arst_l),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .arst_l	(),
+			       .dq_pad_clk_se(dq_pad_clk_se),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .dq_pad_clk_se(),
+			       .dq_pad_clk_si(dq_pad_clk_si),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .dq_pad_clk_si(),
+			       .dqs_read(dqs_read),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .dqs_read(),
+			       .data_pos(data_pos),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .data_pos(),
+			       .data_neg(data_neg),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .data_neg(),
+			       .pad_pos_cnt(pad_pos_cnt[1:0]),
+			       .pad_neg_cnt(pad_neg_cnt[1:0]),
+			       .dram_io_drive_enable(dram_io_drive_enable),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .pad_pos_cnt([1:0]),
+			       .pad_neg_cnt([1:0]),
+			       .dram_io_drive_enable(),
+			       .dram_io_pad_enable(dram_io_pad_enable),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .dram_io_pad_enable(),
+			       .burst_length_four(burst_length_four),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .burst_length_four(),
+			       .to_core	(to_core),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .to_core	(),
+			       .testmode_l(testmode_l),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .testmode_l(),
+			       .test_mode(test_mode),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .test_mode(),
+			       .tp_out_type(out_type),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			       .tp_out_type(),		 // Templated
+			       .afo	(afo));
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),		 			       .afo	());
+
+// SSTL LOGIC
+
+/*dram_sstl_dq_pad AUTO_TEMPLATE(
+		  //.si			(edgelogic_so),
+		  .se			(dq_pad_clk_se),
+		  //.so			(dq_pad_clk_so),
+                  .pad                  (pad),
+                  .oe                   (oe),
+		  .odt_enable_mask      (dram_io_ptr_clk_inv[0]),
+                  .data_in              (to_pad));
+*/
+dram_sstl_dq_pad sstl_dq_pad(/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+));
+
+
+
+dram_sstl_dq_pad (/*AUTOINST*/
+			     // Outputs
+			     .bso	(bso),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+(
+			     			     .bso	(),
+			     .to_core	(to_core),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .to_core	(),
+			     .serial_out(serial_out),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .serial_out(),
+			     // Inouts
+			     .pad	(pad),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     			     .pad	(),			 // Templated
+			     // Inputs
+			     .test_mode	(test_mode),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),			 			     			     .test_mode	(),
+			     .se	(dq_pad_clk_se),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .se	(),	 // Templated
+			     .vrefcode	(vrefcode[7:0]),
+			     .bsi	(bsi),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),	 			     .vrefcode	([7:0]),
+			     .bsi	(),
+			     .cbd	(cbd[8:1]),
+			     .cbu	(cbu[8:1]),
+			     .clock_dr	(clock_dr),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .cbd	([8:1]),
+			     .cbu	([8:1]),
+			     .clock_dr	(),
+			     .data_in	(to_pad),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .data_in	(),		 // Templated
+			     .hiz_n	(hiz_n),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),		 			     .hiz_n	(),
+			     .mode_ctrl	(mode_ctrl),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .mode_ctrl	(),
+			     .oe	(oe),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .oe	(),			 // Templated
+			     .shift_dr	(shift_dr),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),			 			     .shift_dr	(),
+			     .update_dr	(update_dr),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .update_dr	(),
+			     .vdd_h	(vdd_h),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .vdd_h	(),
+			     .odt_enable_mask(dram_io_ptr_clk_inv[0]), // Templated
+			     .bypass_in	(bypass_in),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .odt_enable_mask([0]), 			     .bypass_in	(),
+			     .serial_in	(serial_in),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .serial_in	(),
+			     .bypass_enable(bypass_enable),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .bypass_enable(),
+			     .ps_select	(ps_select),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .ps_select	(),
+			     .clk	(clk),
+			     .out_type	(out_type));
+endmodule
+),
+			     .clk	(),
+			     .out_type	(out_type));
+endmodule
+),
+			     .out_type	());
+endmodule
+));
+endmodule

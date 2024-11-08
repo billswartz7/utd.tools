@@ -1,0 +1,68 @@
+ 
+
+module ciop_iob(
+      iob_pcx_stall_pq, iob_jbi_mondo_nack, iob_jbi_mondo_ack, 
+   iob_jbi_dbg_lo_vld, iob_jbi_dbg_lo_data, iob_jbi_dbg_hi_vld, 
+   iob_jbi_dbg_hi_data, iob_io_dbg_en, iob_io_dbg_data, 
+   iob_ctu_coreavail, iob_cpx_req_cq, iob_cpx_data_ca, iob_clk_tr, 
+   iob_clk_l2_tr, iob_clk_data, iob_clk_stall, iob_clk_vld, 
+   iob_dram02_data, iob_dram02_stall, iob_dram02_vld, 
+   iob_dram13_data, iob_dram13_stall, iob_dram13_vld, 
+   iob_jbi_pio_data, iob_jbi_pio_stall, iob_jbi_pio_vld, 
+   iob_jbi_spi_data, iob_jbi_spi_stall, iob_jbi_spi_vld, 
+   iob_tap_data, iob_tap_stall, iob_tap_vld, iob_scanout, 
+   iob_io_dbg_ck_p, iob_io_dbg_ck_n, 
+      pcx_iob_data_rdy_px2, pcx_iob_data_px2, l2_dbgbus_23, 
+   l2_dbgbus_01, jbus_grst_l, jbus_gdbginit_l, jbus_gclk, 
+   jbus_arst_l, jbus_adbginit_l, jbi_iob_mondo_vld, 
+   jbi_iob_mondo_data, io_trigin, io_temp_trig, global_shift_enable, 
+   efc_iob_sernum2_dshift, efc_iob_sernum1_dshift, 
+   efc_iob_sernum0_dshift, efc_iob_fusestat_dshift, 
+   efc_iob_fuse_data, efc_iob_fuse_clk2, efc_iob_fuse_clk1, 
+   efc_iob_coreavail_dshift, dbg_en_23, dbg_en_01, 
+   ctu_tst_short_chain, ctu_tst_scanmode, ctu_tst_scan_disable, 
+   ctu_tst_pre_grst_l, ctu_tst_macrotest, ctu_iob_wake_thr, 
+   cpx_iob_grant_cx2, cmp_grst_l, cmp_gdbginit_l, cmp_gclk, 
+   cmp_arst_l, cmp_adbginit_l, clspine_jbus_tx_sync, 
+   clspine_jbus_rx_sync, clspine_iob_resetstat_wr, 
+   clspine_iob_resetstat, clk_iob_cken, clk_iob_data, clk_iob_stall, 
+   clk_iob_vld, dram02_iob_data, dram02_iob_stall, dram02_iob_vld, 
+   dram13_iob_data, dram13_iob_stall, dram13_iob_vld, 
+   jbi_iob_pio_data, jbi_iob_pio_stall, jbi_iob_pio_vld, 
+   jbi_iob_spi_data, jbi_iob_spi_stall, jbi_iob_spi_vld, 
+   tap_iob_data, tap_iob_stall, tap_iob_vld, iob_scanin,
+   spc0_inst_done, pc_w0, spc1_inst_done, pc_w1, spc2_inst_done, 
+   pc_w2, spc3_inst_done, pc_w3, spc4_inst_done, pc_w4, 
+   spc5_inst_done, pc_w5, spc6_inst_done, pc_w6, spc7_inst_done, 
+   pc_w7
+   );
+
+   input		clk_iob_cken;		   input [-1:0]clspine_iob_resetstat;   input		clspine_iob_resetstat_wr;   input		clspine_jbus_rx_sync;	   input		clspine_jbus_tx_sync;	   input		cmp_adbginit_l;		   input		cmp_arst_l;		   input		cmp_gclk;		   input		cmp_gdbginit_l;		   input		cmp_grst_l;		   input [-1:0]cpx_iob_grant_cx2;	   input		ctu_iob_wake_thr;	   input		ctu_tst_macrotest;	   input		ctu_tst_pre_grst_l;	   input		ctu_tst_scan_disable;	   input		ctu_tst_scanmode;	   input		ctu_tst_short_chain;	   input		dbg_en_01;		   input		dbg_en_23;		   input		efc_iob_coreavail_dshift;   input		efc_iob_fuse_clk1;	   input		efc_iob_fuse_clk2;	   input		efc_iob_fuse_data;	   input		efc_iob_fusestat_dshift;   input		efc_iob_sernum0_dshift;	   input		efc_iob_sernum1_dshift;	   input		efc_iob_sernum2_dshift;	   input		global_shift_enable;	   input		io_temp_trig;		   input		io_trigin;		   input [-1:0]jbi_iob_mondo_data;   input		jbi_iob_mondo_vld;	   input		jbus_adbginit_l;	   input		jbus_arst_l;		   input		jbus_gclk;		   input		jbus_gdbginit_l;	   input		jbus_grst_l;		   input [39:0]		l2_dbgbus_01;		   input [39:0]		l2_dbgbus_23;		   input [-1:0]pcx_iob_data_px2;	   input		pcx_iob_data_rdy_px2;	
+   input                spc0_inst_done;
+   input [48:0]         pc_w0;
+   input                spc1_inst_done;
+   input [48:0]         pc_w1;
+   input                spc2_inst_done;
+   input [48:0]         pc_w2;
+   input                spc3_inst_done;
+   input [48:0]         pc_w3;
+   input                spc4_inst_done;
+   input [48:0]         pc_w4;
+   input                spc5_inst_done;
+   input [48:0]         pc_w5;
+   input                spc6_inst_done;
+   input [48:0]         pc_w6;
+   input                spc7_inst_done;
+   input [48:0]         pc_w7;          
+
+   output		iob_clk_l2_tr;		   output		iob_clk_tr;		   output [-1:0]iob_cpx_data_ca;	   output [-1:0]iob_cpx_req_cq;	   output [-1:0]iob_ctu_coreavail;   output [39:0]	iob_io_dbg_data;	   output		iob_io_dbg_en;		   output [47:0]	iob_jbi_dbg_hi_data;	   output		iob_jbi_dbg_hi_vld;	   output [47:0]	iob_jbi_dbg_lo_data;	   output		iob_jbi_dbg_lo_vld;	   output		iob_jbi_mondo_ack;	   output		iob_jbi_mondo_nack;	   output		iob_pcx_stall_pq;	
+   input [-1:0]clk_iob_data;	   input		clk_iob_stall;		   input		clk_iob_vld;		   input [-1:0]dram02_iob_data;	   input		dram02_iob_stall;	   input		dram02_iob_vld;		   input [-1:0]dram13_iob_data;	   input		dram13_iob_stall;	   input		dram13_iob_vld;		   input [-1:0]jbi_iob_pio_data;	   input		jbi_iob_pio_stall;	   input		jbi_iob_pio_vld;	   input [-1:0]jbi_iob_spi_data;	   input		jbi_iob_spi_stall;	   input		jbi_iob_spi_vld;	   input [-1:0]tap_iob_data;	   input		tap_iob_stall;		   input		tap_iob_vld;		
+   output [-1:0]iob_clk_data;	   output		iob_clk_stall;		   output		iob_clk_vld;		   output [-1:0]iob_dram02_data;	   output		iob_dram02_stall;	   output		iob_dram02_vld;		   output [-1:0]iob_dram13_data;	   output		iob_dram13_stall;	   output		iob_dram13_vld;		   output [-1:0]iob_jbi_pio_data;	   output		iob_jbi_pio_stall;	   output		iob_jbi_pio_vld;	   output [-1:0]iob_jbi_spi_data;	   output		iob_jbi_spi_stall;	   output		iob_jbi_spi_vld;	   output [-1:0]iob_tap_data;	   output		iob_tap_stall;		   output		iob_tap_vld;		
+   input 	  iob_scanin;
+   output         iob_scanout;
+   
+   output [2:0]	  iob_io_dbg_ck_p;
+   output [2:0]   iob_io_dbg_ck_n;
+   
+
+      reg

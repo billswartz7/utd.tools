@@ -1,0 +1,2719 @@
+module sparc_mul_top(
+      mul_exu_ack, mul_spu_ack, mul_spu_shf_ack, mul_data_out, so, 
+      rclk, grst_l, arst_l, exu_mul_input_vld, exu_mul_rs1_data, exu_mul_rs2_data, 
+   spu_mul_req_vld, spu_mul_acc, spu_mul_areg_shf, spu_mul_areg_rst, 
+   spu_mul_op1_data, spu_mul_op2_data, spu_mul_mulres_lshft, si, se
+   );
+
+input		rclk;
+input		grst_l;			input		arst_l;			input		si;			input		se;			input		exu_mul_input_vld;	input [63:0]	exu_mul_rs1_data;	input [63:0]	exu_mul_rs2_data;	input		spu_mul_req_vld;	input		spu_mul_acc;							input		spu_mul_areg_shf;	input		spu_mul_areg_rst;	input [63:0]	spu_mul_op1_data;	input [63:0]	spu_mul_op2_data;	
+input spu_mul_mulres_lshft;
+
+output		so;			output		mul_exu_ack;		output		mul_spu_ack;		output		mul_spu_shf_ack;	output [63:0]	mul_data_out;		
+wire 		, acc_actc2, acc_actc3, acc_actc5, acc_reg_enb;
+wire 		acc_reg_rst, acc_reg_shf;
+wire		byp_sel, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, , acc_actc3, acc_actc5, acc_reg_enb;
+wire 		acc_reg_rst, acc_reg_shf;
+wire		byp_sel, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, , acc_actc5, acc_reg_enb;
+wire 		acc_reg_rst, acc_reg_shf;
+wire		byp_sel, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, , acc_reg_enb;
+wire 		acc_reg_rst, acc_reg_shf;
+wire		byp_sel, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, ;
+wire 		acc_reg_rst, acc_reg_shf;
+wire		byp_sel, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+;
+wire 		, acc_reg_shf;
+wire		byp_sel, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, ;
+wire		byp_sel, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+;
+wire		, byp_imm, spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, , spick, x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, , x2;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+, ;
+wire		c0_act;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+;
+wire		;
+
+wire 		rst_l;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+;
+
+wire 		;
+wire		clk;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+;
+wire		;
+
+assign clk = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+;
+
+assign  = rclk ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+ =  ;
+
+dffrl_async	rstff	(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+ ;
+
+dffrl_async		(
+			.din	(grst_l),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+	(
+			.din	(),
+			.clk	(clk),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.clk	(),
+			.rst_l	(arst_l),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.rst_l	(),
+			.q	(rst_l),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.q	(),
+			.se	(se),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.se	(),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl	control	(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.si	(),
+			.so	()); 
+
+sparc_mul_cntl		(
+			.ecl_mul_req_vld  	(exu_mul_input_vld),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+	(
+			.ecl_mul_req_vld  	(),
+			.spu_mul_req_vld  	(spu_mul_req_vld),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spu_mul_req_vld  	(),
+			.spu_mul_acc	  	(spu_mul_acc),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spu_mul_acc	  	(),
+			.spu_mul_areg_shf 	(spu_mul_areg_shf),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spu_mul_areg_shf 	(),
+			.spu_mul_areg_rst 	(spu_mul_areg_rst),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spu_mul_areg_rst 	(),
+			.spu_mul_mulres_lshft 	(spu_mul_mulres_lshft),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spu_mul_mulres_lshft 	(),
+			.c0_act	  	  	(c0_act),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.c0_act	  	  	(),
+			.spick	  	  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spick	  	  	(),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.byp_sel	  	(),
+			.byp_imm	  	(byp_imm),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.byp_imm	  	(),
+			.acc_imm 	  	(acc_imm),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_imm 	  	(),
+			.acc_actc2 	  	(acc_actc2),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_actc2 	  	(),
+			.acc_actc3	  	(acc_actc3),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_actc3	  	(),
+			.acc_actc5	  	(acc_actc5),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_actc5	  	(),
+			.acc_reg_enb	  	(acc_reg_enb),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_reg_enb	  	(),
+			.acc_reg_rst	  	(acc_reg_rst),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_reg_rst	  	(),
+			.acc_reg_shf	  	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_reg_shf	  	(),
+			.x2		  	(x2),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.x2		  	(),
+			.mul_ecl_ack	  	(mul_exu_ack),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.mul_ecl_ack	  	(),
+			.mul_spu_ack	  	(mul_spu_ack),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.mul_spu_ack	  	(),
+			.mul_spu_shf_ack  	(mul_spu_shf_ack),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.mul_spu_shf_ack  	(),
+			.rst_l		  	(rst_l),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.rst_l		  	(),
+			.rclk 		  	(clk));
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.rclk 		  	());
+
+sparc_mul_dp	dpath 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+));
+
+sparc_mul_dp	 	(
+			.ecl_mul_rs1_data 	(exu_mul_rs1_data),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+ 	(
+			.ecl_mul_rs1_data 	(),
+			.ecl_mul_rs2_data 	(exu_mul_rs2_data),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.ecl_mul_rs2_data 	(),
+			.spu_mul_op1_data 	(spu_mul_op1_data),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spu_mul_op1_data 	(),
+			.spu_mul_op2_data 	(spu_mul_op2_data),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spu_mul_op2_data 	(),
+			.valid		  	(c0_act),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.valid		  	(),
+			.spick		  	(spick),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.spick		  	(),
+			.byp_sel	  	(byp_sel),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.byp_sel	  	(),
+			.byp_imm	  	(byp_imm),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.byp_imm	  	(),
+			.acc_imm          	(acc_imm),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_imm          	(),
+			.acc_actc2        	(acc_actc2),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.acc_actc2        	(),
+                        .acc_actc3        	(acc_actc3),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+                        .acc_actc3        	(),  
+                        .acc_actc5        	(acc_actc5),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),  
+                        .acc_actc5        	(),  
+                        .acc_reg_enb      	(acc_reg_enb),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),  
+                        .acc_reg_enb      	(),
+                        .acc_reg_rst      	(acc_reg_rst),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+                        .acc_reg_rst      	(),
+                        .acc_reg_shf      	(acc_reg_shf),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+                        .acc_reg_shf      	(),
+			.x2		  	(x2),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.x2		  	(),
+			.mul_data_out	  	(mul_data_out),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.mul_data_out	  	(),
+			.rst_l		  	(rst_l),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.rst_l		  	(),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(se),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.si		  	(),
+			.so		  	(),
+			.se		  	(),
+			.rclk		  	(clk));
+
+endmodule // sparc_mul_top
+),
+			.rclk		  	());
+
+endmodule // sparc_mul_top
+));
+
+endmodule 

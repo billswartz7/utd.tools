@@ -1,0 +1,3757 @@
+
+                                                 
+
+module lsu_rrobin_picker2 (
+      so, pick_one_hot, 
+      rclk, grst_l, arst_l, si, se, events, events_picked, thread_force
+   );
+
+input           rclk ;
+input           grst_l;
+input           arst_l;
+input           si;
+input           se;
+output          so;
+
+
+input 	[3:0]	events ;		input 	[3:0]	events_picked ;		input 	[3:0]	thread_force ;	        
+output 	[3:0]	pick_one_hot ;		
+wire         ;
+wire         reset,dbb_reset_l ;
+   
+wire  [3:0]  thread_force_pe_mask ;
+wire  [3:0]  pick_thread_force_1hot ;
+wire         thread_force_events_sel ;
+
+wire  [3:0]  pick_rrobin_1hot, pick_rev_rrobin_1hot, pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+;
+wire         ,dbb_reset_l ;
+   
+wire  [3:0]  thread_force_pe_mask ;
+wire  [3:0]  pick_thread_force_1hot ;
+wire         thread_force_events_sel ;
+
+wire  [3:0]  pick_rrobin_1hot, pick_rev_rrobin_1hot, pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+, ;
+   
+wire  [3:0]  thread_force_pe_mask ;
+wire  [3:0]  pick_thread_force_1hot ;
+wire         thread_force_events_sel ;
+
+wire  [3:0]  pick_rrobin_1hot, pick_rev_rrobin_1hot, pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+   
+wire  [3:0]   ;
+wire  [3:0]  pick_thread_force_1hot ;
+wire         thread_force_events_sel ;
+
+wire  [3:0]  pick_rrobin_1hot, pick_rev_rrobin_1hot, pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire  [3:0]   ;
+wire         thread_force_events_sel ;
+
+wire  [3:0]  pick_rrobin_1hot, pick_rev_rrobin_1hot, pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire          ;
+
+wire  [3:0]  pick_rrobin_1hot, pick_rev_rrobin_1hot, pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+
+wire  [3:0]  , pick_rev_rrobin_1hot, pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+, , pick_rrobin_1hot_mx ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+,  ;
+wire         events_pick_dir_d1 ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire          ;
+wire         events_pick_dir ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire          ;
+wire  [3:0]  pick_rrobin_status_or_one_hot ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire  [3:0]   ;
+wire  [3:0]  pick_rrobin_din ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire  [3:0]   ;
+wire  [3:0]  pick_rrobin ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire  [3:0]   ;
+wire         pick_rrobin_reset ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire          ;
+wire         pick_rrobin_dir_upd ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire          ;
+wire  [3:0]  pick_rrobin_events ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+wire  [3:0]   ;
+
+   
+
+    dffrl_async rstff(.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ;
+
+   
+
+    dffrl_async (.din (grst_l),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+(.din (),
+                        .q   (dbb_reset_l),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+),
+                        .q   (),
+                        .clk (clk), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+),
+                        .clk (), .se(se), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+), .se(), .si(), .so(),
+                        .rst_l (arst_l));
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+), .si(), .so(),
+                        .rst_l ());
+
+assign  reset =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+));
+
+assign   =  ~dbb_reset_l;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ =  ~;
+assign  clk = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+;
+assign   = rclk;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ = ;
+
+
+//*******************************************************************************************************
+//PICK  
+//*******************************************************************************************************
+
+   //pick for thread force events
+assign	thread_force_events_sel = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+;
+
+
+
+   assign	 = |(events[3:0] & thread_force[3:0]) ;
+
+assign  thread_force_pe_mask[3:0]  =  events[3:0] & thread_force[3:0] ;
+assign	pick_thread_force_1hot[0] = thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[1] = thread_force_pe_mask[1] & ~thread_force_pe_mask[0] ;
+assign	pick_thread_force_1hot[2] = thread_force_pe_mask[2] & ~|thread_force_pe_mask[1:0] ;
+assign	pick_thread_force_1hot[3] = thread_force_pe_mask[3] & ~|thread_force_pe_mask[2:0] ;
+
+   //pick for round robin events
+assign  pick_rrobin_events[3:0]  =  events[3:0] & ~pick_rrobin[3:0] ;
+
+assign  pick_rrobin_1hot[0] = ~events_pick_dir_d1 & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ = |([3:0] & [3:0]) ;
+
+assign  [3:0]  =  [3:0] & [3:0] ;
+assign	[0] = [0] ;
+assign	[1] = [1] & ~[0] ;
+assign	[2] = [2] & ~|[1:0] ;
+assign	[3] = [3] & ~|[2:0] ;
+
+   assign  [3:0]  =  [3:0] & ~[3:0] ;
+
+assign  [0] = ~ & pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[1] = ~events_pick_dir_d1 & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [0] ;
+assign	[1] = ~ & pick_rrobin_events[1] & ~pick_rrobin_events[0] ;
+assign	pick_rrobin_1hot[2] = ~events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [1] & ~[0] ;
+assign	[2] = ~ & pick_rrobin_events[2] & ~|pick_rrobin_events[1:0] ;
+assign	pick_rrobin_1hot[3] = ~events_pick_dir_d1 & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [2] & ~|[1:0] ;
+assign	[3] = ~ & pick_rrobin_events[3] & ~|pick_rrobin_events[2:0] ;
+
+   //pick for reverse round robin events
+assign  pick_rev_rrobin_1hot[0] = events_pick_dir_d1 & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [3] & ~|[2:0] ;
+
+   assign  [0] =  & pick_rrobin_events[0] & ~|pick_rrobin_events[3:1] ;
+assign	pick_rev_rrobin_1hot[1] = events_pick_dir_d1 & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [0] & ~|[3:1] ;
+assign	[1] =  & pick_rrobin_events[1] & ~|pick_rrobin_events[3:2] ;
+assign	pick_rev_rrobin_1hot[2] = events_pick_dir_d1 & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [1] & ~|[3:2] ;
+assign	[2] =  & pick_rrobin_events[2] & ~|pick_rrobin_events[3] ;
+assign	pick_rev_rrobin_1hot[3] = events_pick_dir_d1 & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [2] & ~|[3] ;
+assign	[3] =  & pick_rrobin_events[3] ;
+
+assign  pick_rrobin_1hot_mx[3:0]  =  pick_rev_rrobin_1hot[3:0] | pick_rrobin_1hot[3:0] ;
+assign  pick_one_hot[3:0]    =  thread_force_events_sel ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & [3] ;
+
+assign  [3:0]  =  [3:0] | [3:0] ;
+assign  [3:0]    =   ? pick_thread_force_1hot[3:0] : 
+                                                          pick_rrobin_1hot_mx[3:0] ;
+
+//*******************************************************************************************************
+
+
+
+//*******************************************************************************************************
+//PICK ROUND ROBIN (bug4814)
+//*******************************************************************************************************
+// this is used if there are no requests to be picked based on pick_status[3:0]
+
+assign pick_rrobin_status_or_one_hot[3:0] = pick_rrobin[3:0] | events_picked[3:0] ;
+assign pick_rrobin_reset = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ ? [3:0] : 
+                                                          [3:0] ;
+
+
+
+
+
+assign [3:0] = [3:0] | [3:0] ;
+assign  = reset | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ =  | ~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0]) ;
+   //change direction bit only when events are non-zero
+assign pick_rrobin_dir_upd = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ | ~|([3:0] & ~[3:0]) ;
+   assign  = |events[3:0] & (~|(events[3:0] & ~pick_rrobin_status_or_one_hot[3:0])) ;
+
+   // make reset dominant
+assign pick_rrobin_din[3:0] = pick_rrobin_status_or_one_hot[3:0] & ~{4{pick_rrobin_reset}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ = |[3:0] & (~|([3:0] & ~[3:0])) ;
+
+   assign [3:0] = [3:0] & ~{4{}};
+
+dff_s   #(4) ff_pick_rrobin (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+}};
+
+dff_s   #(4)  (
+           .din    (pick_rrobin_din[3:0]),
+           .q      (pick_rrobin[3:0]    ),
+           .clk    (clk),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ (
+           .din    ([3:0]),
+           .q      ([3:0]    ),
+           .clk    (),
+           .se     (1'b0),       .si (),          .so ()
+            );
+//*******************************************************************************************************
+
+
+//*******************************************************************************************************
+// PICK DIRECTION
+//*******************************************************************************************************
+
+   //bug4609 - change direction of pick all events are picked in round robin pick
+   //          this is needed when the condition below occurs. assuming misc is less frequent
+   //          this should pick load/store in round robin fashion
+   //-------------------------------------------------------
+   // cycle                 0   1   2
+   //-------------------------------------------------------
+   // history{misc,st,ld}  010 011 011
+   // vld{misc,st,ld}      011 011 011
+   //-------------------------------------------------------
+
+assign events_pick_dir  =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+),
+           .se     (1bb),       .si (),          .so ()
+            );
+
+
+
+                           
+assign   =  ~reset &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+  =  ~ &
+                           (( ~pick_rrobin_dir_upd & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ &
+                           (( ~ & events_pick_dir_d1) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & ) |		//hold
+                            (  pick_rrobin_dir_upd & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+) |		                            (   & ~events_pick_dir_d1)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ & ~)) ;		//set - invert direction
+   
+   dff_s   #(1) ff_events_pick_dir (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+)) ;		   
+   dff_s   #(1)  (
+        .din    (events_pick_dir),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+ (
+        .din    (),
+        .q      (events_pick_dir_d1),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+),
+        .q      (),
+        .clk    (clk),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+),
+        .clk    (),
+        .se     (1'b0),       .si (),          .so ()
+        );
+   
+//*******************************************************************************************************
+endmodule
+),
+        .se     (1bb),       .si (),          .so ()
+        );
+   
+endmodule

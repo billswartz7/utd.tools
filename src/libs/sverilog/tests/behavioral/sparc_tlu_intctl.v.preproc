@@ -1,0 +1,2713 @@
+
+
+ 
+
+ 
+ 
+
+module sparc_tlu_intctl(
+      so, int_rst_l, tlu_ifu_hwint_i3, tlu_ifu_rstthr_i2, tlu_ifu_rstint_i2, 
+   tlu_ifu_nukeint_i2, tlu_ifu_resumint_i2, tlu_ifu_pstate_ie, 
+   int_tlu_longop_done,  inc_ind_ld_int_i1, inc_indr_req_valid, 
+   inc_ind_rstthr_i1,       inc_ind_indr_grant, inc_ind_thr_m, tlu_lsu_int_ld_ill_va_w2,
+   inc_indr_req_thrid, tlu_asi_data_nf_vld_w2, tlu_asi_rdata_mxsel_g, 
+            rclk, se, sehold, si, rst_tri_en, arst_l, grst_l, const_cpuid,  
+   lsu_tlu_cpx_vld, lsu_tlu_cpx_req, lsu_tlu_pcxpkt_ack, tlu_ld_data_vld_g, 
+   ind_inc_thrid_i1, ind_inc_type_i1, tlu_int_asi_vld, tlu_int_asi_load, 
+   tlu_int_asi_store, tlu_int_asi_thrid, tlu_int_asi_state, tlu_int_tid_m, 
+   tlu_int_pstate_ie, int_pending_i2_l,    tlu_asi_queue_rd_vld_g, tlu_va_ill_g); 
+   input            rclk, se, si;
+   input            arst_l, grst_l;  
+   input            sehold; 
+   input            rst_tri_en; 
+   input [3:0] 	    const_cpuid;
+
+   input 	    lsu_tlu_cpx_vld;       input [3:0] 	    lsu_tlu_cpx_req;             input 	    lsu_tlu_pcxpkt_ack;
+   
+   
+   input [4:0] 	ind_inc_thrid_i1;    input [1:0]	ind_inc_type_i1;  
+   input 	    tlu_int_asi_vld;
+   input 	    tlu_int_asi_load;     input 	    tlu_int_asi_store;    input [1:0] 	tlu_int_asi_thrid;    input [7:0] 	tlu_int_asi_state;             input        tlu_va_ill_g;         input        tlu_asi_queue_rd_vld_g;    input        tlu_ld_data_vld_g;    
+   input [1:0] 	tlu_int_tid_m;
+   
+   input [3:0] 	tlu_int_pstate_ie;
+      
+      input [3:0] 	    int_pending_i2_l;            
+   output 	    int_rst_l, so;
+
+      output [3:0]     tlu_ifu_hwint_i3;      output [3:0]     tlu_ifu_rstthr_i2;     output 	    tlu_ifu_rstint_i2;     output           tlu_ifu_nukeint_i2;    output 	    tlu_ifu_resumint_i2;   output [3:0]	    tlu_ifu_pstate_ie;
+   
+   output [3:0]     int_tlu_longop_done;
+   
+      output [3:0]     inc_ind_ld_int_i1;             output [3:0]     inc_ind_rstthr_i1;             
+                                                                                 output [3:0]     inc_ind_indr_grant;                output [3:0]     inc_ind_thr_m;               
+      output 	    inc_indr_req_valid;        output [1:0] inc_indr_req_thrid;     
+         output tlu_asi_data_nf_vld_w2;     output tlu_lsu_int_ld_ill_va_w2;       output [3:0] tlu_asi_rdata_mxsel_g; 
+         wire ;           // choose which reg to read
+   wire	int_tlu_asi_data_vld_g, int_tlu_asi_data_vld_w2;
+   wire	int_ld_ill_va_g, int_ld_ill_va_w2;
+   wire hw_int_i1,
+		rst_int_i1,
+		nuke_int_i1,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;              wire	, int_tlu_asi_data_vld_w2;
+   wire	int_ld_ill_va_g, int_ld_ill_va_w2;
+   wire hw_int_i1,
+		rst_int_i1,
+		nuke_int_i1,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ , ;
+   wire	int_ld_ill_va_g, int_ld_ill_va_w2;
+   wire hw_int_i1,
+		rst_int_i1,
+		nuke_int_i1,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+   wire	, int_ld_ill_va_w2;
+   wire hw_int_i1,
+		rst_int_i1,
+		nuke_int_i1,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ , ;
+   wire hw_int_i1,
+		rst_int_i1,
+		nuke_int_i1,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+   wire ,
+		rst_int_i1,
+		nuke_int_i1,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		,
+		nuke_int_i1,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		,
+		resum_int_i1;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		;
+
+   wire [3:0] 	    int_thr_i1,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+
+   wire [3:0] 	    ,
+		    rstthr_i1,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		    ,
+		    asi_thr;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		    ;
+
+   wire [3:0] 	    int_pending_i2;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+
+   wire [3:0] 	    ;
+// 		    int_activate_i2;
+   
+   wire 	    asi_write, 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+   
+   wire 	    , 
+		    asi_read,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ , 
+		    ,
+		    asi_invr,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		    ,
+		    asi_indr;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		    ;
+   
+   wire [3:0] 	    indr_vld,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+   
+   wire [3:0] 	    ,
+		    indr_rst,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		    ,
+		    indr_vld_next,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		    ,
+		    indr_grant;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ,
+		    ;
+
+   // added for bug 3945
+   wire [3:0] indr_req_vec;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+
+      wire [3:0] ;
+   wire indr_req_valid_disable;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+   wire ;
+
+   // wire [3:0] 	    int_or_redrst;
+   wire [3:0] 	    intd_done;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+
+      wire [3:0] 	    ;
+
+   // wire 	    red_thread, valid_dest;
+   wire 	    local_rst;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;
+
+      wire 	    ;  // local reset 
+   wire 	    local_rst_l;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;     wire 	    ;  // local reset 
+   wire 	    clk;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;     wire 	    ;        // local clk 
+   
+
+   //
+   // Code Starts Here
+   //
+   //=========================================================================================
+   //	reset
+   //=========================================================================================
+
+   dffrl_async dffrl_local_rst_l(
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ;           
+
+                  
+   dffrl_async (
+       .din  (grst_l),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ (
+       .din  (),
+       .clk  (clk),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ),
+       .clk  (),
+       .rst_l(arst_l),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ),
+       .rst_l(),
+       .q    (local_rst_l),
+       .se   (se),
+       .si   (),
+ ),
+       .q    (),
+       .se   (se),
+       .si   (),
+ ),
+       .se   (),
+       .si   (),
+ ),
+       .si   (),
+       .so   ()
+   ); 
+   assign  = ~local_rst_l;
+   assign int_rst_l = local_rst_l;
+
+   // create local clk
+   assign clk = rclk; 
+
+   //-------------------------------------
+   // Basic Operation
+   //-------------------------------------
+   sink s1(const_cpuid[3]);
+
+   assign  tlu_ifu_pstate_ie = tlu_int_pstate_ie;
+
+   // process cpx interrupt type
+   // int = 00
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  hw_int_i1 = (lsu_tlu_cpx_vld &
+			// (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			(lsu_tlu_cpx_req == `INT_RET) & 
+			(ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			 ~ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                 1'b0;
+   //reset = 01
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  rst_int_i1 = (lsu_tlu_cpx_vld &
+			 // (lsu_tlu_cpx_req == `INT_RET) && ~lsu_tlu_cpx_nc &
+			 (lsu_tlu_cpx_req == `INT_RET) &
+			 (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			  ~ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                  1'b0;
+   // idle/nuke = 10
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  nuke_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                    1'b0;
+   // resume = 11
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  resum_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                    1'b0;
+
+   dffr_s #1  rstint_ff(.din  (rst_int_i1),
+		      .q    (tlu_ifu_rstint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  nukint_ff(.din  (nuke_int_i1),
+		      .q    (tlu_ifu_nukeint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  resint_ff(.din  (resum_int_i1),
+		      .q    (tlu_ifu_resumint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   // decode int thread id
+   assign  int_thr_i1[0] = ~ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[1] = ~ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+   assign  int_thr_i1[2] =  ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[3] =  ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+
+   assign  inc_ind_ld_int_i1 = {4{hw_int_i1}} & int_thr_i1;
+   assign  inc_ind_rstthr_i1 = {4{rst_int_i1}} & int_thr_i1;
+   assign  rstthr_i1 = {4{rst_int_i1 | nuke_int_i1 | resum_int_i1}} 
+	                & int_thr_i1;
+
+   // decode thr_m
+   // convert the signal back to non-inverting version for grape
+   /*
+   assign  inc_ind_thr_m_l[0] = ~(~tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[1] = ~(~tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[2] = ~( tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[3] = ~( tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   */
+
+   assign  inc_ind_thr_m[0] = ~tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[1] = ~tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[2] =  tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[3] =  tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   
+
+   // Interrupt continues to be signalled even 1 cycle after read is
+   // done.  This should not be a problem, since the lsu will probably
+   // burn one cycle to complete the read by forwarding it to the reg
+   // file.  Otherwise, just burn another cycle in the IFU before
+   // starting the thread (this is also done right now).
+
+   assign  int_pending_i2 = ~int_pending_i2_l;
+
+   // removed IFU will derive the siganl locally
+   /*
+   assign  int_activate_i2 = ~int_pending_i2_l | tlu_int_sftint_pend;
+   // send message to SWL to wake up thread if it is halted
+   dff_s #4 act_signal_reg(.din (int_activate_i2[3:0]),
+			 .q   (tlu_ifu_int_activate_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+   */
+   
+   // ask IFU to schedule interrupt
+   dff_s #4 int_signal_reg(.din (int_pending_i2[3:0]),
+			 .q   (tlu_ifu_hwint_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+   dff_s #4 rst_signal_reg(.din (rstthr_i1[3:0]),
+			 .q   (tlu_ifu_rstthr_i2[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+
+   //----------------------------------
+   // ASI Registers
+   //----------------------------------
+   //ASI_INTR_RECEIVE: 0x72
+   //ASI_UDB_INTR_W: 0x73
+   //ASI_UDB_INTR_R: 0x74
+   //ASI_MESSAGE_MASK: 0x7D
+
+   // decode asi thread
+   assign  asi_thr[0] = ~tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[1] = ~tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+   assign  asi_thr[2] =  tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[3] =  tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+
+   // convert the signal back to non-inverting version for grape
+   // assign  inc_ind_asi_thr_l = ~asi_thr;
+   // assign  inc_ind_asi_thr = asi_thr;
+   
+   // read or write op
+   assign  asi_write = tlu_int_asi_vld & tlu_int_asi_store;
+   assign  asi_read = tlu_int_asi_vld & tlu_int_asi_load;
+
+   // decode asi target
+   // ASI_INTR_RECEIVE
+   assign inc_ind_asi_inrr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5] &
+	      tlu_int_asi_state[4] &
+	      ~tlu_int_asi_state[3]  &
+	      ~tlu_int_asi_state[2] &
+	      tlu_int_asi_state[1] &
+	      ~tlu_int_asi_state[0];      // 0x72
+
+   // need to also check if VA=0x40
+   // what else is mapped to this asi?
+   // ASI_UDB_INTR_R
+   assign asi_invr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3]  &
+	      tlu_int_asi_state[2]  &
+	      ~tlu_int_asi_state[1]  &
+	      ~tlu_int_asi_state[0];      // 0x74
+
+   // VA<63:19>=0 is not checked
+   // ASI_UDB_INTR_W
+   assign asi_indr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3] &
+	      ~tlu_int_asi_state[2]  &
+	      tlu_int_asi_state[1]  &
+	      tlu_int_asi_state[0];      // 0x73
+   /*	       
+   // ASI_MESSAGE_MASK_REG
+   // not implemented any more
+   assign  inc_ind_asi_wr_inrr = asi_thr & {4{inc_ind_asi_inrr & asi_write}};
+   assign  inc_ind_asi_wr_indr = asi_thr & {4{asi_indr & asi_write}};
+   assign  inc_ind_asi_rd_invr = asi_thr & {4{asi_invr & asi_read}};
+
+   assign  red_thread = (tlu_int_redmode[0] & asi_thr[0] |
+			 tlu_int_redmode[1] & asi_thr[1] |
+			 tlu_int_redmode[2] & asi_thr[2] |
+			 tlu_int_redmode[3] & asi_thr[3]);
+   */
+   // modified for bug 2109 
+   // modified for one-hot mux problem and support of macro test
+   // 
+   assign tlu_asi_rdata_mxsel_g[0] = 
+              asi_invr & ~(rst_tri_en | sehold); 
+   assign tlu_asi_rdata_mxsel_g[1] = 
+              inc_ind_asi_inrr & ~(rst_tri_en | asi_invr | sehold);
+   assign tlu_asi_rdata_mxsel_g[2] = 
+              ~((|tlu_asi_rdata_mxsel_g[1:0]) | tlu_asi_rdata_mxsel_g[3]);
+   assign tlu_asi_rdata_mxsel_g[3] = 
+              tlu_asi_queue_rd_vld_g & ~(rst_tri_en | asi_invr | sehold |
+              inc_ind_asi_inrr); 
+   // 
+   assign int_tlu_asi_data_vld_g = 
+          ((asi_invr | inc_ind_asi_inrr) & asi_read) | tlu_ld_data_vld_g; 
+            
+
+   dffr_s dffr_int_tlu_asi_data_vld_w2 (
+    .din (int_tlu_asi_data_vld_g),
+    .q   (int_tlu_asi_data_vld_w2),
+    .clk (clk),
+    .rst (local_rst),
+    .se  (1'b0),       
+    .si  (),          
+    .so  ()
+);
+
+// modified for timing
+// assign tlu_lsu_int_ldxa_vld_w2 = 
+//            int_tlu_asi_data_vld_w2 & ~tlu_flush_all_w2 = ~;
+   assign int_rst_l = local_rst_l;
+
+   // create local clk
+   assign clk = rclk; 
+
+   //-------------------------------------
+   // Basic Operation
+   //-------------------------------------
+   sink s1(const_cpuid[3]);
+
+   assign  tlu_ifu_pstate_ie = tlu_int_pstate_ie;
+
+   // process cpx interrupt type
+   // int = 00
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  hw_int_i1 = (lsu_tlu_cpx_vld &
+			// (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			(lsu_tlu_cpx_req == `INT_RET) & 
+			(ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			 ~ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                 1'b0;
+   //reset = 01
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  rst_int_i1 = (lsu_tlu_cpx_vld &
+			 // (lsu_tlu_cpx_req == `INT_RET) && ~lsu_tlu_cpx_nc &
+			 (lsu_tlu_cpx_req == `INT_RET) &
+			 (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			  ~ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                  1'b0;
+   // idle/nuke = 10
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  nuke_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                    1'b0;
+   // resume = 11
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  resum_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                    1'b0;
+
+   dffr_s #1  rstint_ff(.din  (rst_int_i1),
+		      .q    (tlu_ifu_rstint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  nukint_ff(.din  (nuke_int_i1),
+		      .q    (tlu_ifu_nukeint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  resint_ff(.din  (resum_int_i1),
+		      .q    (tlu_ifu_resumint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   // decode int thread id
+   assign  int_thr_i1[0] = ~ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[1] = ~ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+   assign  int_thr_i1[2] =  ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[3] =  ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+
+   assign  inc_ind_ld_int_i1 = {4{hw_int_i1}} & int_thr_i1;
+   assign  inc_ind_rstthr_i1 = {4{rst_int_i1}} & int_thr_i1;
+   assign  rstthr_i1 = {4{rst_int_i1 | nuke_int_i1 | resum_int_i1}} 
+	                & int_thr_i1;
+
+   // decode thr_m
+   // convert the signal back to non-inverting version for grape
+   /*
+   assign  inc_ind_thr_m_l[0] = ~(~tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[1] = ~(~tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[2] = ~( tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[3] = ~( tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   */
+
+   assign  inc_ind_thr_m[0] = ~tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[1] = ~tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[2] =  tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[3] =  tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   
+
+   // Interrupt continues to be signalled even 1 cycle after read is
+   // done.  This should not be a problem, since the lsu will probably
+   // burn one cycle to complete the read by forwarding it to the reg
+   // file.  Otherwise, just burn another cycle in the IFU before
+   // starting the thread (this is also done right now).
+
+   assign  int_pending_i2 = ~int_pending_i2_l;
+
+   // removed IFU will derive the siganl locally
+   /*
+   assign  int_activate_i2 = ~int_pending_i2_l | tlu_int_sftint_pend;
+   // send message to SWL to wake up thread if it is halted
+   dff_s #4 act_signal_reg(.din (int_activate_i2[3:0]),
+			 .q   (tlu_ifu_int_activate_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+   */
+   
+   // ask IFU to schedule interrupt
+   dff_s #4 int_signal_reg(.din (int_pending_i2[3:0]),
+			 .q   (tlu_ifu_hwint_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+   dff_s #4 rst_signal_reg(.din (rstthr_i1[3:0]),
+			 .q   (tlu_ifu_rstthr_i2[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+
+   //----------------------------------
+   // ASI Registers
+   //----------------------------------
+   //ASI_INTR_RECEIVE: 0x72
+   //ASI_UDB_INTR_W: 0x73
+   //ASI_UDB_INTR_R: 0x74
+   //ASI_MESSAGE_MASK: 0x7D
+
+   // decode asi thread
+   assign  asi_thr[0] = ~tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[1] = ~tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+   assign  asi_thr[2] =  tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[3] =  tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+
+   // convert the signal back to non-inverting version for grape
+   // assign  inc_ind_asi_thr_l = ~asi_thr;
+   // assign  inc_ind_asi_thr = asi_thr;
+   
+   // read or write op
+   assign  asi_write = tlu_int_asi_vld & tlu_int_asi_store;
+   assign  asi_read = tlu_int_asi_vld & tlu_int_asi_load;
+
+   // decode asi target
+   // ASI_INTR_RECEIVE
+   assign inc_ind_asi_inrr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5] &
+	      tlu_int_asi_state[4] &
+	      ~tlu_int_asi_state[3]  &
+	      ~tlu_int_asi_state[2] &
+	      tlu_int_asi_state[1] &
+	      ~tlu_int_asi_state[0];      // 0x72
+
+   // need to also check if VA=0x40
+   // what else is mapped to this asi?
+   // ASI_UDB_INTR_R
+   assign asi_invr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3]  &
+	      tlu_int_asi_state[2]  &
+	      ~tlu_int_asi_state[1]  &
+	      ~tlu_int_asi_state[0];      // 0x74
+
+   // VA<63:19>=0 is not checked
+   // ASI_UDB_INTR_W
+   assign asi_indr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3] &
+	      ~tlu_int_asi_state[2]  &
+	      tlu_int_asi_state[1]  &
+	      tlu_int_asi_state[0];      // 0x73
+   /*	       
+   // ASI_MESSAGE_MASK_REG
+   // not implemented any more
+   assign  inc_ind_asi_wr_inrr = asi_thr & {4{inc_ind_asi_inrr & asi_write}};
+   assign  inc_ind_asi_wr_indr = asi_thr & {4{asi_indr & asi_write}};
+   assign  inc_ind_asi_rd_invr = asi_thr & {4{asi_invr & asi_read}};
+
+   assign  red_thread = (tlu_int_redmode[0] & asi_thr[0] |
+			 tlu_int_redmode[1] & asi_thr[1] |
+			 tlu_int_redmode[2] & asi_thr[2] |
+			 tlu_int_redmode[3] & asi_thr[3]);
+   */
+   // modified for bug 2109 
+   // modified for one-hot mux problem and support of macro test
+   // 
+   assign tlu_asi_rdata_mxsel_g[0] = 
+              asi_invr & ~(rst_tri_en | sehold); 
+   assign tlu_asi_rdata_mxsel_g[1] = 
+              inc_ind_asi_inrr & ~(rst_tri_en | asi_invr | sehold);
+   assign tlu_asi_rdata_mxsel_g[2] = 
+              ~((|tlu_asi_rdata_mxsel_g[1:0]) | tlu_asi_rdata_mxsel_g[3]);
+   assign tlu_asi_rdata_mxsel_g[3] = 
+              tlu_asi_queue_rd_vld_g & ~(rst_tri_en | asi_invr | sehold |
+              inc_ind_asi_inrr); 
+   // 
+   assign int_tlu_asi_data_vld_g = 
+          ((asi_invr | inc_ind_asi_inrr) & asi_read) | tlu_ld_data_vld_g; 
+            
+
+   dffr_s dffr_int_tlu_asi_data_vld_w2 (
+    .din (int_tlu_asi_data_vld_g),
+    .q   (int_tlu_asi_data_vld_w2),
+    .clk (clk),
+    .rst (local_rst),
+    .se  (1'b0),       
+    .si  (),          
+    .so  ()
+);
+
+// modified for timing
+// assign tlu_lsu_int_ldxa_vld_w2 = 
+//            int_tlu_asi_data_vld_w2 & ~tlu_flush_all_w2;
+   assign  = local_rst_l;
+
+   // create local clk
+   assign clk = rclk; 
+
+   //-------------------------------------
+   // Basic Operation
+   //-------------------------------------
+   sink s1(const_cpuid[3]);
+
+   assign  tlu_ifu_pstate_ie = tlu_int_pstate_ie;
+
+   // process cpx interrupt type
+   // int = 00
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  hw_int_i1 = (lsu_tlu_cpx_vld &
+			// (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			(lsu_tlu_cpx_req == `INT_RET) & 
+			(ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			 ~ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                 1'b0;
+   //reset = 01
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  rst_int_i1 = (lsu_tlu_cpx_vld &
+			 // (lsu_tlu_cpx_req == `INT_RET) && ~lsu_tlu_cpx_nc &
+			 (lsu_tlu_cpx_req == `INT_RET) &
+			 (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			  ~ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                  1'b0;
+   // idle/nuke = 10
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  nuke_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                    1'b0;
+   // resume = 11
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  resum_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                    1'b0;
+
+   dffr_s #1  rstint_ff(.din  (rst_int_i1),
+		      .q    (tlu_ifu_rstint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  nukint_ff(.din  (nuke_int_i1),
+		      .q    (tlu_ifu_nukeint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  resint_ff(.din  (resum_int_i1),
+		      .q    (tlu_ifu_resumint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   // decode int thread id
+   assign  int_thr_i1[0] = ~ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[1] = ~ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+   assign  int_thr_i1[2] =  ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[3] =  ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+
+   assign  inc_ind_ld_int_i1 = {4{hw_int_i1}} & int_thr_i1;
+   assign  inc_ind_rstthr_i1 = {4{rst_int_i1}} & int_thr_i1;
+   assign  rstthr_i1 = {4{rst_int_i1 | nuke_int_i1 | resum_int_i1}} 
+	                & int_thr_i1;
+
+   // decode thr_m
+   // convert the signal back to non-inverting version for grape
+   /*
+   assign  inc_ind_thr_m_l[0] = ~(~tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[1] = ~(~tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[2] = ~( tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[3] = ~( tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   */
+
+   assign  inc_ind_thr_m[0] = ~tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[1] = ~tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[2] =  tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[3] =  tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   
+
+   // Interrupt continues to be signalled even 1 cycle after read is
+   // done.  This should not be a problem, since the lsu will probably
+   // burn one cycle to complete the read by forwarding it to the reg
+   // file.  Otherwise, just burn another cycle in the IFU before
+   // starting the thread (this is also done right now).
+
+   assign  int_pending_i2 = ~int_pending_i2_l;
+
+   // removed IFU will derive the siganl locally
+   /*
+   assign  int_activate_i2 = ~int_pending_i2_l | tlu_int_sftint_pend;
+   // send message to SWL to wake up thread if it is halted
+   dff_s #4 act_signal_reg(.din (int_activate_i2[3:0]),
+			 .q   (tlu_ifu_int_activate_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+   */
+   
+   // ask IFU to schedule interrupt
+   dff_s #4 int_signal_reg(.din (int_pending_i2[3:0]),
+			 .q   (tlu_ifu_hwint_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+   dff_s #4 rst_signal_reg(.din (rstthr_i1[3:0]),
+			 .q   (tlu_ifu_rstthr_i2[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+
+   //----------------------------------
+   // ASI Registers
+   //----------------------------------
+   //ASI_INTR_RECEIVE: 0x72
+   //ASI_UDB_INTR_W: 0x73
+   //ASI_UDB_INTR_R: 0x74
+   //ASI_MESSAGE_MASK: 0x7D
+
+   // decode asi thread
+   assign  asi_thr[0] = ~tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[1] = ~tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+   assign  asi_thr[2] =  tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[3] =  tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+
+   // convert the signal back to non-inverting version for grape
+   // assign  inc_ind_asi_thr_l = ~asi_thr;
+   // assign  inc_ind_asi_thr = asi_thr;
+   
+   // read or write op
+   assign  asi_write = tlu_int_asi_vld & tlu_int_asi_store;
+   assign  asi_read = tlu_int_asi_vld & tlu_int_asi_load;
+
+   // decode asi target
+   // ASI_INTR_RECEIVE
+   assign inc_ind_asi_inrr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5] &
+	      tlu_int_asi_state[4] &
+	      ~tlu_int_asi_state[3]  &
+	      ~tlu_int_asi_state[2] &
+	      tlu_int_asi_state[1] &
+	      ~tlu_int_asi_state[0];      // 0x72
+
+   // need to also check if VA=0x40
+   // what else is mapped to this asi?
+   // ASI_UDB_INTR_R
+   assign asi_invr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3]  &
+	      tlu_int_asi_state[2]  &
+	      ~tlu_int_asi_state[1]  &
+	      ~tlu_int_asi_state[0];      // 0x74
+
+   // VA<63:19>=0 is not checked
+   // ASI_UDB_INTR_W
+   assign asi_indr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3] &
+	      ~tlu_int_asi_state[2]  &
+	      tlu_int_asi_state[1]  &
+	      tlu_int_asi_state[0];      // 0x73
+   /*	       
+   // ASI_MESSAGE_MASK_REG
+   // not implemented any more
+   assign  inc_ind_asi_wr_inrr = asi_thr & {4{inc_ind_asi_inrr & asi_write}};
+   assign  inc_ind_asi_wr_indr = asi_thr & {4{asi_indr & asi_write}};
+   assign  inc_ind_asi_rd_invr = asi_thr & {4{asi_invr & asi_read}};
+
+   assign  red_thread = (tlu_int_redmode[0] & asi_thr[0] |
+			 tlu_int_redmode[1] & asi_thr[1] |
+			 tlu_int_redmode[2] & asi_thr[2] |
+			 tlu_int_redmode[3] & asi_thr[3]);
+   */
+   // modified for bug 2109 
+   // modified for one-hot mux problem and support of macro test
+   // 
+   assign tlu_asi_rdata_mxsel_g[0] = 
+              asi_invr & ~(rst_tri_en | sehold); 
+   assign tlu_asi_rdata_mxsel_g[1] = 
+              inc_ind_asi_inrr & ~(rst_tri_en | asi_invr | sehold);
+   assign tlu_asi_rdata_mxsel_g[2] = 
+              ~((|tlu_asi_rdata_mxsel_g[1:0]) | tlu_asi_rdata_mxsel_g[3]);
+   assign tlu_asi_rdata_mxsel_g[3] = 
+              tlu_asi_queue_rd_vld_g & ~(rst_tri_en | asi_invr | sehold |
+              inc_ind_asi_inrr); 
+   // 
+   assign int_tlu_asi_data_vld_g = 
+          ((asi_invr | inc_ind_asi_inrr) & asi_read) | tlu_ld_data_vld_g; 
+            
+
+   dffr_s dffr_int_tlu_asi_data_vld_w2 (
+    .din (int_tlu_asi_data_vld_g),
+    .q   (int_tlu_asi_data_vld_w2),
+    .clk (clk),
+    .rst (local_rst),
+    .se  (1'b0),       
+    .si  (),          
+    .so  ()
+);
+
+// modified for timing
+// assign tlu_lsu_int_ldxa_vld_w2 = 
+//            int_tlu_asi_data_vld_w2 & ~tlu_flush_all_w2 = ;
+
+   // create local clk
+   assign clk = rclk; 
+
+   //-------------------------------------
+   // Basic Operation
+   //-------------------------------------
+   sink s1(const_cpuid[3]);
+
+   assign  tlu_ifu_pstate_ie = tlu_int_pstate_ie;
+
+   // process cpx interrupt type
+   // int = 00
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  hw_int_i1 = (lsu_tlu_cpx_vld &
+			// (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			(lsu_tlu_cpx_req == `INT_RET) & 
+			(ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			 ~ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                 1'b0;
+   //reset = 01
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  rst_int_i1 = (lsu_tlu_cpx_vld &
+			 // (lsu_tlu_cpx_req == `INT_RET) && ~lsu_tlu_cpx_nc &
+			 (lsu_tlu_cpx_req == `INT_RET) &
+			 (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			  ~ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                  1'b0;
+   // idle/nuke = 10
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  nuke_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                    1'b0;
+   // resume = 11
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  resum_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                    1'b0;
+
+   dffr_s #1  rstint_ff(.din  (rst_int_i1),
+		      .q    (tlu_ifu_rstint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  nukint_ff(.din  (nuke_int_i1),
+		      .q    (tlu_ifu_nukeint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  resint_ff(.din  (resum_int_i1),
+		      .q    (tlu_ifu_resumint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   // decode int thread id
+   assign  int_thr_i1[0] = ~ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[1] = ~ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+   assign  int_thr_i1[2] =  ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[3] =  ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+
+   assign  inc_ind_ld_int_i1 = {4{hw_int_i1}} & int_thr_i1;
+   assign  inc_ind_rstthr_i1 = {4{rst_int_i1}} & int_thr_i1;
+   assign  rstthr_i1 = {4{rst_int_i1 | nuke_int_i1 | resum_int_i1}} 
+	                & int_thr_i1;
+
+   // decode thr_m
+   // convert the signal back to non-inverting version for grape
+   /*
+   assign  inc_ind_thr_m_l[0] = ~(~tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[1] = ~(~tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[2] = ~( tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[3] = ~( tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   */
+
+   assign  inc_ind_thr_m[0] = ~tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[1] = ~tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[2] =  tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[3] =  tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   
+
+   // Interrupt continues to be signalled even 1 cycle after read is
+   // done.  This should not be a problem, since the lsu will probably
+   // burn one cycle to complete the read by forwarding it to the reg
+   // file.  Otherwise, just burn another cycle in the IFU before
+   // starting the thread (this is also done right now).
+
+   assign  int_pending_i2 = ~int_pending_i2_l;
+
+   // removed IFU will derive the siganl locally
+   /*
+   assign  int_activate_i2 = ~int_pending_i2_l | tlu_int_sftint_pend;
+   // send message to SWL to wake up thread if it is halted
+   dff_s #4 act_signal_reg(.din (int_activate_i2[3:0]),
+			 .q   (tlu_ifu_int_activate_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+   */
+   
+   // ask IFU to schedule interrupt
+   dff_s #4 int_signal_reg(.din (int_pending_i2[3:0]),
+			 .q   (tlu_ifu_hwint_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+   dff_s #4 rst_signal_reg(.din (rstthr_i1[3:0]),
+			 .q   (tlu_ifu_rstthr_i2[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+
+   //----------------------------------
+   // ASI Registers
+   //----------------------------------
+   //ASI_INTR_RECEIVE: 0x72
+   //ASI_UDB_INTR_W: 0x73
+   //ASI_UDB_INTR_R: 0x74
+   //ASI_MESSAGE_MASK: 0x7D
+
+   // decode asi thread
+   assign  asi_thr[0] = ~tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[1] = ~tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+   assign  asi_thr[2] =  tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[3] =  tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+
+   // convert the signal back to non-inverting version for grape
+   // assign  inc_ind_asi_thr_l = ~asi_thr;
+   // assign  inc_ind_asi_thr = asi_thr;
+   
+   // read or write op
+   assign  asi_write = tlu_int_asi_vld & tlu_int_asi_store;
+   assign  asi_read = tlu_int_asi_vld & tlu_int_asi_load;
+
+   // decode asi target
+   // ASI_INTR_RECEIVE
+   assign inc_ind_asi_inrr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5] &
+	      tlu_int_asi_state[4] &
+	      ~tlu_int_asi_state[3]  &
+	      ~tlu_int_asi_state[2] &
+	      tlu_int_asi_state[1] &
+	      ~tlu_int_asi_state[0];      // 0x72
+
+   // need to also check if VA=0x40
+   // what else is mapped to this asi?
+   // ASI_UDB_INTR_R
+   assign asi_invr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3]  &
+	      tlu_int_asi_state[2]  &
+	      ~tlu_int_asi_state[1]  &
+	      ~tlu_int_asi_state[0];      // 0x74
+
+   // VA<63:19>=0 is not checked
+   // ASI_UDB_INTR_W
+   assign asi_indr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3] &
+	      ~tlu_int_asi_state[2]  &
+	      tlu_int_asi_state[1]  &
+	      tlu_int_asi_state[0];      // 0x73
+   /*	       
+   // ASI_MESSAGE_MASK_REG
+   // not implemented any more
+   assign  inc_ind_asi_wr_inrr = asi_thr & {4{inc_ind_asi_inrr & asi_write}};
+   assign  inc_ind_asi_wr_indr = asi_thr & {4{asi_indr & asi_write}};
+   assign  inc_ind_asi_rd_invr = asi_thr & {4{asi_invr & asi_read}};
+
+   assign  red_thread = (tlu_int_redmode[0] & asi_thr[0] |
+			 tlu_int_redmode[1] & asi_thr[1] |
+			 tlu_int_redmode[2] & asi_thr[2] |
+			 tlu_int_redmode[3] & asi_thr[3]);
+   */
+   // modified for bug 2109 
+   // modified for one-hot mux problem and support of macro test
+   // 
+   assign tlu_asi_rdata_mxsel_g[0] = 
+              asi_invr & ~(rst_tri_en | sehold); 
+   assign tlu_asi_rdata_mxsel_g[1] = 
+              inc_ind_asi_inrr & ~(rst_tri_en | asi_invr | sehold);
+   assign tlu_asi_rdata_mxsel_g[2] = 
+              ~((|tlu_asi_rdata_mxsel_g[1:0]) | tlu_asi_rdata_mxsel_g[3]);
+   assign tlu_asi_rdata_mxsel_g[3] = 
+              tlu_asi_queue_rd_vld_g & ~(rst_tri_en | asi_invr | sehold |
+              inc_ind_asi_inrr); 
+   // 
+   assign int_tlu_asi_data_vld_g = 
+          ((asi_invr | inc_ind_asi_inrr) & asi_read) | tlu_ld_data_vld_g; 
+            
+
+   dffr_s dffr_int_tlu_asi_data_vld_w2 (
+    .din (int_tlu_asi_data_vld_g),
+    .q   (int_tlu_asi_data_vld_w2),
+    .clk (clk),
+    .rst (local_rst),
+    .se  (1'b0),       
+    .si  (),          
+    .so  ()
+);
+
+// modified for timing
+// assign tlu_lsu_int_ldxa_vld_w2 = 
+//            int_tlu_asi_data_vld_w2 & ~tlu_flush_all_w2;
+
+      assign  = rclk; 
+
+   //-------------------------------------
+   // Basic Operation
+   //-------------------------------------
+   sink s1(const_cpuid[3]);
+
+   assign  tlu_ifu_pstate_ie = tlu_int_pstate_ie;
+
+   // process cpx interrupt type
+   // int = 00
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  hw_int_i1 = (lsu_tlu_cpx_vld &
+			// (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			(lsu_tlu_cpx_req == `INT_RET) & 
+			(ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			 ~ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                 1'b0;
+   //reset = 01
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  rst_int_i1 = (lsu_tlu_cpx_vld &
+			 // (lsu_tlu_cpx_req == `INT_RET) && ~lsu_tlu_cpx_nc &
+			 (lsu_tlu_cpx_req == `INT_RET) &
+			 (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			  ~ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                  1'b0;
+   // idle/nuke = 10
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  nuke_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                    1'b0;
+   // resume = 11
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  resum_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                    1'b0;
+
+   dffr_s #1  rstint_ff(.din  (rst_int_i1),
+		      .q    (tlu_ifu_rstint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  nukint_ff(.din  (nuke_int_i1),
+		      .q    (tlu_ifu_nukeint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  resint_ff(.din  (resum_int_i1),
+		      .q    (tlu_ifu_resumint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   // decode int thread id
+   assign  int_thr_i1[0] = ~ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[1] = ~ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+   assign  int_thr_i1[2] =  ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[3] =  ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+
+   assign  inc_ind_ld_int_i1 = {4{hw_int_i1}} & int_thr_i1;
+   assign  inc_ind_rstthr_i1 = {4{rst_int_i1}} & int_thr_i1;
+   assign  rstthr_i1 = {4{rst_int_i1 | nuke_int_i1 | resum_int_i1}} 
+	                & int_thr_i1;
+
+   // decode thr_m
+   // convert the signal back to non-inverting version for grape
+   /*
+   assign  inc_ind_thr_m_l[0] = ~(~tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[1] = ~(~tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[2] = ~( tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[3] = ~( tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   */
+
+   assign  inc_ind_thr_m[0] = ~tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[1] = ~tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[2] =  tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[3] =  tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   
+
+   // Interrupt continues to be signalled even 1 cycle after read is
+   // done.  This should not be a problem, since the lsu will probably
+   // burn one cycle to complete the read by forwarding it to the reg
+   // file.  Otherwise, just burn another cycle in the IFU before
+   // starting the thread (this is also done right now).
+
+   assign  int_pending_i2 = ~int_pending_i2_l;
+
+   // removed IFU will derive the siganl locally
+   /*
+   assign  int_activate_i2 = ~int_pending_i2_l | tlu_int_sftint_pend;
+   // send message to SWL to wake up thread if it is halted
+   dff_s #4 act_signal_reg(.din (int_activate_i2[3:0]),
+			 .q   (tlu_ifu_int_activate_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+   */
+   
+   // ask IFU to schedule interrupt
+   dff_s #4 int_signal_reg(.din (int_pending_i2[3:0]),
+			 .q   (tlu_ifu_hwint_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+   dff_s #4 rst_signal_reg(.din (rstthr_i1[3:0]),
+			 .q   (tlu_ifu_rstthr_i2[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+
+   //----------------------------------
+   // ASI Registers
+   //----------------------------------
+   //ASI_INTR_RECEIVE: 0x72
+   //ASI_UDB_INTR_W: 0x73
+   //ASI_UDB_INTR_R: 0x74
+   //ASI_MESSAGE_MASK: 0x7D
+
+   // decode asi thread
+   assign  asi_thr[0] = ~tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[1] = ~tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+   assign  asi_thr[2] =  tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[3] =  tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+
+   // convert the signal back to non-inverting version for grape
+   // assign  inc_ind_asi_thr_l = ~asi_thr;
+   // assign  inc_ind_asi_thr = asi_thr;
+   
+   // read or write op
+   assign  asi_write = tlu_int_asi_vld & tlu_int_asi_store;
+   assign  asi_read = tlu_int_asi_vld & tlu_int_asi_load;
+
+   // decode asi target
+   // ASI_INTR_RECEIVE
+   assign inc_ind_asi_inrr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5] &
+	      tlu_int_asi_state[4] &
+	      ~tlu_int_asi_state[3]  &
+	      ~tlu_int_asi_state[2] &
+	      tlu_int_asi_state[1] &
+	      ~tlu_int_asi_state[0];      // 0x72
+
+   // need to also check if VA=0x40
+   // what else is mapped to this asi?
+   // ASI_UDB_INTR_R
+   assign asi_invr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3]  &
+	      tlu_int_asi_state[2]  &
+	      ~tlu_int_asi_state[1]  &
+	      ~tlu_int_asi_state[0];      // 0x74
+
+   // VA<63:19>=0 is not checked
+   // ASI_UDB_INTR_W
+   assign asi_indr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3] &
+	      ~tlu_int_asi_state[2]  &
+	      tlu_int_asi_state[1]  &
+	      tlu_int_asi_state[0];      // 0x73
+   /*	       
+   // ASI_MESSAGE_MASK_REG
+   // not implemented any more
+   assign  inc_ind_asi_wr_inrr = asi_thr & {4{inc_ind_asi_inrr & asi_write}};
+   assign  inc_ind_asi_wr_indr = asi_thr & {4{asi_indr & asi_write}};
+   assign  inc_ind_asi_rd_invr = asi_thr & {4{asi_invr & asi_read}};
+
+   assign  red_thread = (tlu_int_redmode[0] & asi_thr[0] |
+			 tlu_int_redmode[1] & asi_thr[1] |
+			 tlu_int_redmode[2] & asi_thr[2] |
+			 tlu_int_redmode[3] & asi_thr[3]);
+   */
+   // modified for bug 2109 
+   // modified for one-hot mux problem and support of macro test
+   // 
+   assign tlu_asi_rdata_mxsel_g[0] = 
+              asi_invr & ~(rst_tri_en | sehold); 
+   assign tlu_asi_rdata_mxsel_g[1] = 
+              inc_ind_asi_inrr & ~(rst_tri_en | asi_invr | sehold);
+   assign tlu_asi_rdata_mxsel_g[2] = 
+              ~((|tlu_asi_rdata_mxsel_g[1:0]) | tlu_asi_rdata_mxsel_g[3]);
+   assign tlu_asi_rdata_mxsel_g[3] = 
+              tlu_asi_queue_rd_vld_g & ~(rst_tri_en | asi_invr | sehold |
+              inc_ind_asi_inrr); 
+   // 
+   assign int_tlu_asi_data_vld_g = 
+          ((asi_invr | inc_ind_asi_inrr) & asi_read) | tlu_ld_data_vld_g; 
+            
+
+   dffr_s dffr_int_tlu_asi_data_vld_w2 (
+    .din (int_tlu_asi_data_vld_g),
+    .q   (int_tlu_asi_data_vld_w2),
+    .clk (clk),
+    .rst (local_rst),
+    .se  (1'b0),       
+    .si  (),          
+    .so  ()
+);
+
+// modified for timing
+// assign tlu_lsu_int_ldxa_vld_w2 = 
+//            int_tlu_asi_data_vld_w2 & ~tlu_flush_all_w2 = ; 
+
+   //-------------------------------------
+   // Basic Operation
+   //-------------------------------------
+   sink s1(const_cpuid[3]);
+
+   assign  tlu_ifu_pstate_ie = tlu_int_pstate_ie;
+
+   // process cpx interrupt type
+   // int = 00
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  hw_int_i1 = (lsu_tlu_cpx_vld &
+			// (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			(lsu_tlu_cpx_req == `INT_RET) & 
+			(ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			 ~ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                 1'b0;
+   //reset = 01
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  rst_int_i1 = (lsu_tlu_cpx_vld &
+			 // (lsu_tlu_cpx_req == `INT_RET) && ~lsu_tlu_cpx_nc &
+			 (lsu_tlu_cpx_req == `INT_RET) &
+			 (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			  ~ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                  1'b0;
+   // idle/nuke = 10
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  nuke_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                    1'b0;
+   // resume = 11
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  resum_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                    1'b0;
+
+   dffr_s #1  rstint_ff(.din  (rst_int_i1),
+		      .q    (tlu_ifu_rstint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  nukint_ff(.din  (nuke_int_i1),
+		      .q    (tlu_ifu_nukeint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  resint_ff(.din  (resum_int_i1),
+		      .q    (tlu_ifu_resumint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   // decode int thread id
+   assign  int_thr_i1[0] = ~ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[1] = ~ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+   assign  int_thr_i1[2] =  ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[3] =  ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+
+   assign  inc_ind_ld_int_i1 = {4{hw_int_i1}} & int_thr_i1;
+   assign  inc_ind_rstthr_i1 = {4{rst_int_i1}} & int_thr_i1;
+   assign  rstthr_i1 = {4{rst_int_i1 | nuke_int_i1 | resum_int_i1}} 
+	                & int_thr_i1;
+
+   // decode thr_m
+   // convert the signal back to non-inverting version for grape
+   /*
+   assign  inc_ind_thr_m_l[0] = ~(~tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[1] = ~(~tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[2] = ~( tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[3] = ~( tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   */
+
+   assign  inc_ind_thr_m[0] = ~tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[1] = ~tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[2] =  tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[3] =  tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   
+
+   // Interrupt continues to be signalled even 1 cycle after read is
+   // done.  This should not be a problem, since the lsu will probably
+   // burn one cycle to complete the read by forwarding it to the reg
+   // file.  Otherwise, just burn another cycle in the IFU before
+   // starting the thread (this is also done right now).
+
+   assign  int_pending_i2 = ~int_pending_i2_l;
+
+   // removed IFU will derive the siganl locally
+   /*
+   assign  int_activate_i2 = ~int_pending_i2_l | tlu_int_sftint_pend;
+   // send message to SWL to wake up thread if it is halted
+   dff_s #4 act_signal_reg(.din (int_activate_i2[3:0]),
+			 .q   (tlu_ifu_int_activate_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+   */
+   
+   // ask IFU to schedule interrupt
+   dff_s #4 int_signal_reg(.din (int_pending_i2[3:0]),
+			 .q   (tlu_ifu_hwint_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+   dff_s #4 rst_signal_reg(.din (rstthr_i1[3:0]),
+			 .q   (tlu_ifu_rstthr_i2[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+
+   //----------------------------------
+   // ASI Registers
+   //----------------------------------
+   //ASI_INTR_RECEIVE: 0x72
+   //ASI_UDB_INTR_W: 0x73
+   //ASI_UDB_INTR_R: 0x74
+   //ASI_MESSAGE_MASK: 0x7D
+
+   // decode asi thread
+   assign  asi_thr[0] = ~tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[1] = ~tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+   assign  asi_thr[2] =  tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[3] =  tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+
+   // convert the signal back to non-inverting version for grape
+   // assign  inc_ind_asi_thr_l = ~asi_thr;
+   // assign  inc_ind_asi_thr = asi_thr;
+   
+   // read or write op
+   assign  asi_write = tlu_int_asi_vld & tlu_int_asi_store;
+   assign  asi_read = tlu_int_asi_vld & tlu_int_asi_load;
+
+   // decode asi target
+   // ASI_INTR_RECEIVE
+   assign inc_ind_asi_inrr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5] &
+	      tlu_int_asi_state[4] &
+	      ~tlu_int_asi_state[3]  &
+	      ~tlu_int_asi_state[2] &
+	      tlu_int_asi_state[1] &
+	      ~tlu_int_asi_state[0];      // 0x72
+
+   // need to also check if VA=0x40
+   // what else is mapped to this asi?
+   // ASI_UDB_INTR_R
+   assign asi_invr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3]  &
+	      tlu_int_asi_state[2]  &
+	      ~tlu_int_asi_state[1]  &
+	      ~tlu_int_asi_state[0];      // 0x74
+
+   // VA<63:19>=0 is not checked
+   // ASI_UDB_INTR_W
+   assign asi_indr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3] &
+	      ~tlu_int_asi_state[2]  &
+	      tlu_int_asi_state[1]  &
+	      tlu_int_asi_state[0];      // 0x73
+   /*	       
+   // ASI_MESSAGE_MASK_REG
+   // not implemented any more
+   assign  inc_ind_asi_wr_inrr = asi_thr & {4{inc_ind_asi_inrr & asi_write}};
+   assign  inc_ind_asi_wr_indr = asi_thr & {4{asi_indr & asi_write}};
+   assign  inc_ind_asi_rd_invr = asi_thr & {4{asi_invr & asi_read}};
+
+   assign  red_thread = (tlu_int_redmode[0] & asi_thr[0] |
+			 tlu_int_redmode[1] & asi_thr[1] |
+			 tlu_int_redmode[2] & asi_thr[2] |
+			 tlu_int_redmode[3] & asi_thr[3]);
+   */
+   // modified for bug 2109 
+   // modified for one-hot mux problem and support of macro test
+   // 
+   assign tlu_asi_rdata_mxsel_g[0] = 
+              asi_invr & ~(rst_tri_en | sehold); 
+   assign tlu_asi_rdata_mxsel_g[1] = 
+              inc_ind_asi_inrr & ~(rst_tri_en | asi_invr | sehold);
+   assign tlu_asi_rdata_mxsel_g[2] = 
+              ~((|tlu_asi_rdata_mxsel_g[1:0]) | tlu_asi_rdata_mxsel_g[3]);
+   assign tlu_asi_rdata_mxsel_g[3] = 
+              tlu_asi_queue_rd_vld_g & ~(rst_tri_en | asi_invr | sehold |
+              inc_ind_asi_inrr); 
+   // 
+   assign int_tlu_asi_data_vld_g = 
+          ((asi_invr | inc_ind_asi_inrr) & asi_read) | tlu_ld_data_vld_g; 
+            
+
+   dffr_s dffr_int_tlu_asi_data_vld_w2 (
+    .din (int_tlu_asi_data_vld_g),
+    .q   (int_tlu_asi_data_vld_w2),
+    .clk (clk),
+    .rst (local_rst),
+    .se  (1'b0),       
+    .si  (),          
+    .so  ()
+);
+
+// modified for timing
+// assign tlu_lsu_int_ldxa_vld_w2 = 
+//            int_tlu_asi_data_vld_w2 & ~tlu_flush_all_w2; 
+
+            sink (const_cpuid[3]);
+
+   assign  tlu_ifu_pstate_ie = tlu_int_pstate_ie;
+
+   // process cpx interrupt type
+   // int = 00
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  hw_int_i1 = (lsu_tlu_cpx_vld &
+			// (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			(lsu_tlu_cpx_req == `INT_RET) & 
+			(ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			 ~ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                 1'b0;
+   //reset = 01
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  rst_int_i1 = (lsu_tlu_cpx_vld &
+			 // (lsu_tlu_cpx_req == `INT_RET) && ~lsu_tlu_cpx_nc &
+			 (lsu_tlu_cpx_req == `INT_RET) &
+			 (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			  ~ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                  1'b0;
+   // idle/nuke = 10
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  nuke_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ~ind_inc_type_i1[0] :
+	                    1'b0;
+   // resume = 11
+   // the flush bit from cpx packet is now included in the
+   // lsu_tlu_cpx_vld qualification
+   assign  resum_int_i1 = (lsu_tlu_cpx_vld &
+			   // (lsu_tlu_cpx_req == `INT_RET) & ~lsu_tlu_cpx_nc &
+			   (lsu_tlu_cpx_req == `INT_RET) & 
+			   (ind_inc_thrid_i1[4:2] == const_cpuid[2:0])) ?
+			    ind_inc_type_i1[1] & ind_inc_type_i1[0] :
+	                    1'b0;
+
+   dffr_s #1  rstint_ff(.din  (rst_int_i1),
+		      .q    (tlu_ifu_rstint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  nukint_ff(.din  (nuke_int_i1),
+		      .q    (tlu_ifu_nukeint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   dffr_s #1  resint_ff(.din  (resum_int_i1),
+		      .q    (tlu_ifu_resumint_i2),
+		      .clk  (clk),
+//
+// modified to abide to the Niagara reset methodology 
+//		      .rst  (reset),
+		      .rst  (local_rst),
+		      .se   (se), .si(), .so());
+   
+   // decode int thread id
+   assign  int_thr_i1[0] = ~ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[1] = ~ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+   assign  int_thr_i1[2] =  ind_inc_thrid_i1[1] & ~ind_inc_thrid_i1[0];
+   assign  int_thr_i1[3] =  ind_inc_thrid_i1[1] &  ind_inc_thrid_i1[0];
+
+   assign  inc_ind_ld_int_i1 = {4{hw_int_i1}} & int_thr_i1;
+   assign  inc_ind_rstthr_i1 = {4{rst_int_i1}} & int_thr_i1;
+   assign  rstthr_i1 = {4{rst_int_i1 | nuke_int_i1 | resum_int_i1}} 
+	                & int_thr_i1;
+
+   // decode thr_m
+   // convert the signal back to non-inverting version for grape
+   /*
+   assign  inc_ind_thr_m_l[0] = ~(~tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[1] = ~(~tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[2] = ~( tlu_int_tid_m[1] & ~tlu_int_tid_m[0]);
+   assign  inc_ind_thr_m_l[3] = ~( tlu_int_tid_m[1] &  tlu_int_tid_m[0]);
+   */
+
+   assign  inc_ind_thr_m[0] = ~tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[1] = ~tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[2] =  tlu_int_tid_m[1] & ~tlu_int_tid_m[0];
+   assign  inc_ind_thr_m[3] =  tlu_int_tid_m[1] &  tlu_int_tid_m[0];
+   
+
+   // Interrupt continues to be signalled even 1 cycle after read is
+   // done.  This should not be a problem, since the lsu will probably
+   // burn one cycle to complete the read by forwarding it to the reg
+   // file.  Otherwise, just burn another cycle in the IFU before
+   // starting the thread (this is also done right now).
+
+   assign  int_pending_i2 = ~int_pending_i2_l;
+
+   // removed IFU will derive the siganl locally
+   /*
+   assign  int_activate_i2 = ~int_pending_i2_l | tlu_int_sftint_pend;
+   // send message to SWL to wake up thread if it is halted
+   dff_s #4 act_signal_reg(.din (int_activate_i2[3:0]),
+			 .q   (tlu_ifu_int_activate_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+   */
+   
+   // ask IFU to schedule interrupt
+   dff_s #4 int_signal_reg(.din (int_pending_i2[3:0]),
+			 .q   (tlu_ifu_hwint_i3[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+   dff_s #4 rst_signal_reg(.din (rstthr_i1[3:0]),
+			 .q   (tlu_ifu_rstthr_i2[3:0]),
+			 .clk (clk),
+			 .se  (se), .si(), .so());
+
+
+   //----------------------------------
+   // ASI Registers
+   //----------------------------------
+   //ASI_INTR_RECEIVE: 0x72
+   //ASI_UDB_INTR_W: 0x73
+   //ASI_UDB_INTR_R: 0x74
+   //ASI_MESSAGE_MASK: 0x7D
+
+   // decode asi thread
+   assign  asi_thr[0] = ~tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[1] = ~tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+   assign  asi_thr[2] =  tlu_int_asi_thrid[1] & ~tlu_int_asi_thrid[0];
+   assign  asi_thr[3] =  tlu_int_asi_thrid[1] &  tlu_int_asi_thrid[0];
+
+   // convert the signal back to non-inverting version for grape
+   // assign  inc_ind_asi_thr_l = ~asi_thr;
+   // assign  inc_ind_asi_thr = asi_thr;
+   
+   // read or write op
+   assign  asi_write = tlu_int_asi_vld & tlu_int_asi_store;
+   assign  asi_read = tlu_int_asi_vld & tlu_int_asi_load;
+
+   // decode asi target
+   // ASI_INTR_RECEIVE
+   assign inc_ind_asi_inrr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5] &
+	      tlu_int_asi_state[4] &
+	      ~tlu_int_asi_state[3]  &
+	      ~tlu_int_asi_state[2] &
+	      tlu_int_asi_state[1] &
+	      ~tlu_int_asi_state[0];      // 0x72
+
+   // need to also check if VA=0x40
+   // what else is mapped to this asi?
+   // ASI_UDB_INTR_R
+   assign asi_invr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3]  &
+	      tlu_int_asi_state[2]  &
+	      ~tlu_int_asi_state[1]  &
+	      ~tlu_int_asi_state[0];      // 0x74
+
+   // VA<63:19>=0 is not checked
+   // ASI_UDB_INTR_W
+   assign asi_indr = ~tlu_int_asi_state[7] &
+	      tlu_int_asi_state[6]  &
+	      tlu_int_asi_state[5]  &
+	      tlu_int_asi_state[4]  &
+	      ~tlu_int_asi_state[3] &
+	      ~tlu_int_asi_state[2]  &
+	      tlu_int_asi_state[1]  &
+	      tlu_int_asi_state[0];      // 0x73
+   /*	       
+   // ASI_MESSAGE_MASK_REG
+   // not implemented any more
+   assign  inc_ind_asi_wr_inrr = asi_thr & {4{inc_ind_asi_inrr & asi_write}};
+   assign  inc_ind_asi_wr_indr = asi_thr & {4{asi_indr & asi_write}};
+   assign  inc_ind_asi_rd_invr = asi_thr & {4{asi_invr & asi_read}};
+
+   assign  red_thread = (tlu_int_redmode[0] & asi_thr[0] |
+			 tlu_int_redmode[1] & asi_thr[1] |
+			 tlu_int_redmode[2] & asi_thr[2] |
+			 tlu_int_redmode[3] & asi_thr[3]);
+   */
+   // modified for bug 2109 
+   // modified for one-hot mux problem and support of macro test
+   // 
+   assign tlu_asi_rdata_mxsel_g[0] = 
+              asi_invr & ~(rst_tri_en | sehold); 
+   assign tlu_asi_rdata_mxsel_g[1] = 
+              inc_ind_asi_inrr & ~(rst_tri_en | asi_invr | sehold);
+   assign tlu_asi_rdata_mxsel_g[2] = 
+              ~((|tlu_asi_rdata_mxsel_g[1:0]) | tlu_asi_rdata_mxsel_g[3]);
+   assign tlu_asi_rdata_mxsel_g[3] = 
+              tlu_asi_queue_rd_vld_g & ~(rst_tri_en | asi_invr | sehold |
+              inc_ind_asi_inrr); 
+   // 
+   assign int_tlu_asi_data_vld_g = 
+          ((asi_invr | inc_ind_asi_inrr) & asi_read) | tlu_ld_data_vld_g; 
+            
+
+   dffr_s dffr_int_tlu_asi_data_vld_w2 (
+    .din (int_tlu_asi_data_vld_g),
+    .q   (int_tlu_asi_data_vld_w2),
+    .clk (clk),
+    .rst (local_rst),
+    .se  (1'b0),       
+    .si  (),          
+    .so  ()
+);
+
+// modified for timing
+// assign tlu_lsu_int_ldxa_vld_w2 = 
+//            int_tlu_asi_data_vld_w2 & ~tlu_flush_all_w2(const_cpuid[

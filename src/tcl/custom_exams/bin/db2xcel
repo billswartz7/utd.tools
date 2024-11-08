@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+echo "Syntax: db2xcel <SQLdatabase> <CSVfilename>"
+echo "        creates new csv files which the grades have been updated."
+echo "        from the database information."
+exit 1  ;
+fi
+
+icdir=${ICDIR}
+
+if [ ! "${icdir}" ] ; then
+  echo " "
+  echo "ERROR[db2xcel]:ICDIR is not set."
+  echo "Please set ICDIR to the iTools root directory."
+  echo " "
+  exit 1
+fi
+
+utd_dir=${UTDEXAMS}
+
+if [ ! "${utd_dir}" ] ; then
+  echo " "
+  echo "ERROR[db2xcel]:UTDEXAMS is not set."
+  echo "Please set UTDEXAMS to the custom_exams root directory."
+  echo " "
+  exit 1
+fi
+
+exec ${ICDIR}/bin/icos ICtclsh -i -v -do ${utd_dir}/tcl/db2xcel.tcl -a ${1+"$@"}

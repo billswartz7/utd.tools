@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"> 
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE>Getting Started</TITLE>
+</HEAD>
+ 
+<BODY TEXT="#000010" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B"
+ ALINK="#FF0000" ONLOAD="parent.loadframe2()">
+<SCRIPT SRC="icinclude.js"></SCRIPT>
+<SCRIPT>UTDsection("Start") ;</SCRIPT>
+<H1><I>Getting Started</I></H1>
+
+<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="<P>Now let's get started using the EZlearn 
+systems <A HREF=\"../welcome/ddoc.html\"> <B>Dynamic Documentation.</B></A> This hypertext
+document will guide you through the execution of various self-help tools. You will be 
+queried for important information concerning your knowledge.  If need help on the available
+commands of a particular tool, you may use the 
+<A HREF=\"autohelp.html\"> <B>Commands</B> </A>option under the <I>Help</I> menu. </P>") ; 
+</SCRIPT>
+
+<P>First, we will need to know your level of knowledge. Please set your
+<A HREF="knowledge.html"> level of expertise</A> in the <B>EZlearn</B> system.
+</P>
+<P><SCRIPT>JS_TK(procedure="ez_user", tkwindow=".icuser", altwidth="400", altheight="30") ; </SCRIPT>
+</P>
+<P><FONT COLOR="#ff0000"> <SCRIPT>JS_COND(expr="$EZUSER==Novice", html="<P>Novice users are given fewer options so the full design flow is more easily understood. Some capabilities are restricted to prevent possible system corruption.</P>" ) ;
+</SCRIPT>
+<SCRIPT>JS_COND(expr="$EZUSER==Intermediate", HTML="<P>Intermediate users are given full documentation of all options. The procedures to customise the design flow are described. No capabilities are restricted.</P><P>" ) ;
+</SCRIPT>
+<SCRIPT>JS_COND(expr="$EZUSER==Expert",HTML="<P>Experts have all capabilies but documentation is less verbose; just an enumeration of the options.</P>" ) ;
+</SCRIPT>
+<SCRIPT>JS_COND(expr="$EZUSER==Developer",HTML="<P>Developers have all capabilies and the ability to edit and annotate the HTML.</P>" ) ;
+</SCRIPT>
+</FONT> </P>
+<P>Next, we need to determine the execution mode for EZ CAD. The execution mode
+dynamically modifies the hypertext allowing the navigation of the <B>itools</B>
+tutorials. The default mode is the normal design flow. <SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="A number of <A HREF=\"tutorial.html\">tutorials</A> are available to teach the user various facets of itools.  Use the <I>iTools Mode</I> pulldown menu below to select a tutorial.  <b>To use your own design data (including foundry libraries), set the execution mode for EZ CAD to design mode.</b> ") ;
+</SCRIPT>
+</P>
+
+
+<P><SCRIPT>JS_TK(procedure="ez_mode", tkwindow=".icmode", altwidth="400", altheight="30") ; </SCRIPT>
+</P>
+
+<SCRIPT>JS_COND(expr="$ICUSER!=Expert&&$EZMODE==design", HTML="<P>The iTools placement and routing suite supports several standard cell library vendors and semiconductor foundaries.  These libraries supply the physical implementation of standard cells and macro cells.  If you are going to supply your own physical implementation, select <B>none</B> in the <I>Library/Foundry</I>.</P>") ;
+
+                JS_COND(expr="$EZMODE==design||$EZMODE==gridded stdcell tutorial", HTML="<BR> ", procedure="ez_foundry", tkwindow=".icfoundry", altwidth="400", altheight="30") ;
+</SCRIPT>
+<P>
+</P>
+
+<SCRIPT>
+              JS_COND(expr="$EZMODE==design",HTML="First, we will need to know where the design directory resides.  Use the window below to pick the <A HREF=\"dd.html\">design directory.</A>  The design directory should contain all of the input files or files that need to be translated.</P>" ) ;
+</SCRIPT>
+<SCRIPT>
+              JS_COND(expr="$EZMODE!=design",HTML="<FONT COLOR=red>All of the information has been set for the ") ;
+              JS_COND(expr="$EZMODE==standard cell tutorial", HTML=" standard cell tutorial. " ) ;
+              JS_COND(expr="$EZMODE==gridded stdcell tutorial", HTML=" gridded standard cell tutorial. " ) ;
+              JS_COND(expr="$EZMODE==macro cell tutorial", HTML=" macro cell tutorial. " ) ;
+              JS_COND(expr="$EZMODE==mixed cell tutorial", HTML=" mixed cell tutorial. " ) ;
+
+	      JS_COND(expr="[::twez::ez_clean_is_possible]&&[idata_exists]&&$ICUSER!=Expert", HTML="<P>EZ has detected the presence of the itoolsdata directory.  Since all of the itools design files are contained within this directory, it is easy to start from the beginning of a run (from translation) by backing up the design.  <FONT COLOR=#ff0000>It is recommended that you use the <I>Backup itoolsdata</I> button, if you wish to start the design process from the beginning.</FONT> </P><BR> " , procedure="ez_cleanfiles", tkwindow=".icclean", altwidth="500", altheight="50") ; 
+              JS_COND(expr="[ez_clean_is_possible]&&(!([idata_exists]))&&$ICUSER!=Expert", HTML="<P>Even though some information exists, this design is incomplete.  If you wish to start anew, use the <I>Force Clean Files</I> command to remove all but the necessary input files.  The <I>designName.lib</I>, <I>designName.ckt</I>, and <I>designName.con</I> as well as the translation script files (<I>designName.do</I>, <I>designName.rdo</I>, <I>designName.tdo</I>, <I>designName.ddo</I>, and <I>designName_final.tdo</I>) are retained.  All other files are moved to the ~/.itools/deleted directory.  The files may be deleted permantly by depressing the empty trashcan button.  After choosing an option, reload the page to update.</P><BR> ", procedure="ez_cleanfiles", tkwindow=".icclean", altwidth="500", altheight="50") ; 
+
+              JS_COND(expr="[ez_clean_is_possible]&&$ICUSER==Expert", HTML="<P>Itools has detected work has been performed previously on this design.</P><BR> ", procedure="ez_cleanfiles", tkwindow=".icclean", altwidth="500", altheight="50") ; 
+
+              JS_COND(expr="$EZMODE!=design",HTML="<P>There is no need to set any of the widgets on this page.  The widgets below are shown in their correct state.</P></FONT> ") ;
+</SCRIPT>
+<P><SCRIPT>JS_TK(procedure="ez_directory", tkwindow=".icdirectory") ; </SCRIPT>
+</P>
+
+
+<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="<P>Next, we need to determine the name of the design. The design name will become the <A HREF=\"root.html\">root</A> for all of the files which are read and written by itools. </P>" ) ; </SCRIPT>
+<P><SCRIPT>JS_TK(procedure="ez_design_name", tkwindow=".icdesign", altwidth="400", altheight="30") ; </SCRIPT>
+
+
+<HR>
+<P><SCRIPT>JS_TK(procedure="ez_nextpage", tkwindow=".icnextpage", args="inputs", altwidth="220", altheight="50") ; </SCRIPT>
+</P>
+</BODY>
+</HTML>
+ 

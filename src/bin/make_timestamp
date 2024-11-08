@@ -1,0 +1,17 @@
+#!/bin/sh
+#
+today=`date`
+
+echo "#ifndef TIMESTAMP_H" > timestamp.h
+echo "#define TIMESTAMP_H" >> timestamp.h
+echo " " >> timestamp.h
+echo "#define UTD_COMPILE_DATE \"${today}\" " >> timestamp.h
+echo " " >> timestamp.h
+echo "#endif /* TIMESTAMP_H */" >> timestamp.h
+
+echo "#include \"timestamp.h\"" > timestamp.c
+echo "const char *utd_get_compile_time(void) {" >> timestamp.c
+echo "  return ( UTD_COMPILE_DATE ) ;" >> timestamp.c
+echo "}" >> timestamp.c
+
+exit 0

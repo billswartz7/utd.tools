@@ -1,0 +1,77 @@
+
+# #################################################
+# TimberWolfDR v2.0.0pre46 executed on Tue Oct 22 14:01:52 2019
+icpreroute_lib iMUX2X1 -enumerate -feeds -exit_on_fail -nominjog -grid 1.6 -forbidden {metal3}
+# [icpreroute_lib]:Grid set to 1.6 offset:0.8
+# 
+# Free area on layer:metal2
+#  * (0.7 0) (8.9 20)
+# [determine_pin_order]:Proposed slot assignment:
+#  S B - Y A -
+# 
+# Pin port locations:
+# pin:S net:3 loc:0.8
+# pin:B net:2 loc:2.4
+# pin:Y net:4 loc:5.6
+# pin:A net:1 loc:7.2
+# pin:ICFD1 net:5 loc:4
+# pin:ICFD4 net:8 loc:8.8
+# 
+# Pin port locations:
+# pin:ICFD4 net:8 loc:8.8
+# pin:A net:1 loc:7.2
+# pin:Y net:4 loc:4
+# pin:B net:2 loc:2.4
+# pin:S net:3 loc:0.8
+# pin:ICFD2 net:6 loc:5.6
+# 
+# Pin port locations:
+# pin:ICFD4 net:8 loc:8.8
+# pin:A net:1 loc:7.2
+# pin:ICFD1 net:5 loc:4
+# pin:Y net:4 loc:5.6
+# pin:B net:2 loc:2.4
+# pin:S net:3 loc:0.8
+# Net routing constrained to be within bounding of the net's pins expanded by 15
+# track pitches.  Use the iccost bbox command to change the bounding box or use
+# iccost bbox inf to remove the bounding box constraint.
+# 
+icpreroute_status
+# [icpreroute_status]:Finished prerouting with 0 design rule errors and 0 unconnected nets.
+icoutput -nonotch
+# [icoutput]:Outputting routing to MUX2X1.rte...
+# 
+# 
+# Runtime Statistics
+# -------------------------
+# Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+# Machine type: Darwin
+# Date        : Tue Oct 22 14:01:52 2019
+# 
+# User    time:   0.0 seconds
+# System  time:   0.0 seconds
+# Elapsed time:   0.0 seconds
+# 
+# Average resident text size       =          0K
+# Average resident data+stack size =          0K
+# Maximum resident size            =    2699264B (2636KB)
+# Virtual memory size              =    4244480K (4145MB)
+# Virtual memory limit soft        = 9007199254740992K (7EB)
+# Virtual memory limit max         = 9007199254740992K (7EB)
+# Maximum heap size                =     2003728 (1956KB)
+# Current heap size                =     1886752 (1842KB)
+# 
+# Major page faults = 0
+# Minor page faults = 2118
+# Swaps = 0
+# 
+# Input blocks = 0
+# Output blocks = 0
+# 
+# Context switch (voluntary) = 8
+# Context switch (involuntary) = 128
+# 
+
+# TimberWolfDR terminated normally at Tue Oct 22 14:01:52 2019
+# with no errors and 0 warning[s]
+

@@ -1,0 +1,33 @@
+module sparc_mul_cntl(
+  ecl_mul_req_vld,
+  spu_mul_req_vld,
+  spu_mul_acc,
+  spu_mul_areg_shf,
+  spu_mul_areg_rst,
+  spu_mul_mulres_lshft,
+  c0_act,
+  spick,
+  byp_sel,
+  byp_imm,
+  acc_imm,
+  acc_actc2,
+  acc_actc3,
+  acc_actc5,
+  acc_reg_enb,
+  acc_reg_rst,
+  acc_reg_shf,
+  x2,
+  mul_ecl_ack,
+  mul_spu_ack,
+  mul_spu_shf_ack,
+  rst_l,
+  rclk
+  );
+
+input		rclk;
+input		rst_l;			input		ecl_mul_req_vld; 	input		spu_mul_req_vld;	input		spu_mul_acc;		input 		spu_mul_areg_shf;	input 		spu_mul_areg_rst;	input		spu_mul_mulres_lshft;	output		c0_act;			output		spick;
+output		byp_sel;		output		byp_imm;
+output		acc_imm;
+output		acc_actc2, acc_actc3;	output		acc_actc5;		output		acc_reg_enb;		output		acc_reg_rst;		output		acc_reg_shf;		output		x2;
+output		mul_ecl_ack;		output		mul_spu_ack;		output		mul_spu_shf_ack;	
+reg

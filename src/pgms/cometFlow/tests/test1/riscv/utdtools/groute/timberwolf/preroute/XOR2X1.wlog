@@ -1,0 +1,8 @@
+# Message Suppression Mechanism
+# Generated @ Tue Oct 22 14:00:56 2019 by TimberWolfDR
+# Message_Identifier  Output_Limit      Message_Occurrence    Message_type   Example_string
+idetailer/calc_vnode_slacks 100 9 MSG
+
+# Note: to suppress all messages of a given identifier
+# use 0 as a limit.  To allow unlimited number of messages
+# set limit to -1.  The default output is 100 messages.

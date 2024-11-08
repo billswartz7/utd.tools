@@ -1,0 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"> 
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE>Programming Memory-Mapped Registers</TITLE>
+</HEAD>
+ 
+<BODY TEXT="#000010" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B"
+ ALINK="#FF0000" ONLOAD="parent.loadframe2()">
+<SCRIPT SRC="utdinclude.js"></SCRIPT>
+<SCRIPT>UTDsection("Problems") ;</SCRIPT>
+<H1><I>Memory-Mapped Registers</I></H1>
+
+
+<H3>Pratice</H3>
+<P>Use the tool to set the proper C statement to control the embedded system peripherals. </P>
+
+<HR>
+<SCRIPT>JS_TK(procedure="::twez::start_boolean_tool", tkwindow=".utdbooltool", args="", altwidth="220", altheight="50") ; </SCRIPT>
+<HR>
+<P><SCRIPT>JS_TK(procedure="ez_nextpage", tkwindow=".eznextpage", args="problems", altwidth="220", altheight="50") ; </SCRIPT>
+</P>
+</BODY>
+</HTML>
+ 

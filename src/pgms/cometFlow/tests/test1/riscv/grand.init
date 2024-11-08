@@ -1,0 +1,49 @@
+# These are the values supplied by user
+
+set ::utdtools::designNameS riscv
+
+# This it a list of all of the input rtl files
+set ::utdtools::rtl_allS "rv32_CPU.v"
+
+# Name of the top verilog modules
+set ::utdtools::vtopS rv32_CPU
+
+# This is the clock definition
+set ::utdtools::clockS 1000000
+
+# Lef file path name - can be full path name
+set ::utdtools::lef_fileS osu035.lef
+
+# The Timing Liberty file
+set ::utdtools::timing_fileS osu035.lib
+
+# The netlist Verilog
+set ::utdtools::verilog_fileS riscv.v
+
+# The SDC file
+set ::utdtools::sdc_fileS riscv.sdc
+
+# The number of partitions
+set ::utdtools::numPartitionS 1
+
+# The name of the feedthru cell
+set ::utdtools::feednameS FILL
+
+# The name of the default DEF file
+set ::utdtools::def_fileS ${::utdtools::designNameS}.def
+
+# How many processor cores do you have?
+set num_cores 4
+
+# What type of quality to you want?  fast, good, or best
+set quality best
+
+# If you don't have xterm installed turn off running in an xterm
+set ::utdtools::run_in_xtermS false
+set ::utdtools::run_in_xtermS true
+
+# We don't normally run using graphics
+set ::utdtools::nographicS false
+
+# We normally run in batch mode
+set ::utdtools::batch_modeS true

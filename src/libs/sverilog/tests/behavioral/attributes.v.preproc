@@ -1,0 +1,10 @@
+
+module foo (
+input clk,
+input reset,
+input head,
+input tail,
+input valid
+);
+
+parameter STATE_IDLE = 2bb,

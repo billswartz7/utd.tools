@@ -1,0 +1,82 @@
+module sparc_exu_rml_inc3 (
+      dout, 
+      din, inc
+   ) ;
+   input [2:0] din;
+   input       inc;
+   output [2:0] dout;
+
+   assign       [2] = ((~[2] & ~[1] & ~[0] & ~) |
+                           (~din[2] & din[1] & din[0] & inc) |
+                           (din[2] & din[1] & ~din[0]) |
+                           (din[2] & ~din[1] & inc) |
+                           (din[2] & din[0] & ~inc));
+   assign dout[1] = ((~din[1] & ~din[0] & ~inc) |
+                     (din[1] & ~din[0] & inc) |
+                     (~din[1] & din[0] & inc) |
+                     (din[1] & din[0] & ~inc));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+) |
+                           (~[2] & [1] & [0] & ) |
+                           (din[2] & din[1] & ~din[0]) |
+                           (din[2] & ~din[1] & inc) |
+                           (din[2] & din[0] & ~inc));
+   assign dout[1] = ((~din[1] & ~din[0] & ~inc) |
+                     (din[1] & ~din[0] & inc) |
+                     (~din[1] & din[0] & inc) |
+                     (din[1] & din[0] & ~inc));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+) |
+                           ([2] & [1] & ~[0]) |
+                           ([2] & ~[1] & ) |
+                           (din[2] & din[0] & ~inc));
+   assign dout[1] = ((~din[1] & ~din[0] & ~inc) |
+                     (din[1] & ~din[0] & inc) |
+                     (~din[1] & din[0] & inc) |
+                     (din[1] & din[0] & ~inc));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+) |
+                           ([2] & [0] & ~));
+   assign dout[1] = ((~din[1] & ~din[0] & ~inc) |
+                     (din[1] & ~din[0] & inc) |
+                     (~din[1] & din[0] & inc) |
+                     (din[1] & din[0] & ~inc));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+));
+   assign [1] = ((~[1] & ~[0] & ~) |
+                     (din[1] & ~din[0] & inc) |
+                     (~din[1] & din[0] & inc) |
+                     (din[1] & din[0] & ~inc));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+) |
+                     ([1] & ~[0] & ) |
+                     (~din[1] & din[0] & inc) |
+                     (din[1] & din[0] & ~inc));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+) |
+                     (~[1] & [0] & ) |
+                     (din[1] & din[0] & ~inc));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+) |
+                     ([1] & [0] & ~));
+   assign dout[0] = ~din[0];
+   
+endmodule // sparc_exu_rml_inc3
+));
+   assign [0] = ~[0];
+   
+endmodule 

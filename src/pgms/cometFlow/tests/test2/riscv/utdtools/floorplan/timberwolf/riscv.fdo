@@ -1,0 +1,14 @@
+
+proc fix_the_pads { } {
+  icplacepads::extract_vectors_from_pads
+  icplacepads::equalize_sides {L B R T}
+  icplace_pads uniform -free_side -core_to_padspace 20
+  icplacepads::convert_to_exact
+  twpad dumpconstraints output/itools.con -append
+}
+
+icprerouting convert
+icfloorplan
+iccontext placement
+fix_the_pads
+twwait

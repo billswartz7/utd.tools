@@ -1,0 +1,2 @@
+#!/bin/sh
+echo "auto_mkindex . *.tcl" | cometTclsh -i -n -q -q -q

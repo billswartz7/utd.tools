@@ -1,0 +1,184 @@
+
+# #################################################
+# ifp v2.0.0pre46 executed on Fri Oct 25 09:52:38 2019
+# 
+# The rand generator seed was: 715452586
+# 
+# 
+# no syntax errors in library:riscv.mlib
+# no syntax problem in circuit file.
+# Reading constraint file riscv.mcon...
+# done reading constraint file. No syntax errors.
+# The number of nets with  2 pins is 251
+# The number of nets with  3 pins is 32
+# The number of nets with 100 pins or more is 0
+# The total number of nets is: 283
+# The maximum number of pins on a single net is: 3
+# Need timing graph...no
+icfloorplan
+# 
+# Total cell area : 4.73e+10
+# mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+# mean short side : 2.16e+05      std deviation short side : 0.00e+00
+# largest cell : core_inst (1) area: 738.7200000000
+# maxBinXG automatically set to:3
+# maxBinYG automatically set to:3
+# bdxlength:27.17938    bdylength:27.17938
+# 
+# 
+# 
+# THE ROUTE COST OF THE CURRENT PLACEMENT: 2020954
+# THE PENALTY OF THE CURRENT PLACEMENT: 0
+# 
+# FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+#    routing cost        :20.39613
+#    overlap penalty     :78289.55700
+#    lapFactor * overlap :3.12829
+#    timing penalty      :0
+# +  timeFactor * timepen:0
+# -------------------------------------
+#    total cost          :23.52441
+# Wirelength:
+# 	All nets             :163169
+# 	Limited nets         :163169
+# 	All nets without pads:0
+# 
+# 
+# CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+#    xspan     = 27
+#    yspan     = 27.36000
+#    core area = 7.39e+02
+# 
+# -------------------------------------
+iczoom -0.71487 16.17796 1.12886 17.72431
+iczoom out 2.0
+iczoom out 2.0
+iczoom out 2.0
+# 
+# IFP FINAL RESULTS ARE:
+#    routing cost        :21.37438
+#    overlap penalty     :78289.55700
+#    lapFactor * overlap :3.12829
+#    timing penalty      :0
+# +  timeFactor * timepen:0
+# -------------------------------------
+#    total cost          :24.50266
+# Wirelength:
+# 	All nets             :170995
+# 	Limited nets         :170995
+# 	All nets without pads:0
+# 
+# 
+# CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+#    xspan     = 27.17950
+#    yspan     = 27.36000
+#    core area = 7.44e+02
+# 
+# -------------------------------------
+# 
+# Statistics:
+# Number of Cells: 1
+# Number of Pads: 319
+# Number of Nets: 283 
+# Number of Pins: 921 
+
+# ifp terminated normally at Fri Oct 25 09:53:03 2019
+# with no errors and 1 warning[s]
+
+
+# #################################################
+# ifp v2.0.0pre46 executed on Fri Oct 25 09:53:50 2019
+# 
+# The rand generator seed was: 1730364828
+# 
+# 
+# no syntax errors in library:riscv.mlib
+# no syntax problem in circuit file.
+# Reading constraint file riscv.mcon...
+# done reading constraint file. No syntax errors.
+# The number of nets with  2 pins is 251
+# The number of nets with  3 pins is 32
+# The number of nets with 100 pins or more is 0
+# The total number of nets is: 283
+# The maximum number of pins on a single net is: 3
+# Need timing graph...no
+
+proc fix_the_pads { } {
+  icplacepads::extract_vectors_from_pads
+  icplacepads::equalize_sides {L B R T}
+  icplace_pads uniform -free_side -core_to_padspace 20
+  icplacepads::convert_to_exact
+  twpad dumpconstraints output/itools.con -append
+}
+
+icprerouting convert
+icfloorplan
+# 
+# Total cell area : 4.73e+10
+# mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+# mean short side : 2.16e+05      std deviation short side : 0.00e+00
+# largest cell : core_inst (1) area: 738.7200000000
+# maxBinXG automatically set to:3
+# maxBinYG automatically set to:3
+# bdxlength:27.17938    bdylength:27.17938
+# 
+# 
+# 
+# THE ROUTE COST OF THE CURRENT PLACEMENT: 2023361
+# THE PENALTY OF THE CURRENT PLACEMENT: 0
+# 
+# FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+#    routing cost        :33.74412
+#    overlap penalty     :78289.55700
+#    lapFactor * overlap :3.12829
+#    timing penalty      :0
+# +  timeFactor * timepen:0
+# -------------------------------------
+#    total cost          :36.87241
+# Wirelength:
+# 	All nets             :269953
+# 	Limited nets         :269953
+# 	All nets without pads:0
+# 
+# 
+# CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+#    xspan     = 27
+#    yspan     = 27.36000
+#    core area = 7.39e+02
+# 
+# -------------------------------------
+iccontext placement
+
+# 
+# IFP FINAL RESULTS ARE:
+#    routing cost        :19.77437
+#    overlap penalty     :78289.55700
+#    lapFactor * overlap :3.12829
+#    timing penalty      :0
+# +  timeFactor * timepen:0
+# -------------------------------------
+#    total cost          :22.90266
+# Wirelength:
+# 	All nets             :158195
+# 	Limited nets         :158195
+# 	All nets without pads:0
+# 
+# 
+# CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+#    xspan     = 27.17950
+#    yspan     = 27.36000
+#    core area = 7.44e+02
+# 
+# -------------------------------------
+# 
+# Statistics:
+# Number of Cells: 1
+# Number of Pads: 319
+# Number of Nets: 283 
+# Number of Pins: 921 
+fix_the_pads
+twwait
+
+# ifp terminated normally at Fri Oct 25 09:54:05 2019
+# with no errors and 1 warning[s]
+

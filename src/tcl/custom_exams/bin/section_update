@@ -1,0 +1,21 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+echo "Syntax: section_update <CSVfilename> <SQLdatabase> [input field] [output field]"
+echo "        creates new csv files which the grades have been updated from database."
+exit 1  ;
+fi
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/custom_exams/tcl/section_update.tcl -- ${1+"$@"}

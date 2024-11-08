@@ -1,0 +1,376 @@
+
+
+
+module bw_io_dtl_flps (
+    q, so, 
+    d, clk, si, se
+  );
+
+  output [2:0]	q;
+  input  [2:0]	d;
+  output	so;
+  input		clk;
+  input		si;
+  input		se;
+
+
+   
+ 
+  bw_u1_soff_2x  (
+    .q               (q[0]),
+    .so              (so_0),
+    .ck              (clk),
+    .d               (d[0]),
+    .se              (se),
+    .sd              (si)
+    );
+
+  bw_u1_soff_2x bsff_1 (
+    .q               (q[1]),
+    .so              (net51),
+    .ck              (clk),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+    .q               ([0]),
+    .so              (),
+    .ck              (clk),
+    .d               (d[0]),
+    .se              (se),
+    .sd              (si)
+    );
+
+  bw_u1_soff_2x bsff_1 (
+    .q               (q[1]),
+    .so              (net51),
+    .ck              (clk),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .ck              (),
+    .d               (d[0]),
+    .se              (se),
+    .sd              (si)
+    );
+
+  bw_u1_soff_2x bsff_1 (
+    .q               (q[1]),
+    .so              (net51),
+    .ck              (clk),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .d               ([0]),
+    .se              (),
+    .sd              (si)
+    );
+
+  bw_u1_soff_2x bsff_1 (
+    .q               (q[1]),
+    .so              (net51),
+    .ck              (clk),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .sd              ()
+    );
+
+  bw_u1_soff_2x bsff_1 (
+    .q               (q[1]),
+    .so              (net51),
+    .ck              (clk),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+    );
+
+  bw_u1_soff_2x  (
+    .q               (q[1]),
+    .so              (net51),
+    .ck              (clk),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+    .q               ([1]),
+    .so              (),
+    .ck              (clk),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .ck              (),
+    .d               (d[1]),
+    .se              (se),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .d               ([1]),
+    .se              (),
+    .sd              (so_0)
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .sd              ()
+    );
+
+  bw_u1_soff_2x I28 (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+    );
+
+  bw_u1_soff_2x  (
+    .q               (q[2]),
+    .so              (so),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+    .q               ([2]),
+    .so              (),
+    .ck              (clk),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .ck              (),
+    .d               (d[2]),
+    .se              (se),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .d               ([2]),
+    .se              (),
+    .sd              (net51)
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .sd              ()
+    );
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+    );
+
+
+  endmodule
+
+

@@ -1,0 +1,1 @@
+../../../automake/ltmain.sh

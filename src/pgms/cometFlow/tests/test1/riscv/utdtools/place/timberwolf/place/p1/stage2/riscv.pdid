@@ -1,0 +1,358 @@
+
+# #################################################
+# iplacesc.v1 v2.0.0pre46 executed on Tue Oct 22 13:59:57 2019
+# Reading .slib, .sckt, and .scon files...
+# 
+# [look_for_hints]:Found hints in <riscv.sstat> file
+# [look_for_hints]:Number of insts:682
+# [look_for_hints]:Number of nets :1626
+# [look_for_hints]:Number of gpins:6540
+# 
+# no syntax errors in library:riscv.slib
+# no syntax errors in physical description.
+# no syntax problem in circuit file.
+# no syntax errors in netlist description.
+# Reading constraint file riscv.scon...
+# done reading constraint file. No syntax errors.
+# 
+# WARNING[pinlayers_init]:pin_layers not defined.
+# Using first vertical layer:metal2 pitch:1.6 offset:0.8
+# Pin layers:
+# layer:metal2 pitch:1.6 offset:0.8
+# 
+# Need timing graph...no
+# [autodetect_port_layers]:didn't autodetect port layers.
+# median:83.2
+# 
+# [cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+# 
+# 
+# 
+# total cell length: 39401.6
+# total block length: 39395.2
+# rowSep                  : 0.000
+# 
+# 
+# [auto_wire_weight]:vertical_wire_weight has been set by user.
+# Effective row separation has been set to 1.00
+# Modified vertical wire weight has been set to 1000000.00
+# WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+# using auto_wire_weight which may cause the results to suffer.
+# If this is due to a small row separation, the problem may be eliminated
+# by turning auto_wire_weight to off in the .par file.
+# WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+# WARNING[SApad_place]:Pad ring given in error.
+# Given padring   : (0,0) (888,900).
+# Adjusted padring: (-4,-4) (888,904).
+# 
+# block x-span:875.5  block y-span:900
+# 
+# 
+# TIMING FACTOR (COMPUTED) : 4.000000
+# Original Average Cell Width:108.5
+# average_cell_width is:108.544
+# standard deviation of cell length is:74.6241
+# narrowest standard cell:9.6
+# widest standard cell:216
+# average row length:875.5
+# Normal row control algorithm.
+# ratio:22.5
+# 
+# Row-based Cell Distribution: 
+# [ 1- 10] (     9.6     30.3) : 7.713  1.377  1.102  1.653  0.275  0.551  0.826  0.275  0.000  0.000 
+# [11- 20] (    32.3     50.9) : 0.275  0.275  0.551  4.683  0.000  0.551  1.102  1.102  4.132  5.510 
+# [21- 30] (    52.9     71.6) : 9.642  1.102  0.551  0.000  1.377  1.653  0.000  0.551  0.275  0.551 
+# [31- 40] (    73.5     92.2) : 0.826  0.551  0.000  0.275  0.551  1.102  0.275  0.826  0.275  0.000 
+# [41- 50] (    94.2    112.8) : 0.000  1.377  0.551  0.551  0.275  0.275  0.275  0.000  0.275  0.000 
+# [51- 60] (   114.8    133.5) : 0.000  0.551  0.275  0.275  0.000  0.551  0.000  0.275  0.275  0.000 
+# [61- 70] (   135.5    154.1) : 0.000  0.275  1.377  0.275  0.000  1.102  0.826  0.000  0.826  1.102 
+# [71- 80] (   156.1    174.8) : 0.000  0.551  0.275  0.275  0.551  1.102  0.000  0.000  0.551  1.653 
+# [81- 90] (   176.7    195.4) : 0.551  0.551  0.826  0.826  0.826  0.275  1.377  0.275  0.826  1.102 
+# [91-100] (   197.4      216) : 1.102  1.653  1.653  2.479  0.826  1.102  3.581  2.755  1.928  6.612 
+# Bin width:82.56 smallest:384 => largest:8640
+# 
+# iplacesc starting from the beginning
+# raw bin width :325.6
+# adjusted bin width :204.8
+# number of x bins    :6
+# number of y bins    :0
+# 
+# 
+# 
+# THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 1367329.4
+# 
+# [findcost]:the large and non-global ignored nets:
+# WARNING[findcost]:Large net <rst> has 186 pins exceeding threshold and is now IGNORED.
+# WARNING[findcost]:Large net <clk> has 243 pins exceeding threshold and is now IGNORED.
+# WARNING[findcost]:Large net <1'h1> has 184 pins exceeding threshold and is now IGNORED.
+# WARNING[findcost]:Large net <CTRL.cyc> has 130 pins exceeding threshold and is now IGNORED.
+# 
+# [findcost]:The active global nets:	NONE
+# 
+# [findcost]:The defined global nets but not present in netlist:	NONE
+# The number of nets with 1 pins is 4
+# The number of nets with 2 pins is 896
+# The number of nets with 3 pins is 271
+# The number of nets with 4 pins is 127
+# The number of nets with 5 pins is 51
+# The number of nets with 6 pins is 32
+# The number of nets with 7 pins is 40
+# The number of nets with 8 pins is 57
+# The number of nets with 9 pins is 42
+# The number of nets with 10 pins is 48
+# The number of nets with 11 pins is 48
+# The number of nets with 12 pins is 1
+# The number of nets with 13 pins is 1
+# The number of nets with 18 pins is 1
+# The number of nets with 20 pins is 1
+# The number of nets with 23 pins is 1
+# The number of nets with 25 pins is 1
+# The number of nets with 100 pins or more is 4
+# Average number of pins per net = 3.573983
+# The maximum number of pins on a single net is:243
+# 
+# Pad information:
+# Core: (0,0) (875.5,900).
+# Padring: (-4,-21.3) (888,921.3).
+# Die: (-21.3,-22) (896.9,922).
+# 
+# 
+# Percentage of Nets Connecting to at least 2 cells:1.00
+# Percentage of Nets Connecting to at least 3 cells:0.47
+# Percentage of Nets Connecting to at least 4 cells:0.28
+# Percentage of Nets Connecting to at least 5 cells:0.21
+# Percentage of Nets Connecting to at least 6 cells:0.19
+# 
+# mean row var width :54.3
+# block:   1 (0,0) (875.5,20) desire:875.5 val:54.3
+# block:   2 (0,20) (875.5,40) desire:875.5 val:54.3
+# block:   3 (0,40) (875.5,60) desire:875.5 val:54.3
+# block:   4 (0,60) (875.5,80) desire:875.5 val:54.3
+# block:   5 (0,80) (875.5,100) desire:875.5 val:54.3
+# block:   6 (0,100) (875.5,120) desire:875.5 val:54.3
+# block:   7 (0,120) (875.5,140) desire:875.5 val:54.3
+# block:   8 (0,140) (875.5,160) desire:875.5 val:54.3
+# block:   9 (0,160) (875.5,180) desire:875.5 val:54.3
+# block:  10 (0,180) (875.5,200) desire:875.5 val:54.3
+# block:  11 (0,200) (875.5,220) desire:875.5 val:54.3
+# block:  12 (0,220) (875.5,240) desire:875.5 val:54.3
+# block:  13 (0,240) (875.5,260) desire:875.5 val:54.3
+# block:  14 (0,260) (875.5,280) desire:875.5 val:54.3
+# block:  15 (0,280) (875.5,300) desire:875.5 val:54.3
+# block:  16 (0,300) (875.5,320) desire:875.5 val:54.3
+# block:  17 (0,320) (875.5,340) desire:875.5 val:54.3
+# block:  18 (0,340) (875.5,360) desire:875.5 val:54.3
+# block:  19 (0,360) (875.5,380) desire:875.5 val:54.3
+# block:  20 (0,380) (875.5,400) desire:875.5 val:54.3
+# block:  21 (0,400) (875.5,420) desire:875.5 val:54.3
+# block:  22 (0,420) (875.5,440) desire:875.5 val:54.3
+# block:  23 (0,440) (875.5,460) desire:875.5 val:54.3
+# block:  24 (0,460) (875.5,480) desire:875.5 val:54.3
+# block:  25 (0,480) (875.5,500) desire:875.5 val:54.3
+# block:  26 (0,500) (875.5,520) desire:875.5 val:54.3
+# block:  27 (0,520) (875.5,540) desire:875.5 val:54.3
+# block:  28 (0,540) (875.5,560) desire:875.5 val:54.3
+# block:  29 (0,560) (875.5,580) desire:875.5 val:54.3
+# block:  30 (0,580) (875.5,600) desire:875.5 val:54.3
+# block:  31 (0,600) (875.5,620) desire:875.5 val:54.3
+# block:  32 (0,620) (875.5,640) desire:875.5 val:54.3
+# block:  33 (0,640) (875.5,660) desire:875.5 val:54.3
+# block:  34 (0,660) (875.5,680) desire:875.5 val:54.3
+# block:  35 (0,680) (875.5,700) desire:875.5 val:54.3
+# block:  36 (0,700) (875.5,720) desire:875.5 val:54.3
+# block:  37 (0,720) (875.5,740) desire:875.5 val:54.3
+# block:  38 (0,740) (875.5,760) desire:875.5 val:54.3
+# block:  39 (0,760) (875.5,780) desire:875.5 val:54.3
+# block:  40 (0,780) (875.5,800) desire:875.5 val:54.3
+# block:  41 (0,800) (875.5,820) desire:875.5 val:54.3
+# block:  42 (0,820) (875.5,840) desire:875.5 val:54.3
+# block:  43 (0,840) (875.5,860) desire:875.5 val:54.3
+# block:  44 (0,860) (875.5,880) desire:875.5 val:54.3
+# block:  45 (0,880) (875.5,900) desire:875.5 val:54.3
+# Total Desired Length:39395.2
+# 
+# bdxlen:875.5  bdylen:900
+# l:0  t:900  r:875.5  b:0
+# 
+# 
+# 
+# THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 1360724.9
+icplace
+# Attempts per iteration:1815
+# 
+# Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc
+#  -1: 5.96e+05 5.96e+05    1351903          0  1.00   0   1332    386    808 0.946 0.964 0.950
+#   0: 5.96e+05 5.96e+05    1343608          0  1.00   0   1307    411    949 0.946 0.963 0.982
+#   1: 5.76e+05 5.14e+05    1347467          0  1.00   0   1320    410    936 0.952 0.984 0.948
+#   2: 5.79e+05 2.92e+05    1352001          0  1.00   0   1242    448    941 0.932 0.908 0.915
+#   3: 5.42e+05 2.47e+05    1314216          0  1.00   0   1199    413    955 0.886 0.939 0.883
+#   4: 4.83e+05 1.66e+05    1322010          0  1.00   0   1201    371   1077 0.862 0.969 0.852
+#   5: 4.05e+05 1.30e+05    1299950          0  1.00   0   1138    375   1030 0.828 0.959 0.822
+#   6: 3.66e+05 1.38e+05    1308730          0  1.00   0   1087    353   1001 0.789 0.899 0.793
+#   7: 3.11e+05 1.42e+05    1269763          0  1.00   0   1114    280   1023 0.763 0.874 0.765
+#   8: 2.70e+05 1.18e+05    1245772          0  1.00   0   1009    347   1039 0.742 0.889 0.738
+#   9: 2.41e+05 9.67e+04    1288859          0  1.00   0    974    335    940 0.717 0.875 0.712
+#  10: 2.10e+05 8.30e+04    1257253          0  1.00   0    956    306   1067 0.690 0.833 0.687
+#  11: 1.85e+05 8.26e+04    1256137          0  1.00   0    941    269   1016 0.663 0.789 0.663
+#  12: 1.42e+05 7.01e+04    1217958          0  1.00   0    893    288    920 0.643 0.833 0.640
+#  13: 1.26e+05 8.14e+04    1241349          0  1.00   0    852    267    941 0.611 0.744 0.618
+#  14: 1.08e+05 5.71e+04    1203867          0  1.00   0    868    234    972 0.603 0.682 0.596
+#  15: 8.90e+04 5.67e+04    1200175          0  1.00   0    805    249    969 0.573 0.738 0.575
+#  16: 7.64e+04 5.94e+04    1145175          0  1.00   0    777    233    907 0.552 0.671 0.555
+#  17: 6.78e+04 5.79e+04    1167104          0  1.00   0    771    206    999 0.534 0.634 0.535
+#  18: 5.84e+04 6.17e+04    1156541          0  1.00   0    736    202    933 0.513 0.627 0.517
+#  19: 5.40e+04 5.20e+04    1146155          0  1.00   0    685    228    990 0.501 0.571 0.499
+#  20: 4.73e+04 4.80e+04    1135355          0  1.00   0    692    190    966 0.481 0.603 0.481
+#  21: 4.84e+04 4.83e+04    1132804          0  1.00   0    655    184    935 0.462 0.458 0.464
+#  22: 3.72e+04 5.16e+04    1088075          0  1.00   0    644    177    910 0.444 0.616 0.448
+#  23: 3.51e+04 4.14e+04    1075046          0  1.00   0    635    173    853 0.444 0.468 0.440
+#  24: 3.35e+04 5.12e+04    1099211          0  1.00   0    620    166    956 0.431 0.482 0.440
+#  25: 3.22e+04 4.64e+04    1055512          0  1.00   0    634    169   1007 0.441 0.466 0.440
+#  26: 2.87e+04 4.40e+04    1094835          0  1.00   0    656    149    967 0.439 0.542 0.440
+#  27: 2.81e+04 4.75e+04    1094681          0  1.00   0    628    162    975 0.434 0.457 0.440
+#  28: 2.90e+04 3.92e+04    1070812          0  1.00   0    662    142   1037 0.444 0.418 0.440
+#  29: 2.88e+04 4.32e+04    1080952          0  1.00   0    621    171   1029 0.435 0.462 0.440
+#  30: 3.18e+04 4.36e+04    1037828          0  1.00   0    617    169   1109 0.437 0.347 0.440
+#  31: 3.41e+04 5.26e+04    1035438          0  1.00   0    619    165    913 0.434 0.400 0.440
+#  32: 3.16e+04 4.68e+04    1031833          0  1.00   0    654    154    990 0.441 0.532 0.440
+#  33: 3.26e+04 5.43e+04    1051487          0  1.00   0    615    168    965 0.432 0.416 0.440
+#  34: 3.36e+04 4.29e+04    1065688          0  1.00   0    631    175   1005 0.446 0.390 0.440
+#  35: 2.91e+04 3.69e+04    1059303          0  1.00   0    651    161   1017 0.443 0.513 0.440
+#  36: 2.62e+04 3.41e+04    1030962          0  1.00   0    662    139   1065 0.439 0.467 0.440
+#  37: 2.75e+04 3.58e+04    1005811          0  1.00   0    659    131    884 0.436 0.419 0.440
+#  38: 2.85e+04 3.29e+04    1026574          0  1.00   0    616    180    961 0.439 0.425 0.440
+#  39: 2.80e+04 3.91e+04    1000206          0  1.00   0    639    147    905 0.432 0.447 0.440
+#  40: 3.13e+04 3.87e+04     985106          0  1.00   0    632    158    895 0.438 0.394 0.440
+#  41: 3.20e+04 2.82e+04     988886          0  1.00   0    638    173    972 0.448 0.423 0.440
+#  42: 3.23e+04 3.68e+04     995142          0  1.00   0    611    166   1026 0.428 0.430 0.440
+#  43: 3.35e+04 3.06e+04    1007557          0  1.00   0    628    177   1014 0.444 0.432 0.440
+#  44: 2.76e+04 2.52e+04     977875          0  1.00   0    657    164    927 0.446 0.522 0.440
+#  45: 3.32e+04 3.71e+04     978628          0  1.00   0    637    129    944 0.425 0.389 0.440
+#  46: 2.99e+04 2.86e+04     967466          0  1.00   0    667    148    980 0.446 0.483 0.440
+#  47: 2.70e+04 2.57e+04     957282          0  1.00   0    649    162    983 0.442 0.491 0.440
+#  48: 2.67e+04 2.98e+04     949608          0  1.00   0    634    154    934 0.432 0.443 0.440
+#  49: 2.69e+04 3.38e+04     943511          0  1.00   0    641    147    856 0.434 0.435 0.440
+#  50: 2.69e+04 2.62e+04     962206          0  1.00   0    657    155    978 0.445 0.455 0.440
+#  51: 2.99e+04 2.56e+04     951466          0  1.00   0    638    149    955 0.438 0.399 0.440
+#  52: 3.09e+04 2.55e+04     925496          0  1.00   0    648    147    927 0.437 0.437 0.440
+#  53: 3.13e+04 2.13e+04     933299          0  1.00   0    665    139   1010 0.445 0.431 0.440
+#  54: 4.15e+04 2.36e+04     944784          0  1.00   0    608    164   1003 0.432 0.368 0.440
+#  55: 3.62e+04 2.48e+04     920905          0  1.00   0    650    150    967 0.435 0.471 0.440
+#  56: 3.18e+04 2.35e+04     889522          0  1.00   0    656    152    881 0.441 0.463 0.440
+#  57: 3.11e+04 1.94e+04     908090          0  1.00   0    662    146    888 0.445 0.445 0.440
+#  58: 3.58e+04 2.16e+04     903748          0  1.00   0    641    143    791 0.435 0.411 0.440
+#  59: 4.74e+04 2.09e+04     909864          0  1.00   0    647    134    859 0.439 0.382 0.440
+#  60: 4.57e+04 2.09e+04     891489          0  1.00   0    680    114    884 0.436 0.439 0.440
+#  61: 4.06e+04 2.24e+04     891794          0  1.00   0    645    155    893 0.437 0.458 0.440
+#  62: 3.47e+04 1.85e+04     900004          0  1.00   0    658    158    940 0.446 0.464 0.440
+#  63: 4.71e+04 1.43e+04     878244          0  1.00   0    626    166    908 0.446 0.390 0.440
+#  64: 4.39e+04 2.23e+04     892971          0  1.00   0    603    170    851 0.419 0.447 0.440
+#  65: 3.30e+04 1.79e+04     897923          0  1.00   0    674    152   1006 0.447 0.477 0.440
+#  66: 3.39e+04 1.68e+04     887359          0  1.00   0    664    135    969 0.441 0.432 0.440
+#  67: 2.70e+04 1.25e+04     871268          0  1.00   0    687    137    928 0.450 0.465 0.440
+#  68: 3.60e+04 1.67e+04     862045          0  1.00   0    626    135   1017 0.426 0.398 0.440
+#  69: 3.82e+04 1.49e+04     880775          0  1.00   0    654    147    939 0.443 0.431 0.440
+#  70: 3.96e+04 1.21e+04     875097          0  1.00   0    663    150    817 0.447 0.442 0.440
+#  71: 3.70e+04 1.30e+04     877526          0  1.00   0    643    154    861 0.434 0.446 0.440
+#  72: 3.32e+04 1.17e+04     862621          0  1.00   0    657    151   1110 0.442 0.445 0.440
+#  73: 3.83e+04 1.07e+04     853846          0  1.00   0    647    144    833 0.442 0.422 0.440
+#  74: 3.19e+04 1.61e+04     857888          0  1.00   0    662    129    899 0.419 0.452 0.440
+#  75: 2.87e+04 1.09e+04     860633          0  1.00   0    695    122    963 0.452 0.440 0.433
+#  76: 2.98e+04 8.76e+03     849873          0  1.00   0    658    114    986 0.429 0.416 0.419
+#  77: 2.98e+04 9.30e+03     855370          0  1.00   0    630    104    992 0.401 0.405 0.405
+#  78: 2.48e+04 8.38e+03     852796          0  1.00   0    599    129    955 0.395 0.403 0.391
+#  79: 2.06e+04 5.40e+03     836334          0  1.00   0    619     99    863 0.400 0.387 0.377
+#  80: 1.98e+04 5.08e+03     819561          0  1.00   0    564    100    921 0.363 0.366 0.363
+#  81: 2.68e+04 6.28e+03     811150          0  1.00   0    502    101    904 0.333 0.327 0.349
+#  82: 2.41e+04 5.17e+03     817761          0  1.00   0    543     82    889 0.344 0.341 0.335
+#  83: 2.00e+04 3.79e+03     810967          0  1.00   0    505    108    890 0.337 0.331 0.321
+#  84: 1.90e+04 3.38e+03     803838          0  1.00   0    470     97    918 0.314 0.308 0.307
+#  85: 1.83e+04 5.85e+03     801311          0  1.00   0    486     72    918 0.288 0.324 0.323
+# Removed the cell overlaps --- Will do neighbor interchanges only now
+# 
+# TOTAL INTERCONNECT LENGTH: 801310.6
+# 
+# BLOCK   LENGTHS ORIG_DESIRE    OVER/UNDER       MIN       MAX    DESIRE DEVIATION DESIRE_DEV
+#    1       822       875       -53  -6.1%       821       930       875       -53         0
+#    2       854       875       -21  -2.4%       821       930       875       -21         0
+#    3       877       875         1   0.2%       821       930       875         1         0
+#    4       856       875       -19  -2.2%       821       930       875       -19         0
+#    5       862       875       -13  -1.5%       821       930       875       -13         0
+#    6       861       875       -15  -1.7%       821       930       875       -15         0
+#    7       845       875       -31  -3.5%       821       930       875       -31         0
+#    8       902       875        27   3.1%       821       930       875        27         0
+#    9       894       875        19   2.2%       821       930       875        19         0
+#   10       832       875       -43  -5.0%       821       930       875       -43         0
+#   11       880       875         5   0.5%       821       930       875         5         0
+#   12       854       875       -21  -2.4%       821       930       875       -21         0
+#   13       885       875         9   1.1%       821       930       875         9         0
+#   14       925       875        49   5.6%       821       930       875        49         0
+#   15       830       875       -45  -5.1%       821       930       875       -45         0
+#   16       877       875         1   0.2%       821       930       875         1         0
+#   17       894       875        19   2.2%       821       930       875        19         0
+#   18       869       875        -7  -0.8%       821       930       875        -7         0
+#   19       867       875        -8  -0.9%       821       930       875        -8         0
+#   20       906       875        30   3.4%       821       930       875        30         0
+#   21       874       875        -2  -0.2%       821       930       875        -2         0
+#   22       925       875        49   5.6%       821       930       875        49         0
+#   23       883       875         8   0.9%       821       930       875         8         0
+#   24       867       875        -8  -0.9%       821       930       875        -8         0
+#   25       898       875        22   2.5%       821       930       875        22         0
+#   26       874       875        -2  -0.2%       821       930       875        -2         0
+#   27       888       875        13   1.4%       821       930       875        13         0
+#   28       859       875       -16  -1.9%       821       930       875       -16         0
+#   29       890       875        14   1.6%       821       930       875        14         0
+#   30       856       875       -19  -2.2%       821       930       875       -19         0
+#   31       915       875        40   4.5%       821       930       875        40         0
+#   32       899       875        24   2.7%       821       930       875        24         0
+#   33       920       875        45   5.1%       821       930       875        45         0
+#   34       896       875        21   2.3%       821       930       875        21         0
+#   35       854       875       -21  -2.4%       821       930       875       -21         0
+#   36       862       875       -13  -1.5%       821       930       875       -13         0
+#   37       885       875         9   1.1%       821       930       875         9         0
+#   38       882       875         6   0.7%       821       930       875         6         0
+#   39       888       875        13   1.4%       821       930       875        13         0
+#   40       902       875        27   3.1%       821       930       875        27         0
+#   41       826       875       -50  -5.7%       821       930       875       -50         0
+#   42       874       875        -2  -0.2%       821       930       875        -2         0
+#   43       926       875        51   5.8%       821       930       875        51         0
+#   44       843       875       -32  -3.7%       821       930       875       -32         0
+#   45       822       875       -53  -6.1%       821       930       875       -53         0
+# The longest row is:43, its length:926.4, deviation is:51.0
+# The shortest row is:1, its length:822.4 Unevenness:104 12.65%
+# 
+# iter     T      Wire      Time   accept
+# WARNING[SApad_place]:Pad ring given in error.
+# Given padring   : (-4,-21.3) (888,921.3).
+# Adjusted padring: (-4,-21.3) (930.4,921.3).
+# 
+# 134  0.001     800713          0       0%
+# 135  0.001     800713          0       (no fixed constraint processing)
+# 135  0.001     770133          0      11%
+# 136  0.001     769369          0       2%
+# 137  0.001     767832          0       2%
+# 138  0.001     767792          0       2%
+# 139  0.001     767674          0       2%
+icoutput
+# [output]:output core with 0 errors and 0 warnings.
+# 
+# 
+# [neighborhood_report]:No neighborhood constraints.
+# 
+# 
+# 
+# FINAL CLUSTERED INTERCONNECT LENGTH:767674.1
+# MAX NUMBER OF ATTEMPTED FLIPS PER T:1815
+# 
+# Statistics:
+# Number of Standard Cells: 363
+# Number of Macros: 0 
+# Number of Pads: 319 
+# Number of PadGroups: 0 
+# Number of Instances: 682 
+# Number of Nets: 1626 
+# Number of Pins: 6859 
+# Number of Implicit Feed Thrus: 319
+# 
+# iplacesc.v1 terminated normally with no errors and 9 warning[s] (status arg:1024 status:0 status given:1024) 
+# 

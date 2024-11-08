@@ -1,0 +1,329 @@
+ 
+ 
+
+module efc_saed (
+      rise_det, fall_det, 
+      async_in, clk
+   );
+
+output   rise_det;
+output   fall_det;
+input   async_in;
+input   clk;
+
+
+wire		;
+wire		snc2_ff;
+wire		hist_ff;
+
+//-----------------------------------------------------------------------------
+// Module Body
+//-----------------------------------------------------------------------------
+bw_u1_syncff_4x snc1_reg(
+					.so(),
+					.q (snc1_ff),
+					.ck (clk),
+					.d (async_in),
+					.sd(),
+					.se(1'b0));
+dff_ns #(1) snc2_reg (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire		;
+wire		hist_ff;
+
+//-----------------------------------------------------------------------------
+// Module Body
+//-----------------------------------------------------------------------------
+bw_u1_syncff_4x snc1_reg(
+					.so(),
+					.q (snc1_ff),
+					.ck (clk),
+					.d (async_in),
+					.sd(),
+					.se(1'b0));
+dff_ns #(1) snc2_reg (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire		;
+
+//-----------------------------------------------------------------------------
+// Module Body
+//-----------------------------------------------------------------------------
+bw_u1_syncff_4x snc1_reg(
+					.so(),
+					.q (snc1_ff),
+					.ck (clk),
+					.d (async_in),
+					.sd(),
+					.se(1'b0));
+dff_ns #(1) snc2_reg (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+
+bw_u1_syncff_4x (
+					.so(),
+					.q (snc1_ff),
+					.ck (clk),
+					.d (async_in),
+					.sd(),
+					.se(1'b0));
+dff_ns #(1) snc2_reg (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+(
+					.so(),
+					.q (),
+					.ck (clk),
+					.d (async_in),
+					.sd(),
+					.se(1'b0));
+dff_ns #(1) snc2_reg (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+					.ck (),
+					.d (async_in),
+					.sd(),
+					.se(1'b0));
+dff_ns #(1) snc2_reg (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+					.d (),
+					.sd(),
+					.se(1'b0));
+dff_ns #(1) snc2_reg (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+					.sd(),
+					.se(1bb));
+dff_ns #(1)  (.din(snc1_ff), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (.din(), .q(snc2_ff), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .q(), .clk(clk));
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .clk());
+
+dff_ns #(1) hist_reg (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+dff_ns #(1)  (.din(snc2_ff), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (.din(), .q(hist_ff), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .q(), .clk(clk));
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .clk());
+
+assign rise_det = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+assign  = !hist_ff && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ = ! && snc2_ff;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ && ;
+assign fall_det = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+assign  = hist_ff && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ =  && !snc2_ff;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ && !;
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+
+endmodule

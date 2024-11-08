@@ -1,0 +1,2915 @@
+module dram_addr_gen(
+      addr_err, rank_adr, stack_adr, bank_adr, ras_adr, cas_adr, addr_parity,
+      addr_in, config_reg, two_channel_mode, rank1_present, eight_bank_mode
+   );
+
+input [39:4]	addr_in;
+input [8:0]	config_reg;
+input		rank1_present;
+input		eight_bank_mode;
+input		two_channel_mode;
+
+output		addr_parity;
+output		addr_err;
+output 		rank_adr;
+output 		stack_adr;
+output [2:0]	bank_adr;
+output [14:0]	ras_adr;
+output [13:0]	cas_adr;
+
+wire [14:0]     ;
+wire [14:0]     ras_adr_cas11;
+
+//////////////////////////////////////////////////////////////////
+// Mux the RAS address 
+//////////////////////////////////////////////////////////////////
+				
+assign ras_adr_cas12[14:0] = two_channel_mode ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[34:21]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[33:21]} : addr_in[35:21]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]);
+
+assign ras_adr_cas11[14:0] = two_channel_mode ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[31:18]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[30:18]} : addr_in[32:18]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3;
+wire [14:0]     ;
+
+//////////////////////////////////////////////////////////////////
+// Mux the RAS address 
+//////////////////////////////////////////////////////////////////
+				
+assign ras_adr_cas12[14:0] = two_channel_mode ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[34:21]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[33:21]} : addr_in[35:21]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]);
+
+assign ras_adr_cas11[14:0] = two_channel_mode ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[31:18]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[30:18]} : addr_in[32:18]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3;
+
+				
+assign [14:0] =  ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[34:21]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[33:21]} : addr_in[35:21]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]);
+
+assign ras_adr_cas11[14:0] = two_channel_mode ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[31:18]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[30:18]} : addr_in[32:18]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? (
+                 ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[34:21]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[33:21]} : addr_in[35:21]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]);
+
+assign ras_adr_cas11[14:0] = two_channel_mode ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[31:18]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[30:18]} : addr_in[32:18]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? ( ([8:5] == 4hh) ?
+                        {1hh,[33:20]} : ([8:5] == 4hh) ?
+                        {2hh,[32:20]} : [34:20]) :
+                ([8:5] == 4hh) ?
+                        {1hh,[32:19]} : ([8:5] == 4hh) ?
+                        {2hh,[31:19]} : [33:19]) :
+                 ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[34:21]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[33:21]} : addr_in[35:21]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]);
+
+assign ras_adr_cas11[14:0] = two_channel_mode ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[31:18]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[30:18]} : addr_in[32:18]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? (
+                        ([8:5] == 4hh) ?
+                        {1hh,[34:21]} : ([8:5] == 4hh) ?
+                        {2hh,[33:21]} : [35:21]) :
+                (([8:5] == 4hh) ?
+                        {1hh,[33:20]} : ([8:5] == 4hh) ?
+                        {2hh,[32:20]} : [34:20]);
+
+assign [14:0] =  ? (
+                eight_bank_mode ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[31:18]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[30:18]} : addr_in[32:18]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? (
+                 ? ( (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]) :
+                (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[31:18]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[30:18]} : addr_in[32:18]) :
+                eight_bank_mode ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? ( ([8:5] == 4hh) ?
+                        {1hh,[32:19]} : ([8:5] == 4hh) ?
+                        {2hh,[31:19]} : [33:19]) :
+                ([8:5] == 4hh) ?
+                        {1hh,[31:18]} : ([8:5] == 4hh) ?
+                        {2hh,[30:18]} : [32:18]) :
+                 ? (
+                        (config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[33:20]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[32:20]} : addr_in[34:20]) :
+                ((config_reg[8:5] == 4'he) ?
+                        {1'h0,addr_in[32:19]} : (config_reg[8:5] == 4'hd) ?
+                        {2'h0,addr_in[31:19]} : addr_in[33:19]);
+
+assign ras_adr[14:0] = (config_reg[4:1] == 4'hc) ? ras_adr_cas12 : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? (
+                        ([8:5] == 4hh) ?
+                        {1hh,[33:20]} : ([8:5] == 4hh) ?
+                        {2hh,[32:20]} : [34:20]) :
+                (([8:5] == 4hh) ?
+                        {1hh,[32:19]} : ([8:5] == 4hh) ?
+                        {2hh,[31:19]} : [33:19]);
+
+assign [14:0] = ([4:1] == 4hh) ?  : ras_adr_cas11;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 : ;
+
+wire stack_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3;
+
+wire  = two_channel_mode ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 =  ? ( 
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? ( 
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33])) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? ( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      	([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [33] : [32]) :
+                      	(([4:1] == 4hh) ? [35] : [34])) :
+		([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [33] : [32]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [32] : [31]) :
+                      (([4:1] == 4hh) ? [34] : [33])) :
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      	(config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      	((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35])) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34])); 
+
+wire stack_adr = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? ( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [35] : [34]) :
+                      	([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      	(([4:1] == 4hh) ? [36] : [35])) :
+		(([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [33] : [32]) :
+                      (([4:1] == 4hh) ? [35] : [34])); 
+
+wire  = config_reg[0] ? stack_adr_present : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 = [0] ?  : 1'b0;
+
+wire rank_adr_present = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 : 1bb;
+
+wire  = two_channel_mode ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 =  ? ( 
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? ( 
+		 ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )) :
+		config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[32] : addr_in[31]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) )) :
+		eight_bank_mode ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? (
+			[0] ? (
+			([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [35] : [34]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      (([4:1] == 4hh) ? [36] : [35]) ) :
+			( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [33] : [32]) :
+                      (([4:1] == 4hh) ? [35] : [34]) )) :
+		[0] ? (
+			([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [33] : [32]) :
+                      (([4:1] == 4hh) ? [35] : [34]) ) :
+			( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [33] : [32]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [32] : [31]) :
+                      (([4:1] == 4hh) ? [34] : [33]) )) :
+		 ? (
+			config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[37] : addr_in[36]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) )) :
+		(config_reg[0] ? (
+			(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[36] : addr_in[35]) ) :
+			( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[34] : addr_in[33]) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? addr_in[33] : addr_in[32]) :
+                      ((config_reg[4:1] == 4'hc) ? addr_in[35] : addr_in[34]) )); 
+
+wire rank_adr = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? (
+			[0] ? (
+			([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [36] : [35]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [35] : [34]) :
+                      (([4:1] == 4hh) ? [37] : [36]) ) :
+			( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [35] : [34]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      (([4:1] == 4hh) ? [36] : [35]) )) :
+		([0] ? (
+			([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [35] : [34]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      (([4:1] == 4hh) ? [36] : [35]) ) :
+			( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [34] : [33]) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? [33] : [32]) :
+                      (([4:1] == 4hh) ? [35] : [34]) )); 
+
+wire  = rank1_present ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 =  ? rank_adr_present : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ?  : 1'b0;
+
+wire [8:0] upper_addr_no_sd_no_rank = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 : 1bb;
+
+wire [8:0]  = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 =  ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? (
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[3 ? ( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:34]} : {2hh,[39:33]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:33]} : {1hh,[39:32]}) :
+                      (([4:1] == 4hh) ? {4hh,[39:35]} : {3hh,[39:34]})) :
+		([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:33]} : {1hh,[39:32]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {1hh,[39:32]} : [39:31]) :
+                      (([4:1] == 4hh) ? {3hh,[39:34]} : {2hh,[39:33]})) :
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:35]} : {3'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:36]} : {4'h0,addr_in[39:35]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:34]} : {2'h0,addr_in[39:33]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:33]} : {1'h0,addr_in[39:32]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:35]} : {3'h0,addr_in[39:34]}));
+
+wire [7:0] upper_addr_sd_or_rank  = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:33]} : addr_in[39:32]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:37]} : {4'h0,addr_in[39:36]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})); 
+
+wire [6:0] upper_addr_sd_and_rank  = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {4hh,[39:35]} : {3hh,[39:34]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:34]} : {2hh,[39:33]}) :
+                      (([4:1] == 4hh) ? {5hh,[39:36]} : {4hh,[39:35]})) :
+		(([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:34]} : {2hh,[39:33]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:33]} : {1hh,[39:32]}) :
+                      (([4:1] == 4hh) ? {4hh,[39:35]} : {3hh,[39:34]}));
+
+wire [7:0]   = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:33]} : addr_in[39:32]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:37]} : {4'h0,addr_in[39:36]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})); 
+
+wire [6:0] upper_addr_sd_and_rank  = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+  =  ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:33]} : addr_in[39:32]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:37]} : {4'h0,addr_in[39:36]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})); 
+
+wire [6:0] upper_addr_sd_and_rank  = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? (
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:33]} : addr_in[39:32]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:37]} : {4'h0,addr_in[39:36]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})); 
+
+wire [6:0] upper_addr_sd_and_rank  = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:35]} : {2hh,[39:34]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:34]} : {1hh,[39:33]}) :
+                      (([4:1] == 4hh) ? {4hh,[39:36]} : {3hh,[39:35]})) :
+		([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:34]} : {1hh,[39:33]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {1hh,[39:33]} : [39:32]) :
+                      (([4:1] == 4hh) ? {3hh,[39:35]} : {2hh,[39:34]})) :
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:37]} : {4'h0,addr_in[39:36]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:35]} : {2'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:34]} : {1'h0,addr_in[39:33]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:36]} : {3'h0,addr_in[39:35]})); 
+
+wire [6:0] upper_addr_sd_and_rank  = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {4hh,[39:36]} : {3hh,[39:35]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:35]} : {2hh,[39:34]}) :
+                      (([4:1] == 4hh) ? {5hh,[39:37]} : {4hh,[39:36]})) :
+		(([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:35]} : {2hh,[39:34]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:34]} : {1hh,[39:33]}) :
+                      (([4:1] == 4hh) ? {4hh,[39:36]} : {3hh,[39:35]})); 
+
+wire [6:0]   = two_channel_mode ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+  =  ? (
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? (
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                   (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                   (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})) :
+		(config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {1'h0,addr_in[39:34]} : addr_in[39:33]) :
+                      ((config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]})) :
+		eight_bank_mode ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ( ([8:5] == 4hh) ? (
+                   ([4:1] == 4hh) ? {3hh,[39:36]} : {2hh,[39:35]}) :
+                   ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:35]} : {1hh,[39:34]}) :
+                      (([4:1] == 4hh) ? {4hh,[39:37]} : {3hh,[39:36]})) :
+		([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:35]} : {1hh,[39:34]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {1hh,[39:34]} : [39:33]) :
+                      (([4:1] == 4hh) ? {3hh,[39:36]} : {2hh,[39:35]})) :
+		 ? ( (config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      ((config_reg[4:1] == 4'hc) ? {5'h0,addr_in[39:38]} : {4'h0,addr_in[39:37]})) :
+		((config_reg[8:5] == 4'he) ? (
+                        (config_reg[4:1] == 4'hc) ? {3'h0,addr_in[39:36]} : {2'h0,addr_in[39:35]}) :
+                      (config_reg[8:5] == 4'hd) ? (
+                        (config_reg[4:1] == 4'hc) ? {2'h0,addr_in[39:35]} : {1'h0,addr_in[39:34]}) :
+                      ((config_reg[4:1] == 4'hc) ? {4'h0,addr_in[39:37]} : {3'h0,addr_in[39:36]})); 
+
+wire [8:0] upper_addr = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ( ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {4hh,[39:37]} : {3hh,[39:36]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:36]} : {2hh,[39:35]}) :
+                      (([4:1] == 4hh) ? {5hh,[39:38]} : {4hh,[39:37]})) :
+		(([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {3hh,[39:36]} : {2hh,[39:35]}) :
+                      ([8:5] == 4hh) ? (
+                        ([4:1] == 4hh) ? {2hh,[39:35]} : {1hh,[39:34]}) :
+                      (([4:1] == 4hh) ? {4hh,[39:37]} : {3hh,[39:36]})); 
+
+wire [8:0]  = 
+		(rank1_present & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ = 
+		( & config_reg[0]) ? {upper_addr_sd_and_rank[6:0],2'b0} :
+		(rank1_present | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ & [0]) ? {[6:0],2bb} :
+		( | config_reg[0]) ? {upper_addr_sd_or_rank[7:0],1'b0} : 
+			upper_addr_no_sd_no_rank[8:0];
+
+wire addr_err = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ | [0]) ? {[7:0],1bb} : 
+			[8:0];
+
+wire  = |upper_addr[8:0];
+
+//////////////////////////////////////////////////////////////////
+// Mux the CAS address 
+//////////////////////////////////////////////////////////////////
+
+assign cas_adr[13:0] = two_channel_mode ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ = |[8:0];
+
+
+assign [13:0] =  ? (
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? (
+		 ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}) :
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[18:17],1'b1,addr_in[16:9],addr_in[5:4]} : 
+			{2'h0,addr_in[17],1'b1,addr_in[16:9],addr_in[5:4]}) :
+		eight_bank_mode ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ( 
+			([4:1] == 4hh) ? 
+			{1hh,[19:18],1bb,[17:10],[5:4]} : 
+			{2hh,[18],1bb,[17:10],[5:4]}) :
+			([4:1] == 4hh) ? 
+			{1hh,[18:17],1bb,[16:9],[5:4]} : 
+			{2hh,[17],1bb,[16:9],[5:4]}) :
+		 ? ( 
+			(config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[20:19],1'b1,addr_in[18:11],addr_in[5:4]} : 
+			{2'h0,addr_in[19],1'b1,addr_in[18:11],addr_in[5:4]}) :
+		((config_reg[4:1] == 4'hc) ? 
+			{1'h0,addr_in[19:18],1'b1,addr_in[17:10],addr_in[5:4]} : 
+			{2'h0,addr_in[18],1'b1,addr_in[17:10],addr_in[5:4]}); 
+
+assign bank_adr[2:0] = two_channel_mode ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ( 
+			([4:1] == 4hh) ? 
+			{1hh,[20:19],1bb,[18:11],[5:4]} : 
+			{2hh,[19],1bb,[18:11],[5:4]}) :
+		(([4:1] == 4hh) ? 
+			{1hh,[19:18],1bb,[17:10],[5:4]} : 
+			{2hh,[18],1bb,[17:10],[5:4]}); 
+
+assign [2:0] =  ? (
+			eight_bank_mode ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? (
+			 ? addr_in[9:7] ^ addr_in[20:18] ^ addr_in[30:28] :
+			config_reg[0] ? { stack_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? [9:7] ^ [20:18] ^ [30:28] :
+			[0] ? { , addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } : 
+				rank1_present ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+, [8:7] ^ [19:18] ^ [29:28] } : 
+				 ? {rank_adr, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? {, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[8:7] ^ addr_in[19:18] ^ addr_in[29:28] }) : 
+			(eight_bank_mode ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+, [8:7] ^ [19:18] ^ [29:28] } :
+				{1bb, [8:7] ^ [19:18] ^ [29:28] }) : 
+			( ? addr_in[10:8] ^ addr_in[20:18] ^ addr_in[30:28] :
+				config_reg[0] ? { stack_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? [10:8] ^ [20:18] ^ [30:28] :
+				[0] ? { , addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28]} : 
+				rank1_present ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+, [9:8] ^ [19:18] ^ [29:28]} : 
+				 ? {rank_adr, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? {, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] } :
+				{1'b0, addr_in[9:8] ^ addr_in[19:18] ^ addr_in[29:28] });
+
+wire addr_parity = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+, [9:8] ^ [19:18] ^ [29:28] } :
+				{1bb, [9:8] ^ [19:18] ^ [29:28] });
+
+wire  = two_channel_mode ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ =  ? ^(addr_in[39:7]) : ^(addr_in[39:8]);
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:("." "../../../common/rtl")
+// End:
+
+ ? ^([39:7]) : ^([39:8]);
+
+endmodule
+
+

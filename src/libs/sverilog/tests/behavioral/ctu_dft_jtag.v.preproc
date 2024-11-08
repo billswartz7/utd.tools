@@ -1,0 +1,87 @@
+ 
+ 
+
+module ctu_dft_jtag (
+dft_tdo, io_tdo_en, jtag_creg_addr, jtag_creg_data, jtag_creg_rd_en, 
+jtag_creg_wr_en, jtag_creg_addr_en, jtag_creg_data_en, 
+jtag_creg_rdrtrn_complete, jtag_bist_serial, jtag_bist_parallel, 
+jtag_bist_active, jtag_bist_abort, dft_pll_div2, dft_pll_arst_l, 
+dft_pll_testmode, dft_pll_clamp_fltr, jtag_clsp_stop_id_vld, 
+jtag_clsp_stop_id, jtag_nstep_vld, jtag_nstep_domain, 
+jtag_nstep_count, dft_clsp_nstep_capture_l, jtag_clock_dr, 
+jtag_clsp_ignore_wrm_rst, jtag_clsp_sel_tck2, 
+jtag_clsp_force_cken_cmp, jtag_clsp_force_cken_dram, 
+jtag_clsp_force_cken_jbus, pll_bypass, ctu_sel_cpu, ctu_sel_dram, 
+ctu_sel_jbus, ctu_spc0_sscan_se, ctu_spc1_sscan_se, 
+ctu_spc2_sscan_se, ctu_spc3_sscan_se, ctu_spc4_sscan_se, 
+ctu_spc5_sscan_se, ctu_spc6_sscan_se, ctu_spc7_sscan_se, 
+ctu_spc0_tck, ctu_spc1_tck, ctu_spc2_tck, ctu_spc3_tck, ctu_spc4_tck, 
+ctu_spc5_tck, ctu_spc6_tck, ctu_spc7_tck, ctu_spc_sscan_tid, 
+ctu_pads_sscan_update, ctu_global_snap, ctu_ddr0_mode_ctl, 
+ctu_ddr0_hiz_l, ctu_ddr0_update_dr, ctu_ddr0_clock_dr, 
+ctu_ddr0_shift_dr, ctu_ddr1_mode_ctl, ctu_ddr1_hiz_l, 
+ctu_ddr1_update_dr, ctu_ddr1_clock_dr, ctu_ddr1_shift_dr, 
+ctu_ddr2_mode_ctl, ctu_ddr2_hiz_l, ctu_ddr2_update_dr, 
+ctu_ddr2_clock_dr, ctu_ddr2_shift_dr, ctu_ddr3_mode_ctl, 
+ctu_ddr3_hiz_l, ctu_ddr3_update_dr, ctu_ddr3_clock_dr, 
+ctu_ddr3_shift_dr, ctu_jbusl_mode_ctl, ctu_jbusl_hiz_l, 
+ctu_jbusl_update_dr, ctu_jbusl_clock_dr, ctu_jbusl_shift_dr, 
+ctu_jbusr_mode_ctl, ctu_jbusr_hiz_l, ctu_jbusr_update_dr, 
+ctu_jbusr_clock_dr, ctu_jbusr_shift_dr, ctu_debug_mode_ctl, 
+ctu_debug_hiz_l, ctu_debug_update_dr, ctu_debug_clock_dr, 
+ctu_debug_shift_dr, ctu_misc_mode_ctl, ctu_misc_hiz_l, 
+ctu_misc_update_dr, ctu_misc_clock_dr, ctu_misc_shift_dr, 
+ctu_pads_bso, global_shift_enable, global_scan_bypass_en, 
+dft_ctu_scan_disable, dft_pin_pscan_l, ctu_pads_so, ctu_fpu_so, 
+pscan_select, ctu_ddr_testmode_l, ctu_tst_scanmode, 
+ctu_tst_macrotest, ctu_tst_short_chain, ctu_tst_scan_disable, 
+ctu_efc_data_in, ctu_efc_updatedr, ctu_efc_shiftdr, 
+ctu_efc_capturedr, ctu_efc_tck, ctu_efc_rowaddr, ctu_efc_coladdr, 
+ctu_efc_read_en, ctu_efc_read_mode, ctu_efc_fuse_bypass, 
+ctu_efc_dest_sample, dft_rng_vctrl, dft_rng_rst_l, dft_tsr_div, 
+dft_tsr_tsel, dft_tsr_reset_l, testmode_l, 
+jbus_rst_l, io_tdi, io_tms, io_trst_l, io_tck, tck_l, jtag_id, 
+test_mode_pin, afi_rng_ctl, afi_tsr_div, afi_tsr_mode, 
+afi_pll_char_mode, afi_pll_div2, afi_pll_trst_l, afi_tsr_tsel, 
+afi_pll_clamp_fltr, creg_jtag_scratch_data, creg_jtag_rdrtrn_data, 
+creg_jtag_rdrtrn_vld, bist_jtag_result, bist_jtag_abort_done, 
+pll_bypass_pin, pll_reset_ref_l, spc0_ctu_sscan_out, 
+spc1_ctu_sscan_out, spc2_ctu_sscan_out, spc3_ctu_sscan_out, 
+spc4_ctu_sscan_out, spc5_ctu_sscan_out, spc6_ctu_sscan_out, 
+spc7_ctu_sscan_out, pads_ctu_bsi, pads_ctu_si, 
+sctag2_ctu_serial_scan_in, efc_ctu_data_out
+);
+
+input 	      jbus_rst_l;
+
+input 	  io_tdi;
+input 	  io_tms;
+input 	  io_trst_l;
+input 	  io_tck;
+input 	  tck_l;
+output 	  dft_tdo; output 	  io_tdo_en;
+
+input [3:0] jtag_id;
+
+input 	      test_mode_pin;
+input [2:0]   afi_rng_ctl;
+input [9:1]   afi_tsr_div;
+input 	      afi_tsr_mode;
+input 	      afi_pll_char_mode;
+input [5:0]   afi_pll_div2;
+input 	      afi_pll_trst_l;
+input [7:0]   afi_tsr_tsel;
+input 	      afi_pll_clamp_fltr;
+
+output [39:0] jtag_creg_addr;  output [63:0] jtag_creg_data;     output 	      jtag_creg_rd_en;
+output 	      jtag_creg_wr_en;
+output 	      jtag_creg_addr_en;
+output 	      jtag_creg_data_en;
+
+input [63:0]  creg_jtag_scratch_data;
+
+input [63:0]  creg_jtag_rdrtrn_data;
+input 	      creg_jtag_rdrtrn_vld;
+output 	      jtag_creg_rdrtrn_complete;
+
+input [(*

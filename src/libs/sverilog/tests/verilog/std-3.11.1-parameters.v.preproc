@@ -1,0 +1,3 @@
+module test;
+parameter msb = 7;
+parameter e = 25,

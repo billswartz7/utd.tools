@@ -1,0 +1,60 @@
+
+     
+
+module aurora_201_TX_STREAM
+(
+        TX_D,
+    TX_SRC_RDY_N,
+    TX_DST_RDY_N,
+
+
+        CHANNEL_UP,
+    
+    
+        DO_CC,
+    WARN_CC,
+
+
+        GEN_SCP,
+    GEN_ECP,
+    TX_PE_DATA_V,
+    GEN_PAD,
+    TX_PE_DATA,
+    GEN_CC,
+
+
+        USER_CLK
+
+
+);
+
+ 
+
+
+
+        input   [0:15]     TX_D;
+    input              TX_SRC_RDY_N;
+
+    output             TX_DST_RDY_N;
+
+
+        input              CHANNEL_UP;
+    
+    
+        input              DO_CC;
+    input              WARN_CC;
+
+
+        output             GEN_SCP;
+    output             GEN_ECP;
+    output             TX_PE_DATA_V;
+    output             GEN_PAD;
+    output  [0:15]     TX_PE_DATA;
+    output             GEN_CC;
+
+
+        input              USER_CLK;
+
+
+
+    reg

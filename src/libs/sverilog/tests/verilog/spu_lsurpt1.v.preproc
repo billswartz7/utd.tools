@@ -1,0 +1,3185 @@
+
+
+module spu_lsurpt1 (
+
+
+
+so,
+
+spu_lsu_ldxa_data_w2,
+spu_lsu_ldxa_data_vld_w2,
+spu_lsu_ldxa_tid_w2,
+
+spu_lsu_ldst_pckt,
+
+
+spu_lsurpt1_rs3_data_g2,
+
+
+spu_lsu_ldxa_illgl_va_w2,
+
+spu_lsurpt1_stb_empty,
+
+spu_lsurpt_cpx_data_out,
+
+spu_ifu_ttype_tid_w2,
+
+spu_lsu_unc_error_w2,
+
+spu_ifu_err_addr_w2,
+
+spu_lsu_stxa_ack_tid,
+
+
+
+spu_ctl_ldxa_illgl_va_w,
+
+spu_madp_ldxa_data,
+
+spu_ldstreq_pcx,
+
+spu_ctl_ldxa_data_vld_w2,
+spu_ctl_ldxa_tid_w2,
+
+
+exu_lsu_rs3_data_e,
+
+lsu_spu_stb_empty,
+
+spu_lsurpt_cpx_data_in,
+
+spu_wen_pcx_wen,
+spu_wen_pcx_7170_sel,
+
+spu_ifu_ttype_tid_w,
+
+spu_lsu_unc_error_w,
+
+spu_lsu_stxa_ack_tid_ctl,
+
+
+
+si,se,
+
+reset_l,
+rclk);
+
+input rclk;
+input reset_l;
+input se;
+input si;
+
+input [63:0] spu_madp_ldxa_data;
+
+input [122:0] spu_ldstreq_pcx;
+
+input spu_ctl_ldxa_data_vld_w2;
+input [1:0] spu_ctl_ldxa_tid_w2;
+
+
+input [63:0] exu_lsu_rs3_data_e;
+
+input spu_ctl_ldxa_illgl_va_w;
+
+input [3:0] lsu_spu_stb_empty;
+
+input [134:0] spu_lsurpt_cpx_data_in;
+
+input spu_wen_pcx_wen;
+input spu_wen_pcx_7170_sel;
+
+input [1:0] spu_ifu_ttype_tid_w;
+
+input spu_lsu_unc_error_w;
+
+input [1:0] spu_lsu_stxa_ack_tid_ctl;
+output [122:0] spu_lsu_ldst_pckt;
+
+output [63:0] spu_lsu_ldxa_data_w2;
+output spu_lsu_ldxa_data_vld_w2;
+output [1:0] spu_lsu_ldxa_tid_w2;
+
+
+output [63:0] spu_lsurpt1_rs3_data_g2;
+
+
+output  spu_lsu_ldxa_illgl_va_w2;
+
+output [3:0] spu_lsurpt1_stb_empty;
+
+output [134:0] spu_lsurpt_cpx_data_out;
+
+output [1:0] spu_ifu_ttype_tid_w2;
+
+output spu_lsu_unc_error_w2;
+
+output [39:4] spu_ifu_err_addr_w2;
+
+output [1:0] spu_lsu_stxa_ack_tid;
+
+
+output so;
+
+
+dffe_s #(121)  (
+        .din({spu_ldstreq_pcx[122:72],spu_ldstreq_pcx[69:0]}) ,
+        .q({spu_lsu_ldst_pckt[122:72],spu_lsu_ldst_pckt[69:0]}),
+        .en(spu_wen_pcx_wen), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+// bank select needs to be fast.
+//assign spu_lsu_ldst_pckt[71:70] = spu_ldstreq_pcx[71:70];
+
+wire [71:70] spu_ldstreq_pcx_q;
+dffe_s #(2) pcx_7170_ff (
+        .din(spu_ldstreq_pcx[71:70]) ,
+        .q(spu_ldstreq_pcx_q[71:70]),
+        .en(spu_wen_pcx_wen), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dp_mux2es #(2) pcx_7170_mx (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din({[122:72],[69:0]}) ,
+        .q({[122:72],[69:0]}),
+        .en(), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+// bank select needs to be fast.
+//assign spu_lsu_ldst_pckt[71:70] = spu_ldstreq_pcx[71:70];
+
+wire [71:70] spu_ldstreq_pcx_q;
+dffe_s #(2) pcx_7170_ff (
+        .din(spu_ldstreq_pcx[71:70]) ,
+        .q(spu_ldstreq_pcx_q[71:70]),
+        .en(spu_wen_pcx_wen), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dp_mux2es #(2) pcx_7170_mx (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .clk (), .se(1'b0),.si (),.so ()
+        );
+
+
+// bank select needs to be fast.
+//assign spu_lsu_ldst_pckt[71:70] = spu_ldstreq_pcx[71:70];
+
+wire [71:70] spu_ldstreq_pcx_q;
+dffe_s #(2) pcx_7170_ff (
+        .din(spu_ldstreq_pcx[71:70]) ,
+        .q(spu_ldstreq_pcx_q[71:70]),
+        .en(spu_wen_pcx_wen), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dp_mux2es #(2) pcx_7170_mx (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+        );
+
+
+
+wire [71:70] ;
+dffe_s #(2) pcx_7170_ff (
+        .din(spu_ldstreq_pcx[71:70]) ,
+        .q(spu_ldstreq_pcx_q[71:70]),
+        .en(spu_wen_pcx_wen), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dp_mux2es #(2) pcx_7170_mx (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+;
+dffe_s #(2)  (
+        .din(spu_ldstreq_pcx[71:70]) ,
+        .q(spu_ldstreq_pcx_q[71:70]),
+        .en(spu_wen_pcx_wen), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dp_mux2es #(2) pcx_7170_mx (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([71:70]) ,
+        .q([71:70]),
+        .en(), .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dp_mux2es #(2) pcx_7170_mx (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .clk (), .se(1'b0),.si (),.so ()
+        );
+
+dp_mux2es #(2) pcx_7170_mx (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+        );
+
+dp_mux2es #(2)  (
+        .in0    (spu_ldstreq_pcx_q[71:70]),
+        .in1    (spu_ldstreq_pcx[71:70]),
+        .sel    (spu_wen_pcx_7170_sel),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .in0    ([71:70]),
+        .in1    ([71:70]),
+        .sel    (),
+        .dout   (spu_lsu_ldst_pckt[71:70]));
+
+
+assign spu_ifu_err_addr_w2[39:8] = spu_ldstreq_pcx[103:72]; // buf_10x
+assign spu_ifu_err_addr_w2[7:6] = spu_ldstreq_pcx[71:70]; // very critical to not overload double 
+							  // buffer(buf_2x+buf10x)
+assign spu_ifu_err_addr_w2[5:4] = spu_ldstreq_pcx[69:68]; // buf_10x
+
+// ---------------------------------------------------------------------
+
+
+dff_s #(64) ldxa_data_ff (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+),
+        .dout   ([71:70]));
+
+
+assign [39:8] = [103:72]; assign [7:6] = [71:70]; 							  assign [5:4] = [69:68]; 
+
+
+dff_s #(64)  (
+        .din(spu_madp_ldxa_data[63:0]) ,
+        .q(spu_lsu_ldxa_data_w2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([63:0]) ,
+        .q([63:0]),
+        .clk (), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(2) ldxa_tid_ff (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+        );
+
+dff_s #(2)  (
+        .din(spu_ctl_ldxa_tid_w2[1:0]) ,
+        .q(spu_lsu_ldxa_tid_w2[1:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([1:0]) ,
+        .q([1:0]),
+        .clk (), .se(1'b0),.si (),.so ()
+        );
+
+
+wire reset = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+        );
+
+
+wire  = ~reset_l;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ = ~;
+
+dffr_s #(1) ldxa_vld_ff (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+;
+
+dffr_s #(1)  (
+        .din(spu_ctl_ldxa_data_vld_w2) ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din() ,
+        .q(spu_lsu_ldxa_data_vld_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+) ,
+        .q(),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+),
+	.rst(),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+),
+        .clk (), .se(1'b0),.si (),.so ()
+	);
+
+dffr_s #(1) illgl_va_ff (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+	);
+
+dffr_s #(1)  (
+        .din(spu_ctl_ldxa_illgl_va_w) ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din() ,
+        .q(spu_lsu_ldxa_illgl_va_w2),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+) ,
+        .q(),
+	.rst(reset),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+),
+	.rst(),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+),
+        .clk (), .se(1'b0),.si (),.so ()
+	);
+
+//---------------------------------------------
+
+wire [63:0] spu_lsurpt1_rs3_data_m, spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+	);
+
+
+wire [63:0] , spu_lsurpt1_rs3_data_g;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+, ;
+
+dff_s #(64) exu_rs3_data_e_ff (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+;
+
+dff_s #(64)  (
+        .din(exu_lsu_rs3_data_e[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_m[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([63:0]) ,
+        .q([63:0]),
+        .clk (), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_m_ff (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+        );
+
+dff_s #(64)  (
+        .din(spu_lsurpt1_rs3_data_m[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([63:0]) ,
+        .q([63:0]),
+        .clk (), .se(1'b0),.si (),.so ()
+        );
+
+dff_s #(64) spu_rs3_data_g_ff (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+        );
+
+dff_s #(64)  (
+        .din(spu_lsurpt1_rs3_data_g[63:0]) ,
+        .q(spu_lsurpt1_rs3_data_g2[63:0]),
+        .clk (rclk), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([63:0]) ,
+        .q([63:0]),
+        .clk (), .se(1'b0),.si (),.so ()
+        );
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+dff_s #(4) lsu_spu_stb_empty_ff (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb),.si (),.so ()
+        );
+
+
+
+
+dff_s #(4)  (
+        .din(lsu_spu_stb_empty[3:0]) ,
+        .q(spu_lsurpt1_stb_empty[3:0]),
+        .clk (rclk), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([3:0]) ,
+        .q([3:0]),
+        .clk (), .se(1'b0), .si(), .so());
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// port postion should be: input on the BOTTOM and output on TOP.
+
+assign spu_lsurpt_cpx_data_out[134:0] = spu_lsurpt_cpx_data_in[134:0];
+
+
+//---------------------------------------------
+//---------------------------------------------
+
+// place all the following flops on the right hand side. inputs located on the top
+// and outputs located on the bottom.
+
+
+dff_s  #(2) spu_ifu_ttype_tid_w2_ff (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(1bb), .si(), .so());
+
+
+
+
+assign [134:0] = [134:0];
+
+
+
+
+
+dff_s  #(2)  (
+        .din(spu_ifu_ttype_tid_w[1:0]) ,
+        .q(spu_ifu_ttype_tid_w2[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([1:0]) ,
+        .q([1:0]),
+        .clk (), .se(se), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(), .si(), .so());
+
+
+dff_s  #(1) spu_lsu_unc_error_w2_ff (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .si(), .so());
+
+
+dff_s  #(1)  (
+        .din(spu_lsu_unc_error_w) ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din() ,
+        .q(spu_lsu_unc_error_w2),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+) ,
+        .q(),
+        .clk (rclk), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+),
+        .clk (), .se(se), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .se(), .si(), .so());
+
+dff_s  #(2) spu_lsu_stxa_ack_tid_ff (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+), .si(), .so());
+
+dff_s  #(2)  (
+        .din(spu_lsu_stxa_ack_tid_ctl[1:0]) ,
+        .q(spu_lsu_stxa_ack_tid[1:0]),
+        .clk (rclk), .se(se), .si(), .so());
+
+endmodule
+ (
+        .din([1:0]) ,
+        .q([1:0]),
+        .clk (), .se(se), .si(), .so());
+
+endmodule
+), .se(), .si(), .so());
+
+endmodule
+), .si(), .so());
+
+endmodule

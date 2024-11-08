@@ -1,0 +1,10 @@
+#!/bin/sh
+
+randomize students.csv
+loadsql students.data.1.csv
+cp students.data.1.db students.db
+rename_table students.db
+columns students.db -column requested -type INTEGER -default 1725256800
+columns students.db -column cadence_reply -type INTEGER -default 1725343200
+columns students.db -column expires -type INTEGER
+

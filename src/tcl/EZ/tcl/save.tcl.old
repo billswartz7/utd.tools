@@ -1,0 +1,7 @@
+
+namespace eval twez {
+
+  proc auto_save {args} {
+  }
+
+}

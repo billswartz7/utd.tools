@@ -1,0 +1,79 @@
+
+
+ 
+ 
+
+
+
+module sctag_csr_ctl( 
+      fbctl_decc_scrd_corr_err_c8, fbctl_decc_scrd_uncorr_err_c8, 
+   mbctl_decc_spcfb_corr_err_c8, mbctl_decc_spcd_corr_err_c8, 
+   fbctl_decc_bscd_corr_err_c8, fbctl_decc_bscd_uncorr_err_c8, 
+   arbctl_data_ecc_active_c3, decc_data_ecc_active_c3, 
+   tagdp_l2_dir_map_on, mbctl_l2_dir_map_on, fbctl_l2_dir_map_on, 
+   arbctl_dbginit_l, mbctl_dbginit_l, fbctl_dbginit_l, 
+   tagctl_dbginit_l, tagdp_ctl_dbginit_l, csr_dbginit_l, 
+   wbctl_dbginit_l, so, csr_ctl_wr_en_c8, csr_erren_wr_en_c8, 
+   csr_errstate_wr_en_c8, csr_errinj_wr_en_c8, err_state_in_rw, 
+   err_state_in_mec, err_state_in_meu, err_state_in, csr_synd_wr_en, 
+   mux1_synd_sel, mux2_synd_sel, wr_enable_tid_c9, csr_tid_wr_en, 
+   csr_async_wr_en, set_async_c9, error_rw_en, diag_wr_en, 
+   mux1_addr_sel, mux2_addr_sel, csr_addr_wr_en, csr_rd_mux1_sel_c7, 
+   csr_rd_mux2_sel_c7, csr_rd_mux3_sel_c7, sctag_por_req, 
+   csr_bist_wr_en_c8, 
+      arbctl_csr_wr_en_c7, arbdp_word_addr_c6, rclk, si, se, rst_tri_en, 
+   vuad_error_c8, dir_error_c8, decc_spcd_corr_err_c8, 
+   decc_spcd_uncorr_err_c8, decc_scrd_corr_err_c8, 
+   decc_scrd_uncorr_err_c8, decc_spcfb_corr_err_c8, 
+   decc_spcfb_uncorr_err_c8, decc_bscd_corr_err_c8, 
+   decc_bscd_uncorr_err_c8, tag_error_c8, data_ecc_active_c3, 
+   l2_dir_map_on, dbginit_l, dram_scb_secc_err_d1, 
+   dram_scb_mecc_err_d1, fbctl_uncorr_err_c8, fbctl_corr_err_c8, 
+   fbctl_bsc_corr_err_c12, fbctl_ld64_fb_hit_c12, ev_uerr_r6, 
+   ev_cerr_r6, rdmard_uerr_c12, rdmard_cerr_c12, error_status_vec, 
+   error_status_veu, store_err_c8, arbdp_async_bit_c8, str_ld_hit_c7
+   );
+
+input		arbctl_csr_wr_en_c7;
+input	[2:0]	arbdp_word_addr_c6;	
+
+input		rclk;
+input		si, se;
+input		rst_tri_en;
+
+
+input		vuad_error_c8; input		dir_error_c8 ; 
+
+input   	decc_spcd_corr_err_c8 ;	input   	decc_spcd_uncorr_err_c8 ; input   	decc_scrd_corr_err_c8 ;input  		decc_scrd_uncorr_err_c8 ;input   	decc_spcfb_corr_err_c8 ; input   	decc_spcfb_uncorr_err_c8 ; input		decc_bscd_corr_err_c8; input		decc_bscd_uncorr_err_c8; 
+
+
+input		tag_error_c8;
+
+input	data_ecc_active_c3 ; output	fbctl_decc_scrd_corr_err_c8; output	fbctl_decc_scrd_uncorr_err_c8; output	mbctl_decc_spcfb_corr_err_c8; output	mbctl_decc_spcd_corr_err_c8 ; output	fbctl_decc_bscd_corr_err_c8; output	fbctl_decc_bscd_uncorr_err_c8; output	arbctl_data_ecc_active_c3; output	decc_data_ecc_active_c3; 
+input		l2_dir_map_on; 
+output		tagdp_l2_dir_map_on; output		mbctl_l2_dir_map_on; output		fbctl_l2_dir_map_on; 
+
+
+input		dbginit_l ;	output		arbctl_dbginit_l ;	output		mbctl_dbginit_l ;	output		fbctl_dbginit_l ;	output		tagctl_dbginit_l ;	output		tagdp_ctl_dbginit_l ;	output		csr_dbginit_l ;	output		wbctl_dbginit_l ;	
+input		dram_scb_secc_err_d1; input		dram_scb_mecc_err_d1; input   	fbctl_uncorr_err_c8 ; input   	fbctl_corr_err_c8 ; input		fbctl_bsc_corr_err_c12;  input		fbctl_ld64_fb_hit_c12;	 					
+input		ev_uerr_r6;input		ev_cerr_r6;input		rdmard_uerr_c12;
+input		rdmard_cerr_c12;
+
+input		error_status_vec;
+input		error_status_veu;
+ 
+input		store_err_c8;
+input		arbdp_async_bit_c8; 
+input	str_ld_hit_c7; output	so;
+output		csr_ctl_wr_en_c8 ;
+output		csr_erren_wr_en_c8;
+output		csr_errstate_wr_en_c8;
+output		csr_errinj_wr_en_c8;
+
+
+ 
+output          err_state_in_rw ;
+output          err_state_in_mec ;
+output          err_state_in_meu ;
+
+output  [:

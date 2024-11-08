@@ -1,0 +1,24 @@
+
+     
+
+module aurora_201_CHBOND_COUNT_DEC (
+
+    RX_STATUS,
+    CHANNEL_BOND_LOAD,
+    USER_CLK
+
+);
+
+ 
+
+    parameter CHANNEL_BOND_LOAD_CODE = 6bb;  
+
+
+    input   [5:0]   RX_STATUS;
+    output          CHANNEL_BOND_LOAD;
+
+    input           USER_CLK;
+
+
+
+    reg

@@ -1,0 +1,13 @@
+RCS
+*~
+build
+v1.0.0
+__pycache__
+tw
+autom4te.cache
+c
+c2
+*.o
+*.lo
+*.deps
+*.dSYM

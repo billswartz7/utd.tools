@@ -1,0 +1,32 @@
+#!/bin/sh
+
+# "$RCSfile: make_lib_dir,v $ $Revision: 1.30 $ $Date: 2012/05/23 16:11:40 $"
+
+RM=/bin/rm
+
+# ############## shell script to set up directory structure ################
+problem()
+{
+    echo ""
+    echo "ERROR[make_include_links]: script failure."
+    echo "Syntax:"
+    echo "       make_include_links directoryName"
+    echo ""
+    exit 1 ;
+}
+
+trap problem KILL
+trap problem INT
+trap problem QUIT
+
+if [ $# = 1 ] ; then
+  files=`ls $1/*.h`
+  for f in ${files} ; do
+    ln -s ${f}
+  done ;
+else
+  problem ;
+fi
+
+exit 0 ;
+

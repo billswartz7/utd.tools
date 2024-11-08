@@ -1,0 +1,1196 @@
+
+
+  
+module bw_io_cmos2_pad_dn(oe ,data ,to_core ,pad ,por_l, vddo );
+output		to_core ;
+input		oe ;
+input		data ;
+input		por_l ;
+inout		pad ;
+input  		vddo ;
+supply1		vdd ;
+supply0		vss ;
+ 
+wire		 ;
+wire		por ;
+wire		pad_up ;
+wire		net58 ;
+wire		net59 ;
+wire		pad_dn_l ;
+ 
+ 
+bw_io_cmos_edgelogic I2 (
+     .rcvr_data       (rcvr_data ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ;
+wire		 ;
+wire		pad_up ;
+wire		net58 ;
+wire		net59 ;
+wire		pad_dn_l ;
+ 
+ 
+bw_io_cmos_edgelogic I2 (
+     .rcvr_data       (rcvr_data ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ;
+wire		 ;
+wire		net58 ;
+wire		net59 ;
+wire		pad_dn_l ;
+ 
+ 
+bw_io_cmos_edgelogic I2 (
+     .rcvr_data       (rcvr_data ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ;
+wire		 ;
+wire		net59 ;
+wire		pad_dn_l ;
+ 
+ 
+bw_io_cmos_edgelogic I2 (
+     .rcvr_data       (rcvr_data ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ;
+wire		 ;
+wire		pad_dn_l ;
+ 
+ 
+bw_io_cmos_edgelogic I2 (
+     .rcvr_data       (rcvr_data ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ;
+wire		 ;
+ 
+ 
+bw_io_cmos_edgelogic I2 (
+     .rcvr_data       (rcvr_data ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ;
+ 
+ 
+bw_io_cmos_edgelogic  (
+     .rcvr_data       (rcvr_data ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ (
+     .rcvr_data       ( ),
+     .to_core         (to_core ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .to_core         ( ),
+     .se              (vss ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .se              ( ),
+     .bsr_up          (net58 ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .bsr_up          ( ),
+     .bsr_dn_l        (net59 ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .bsr_dn_l        ( ),
+     .pad_dn_l        (pad_dn_l ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .pad_dn_l        ( ),
+     .pad_up          (pad_up ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .pad_up          ( ),
+     .oe              (oe ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .oe              ( ),
+     .data            (data ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .data            ( ),
+     .por_l           (por_l ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .por_l           ( ),
+     .por             (por ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .por             ( ),
+     .bsr_data_to_core (vss ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .bsr_data_to_core ( ),
+     .bsr_mode        (vss ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .bsr_mode        ( ) );
+bw_io_hstl_drv I3 (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ) );
+bw_io_hstl_drv  (
+     .cbu             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ (
+     .cbu             ({ ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , } ),
+     .cbd             ({vss ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ } ),
+     .cbd             ({ ,vss ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vss ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vss ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , ,vdd } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ , } ),
+     .por             (por ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ } ),
+     .por             ( ),
+     .bsr_dn_l        (vss ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .bsr_dn_l        ( ),
+     .bsr_up          (vss ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .bsr_up          ( ),
+     .pad_dn_l        (pad_dn_l ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .pad_dn_l        ( ),
+     .sel_data_n      (vss ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .sel_data_n      ( ),
+     .pad_up          (pad_up ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .pad_up          ( ),
+     .pad             (pad ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .pad             ( ),
+     .vddo            (vddo) );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .vddo            () );
+bw_io_schmitt I41 (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+) );
+bw_io_schmitt  (
+     .vddo            (vddo ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ (
+     .vddo            ( ),
+     .out             (rcvr_data ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .out             ( ),
+     .in              (pad ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .in              ( ) );
+bw_io_cmos2_term_dn I18 (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ ) );
+bw_io_cmos2_term_dn  (
+     .vddo            (vddo ),
+     .out            (pad ) );
+     
+endmodule
+
+ (
+     .vddo            ( ),
+     .out            (pad ) );
+     
+endmodule
+
+ ),
+     .out            ( ) );
+     
+endmodule
+
+ ) );
+     
+endmodule
+

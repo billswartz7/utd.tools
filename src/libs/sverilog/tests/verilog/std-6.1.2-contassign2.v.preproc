@@ -1,0 +1,71 @@
+module select_bus(busout, bus0, bus1, bus2, bus3, enable, s);
+parameter n = 16;
+parameter Zee = 16bb;
+output [1:n] busout;
+input [1:n] bus0, bus1, bus2, bus3;
+input enable;
+input [1:2] s;
+tri [1:n] data;
+tri [1:n] busout = enable ? data : Zee;
+assign
+ = (s == 0) ? bus0 : Zee,
+data = (s == 1) ? bus1 : Zee,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ = ( == 0) ? bus0 : Zee,
+data = (s == 1) ? bus1 : Zee,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ == 0) ?  : Zee,
+data = (s == 1) ? bus1 : Zee,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ : ,
+data = (s == 1) ? bus1 : Zee,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+,
+ = (s == 1) ? bus1 : Zee,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ = ( == 1) ? bus1 : Zee,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ == 1) ?  : Zee,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ : ,
+data = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+,
+ = (s == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ = ( == 2) ? bus2 : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ == 2) ?  : Zee,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+ : ,
+data = (s == 3) ? bus3 : Zee;
+endmodule
+,
+ = (s == 3) ? bus3 : Zee;
+endmodule
+ = ( == 3) ? bus3 : Zee;
+endmodule
+ == 3) ?  : Zee;
+endmodule
+ : ;
+endmodule
+;
+endmodule

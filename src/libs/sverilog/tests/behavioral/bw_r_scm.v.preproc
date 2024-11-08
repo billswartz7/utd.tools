@@ -1,0 +1,27 @@
+
+
+
+ 
+
+module bw_r_scm (
+      stb_rdata_ramc, stb_ld_full_raw, stb_ld_partial_raw, 
+   stb_cam_hit_ptr, stb_cam_hit, stb_cam_mhit, 
+      stb_cam_data, stb_alt_wr_data, stb_camwr_data, stb_alt_wsel, 
+   stb_cam_vld, stb_cam_cm_tid, stb_cam_sqsh_msk, stb_cam_rw_ptr, 
+   stb_cam_wptr_vld, stb_cam_rptr_vld, stb_cam_rw_tid, 
+   stb_quad_ld_cam, rclk, rst_tri_en
+   ) ;	
+
+parameter NUMENTRIES = 32 ;				
+input	[44:15]		stb_cam_data ;	  input	[44:15]		stb_alt_wr_data ;	  input	[14:0]		stb_camwr_data ;  input			stb_alt_wsel ;
+input			stb_cam_vld ;	  input	[1:0]		stb_cam_cm_tid ;  input	[7:0]		stb_cam_sqsh_msk; 
+input 	[2:0]		stb_cam_rw_ptr ;  input 	     		stb_cam_wptr_vld ;input 	     		stb_cam_rptr_vld ;input	[1:0]		stb_cam_rw_tid ;  input 			stb_quad_ld_cam ; 
+input			rclk ;		  
+
+input			rst_tri_en ;
+
+output	[44:0]		stb_rdata_ramc ;  output	[7:0]		stb_ld_full_raw ; output	[7:0]		stb_ld_partial_raw ; output	[2:0]		stb_cam_hit_ptr ;
+output			stb_cam_hit ;	  output			stb_cam_mhit ;	  
+
+
+reg

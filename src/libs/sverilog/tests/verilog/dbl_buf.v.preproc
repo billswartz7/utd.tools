@@ -1,0 +1,3954 @@
+ 
+	                         
+
+
+module dbl_buf (
+      dout, vld, full, 
+      clk, rst_l, wr, rd, din
+   );
+      
+   parameter BUF_WIDTH = 64;         
+
+      input          clk;
+   input 	  rst_l;
+   
+      input 	  wr;
+   input 	  rd;
+   input [BUF_WIDTH-1:0] din;
+
+      output [BUF_WIDTH-1:0] dout;
+   output 	  vld;
+   output 	  full;
+   
+      wire 	  ;
+   wire 	  wr_buf1;
+   wire 	  buf0_vld;
+   wire 	  buf1_vld;
+   wire 	  buf1_older;
+   wire 	  rd_buf0;
+   wire 	  rd_buf1;
+   wire 	  rd_buf;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  buf0_vld;
+   wire 	  buf1_vld;
+   wire 	  buf1_older;
+   wire 	  rd_buf0;
+   wire 	  rd_buf1;
+   wire 	  rd_buf;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  buf1_vld;
+   wire 	  buf1_older;
+   wire 	  rd_buf0;
+   wire 	  rd_buf1;
+   wire 	  rd_buf;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  buf1_older;
+   wire 	  rd_buf0;
+   wire 	  rd_buf1;
+   wire 	  rd_buf;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  rd_buf0;
+   wire 	  rd_buf1;
+   wire 	  rd_buf;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  rd_buf1;
+   wire 	  rd_buf;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  rd_buf;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  en_vld0;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire 	  en_vld1;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire 	  ;
+   wire [BUF_WIDTH-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire [-1:0] buf0_obj;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+-1:0] ;
+   wire [BUF_WIDTH-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   wire [-1:0] buf1_obj;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+-1:0] ;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   // if both entries are empty, write to entry pointed to by the older pointer
+   // if only one entry is empty, then write to the empty entry (duh!)
+   assign 	  wr_buf0 = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   
+   
+         assign 	   = wr &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  &
+                            (buf1_vld | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ &
+                            ( | (~buf0_vld & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ | (~ & ~buf1_older));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ & ~));
+   assign         wr_buf1 = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+));
+   assign          = wr &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  &
+                            (buf0_vld | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ &
+                            ( | (~buf1_vld & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ | (~ & buf1_older));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ & ));
+
+   // read from the older entry
+   assign         rd_buf0 = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+));
+
+      assign          = rd & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  & ~buf1_older;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ & ~;
+   assign         rd_buf1 = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   assign          = rd & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  & buf1_older;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ & ;
+
+   // flip older pointer when an entry is read
+   assign 	  rd_buf = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+
+      assign 	   = rd & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  & (buf0_vld | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ & ( | buf1_vld);
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ | );
+   dffrle_ns buf1_older_ff (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+);
+   dffrle_ns  (.din(~buf1_older),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ (.din(~),
+			    .rst_l(rst_l),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			    .rst_l(),
+                            .en(rd_buf),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+                            .en(),
+			    .clk(clk),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			    .clk(),
+			    .q(buf1_older));
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			    .q());
+
+   // set valid bit for writes and reset for reads
+   assign         en_vld0 = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+));
+
+      assign          = wr_buf0 | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  | rd_buf0;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ | ;
+   assign         en_vld1 = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   assign          = wr_buf1 | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  | rd_buf1;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ | ;
+
+   // the actual buffers
+   dffrle_ns buf0_vld_ff (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+
+      dffrle_ns  (.din(wr_buf0),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ (.din(),
+			  .rst_l(rst_l),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .rst_l(),
+			  .en(en_vld0),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .en(),
+			  .clk(clk),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .clk(),
+			  .q(buf0_vld));
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .q());
+
+   dffrle_ns buf1_vld_ff (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+));
+
+   dffrle_ns  (.din(wr_buf1),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ (.din(),
+			  .rst_l(rst_l),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .rst_l(),
+			  .en(en_vld1),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .en(),
+			  .clk(clk),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .clk(),
+			  .q(buf1_vld));
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+			  .q());
+
+   dffe_ns #(BUF_WIDTH) buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+));
+
+   dffe_ns #() buf0_obj_ff (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+)  (.din(din),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ (.din(),
+				     .en(wr_buf0),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+				     .en(),
+                                     .clk(clk),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+                                     .clk(),
+				     .q(buf0_obj));
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+				     .q());
+   
+   dffe_ns #(BUF_WIDTH) buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+));
+   
+   dffe_ns #() buf1_obj_ff (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+)  (.din(din),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ (.din(),
+				     .en(wr_buf1),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+				     .en(),
+                                     .clk(clk),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+                                     .clk(),
+				     .q(buf1_obj));
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+),
+				     .q());
+   
+   // mux out the older entry
+   assign         dout = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+));
+   
+      assign          = (buf1_older) ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ = () ? buf1_obj:buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+) ? :buf0_obj;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+:;
+
+   assign 	  vld = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+
+   assign 	   = buf0_vld | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  | buf1_vld;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ | ;
+   assign 	  full = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   assign 	   = buf0_vld & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ =  & buf1_vld;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+ & ;
+   
+	  
+endmodule // dbl_buf
+
+
+
+// Local Variables:
+// verilog-library-directories:(".")
+// End:
+
+
+
+
+
+
+
+;
+   
+	  
+endmodule 
+
+
+
+
+
+
+
+
+

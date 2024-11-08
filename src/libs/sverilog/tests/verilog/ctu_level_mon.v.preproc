@@ -1,0 +1,15 @@
+
+
+module ctu_level_mon (
+ hi,
+ lo,
+ mon_en,
+ mon_num,
+ off_on
+
+);
+
+
+  input hi;     input lo;     input mon_en;     input [31:0] mon_num;     input off_on;   
+
+always

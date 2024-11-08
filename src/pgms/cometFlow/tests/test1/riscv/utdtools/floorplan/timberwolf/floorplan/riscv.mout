@@ -1,0 +1,266 @@
+
+Macro cell Placement and Routing/Floorplanning Program
+
+ifp version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:30:04 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+ifp switches:
+	Messages will be redirected to screen
+	Global routing files will be saved for each execution
+	Graphics mode on
+	ifp will inherit window
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 1.2 1 1.2 1
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 1.2
+default_block_yspace       : 1
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 1352977730
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 10.00
+script                     : /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf/riscv.fdo (auto detected)
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 1.2
+                               y: 1
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% 
+iTools System Netlist Simplifier
+
+simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:38 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+Memory status ->   0KB in use.
+
+
+simplify switches:
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Memory status ->1024KB in use.
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Memory status ->2048KB in use.
+Read 3000 cell instances so far...
+Memory status ->3072KB in use.
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+Memory status ->4096KB in use.
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+
+simplify terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+
+The rand generator seed was: 1352977730
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 3.15e+08
+mean cell area : 3.15e+08      std deviation cell area : 0.00e+00
+mean short side : 1.75e+04      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 788040
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:887.7    bdylength:887.7
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 159091
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :2221.8
+   overlap penalty     :435547.2
+   lapFactor * overlap :147.6
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :2369.4
+Wirelength:
+	All nets             :44437
+	Limited nets         :44437
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:875.6 t:900
+   xspan     = 875.6
+   yspan     = 900
+   core area = 7.88e+05
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :2257.3
+   overlap penalty     :435547.2
+   lapFactor * overlap :147.6
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :2404.9
+Wirelength:
+	All nets             :45146
+	Limited nets         :45146
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:887.8 t:900
+   xspan     = 887.8
+   yspan     = 900
+   core area = 7.99e+05
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+
+Runtime Statistics
+-------------------------
+Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+Machine type: Darwin
+Date        : Tue Oct 22 13:59:52 2019
+
+User    time:   0.2 seconds
+System  time:   0.1 seconds
+Elapsed time:   3.8 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =    5347328B (5222KB)
+Virtual memory size              =    4246528K (4147MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =     5209856 (5087KB)
+Current heap size                =     5055440 (4936KB)
+
+Major page faults = 772
+Minor page faults = 3418
+Swaps = 0
+
+Input blocks = 0
+Output blocks = 8
+
+Context switch (voluntary) = 1344
+Context switch (involuntary) = 257
+
+
+ifp terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+

@@ -1,0 +1,58 @@
+***************
+*** 631,641 ****
+  	    }
+  	    i++;
+  	}
+! 	treePtr->startEndCount = count;
+  	treePtr->startEnd = ckrealloc(treePtr->startEnd,
+! 		sizeof(TkTextLine *) * count);
+  	treePtr->startEndRef = ckrealloc(treePtr->startEndRef,
+! 		sizeof(TkText *) * count);
+      }
+      if ((action & TEXT_ADD_REFS)
+  	    && (textPtr->start != NULL || textPtr->end != NULL)) {
+--- 633,647 ----
+  	    }
+  	    i++;
+  	}
+! 	eff_alloc = count ;
+! 	if( eff_alloc < 1 ){
+! 	  eff_alloc = 1 ;
+! 	}
+! 	treePtr->startEndCount = eff_alloc;
+  	treePtr->startEnd = ckrealloc(treePtr->startEnd,
+! 		sizeof(TkTextLine *) * eff_alloc );
+  	treePtr->startEndRef = ckrealloc(treePtr->startEndRef,
+! 		sizeof(TkText *) * eff_alloc );
+      }
+      if ((action & TEXT_ADD_REFS)
+  	    && (textPtr->start != NULL || textPtr->end != NULL)) {
+***************
+*** 649,659 ****
+  	}
+  
+  	count = treePtr->startEndCount;
+  
+  	treePtr->startEnd = ckrealloc(treePtr->startEnd,
+! 		sizeof(TkTextLine *) * count);
+  	treePtr->startEndRef = ckrealloc(treePtr->startEndRef,
+! 		sizeof(TkText *) * count);
+  
+  	if (textPtr->start != NULL) {
+  	    count--;
+--- 655,669 ----
+  	}
+  
+  	count = treePtr->startEndCount;
++ 	eff_alloc = count ;
++ 	if( eff_alloc < 1 ){
++ 	  eff_alloc = 1 ;
++ 	}
+  
+  	treePtr->startEnd = ckrealloc(treePtr->startEnd,
+! 		sizeof(TkTextLine *) * eff_alloc);
+  	treePtr->startEndRef = ckrealloc(treePtr->startEndRef,
+! 		sizeof(TkText *) * eff_alloc);
+  
+  	if (textPtr->start != NULL) {
+  	    count--;

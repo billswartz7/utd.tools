@@ -1,0 +1,212 @@
+#!/bin/sh
+# This comment make this script an executable.  Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos ICtclsh -i -v -do ${HOME}/bin/exam_versions -A -- ${0+"$@"}
+
+global env
+global argv
+global argc
+
+puts stderr "argc: $argc argv: $argv"
+
+namespace eval utd {
+
+  proc read_latex { filename version args } {
+    variable questionS
+
+    set routine "utd::read_latex"
+    if {$filename == ""} {
+      icmessage errmsg $routine "No file name specified.\n"
+      return ;
+    }
+    set f [open $filename "r"]
+    if {$f == ""} {
+      icmessage errmsg $routine "Could not open file:$filename\n"
+      return ;
+    }
+    set file_data [read $f]
+    close $f
+
+    set ext [file extension $filename]
+    if {$ext == ".tex"} {
+      set master [file root $filename]
+    } elseif {$ext == ".tex.1"} {
+      set master [file root $filename]
+      set ext .tex
+    } else {
+      set master ""
+    }
+
+    set count 1
+    while {1} {
+      if {$master != ""} {
+	if {$count == 1} {
+	  set fname "${master}${version}${ext}"
+	  if {!([file exists $fname])} {
+	    break ;
+	  }
+	  set fname "${master}${version}${ext}.${count}"
+	} else {
+	  set fname "${master}${version}${ext}.${count}"
+	}
+      } else {
+	set fname "${filename}.v${version}.${count}"
+      }
+      if {!([file exists $fname])} {
+	break ;
+      }
+      incr count
+    }
+    icmessage imsg $routine "Creating file:$fname\n"
+    set fout [open $fname "w"]
+    if {$fout == ""} {
+      icmessage errmsg $routine "Could not open file:$fname\n"
+      return ;
+    }
+
+    set vcount [find_version_count $version]
+    icmessage imsg $routine "This is choice: $vcount\n"
+
+    set lines [split $file_data "\r\n"]
+    set lcount 0
+    foreach line $lines {
+      set startidx 0
+      set outline true
+      incr lcount
+      while {1} {
+	set idx [string first utdchoice $line $startidx]
+	if {$idx >= 0} {
+	  set outline false
+	  icmessage imsg $routine "found match ($lcount:$idx) : $line\n"
+	  set intro [expr {$idx-1}]
+	  puts -nonewline $fout "[string range $line $startidx $intro]"
+	  # Now find the index of the opening brace
+	  set open_brace_idx [string first "{" $line $idx]
+	  set close_brace_idx [string first "}" $line $idx]
+	  if {($open_brace_idx >= 0) && ($close_brace_idx >= 0)} {
+	    set after_options [expr {$close_brace_idx + 1}]
+	    incr open_brace_idx
+	    incr close_brace_idx -1
+	    set options [string range $line $open_brace_idx $close_brace_idx]
+	    puts stderr "options : $options $open_brace_idx:$close_brace_idx"
+	    set choice [get_choice $options $vcount]
+	    puts -nonewline $fout "$choice"
+	    puts $fout "[string range $line $after_options end]"
+	  }
+	}
+	set idx [string first utd2choice $line $startidx]
+	if {$idx >= 0} {
+	  set outline false
+	  icmessage imsg $routine "found match ($lcount:$idx) : $line\n"
+	  set intro [expr {$idx-1}]
+	  puts -nonewline $fout "[string range $line $startidx $intro]"
+	  # Now find the index of the opening brace
+	  set open_brace_idx [string first "{" $line $idx]
+	  set close_brace_idx [string first "}" $line $idx]
+	  if {($open_brace_idx >= 0) && ($close_brace_idx >= 0)} {
+	    set after_options [expr {$close_brace_idx + 1}]
+	    incr open_brace_idx
+	    incr close_brace_idx -1
+	    set options [string range $line $open_brace_idx $close_brace_idx]
+	    puts stderr "options : $options $open_brace_idx:$close_brace_idx"
+	    set choice [get_2choice $options $vcount]
+	    puts -nonewline $fout "$choice"
+	    puts $fout "[string range $line $after_options end]"
+	  }
+	}
+	set idx [string first utd3choice $line $startidx]
+	if {$idx >= 0} {
+	  set outline false
+	  icmessage imsg $routine "found match ($lcount:$idx) : $line\n"
+	  set intro [expr {$idx-1}]
+	  puts -nonewline $fout "[string range $line $startidx $intro]"
+	  # Now find the index of the opening brace
+	  set open_brace_idx [string first "\[" $line $idx]
+	  set close_brace_idx [string first "\]" $line $idx]
+	  if {($open_brace_idx >= 0) && ($close_brace_idx >= 0)} {
+	    set after_options [expr {$close_brace_idx + 1}]
+	    incr open_brace_idx
+	    incr close_brace_idx -1
+	    set options [string range $line $open_brace_idx $close_brace_idx]
+	    puts stderr "options : $options $open_brace_idx:$close_brace_idx"
+	    set choice [get_3choice $options $vcount]
+	    puts -nonewline $fout "$choice"
+	    puts $fout "[string range $line $after_options end]"
+	  }
+	}
+	break ;
+      }
+
+      if {$outline} {
+	puts $fout "$line"
+      }
+    }
+    close $fout
+    return $fname
+  }
+
+  proc find_version_count {version} {
+    set count [string map {A 0 B 1 C 2 D 3 E 4 F 5} $version]
+    return $count
+  }
+
+  proc get_choice {choices option} {
+    set vals [split $choices ","]
+    set len [llength $vals]
+    puts stderr "vals: $vals $len"
+    set val [lindex $vals $option]
+    return $val
+  }
+  proc get_2choice {choices option} {
+    set vals [split $choices "@"]
+    set len [llength $vals]
+    puts stderr "vals: $vals $len"
+    set val [lindex $vals $option]
+    return $val
+  }
+  proc get_3choice {choices option} {
+    set vals [split $choices "@"]
+    set len [llength $vals]
+    puts stderr "vals: $vals $len"
+    set val [lindex $vals $option]
+    return $val
+  }
+
+}
+
+global env
+global argv
+set filename ""
+set args $argv
+set num_args [llength $args]
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  if {$arg_el == "debug" } {
+    set debug_flag on
+    puts stdout "debug mode enabled.\n"
+    flush stdout
+  } elseif {($arg_el == "help")||($arg_el == "-help")||($arg_el == "--help") } {
+    icmessage imsg null "Usage:\n"
+    icmessage imsg null "  exam_versions <LatexFilename> <Version>\n\n"
+    icmessage imsg null "Note: this program calls random exam\n\n"
+    exit 0
+  } elseif {$filename == ""} {
+    set filename $arg_el
+  } else {
+    set version $arg_el
+  }
+}
+
+
+set fname [utd::read_latex $filename $version]
+icmessage "created version: $fname\n"
+if {$version != "A"} {
+  set pgm_name [file join $env(HOME) bin random_exam]
+  puts stderr "system: $pgm_name $fname"
+  exec $pgm_name $fname
+  file delete -force $fname
+  if {[file exists ${fname}.1]} {
+    file rename ${fname}.1 $fname
+  }
+}
+icexit
+

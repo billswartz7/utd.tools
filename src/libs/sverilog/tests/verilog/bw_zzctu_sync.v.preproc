@@ -1,0 +1,1316 @@
+
+
+module bw_zzctu_sync (
+so, out, sob,
+d, si, sib, pll_out, pll_out_l, se
+);
+
+
+input d;
+input si;
+input sib;
+input pll_out;
+input pll_out_l;
+input se;
+output so;
+output sob;
+output out;
+
+wire , ql2;
+wire so1, so2;
+wire pll_out_inv;
+
+
+    assign pll_out_inv = ~pll_out;
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql1),
+          .d(d),
+          .ck(pll_out),
+          .sd(si),
+          .so(so1),
+      );
+*/
+     bw_u1_soffi_4x u_I0(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+, ;
+wire so1, so2;
+wire pll_out_inv;
+
+
+    assign pll_out_inv = ~pll_out;
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql1),
+          .d(d),
+          .ck(pll_out),
+          .sd(si),
+          .so(so1),
+      );
+*/
+     bw_u1_soffi_4x u_I0(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+;
+wire , so2;
+wire pll_out_inv;
+
+
+    assign pll_out_inv = ~pll_out;
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql1),
+          .d(d),
+          .ck(pll_out),
+          .sd(si),
+          .so(so1),
+      );
+*/
+     bw_u1_soffi_4x u_I0(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+, ;
+wire pll_out_inv;
+
+
+    assign pll_out_inv = ~pll_out;
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql1),
+          .d(d),
+          .ck(pll_out),
+          .sd(si),
+          .so(so1),
+      );
+*/
+     bw_u1_soffi_4x u_I0(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+;
+wire ;
+
+
+    assign pll_out_inv = ~pll_out;
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql1),
+          .d(d),
+          .ck(pll_out),
+          .sd(si),
+          .so(so1),
+      );
+*/
+     bw_u1_soffi_4x u_I0(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+;
+
+
+    assign  = ~pll_out;
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql1),
+          .d(d),
+          .ck(pll_out),
+          .sd(si),
+          .so(so1),
+      );
+*/
+     bw_u1_soffi_4x u_I0(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+ = ~;
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql1),
+          .d(d),
+          .ck(pll_out),
+          .sd(si),
+          .so(so1),
+      );
+*/
+     bw_u1_soffi_4x u_I0(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+;
+
+ 
+     bw_u1_soffi_4x (/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql1),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+(
+			 			 .q_l		(),			 // Templated
+			 .so		(so),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			 .so		(),			 // Templated
+			 // Inputs
+			 .ck		(pll_out),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			 			 .ck		(),		 // Templated
+			 .d		(d),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),		 			 .d		(),			 // Templated
+			 .se		(se),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			 .se		(),
+			 .sd		(si));			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),
+			 .sd		());			 // Templated
+
+ /* bw_u1_soffi_4x AUTO_TEMPLATE (
+          .q_l(ql2),
+          .d(ql1),
+          .ck(pll_out_inv),
+          .sd(so1),
+          .so(so2),
+      );
+
+*/
+     bw_u1_soffi_4x u_I1(/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+));			 
+ 
+     bw_u1_soffi_4x (/*AUTOINST*/
+			 // Outputs
+			 .q_l		(ql2),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+(
+			 			 .q_l		(),			 // Templated
+			 .so		(sob1),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			 .so		(),			 // Templated
+			 // Inputs
+			 .ck		(pll_out_inv),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			 			 .ck		(),		 // Templated
+			 .d		(ql1),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),		 			 .d		(),			 // Templated
+			 .se		(se),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			 .se		(),
+			 .sd		(sib));			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),
+			 .sd		());			 // Templated
+
+ /* bw_u1_soff_8x AUTO_TEMPLATE (
+          .q(out),
+          .d(ql2),
+          .ck(pll_out_l),
+          .sd(so2),
+          .so(so),
+      );
+
+*/
+
+     bw_u1_soff_8x u_I2(/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+));			 
+ 
+
+     bw_u1_soff_8x (/*AUTOINST*/
+			// Outputs
+			.q		(out),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+(
+						.q		(),			 // Templated
+			.so		(sob ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			.so		( ),			 // Templated
+			// Inputs
+			.ck		(pll_out_l),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+ ),			 						.ck		(),		 // Templated
+			.d		(ql2),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),		 			.d		(),			 // Templated
+			.se		(se),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),			 			.se		(),
+			.sd		(sob1));			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+),
+			.sd		());			 // Templated
+
+
+endmodule
+
+// Local Variables:
+// verilog-library-directories:(".")
+// verilog-library-files:("../../../common/rtl/u1.behV")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+
+
+));			 
+
+endmodule
+
+
+
+

@@ -1,0 +1,182 @@
+
+ 
+
+  
+  
+
+      
+module bw_pll (
+
+
+  pll_sys_clk ,        pll_bypass ,         pll_arst_l ,         l2clk ,              pll_clamp_fltr ,     pll_div1 ,                                pll_div2 ,                                                     pll_div3 ,                                vdd_pll ,            pll_char_in ,        testmode ,           vreg_seldb_l ,     
+  pll_raw_clk_out ,    pll_vco_out ,        pll_clk_out ,        pll_clk_out_l ,      pll_char_out       );
+
+  input [1:0] pll_sys_clk;
+  input       pll_bypass;
+  input       pll_arst_l;
+  input       l2clk;
+  input       pll_clamp_fltr;
+  input [5:0] pll_div1;
+  input [5:0] pll_div2;
+  input [5:0] pll_div3;
+  input       vdd_pll;
+  input       pll_char_in;
+  input       testmode;
+  input       vreg_seldb_l;
+ 
+  output       pll_raw_clk_out;
+  output       pll_vco_out;
+  output       pll_clk_out;
+  output       pll_clk_out_l;
+  output [1:0] pll_char_out;
+
+
+  wire  [4:0]  ;  // driven by env. meaningful range is 4 to 24
+  reg   [7:0] jmhz ;  // computed here, to be used by env
+
+  integer     ref_clk_last_edge ;
+  integer     ref_clk_this_edge ;
+  integer     ref_clk_width ;
+  reg         ref_clk_vld ;
+
+  reg         slow_ext_clk_reg ;
+
+  reg         fast_ext_clk_reg ;
+  integer     fast_ext_clk_jdiv;
+  integer     fast_ext_clk_width;
+
+  reg         fast_int_clk_reg ;
+  integer     fast_int_clk_jdiv ;
+  integer     fast_int_clk_width ;
+  integer     fast_int_clk_residue ;
+
+  reg         osc_reg0;
+  reg         osc_reg1;
+  reg         osc_reg2;
+  reg         osc_reg3;
+  reg         osc_out;
+   
+  integer     osc_dly0;
+  integer     osc_dly1;
+  integer     osc_dly2;
+  integer     osc_dly3;
+
+  reg         osc_dly0_set;
+  reg         osc_dly1_set;
+  reg         osc_dly2_set;
+  reg         osc_dly3_set;
+
+  reg         vco_reg;
+  reg         vco_off;
+  wire        vco_out;
+
+  integer     freq_step_ctr;
+  wire        freq_locked ;
+  reg         phase_locked;
+  reg         edge_locked;
+  integer     phase_match_ctr;
+  integer     sync_errors;
+
+  wire        ref_clk  = pll_sys_clk[0] ;
+  wire        feedback = l2clk ; 
+
+  integer     beg_time, end_time ;
+
+  wire        pll_clk_free ;
+
+  wire        pll_lock = freq_locked && phase_locked &&
+                         (phase_match_ctr>`PHASE_LOCK_THRESHOLD) &&
+                         (sync_errors==0) ;
+
+  reg         pll_raw_clk_reg ;
+   
+  // PLL Characterization Ports
+  assign pll_char_out[0] =  pll_char_in; // Like this to check connections
+  assign pll_char_out[1] = ~pll_char_in; // Like this to check connections
+
+  // PLL Bypass Mux
+  assign pll_clk_out   =  pll_bypass ? pll_sys_clk[0] : vco_out ;
+  assign pll_clk_out_l = ~pll_clk_out;
+
+  assign pll_clk_free  =  pll_bypass ? fast_ext_clk_reg : osc_out ;
+   
+  assign pll_vco_out     = vco_out;
+  assign pll_raw_clk_out = pll_raw_clk_reg ;
+
+  initial pll_raw_clk_reg = 1'b0 ; 
+
+  always @(pll_sys_clk[0]) begin
+    #(`RAW_CLK_OUTPUT_DLY)
+    pll_raw_clk_reg = pll_sys_clk[0];
+  end
+
+//assign #(`RAW_CLK_OUTPUT_DLY) pll_raw_clk_out = pll_sys_clk[0];
+   
+  // slow_ext_clk is a free running clock whose frequency is specified by
+  // plusarg. This signal is not used internally, but is expected to be
+  // tapped externally to drive reference clk
+  initial begin
+    if (! $value$plusargs("jmhz=%d", jmhz)) jmhz = `DEFAULT_JMHZ ;
+    ref_clk_width = 1000000/(2*jmhz) ; // ps
+    slow_ext_clk_reg = 1'b0 ;
+    forever begin
+      #(ref_clk_width) slow_ext_clk_reg = ~slow_ext_clk_reg ; 
+    end
+  end
+
+  // fast_ext_clk is a free running multiple of slow_ext_clk.
+  // It is generated such that exactly 'jdiv' periods of it fit within each
+  // of the high or the low windows of slow_ext_clk. 
+  // 'jdiv' is a dynamic value which can be driven by the environment at any
+  // time, but its value is sampled on every rising edge of slow_ext_clock.
+  // Since the period of slow_ext_clk may not divisible by jdiv, the low
+  // period of fast_ext_clk just before an edge of slow_ext_clk is stretched
+  // if necessary, so that an edge of slow_ext_clk is always coincident with
+  // a rising edge of fast_ext_clk.
+  // Note that this signal is not used internally. It is expected to be
+  // tapped externally to drive vera interface.
+  initial begin
+    fast_ext_clk_jdiv = `DEFAULT_JDIV ;
+    forever begin
+      @(jdiv) @(negedge slow_ext_clk_reg) #1
+      fast_ext_clk_jdiv = jdiv ;
+    end    
+  end
+
+  initial begin
+    fast_ext_clk_reg = 1'b0 ;
+    forever begin
+      @(slow_ext_clk_reg)
+      fast_ext_clk_reg = 1'b1 ;
+      fast_ext_clk_width = ref_clk_width/(2*fast_ext_clk_jdiv) ;
+      repeat ((2*fast_ext_clk_jdiv)-1)
+        #(fast_ext_clk_width) fast_ext_clk_reg = ~fast_ext_clk_reg ;
+    end
+  end
+
+  // ref_clk is expected to be driven externally such that its shape exactly
+  // matches that of ext_slow_clk (adding a delay is acceptable).
+  // The following logic continuously measures period of ref_clk by comparing
+  // its width to the expected value.
+  initial begin
+    ref_clk_vld = 1'b0 ;
+    @(posedge ref_clk) ref_clk_last_edge = $time ;
+    @(negedge ref_clk) ref_clk_this_edge = $time ;
+    forever begin
+      @(ref_clk)
+      ref_clk_last_edge = ref_clk_this_edge ;
+      ref_clk_this_edge = $time ;
+      if ((ref_clk_this_edge-ref_clk_last_edge) == ref_clk_width)
+        ref_clk_vld = 1'b1 ; 
+      else
+        ref_clk_vld = 1'b0 ;
+    end
+  end
+
+  // fast_int_clk is similar to fast_ext_clk except that it is synchronized
+  // to ref_clk. It runs at twice the steady state frequency of PLL.
+  initial begin
+    fast_int_clk_jdiv = `DEFAULT_JDIV ;
+    forever begin
+      @(jdiv) @(negedge ref_clk) #1
+      fast_int_clk_jdiv = ;    reg

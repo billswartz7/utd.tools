@@ -1,0 +1,3 @@
+
+problem1 :
+	g++ -o problem1 problem1.cpp -lm

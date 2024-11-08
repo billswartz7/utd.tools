@@ -1,0 +1,23 @@
+
+
+  
+
+module bw_io_schmitt(
+
+     out,
+    in, 
+    vddo );
+
+output	out;
+input	in;
+inout	vddo;
+
+wire  = in;
+
+endmodule
+ = ;
+
+endmodule
+;
+
+endmodule

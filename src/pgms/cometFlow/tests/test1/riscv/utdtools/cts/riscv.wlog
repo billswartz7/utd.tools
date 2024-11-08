@@ -1,0 +1,18 @@
+# Message Suppression Mechanism
+# Generated @ Tue Oct 22 14:00:54 2019 by itranslate
+# Message_Identifier  Output_Limit      Message_Occurrence    Message_type   Example_string
+TWMC/config/area -1 4 MSG "\nTotal cell area : 3.15e+08\n"
+TWMC/config/core -1 1 MSG "bdxlength:887.7 bdylength:887.7\n"
+TWMC/cost/core -1 10 MSG "\n\nCORE Bounding Box: l:0 r:0 b:875.6 t:90..."
+TWMC/cost/print -1 16 MSG "\nFINAL PLACEMENT RESULTS AFTER VIOLATION ..."
+TWMC/main/cost -1 2 MSG "\n\n\nTHE ROUTE COST OF THE CURRENT PLACEMEN"
+TWMC/main/rand -1 1 MSG "\nThe rand generator seed was: 1352977730\n"
+TWMC/makebins -1 2 MSG "maxBinXG automatically set to:3\n"
+TWMC/netstats -1 5 MSG "The number of nets with 2 pins is 251\n"
+TWMC/readpar/tracks -1 1 MSG "default.tracks.per.channel: 0\n"
+TWMC/twstats -1 5 MSG "\nStatistics:\n"
+TWMC/wirecosts -1 8 MSG "Wirelength:\n"
+
+# Note: to suppress all messages of a given identifier
+# use 0 as a limit.  To allow unlimited number of messages
+# set limit to -1.  The default output is 100 messages.

@@ -1,0 +1,76 @@
+
+     
+
+module aurora_201_SYM_DEC
+(
+        RX_PAD,
+    RX_PE_DATA,
+    RX_PE_DATA_V,
+    RX_SCP,
+    RX_ECP,
+
+
+        DO_WORD_ALIGN,
+
+    RX_SP,
+    RX_SPA,
+    RX_NEG,
+
+
+        GOT_A,
+    GOT_V,
+
+
+        RX_DATA,
+    RX_CHAR_IS_K,
+    RX_CHAR_IS_COMMA,
+
+
+        USER_CLK,
+    RESET
+);
+
+ 
+
+    parameter       K_CHAR_0        =   4hh;
+    parameter       K_CHAR_1        =   4hh;
+    parameter       SP_DATA_0       =   4hh;
+    parameter       SP_DATA_1       =   4hh;
+    parameter       SPA_DATA_0      =   4hh;
+    parameter       SPA_DATA_1      =   4hh;
+    parameter       SP_NEG_DATA_0   =   4hh;
+    parameter       SP_NEG_DATA_1   =   4hh;
+    parameter       SPA_NEG_DATA_0  =   4hh;
+    parameter       SPA_NEG_DATA_1  =   4hh;
+    parameter       PAD_0           =   4hh;
+    parameter       PAD_1           =   4hh;
+    parameter       SCP_0           =   4hh;
+    parameter       SCP_1           =   4hh;
+    parameter       SCP_2           =   4hh;
+    parameter       SCP_3           =   4hh;
+    parameter       ECP_0           =   4hh;
+    parameter       ECP_1           =   4hh;
+    parameter       ECP_2           =   4hh;
+    parameter       ECP_3           =   4hh;
+    parameter       A_CHAR_0        =   4hh;
+    parameter       A_CHAR_1        =   4hh;
+    parameter       VER_DATA_0      =   4hh;
+    parameter       VER_DATA_1      =   4hh;
+
+
+
+        output          RX_PAD;               output  [0:15]  RX_PE_DATA;           output          RX_PE_DATA_V;         output          RX_SCP;               output          RX_ECP;           
+
+        input           DO_WORD_ALIGN;    
+    output          RX_SP;                output          RX_SPA;               output          RX_NEG;           
+
+        output  [0:1]   GOT_A;                output          GOT_V;            
+
+        input   [15:0]  RX_DATA;              input   [1:0]   RX_CHAR_IS_K;         input   [1:0]   RX_CHAR_IS_COMMA; 
+
+        input           USER_CLK;             input           RESET;
+
+
+
+
+    reg

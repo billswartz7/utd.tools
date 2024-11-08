@@ -1,0 +1,62 @@
+module sctag_pcx_rptr_1 (
+      sig_buf, 
+      sig
+   );
+
+
+
+output  [163:0] sig_buf;
+input   [163:0] sig;
+
+
+assign    = sig;
+
+
+
+//output                   pcx_sctag_data_rdy_px1_buf;
+//output [`PCX_WIDTH-1:0]  pcx_sctag_data_px2_buf;   // pcx to sctag packet
+//output                   pcx_sctag_atm_px1_buf; // indicates that the current packet is atm with the next
+//output			sctag_pcx_stall_pq_buf;
+
+//input                   pcx_sctag_data_rdy_px1;
+//input [`PCX_WIDTH-1:0]  pcx_sctag_data_px2;   // pcx to sctag packet
+//input                   pcx_sctag_atm_px1; // indicates that the current packet is atm with the next
+//input			sctag_pcx_stall_pq;
+
+
+//assign	pcx_sctag_data_rdy_px1_buf = pcx_sctag_data_rdy_px1; 
+//assign	pcx_sctag_data_px2_buf = pcx_sctag_data_px2;
+//assign	pcx_sctag_atm_px1_buf = pcx_sctag_atm_px1;
+//assign	sctag_pcx_stall_pq_buf = sctag_pcx_stall_pq;
+
+endmodule
+  = ;
+
+
+
+//output                   pcx_sctag_data_rdy_px1_buf;
+//output [`PCX_WIDTH-1:0]  pcx_sctag_data_px2_buf;   // pcx to sctag packet
+//output                   pcx_sctag_atm_px1_buf; // indicates that the current packet is atm with the next
+//output			sctag_pcx_stall_pq_buf;
+
+//input                   pcx_sctag_data_rdy_px1;
+//input [`PCX_WIDTH-1:0]  pcx_sctag_data_px2;   // pcx to sctag packet
+//input                   pcx_sctag_atm_px1; // indicates that the current packet is atm with the next
+//input			sctag_pcx_stall_pq;
+
+
+//assign	pcx_sctag_data_rdy_px1_buf = pcx_sctag_data_rdy_px1; 
+//assign	pcx_sctag_data_px2_buf = pcx_sctag_data_px2;
+//assign	pcx_sctag_atm_px1_buf = pcx_sctag_atm_px1;
+//assign	sctag_pcx_stall_pq_buf = sctag_pcx_stall_pq;
+
+endmodule
+;
+
+
+
+
+
+
+
+endmodule

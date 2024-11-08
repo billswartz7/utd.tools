@@ -1,0 +1,606 @@
+
+module test_stub_scan (
+mux_drive_disable, mem_write_disable, sehold, se, testmode_l, 
+mem_bypass, so_0, so_1, so_2, 
+ctu_tst_pre_grst_l, arst_l, global_shift_enable, 
+ctu_tst_scan_disable, ctu_tst_scanmode, ctu_tst_macrotest, 
+ctu_tst_short_chain, long_chain_so_0, short_chain_so_0, 
+long_chain_so_1, short_chain_so_1, long_chain_so_2, short_chain_so_2
+);
+
+   input        ctu_tst_pre_grst_l;
+   input        arst_l;                   input        global_shift_enable;
+   input        ctu_tst_scan_disable;     input        ctu_tst_scanmode;
+   input 	ctu_tst_macrotest;
+   input 	ctu_tst_short_chain;
+   input 	long_chain_so_0;
+   input 	short_chain_so_0;
+   input 	long_chain_so_1;
+   input 	short_chain_so_1;
+   input 	long_chain_so_2;
+   input 	short_chain_so_2;
+   
+   output 	mux_drive_disable;
+   output 	mem_write_disable;
+   output 	sehold;
+   output 	se;
+   output 	testmode_l;
+   output 	mem_bypass;
+   output 	so_0;
+   output 	so_1;
+   output 	so_2;
+
+   wire         ;
+   wire         short_chain_en;
+   wire         short_chain_select;
+
+   // INTERNAL CLUSTER CONNECTIONS
+   //
+   // Scan Chain Hookup
+   // =================
+   //
+   // Scan chains have two configurations: long and short.
+   // The short chain is typically the first tenth of the
+   // long chain. The short chain should contain memory
+   // collar flops for deep arrays. The CTU determines
+   // which configuration is selected. Up to three chains
+   // are supported.
+   //
+   // The scanout connections from the long and short
+   // chains connect to the following inputs:
+   //
+   // long_chain_so_0, short_chain_so_0 (mandatory)
+   // long_chain_so_1, short_chain_so_1 (optional)
+   // long_chain_so_2, short_chain_so_2 (optional)
+   //
+   // The test stub outputs should connect directly to the
+   // scanout port(s) of the cluster:
+   //
+   // so_0 (mandatory), so_1 (optional), so_2 (optional)
+   //
+   //
+   // Static Output Signals
+   // =====================
+   //
+   // testmode_l
+   //
+   // Local testmode control for overriding gated
+   // clocks, asynchronous resets, etc. Asserted
+   // for all shift-based test modes.
+   //
+   // mem_bypass
+   //
+   // Memory bypass control for arrays without output
+   // flops. Allows testing of shadow logic. Asserted
+   // for scan test; de-asserted for macrotest.
+   //
+   //
+   // Dynamic Output Signals
+   // ======================
+   //
+   // sehold
+   //
+   // The sehold signal needs to be set for macrotest
+   // to allow holding flops in the array collars
+   // to retain their shifted data during capture.
+   // Inverted version of scan enable during macrotest.
+   //
+   // mux_drive_disable (for mux/long chain protection)
+   //
+   // Activate one-hot mux protection circuitry during
+   // scan shift and reset. Formerly known as rst_tri_en.
+   // Also used by long chain memories with embedded
+   // control.
+   //
+   // mem_write_disable (for short chain protection)
+   //
+   // Protects contents of short chain memories during
+   // shift and POR.
+   //
+   // se
+
+   assign  mux_drive_disable  = ~ctu_tst_pre_grst_l | short_chain_select | se;
+   assign  mem_write_disable  = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   wire         ;
+   wire         short_chain_select;
+
+   // INTERNAL CLUSTER CONNECTIONS
+   //
+   // Scan Chain Hookup
+   // =================
+   //
+   // Scan chains have two configurations: long and short.
+   // The short chain is typically the first tenth of the
+   // long chain. The short chain should contain memory
+   // collar flops for deep arrays. The CTU determines
+   // which configuration is selected. Up to three chains
+   // are supported.
+   //
+   // The scanout connections from the long and short
+   // chains connect to the following inputs:
+   //
+   // long_chain_so_0, short_chain_so_0 (mandatory)
+   // long_chain_so_1, short_chain_so_1 (optional)
+   // long_chain_so_2, short_chain_so_2 (optional)
+   //
+   // The test stub outputs should connect directly to the
+   // scanout port(s) of the cluster:
+   //
+   // so_0 (mandatory), so_1 (optional), so_2 (optional)
+   //
+   //
+   // Static Output Signals
+   // =====================
+   //
+   // testmode_l
+   //
+   // Local testmode control for overriding gated
+   // clocks, asynchronous resets, etc. Asserted
+   // for all shift-based test modes.
+   //
+   // mem_bypass
+   //
+   // Memory bypass control for arrays without output
+   // flops. Allows testing of shadow logic. Asserted
+   // for scan test; de-asserted for macrotest.
+   //
+   //
+   // Dynamic Output Signals
+   // ======================
+   //
+   // sehold
+   //
+   // The sehold signal needs to be set for macrotest
+   // to allow holding flops in the array collars
+   // to retain their shifted data during capture.
+   // Inverted version of scan enable during macrotest.
+   //
+   // mux_drive_disable (for mux/long chain protection)
+   //
+   // Activate one-hot mux protection circuitry during
+   // scan shift and reset. Formerly known as rst_tri_en.
+   // Also used by long chain memories with embedded
+   // control.
+   //
+   // mem_write_disable (for short chain protection)
+   //
+   // Protects contents of short chain memories during
+   // shift and POR.
+   //
+   // se
+
+   assign  mux_drive_disable  = ~ctu_tst_pre_grst_l | short_chain_select | se;
+   assign  mem_write_disable  = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   wire         ;
+
+   // INTERNAL CLUSTER CONNECTIONS
+   //
+   // Scan Chain Hookup
+   // =================
+   //
+   // Scan chains have two configurations: long and short.
+   // The short chain is typically the first tenth of the
+   // long chain. The short chain should contain memory
+   // collar flops for deep arrays. The CTU determines
+   // which configuration is selected. Up to three chains
+   // are supported.
+   //
+   // The scanout connections from the long and short
+   // chains connect to the following inputs:
+   //
+   // long_chain_so_0, short_chain_so_0 (mandatory)
+   // long_chain_so_1, short_chain_so_1 (optional)
+   // long_chain_so_2, short_chain_so_2 (optional)
+   //
+   // The test stub outputs should connect directly to the
+   // scanout port(s) of the cluster:
+   //
+   // so_0 (mandatory), so_1 (optional), so_2 (optional)
+   //
+   //
+   // Static Output Signals
+   // =====================
+   //
+   // testmode_l
+   //
+   // Local testmode control for overriding gated
+   // clocks, asynchronous resets, etc. Asserted
+   // for all shift-based test modes.
+   //
+   // mem_bypass
+   //
+   // Memory bypass control for arrays without output
+   // flops. Allows testing of shadow logic. Asserted
+   // for scan test; de-asserted for macrotest.
+   //
+   //
+   // Dynamic Output Signals
+   // ======================
+   //
+   // sehold
+   //
+   // The sehold signal needs to be set for macrotest
+   // to allow holding flops in the array collars
+   // to retain their shifted data during capture.
+   // Inverted version of scan enable during macrotest.
+   //
+   // mux_drive_disable (for mux/long chain protection)
+   //
+   // Activate one-hot mux protection circuitry during
+   // scan shift and reset. Formerly known as rst_tri_en.
+   // Also used by long chain memories with embedded
+   // control.
+   //
+   // mem_write_disable (for short chain protection)
+   //
+   // Protects contents of short chain memories during
+   // shift and POR.
+   //
+   // se
+
+   assign  mux_drive_disable  = ~ctu_tst_pre_grst_l | short_chain_select | se;
+   assign  mem_write_disable  = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+
+                                                                                                                                                                                                
+   assign    = ~ctu_tst_pre_grst_l | short_chain_select | se;
+   assign  mem_write_disable  = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+  = ~ | short_chain_select | se;
+   assign  mem_write_disable  = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ |  | se;
+   assign  mem_write_disable  = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ | ;
+   assign  mem_write_disable  = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign    = ~ctu_tst_pre_grst_l | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+  = ~ | se;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ | ;
+   assign  sehold             = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign               = ctu_tst_macrotest & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+             =  & ~se;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ & ~;
+   assign  se                 = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign                   = global_shift_enable;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+                 = ;
+   assign  testmode_l         = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign           = ~ctu_tst_scanmode;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+         = ~;
+   assign  mem_bypass         = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign           = ~ctu_tst_macrotest & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+         = ~ & ~testmode_l;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ & ~;
+   assign  pin_based_scan     = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign       = ctu_tst_scan_disable;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+     = ;
+   assign  short_chain_en     = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign       = ~(pin_based_scan & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+     = ~( & se);
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ & );
+   assign  short_chain_select = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+);
+   assign   = ctu_tst_short_chain & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ =  & ~testmode_l & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ & ~ & short_chain_en;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ & ;
+   assign  so_0               = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign                 = short_chain_select ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+               =  ? short_chain_so_0 : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ ?  : long_chain_so_0;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ : ;
+   assign  so_1               = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign                 = short_chain_select ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+               =  ? short_chain_so_1 : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ ?  : long_chain_so_1;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ : ;
+   assign  so_2               = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+;
+   assign                 = short_chain_select ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+               =  ? short_chain_so_2 : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ ?  : long_chain_so_2;
+   
+endmodule // test_stub_scan
+ : ;
+   
+endmodule // test_stub_scan
+;
+   
+endmodule 

@@ -1,0 +1,93 @@
+\documentclass[12pt]{report}
+
+%----------------------------------------------------------------------
+% Create a listing in the log of all files needed to process this document
+ \listfiles
+
+%----------------------------------------------------------------------
+\usepackage{epsfig}
+\usepackage{graphicx,color,psfrag}
+\usepackage{amsmath}
+\usepackage{subfigure}
+\usepackage{longtable}
+\usepackage{amssymb}
+\usepackage{enumerate}
+%\usepackage{array}
+\usepackage{makeidx}
+%\usepackage{showidx}
+%\usepackage{multind}
+%\usepackage{index}
+\usepackage{pifont}
+%\usepackage{verbatim}
+\usepackage{moreverb}
+%\usepackage{fancybox}
+%\usepackage{boxedminipage}
+\usepackage{calc}
+\usepackage{rotating}
+%\usepackage{bbold}
+
+\newenvironment{Ventry}[1]%
+   {\begin{list}{}{\renewcommand{\makelabel}[1]{\textsf{##1}\hfil}%
+      \settowidth{\labelwidth}{\textsf{#1:}}%
+      \setlength{\leftmargin}{\labelwidth+\labelsep}}}%
+   {\end{list}}
+
+
+ \setlength{\textheight}{8.75in}     % jan
+ \setlength{\topmargin}{-0.5cm}     % jan
+\setlength{\evensidemargin}{0mm}
+\setlength{\oddsidemargin}{0mm}
+\setlength{\textwidth}{7in}
+\setlength{\textheight}{9.5in}
+\setlength{\topmargin}{-20mm}
+\newlength{\invisible}
+\settowidth{\invisible}{1}
+\raggedbottom
+
+%................................................................
+
+\begin{document}
+\noindent
+
+In class, we wrote on the blackboard a byte addressable memory where each element was 2 nibbles:
+For example:
+\newline
+
+Main memory A
+\tiny
+\begin{center}
+\begin{tabular}{ |c||c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c| }\hline
+Address & Data & Data & Data & Data & Data & Data & Data & Data & Data & Data & Data & Data & Data & Data & Data & Data \\ \hline
+Offset  &  0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & A & B & C & D & E & F \\ \hline
+0  &  0x00 & 0x02 & 0x2B & 0x4F & 0x00 & 0x00 &0x00 &0x1C & 0x00 & 0x00 & 0x01 & 0x00 & 0x05 & 0x04 & 0x03 & 0x02 \\ \hline
+0x10  & 0x10 & 0x10 & 0x11 & 0x12 & 0x00 & 0x00 &0x00 &0x00 & 0x00 & 0x00 & 0x01 & 0x00 & 0x3D & 0x00 & 0x1C & 0x2F \\ \hline
+0x20  & 0x00 & 0xFF & 0x3E & 0x00 & 0x00 & 0x00 &0x00 &0x00 & 0x00 & 0x00 & 0x01 & 0x00 & 0x1F & 0xFF & 0x03 & 0x02 \\ \hline
+\hline
+\end{tabular}
+\end{center}
+
+\normalsize
+\normalsize
+
+What is the contents of address 0x1C in main memory A for a 32 bit machine
+using Big Endian format?
+\newline
+\newline
+
+What is the contents of address 0x1C in main memory A for a 16 bit machine
+using Little Endian format?
+\newline
+\newline
+
+What is the contents of the indirect address at 0x04 in main memory A for a Big Endian 32 bit machine ((0x4))? 
+\newline
+\newline
+
+What is the contents of 4(0x10) in main memory A for a 16 bit Little Endian machine?  
+\newline
+\newline
+
+What is the contents of the address 16(0xC) for  a 64 bit Little Endian machine?
+
+
+\end{document}

@@ -1,0 +1,38 @@
+
+
+
+
+
+ 
+
+
+module pcx2mb_entry (
+		e_data,
+	e_active,
+	e_dest,
+
+		rclk,
+	reset_l,
+
+	any_req_pa,
+	spc_pcx_data_pa,
+	req_dest_pa,
+	req_atom_pa,
+	any_req_px,
+	req_dest_px,
+	req_atom_px,
+	load_data,
+
+	prev_data,
+	prev_active,
+	prev_dest,
+
+	next_active
+	);
+
+ 
+    parameter PCX_REQ_WIDTH = 2;
+
+
+
+    output [+PCX_REQ_WIDTH

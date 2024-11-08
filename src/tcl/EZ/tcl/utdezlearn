@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Usage:
+#       utdezlearn
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+cometTix -N -E -v ${utdtools}/${UTDTOOLSVERSION}/tcl/EZ/tcl/ezlearn.tcl

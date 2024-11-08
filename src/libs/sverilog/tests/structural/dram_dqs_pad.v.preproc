@@ -1,0 +1,833 @@
+module dram_dqs_pad(
+      dqs_pad_clk_so, clk_sel, bso, 
+      pad, 
+      vrefcode, vdd_h, update_dr, testmode_l, shift_dr, odt_enable_mask, 
+   mode_ctrl, hiz_n, dram_io_drive_enable, dram_io_drive_data, 
+   dram_io_channel_disabled, dqs_pad_clk_si, dqs_pad_clk_se, 
+   clock_dr, clk, cbu, cbd, bsi
+   );
+
+
+input			bsi;			input [8:1]		cbd;			input [8:1]		cbu;			input			clk;			input			clock_dr;		input			dqs_pad_clk_se;		input			dqs_pad_clk_si;		input			dram_io_channel_disabled;input			dram_io_drive_data;	input			dram_io_drive_enable;	input			hiz_n;			input			mode_ctrl;		input			odt_enable_mask;	input			shift_dr;		input			testmode_l;		input			update_dr;		input			vdd_h;			input [7:0]		vrefcode;		
+inout			pad;
+
+
+output			bso;			output			clk_sel;		output			dqs_pad_clk_so;		
+
+wire			;			// From dqs_edgelogic of dram_dqs_edgelogic.v
+wire			to_core;		// From sstl_pad of dram_sstl_pad.v
+wire			to_pad;			// From dqs_edgelogic of dram_dqs_edgelogic.v
+// End of automatics
+
+//////////////////////////////////////////////////////////////////////////
+// CODE
+//////////////////////////////////////////////////////////////////////////
+
+// INSTANTIATING PAD LOGIC
+dram_dqs_edgelogic dqs_edgelogic(/*AUTOINST*/
+				 // Outputs
+				 .clk_sel(clk_sel),
+				 .dqs_pad_clk_so(dqs_pad_clk_so),
+				 .to_pad(to_pad),
+				 .oe	(oe),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+;			wire			;		// From sstl_pad of dram_sstl_pad.v
+wire			to_pad;			// From dqs_edgelogic of dram_dqs_edgelogic.v
+// End of automatics
+
+//////////////////////////////////////////////////////////////////////////
+// CODE
+//////////////////////////////////////////////////////////////////////////
+
+// INSTANTIATING PAD LOGIC
+dram_dqs_edgelogic dqs_edgelogic(/*AUTOINST*/
+				 // Outputs
+				 .clk_sel(clk_sel),
+				 .dqs_pad_clk_so(dqs_pad_clk_so),
+				 .to_pad(to_pad),
+				 .oe	(oe),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+;		wire			;			// From dqs_edgelogic of dram_dqs_edgelogic.v
+// End of automatics
+
+//////////////////////////////////////////////////////////////////////////
+// CODE
+//////////////////////////////////////////////////////////////////////////
+
+// INSTANTIATING PAD LOGIC
+dram_dqs_edgelogic dqs_edgelogic(/*AUTOINST*/
+				 // Outputs
+				 .clk_sel(clk_sel),
+				 .dqs_pad_clk_so(dqs_pad_clk_so),
+				 .to_pad(to_pad),
+				 .oe	(oe),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+;			
+
+dram_dqs_edgelogic (/*AUTOINST*/
+				 // Outputs
+				 .clk_sel(clk_sel),
+				 .dqs_pad_clk_so(dqs_pad_clk_so),
+				 .to_pad(to_pad),
+				 .oe	(oe),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+(
+				 				 .clk_sel(),
+				 .dqs_pad_clk_so(dqs_pad_clk_so),
+				 .to_pad(to_pad),
+				 .oe	(oe),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .dqs_pad_clk_so(),
+				 .to_pad(to_pad),
+				 .oe	(oe),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .to_pad(),
+				 .oe	(oe),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .oe	(),
+				 // Inputs
+				 .clk	(clk),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 				 .clk	(),
+				 .testmode_l(testmode_l),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .testmode_l(),
+				 .dqs_pad_clk_se(dqs_pad_clk_se),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .dqs_pad_clk_se(),
+				 .dqs_pad_clk_si(dqs_pad_clk_si),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .dqs_pad_clk_si(),
+				 .dram_io_drive_enable(dram_io_drive_enable),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .dram_io_drive_enable(),
+				 .dram_io_drive_data(dram_io_drive_data),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .dram_io_drive_data(),
+				 .dram_io_channel_disabled(dram_io_channel_disabled),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .dram_io_channel_disabled(),
+				 .to_core(to_core));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 .to_core());
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                   (oe),
+                  .data_in              (to_pad));
+*/
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+));
+
+
+
+dram_sstl_pad (/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+(
+		       		       .bso		(),
+		       .to_core		(to_core),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .to_core		(),
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       		       .pad		(),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),			 		       		       .bsi		(),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .cbd		([8:1]),
+		       .cbu		([8:1]),
+		       .clock_dr	(),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .data_in		(),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),		 		       .hiz_n		(),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .mode_ctrl	(),
+		       .odt_enable_mask	(odt_enable_mask),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .odt_enable_mask	(),
+		       .oe		(oe),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .oe		(),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),			 		       .shift_dr	(),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .update_dr	(),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .vdd_h		(),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .vrefcode	([7:0]));
+endmodule

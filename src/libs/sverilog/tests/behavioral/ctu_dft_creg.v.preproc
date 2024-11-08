@@ -1,0 +1,53 @@
+
+ 
+ 
+ 
+
+module ctu_dft_creg (
+creg_jtag_scratch_data, creg_jtag_rdrtrn_data, creg_jtag_rdrtrn_vld, 
+tap_iob_stall, tap_iob_vld, tap_iob_data, rt_ack, rt_data_out, 
+io_tck, jbus_clk, jbus_rst_l, io_pwron_rst_l, test_mode_pin, 
+bist_mode_pin, start_clk_jl, jtag_creg_addr, jtag_creg_data, 
+jtag_creg_rd_en, jtag_creg_wr_en, jtag_creg_addr_en, 
+jtag_creg_data_en, jtag_creg_rdrtrn_complete, iob_tap_vld, 
+iob_tap_data, iob_tap_stall, rt_valid, rt_addr_data, rt_read_write, 
+rt_high_low, rt_data_in, bist_jtag_result
+);
+
+input 	      io_tck;
+input 	      jbus_clk;
+input 	      jbus_rst_l;
+input 	      io_pwron_rst_l;
+input 	      test_mode_pin;
+input 	      bist_mode_pin;
+
+input 	      start_clk_jl;
+
+input [39:0] jtag_creg_addr;
+input [63:0] jtag_creg_data;
+input 	     jtag_creg_rd_en;
+input 	     jtag_creg_wr_en;
+input 	     jtag_creg_addr_en;
+input 	     jtag_creg_data_en;
+output [63:0] creg_jtag_scratch_data;
+output [63:0] creg_jtag_rdrtrn_data;
+output 	      creg_jtag_rdrtrn_vld;
+input 	      jtag_creg_rdrtrn_complete;
+
+output 	      tap_iob_stall;
+input 	      iob_tap_vld;
+input [7:0]   iob_tap_data;
+
+output 	      tap_iob_vld;
+output [7:0]  tap_iob_data;
+input 	      iob_tap_stall;
+
+input 	      rt_valid;
+input 	      rt_addr_data;
+input 	      rt_read_write;
+input 	      rt_high_low;
+input [31:0]  rt_data_in;
+output 	      rt_ack;
+output [31:0] rt_data_out;
+
+input [(*

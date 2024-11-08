@@ -1,0 +1,40 @@
+/* XPM */
+static char *controls2[] = {
+/* width height num_colors chars_per_pixel */
+"    26    26        7            1",
+/* colors */
+". c #c0c0c0",
+"# c #808080",
+"a c #ff0000",
+"b c #ffff00",
+"c c #0000ff",
+"d c #ffffff",
+"e c #070707",
+/* pixels */
+"dddddddddddddddddddddddddd",
+"dddddddddddddddddddddddddd",
+"ddddddddddddddddddddcccddd",
+"ddddddddddddddddddccbbbccd",
+"ddddddddddddddddddbbbebbbc",
+"dddddddddddddddddcbbbebbbb",
+"dddddddddddddddddcbbbebbbb",
+"dddddeeeeeeeeeeeecbbeeeebb",
+"ddddd............cbbbebbbc",
+"ddddd.#eeeeeeeeeeebbbbbbbc",
+"ddddd.#eeeeeeeaeee#cbbbccd",
+"ddddd.#eeeeeeaaeee#.eccddd",
+"ddddd.#eeeeeeeaeee#.e#dddd",
+"ddddd.#eeeeaaaaeee#.e#dedd",
+"ddddd.#eeeaeeeaeee#.e#dddd",
+"ddddd.#eeaaaeaaaee#.e#dddd",
+"ddddd.#eeeeeeeeeee#.e#dddd",
+"ddddd.#############.e#ddde",
+"dddddeeeeeeeeeeeeeee##dedd",
+"dddeeeeeeeeeeeeeeeeeeeedde",
+"ddde..................dddd",
+"ddde.e.e..e.ee.e.ee..edddd",
+"ddde......e.ee.e.e...edddd",
+"ddde..................edde",
+"ddde..................eeee",
+"dddeeeeeeeeeeeeeeeeeee####"
+};

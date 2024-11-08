@@ -1,0 +1,17 @@
+
+module ch_mem ( 
+      XXSDA, XXDQ, XXCB, XXDQS, 
+      XXRAS_L, XXCAS_L, XXWE_L, XXCS_L, XXRESET_L, XXADDR, XXBA, XXSA, 
+   XXSCL, XXWP, XXCLK, XXCLK_L, XXCKE
+   );
+   
+   input 	 XXRAS_L;	   input 	 XXCAS_L;	   input 	 XXWE_L;	   input [3:0] 	 XXCS_L;	   input 	 XXRESET_L;	   input [14:0]  XXADDR;	   input [2:0]   XXBA;		   input [2:0]   XXSA;		   input  	 XXSCL;
+   inout  	 XXSDA;
+   input  	 XXWP;
+   input [3:0]	 XXCLK;
+   input [3:0] 	 XXCLK_L;
+   input 	 XXCKE;
+   
+
+      inout [127:0] XXDQ;		   inout [15:0]  XXCB;		   inout [35:0]  XXDQS;	   
+                  integer

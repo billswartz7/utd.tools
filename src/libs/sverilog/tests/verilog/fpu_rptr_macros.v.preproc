@@ -1,0 +1,24 @@
+module fpu_bufrpt_grp64 (
+	in,
+	out
+);
+	
+	input [63:0] in;
+	output [63:0] out;
+
+	assign [63:0] = [63:0];
+
+endmodule
+
+module fpu_bufrpt_grp32 (
+	in,
+	out
+);
+
+	input [31:0] in;
+	output [31:0] out;
+
+	assign [31:0] = [31:0];
+
+endmodule
+

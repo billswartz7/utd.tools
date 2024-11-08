@@ -1,0 +1,16 @@
+
+	 			        
+
+
+
+module iobdg_asi_dec (
+      asi_ctrl, asi_addr, 
+      ucb_packet
+   );
+
+   
+   input [-1:0]    ucb_packet;
+   output [31:0] 		       asi_ctrl;
+   output [31:0] 		       asi_addr;
+   
+   reg

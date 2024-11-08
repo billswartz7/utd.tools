@@ -1,0 +1,45 @@
+
+     
+
+module aurora_201_ERROR_DETECT
+(
+        ENABLE_ERROR_DETECT,
+
+    HARD_ERROR_RESET,
+
+
+        SOFT_ERROR,
+    HARD_ERROR,
+
+
+        RX_BUF_ERR,
+    RX_DISP_ERR,
+    RX_NOT_IN_TABLE,
+    TX_BUF_ERR,
+    RX_REALIGN,
+
+        USER_CLK
+);
+
+
+ 
+
+        input           ENABLE_ERROR_DETECT;
+
+    output          HARD_ERROR_RESET;
+
+
+        output          SOFT_ERROR;
+    output          HARD_ERROR;
+
+
+        input           RX_BUF_ERR;
+    input   [1:0]   RX_DISP_ERR;
+    input   [1:0]   RX_NOT_IN_TABLE;
+    input           TX_BUF_ERR;
+    input           RX_REALIGN;
+
+        input           USER_CLK;
+
+
+    reg

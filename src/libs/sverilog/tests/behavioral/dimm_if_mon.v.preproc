@@ -1,0 +1,36 @@
+
+module dimm_if_mon(
+    clk,
+  DRAM_CK, DRAM_CKE, DRAM_RST_L,
+  DRAM_CS_L, DRAM_BA, DRAM_ADDR, 
+  DRAM_RAS_L, DRAM_CAS_L, DRAM_WE_L,
+  DRAM_DQ, DRAM_CB, DRAM_DQS,
+  DRAM_ENB_ERROR, DRAM_FAIL_OVER,
+  DRAM_FAIL_PART
+  );
+
+  parameter AUTOREF_PERIOD = 1500;
+
+  parameter ST_RAS  = 2bb;
+  parameter ST_CAS  = 2bb;
+  parameter ST_DATA = 2bb;
+  parameter ST_REL  = 2bb;
+  
+  input         clk;
+  input [7:0]   DRAM_CK;
+  input         DRAM_CKE;
+  input         DRAM_RST_L;
+  input [1:0]   DRAM_CS_L;
+  input [2:0]   DRAM_BA;
+  input [14:0]  DRAM_ADDR;
+  input         DRAM_RAS_L;
+  input         DRAM_CAS_L;
+  input         DRAM_WE_L;
+  inout [127:0] DRAM_DQ;
+  input [15:0]  DRAM_CB;
+  input [35:0]  DRAM_DQS;
+  input         DRAM_ENB_ERROR;
+  input         DRAM_FAIL_OVER;
+  input  [5:0]  DRAM_FAIL_PART;
+
+  integer

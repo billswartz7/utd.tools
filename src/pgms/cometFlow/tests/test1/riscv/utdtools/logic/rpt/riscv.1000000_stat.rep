@@ -1,0 +1,35 @@
+
+9. Printing statistics.
+
+=== rv32_CPU ===
+
+   Number of wires:               4298
+   Number of wire bits:           5136
+   Number of public wires:          48
+   Number of public wire bits:     669
+   Number of memories:               0
+   Number of memory bits:            0
+   Number of processes:              0
+   Number of cells:               4902
+     AND2X1                          1
+     AND2X2                        273
+     AOI21X1                       410
+     AOI22X1                        93
+     BUFX2                         282
+     DFFPOSX1                      134
+     DFFSR                         264
+     INVX1                         546
+     INVX2                          58
+     MUX2X1                        231
+     NAND2X1                       613
+     NAND3X1                       422
+     NOR2X1                        323
+     NOR3X1                         96
+     OAI21X1                       785
+     OAI22X1                        36
+     OR2X2                         120
+     XNOR2X1                       124
+     XOR2X1                         91
+
+   Chip area for module '\rv32_CPU': 766524.000000
+

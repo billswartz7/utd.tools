@@ -1,0 +1,303 @@
+module dram_async_pad(
+      bso, 
+      pad, 
+      vrefcode, vdd_h, update_dr, shift_dr, 
+   mode_ctrl, hiz_n, data, clock_dr, cbu, cbd, bsi
+   );
+
+
+input			bsi;			input [8:1]		cbd;			input [8:1]		cbu;			input			clock_dr;		input			data;			input			hiz_n;			input			mode_ctrl;		input			shift_dr;		input			update_dr;		input			vdd_h;			input [7:0]		vrefcode;		
+inout			pad;
+
+
+output			bso;			
+
+wire			;			// From ctl_edgelogic of dram_ctl_edgelogic.v
+// End of automatics
+
+// INSTANTIATING PAD LOGIC
+
+dram_async_edgelogic async_edgelogic(/*AUTOINST*/
+				 // Outputs
+				 .to_pad(to_pad),
+				 // Inputs
+				 .data	(data));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                  	(1'b1),
+		  .to_core		(),
+		  .odt_enable_mask	(1'b1),
+                  .data_in              (to_pad));
+*/
+
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(),			 // Templated
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+;			
+
+dram_async_edgelogic (/*AUTOINST*/
+				 // Outputs
+				 .to_pad(to_pad),
+				 // Inputs
+				 .data	(data));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                  	(1'b1),
+		  .to_core		(),
+		  .odt_enable_mask	(1'b1),
+                  .data_in              (to_pad));
+*/
+
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(),			 // Templated
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+(
+				 				 .to_pad(),
+				 // Inputs
+				 .data	(data));
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                  	(1'b1),
+		  .to_core		(),
+		  .odt_enable_mask	(1'b1),
+                  .data_in              (to_pad));
+*/
+
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(),			 // Templated
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+				 				 .data	());
+
+// SSTL LOGIC
+
+/*dram_sstl_pad AUTO_TEMPLATE(
+                  .pad                  (pad),
+                  .oe                  	(1'b1),
+		  .to_core		(),
+		  .odt_enable_mask	(1'b1),
+                  .data_in              (to_pad));
+*/
+
+dram_sstl_pad sstl_pad(/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(),			 // Templated
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+));
+
+
+
+
+dram_sstl_pad (/*AUTOINST*/
+		       // Outputs
+		       .bso		(bso),
+		       .to_core		(),			 // Templated
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+(
+		       		       .bso		(),
+		       .to_core		(),			 // Templated
+		       // Inouts
+		       .pad		(pad),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .to_core		(),			 		       		       .pad		(),			 // Templated
+		       // Inputs
+		       .bsi		(bsi),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),			 		       		       .bsi		(),
+		       .cbd		(cbd[8:1]),
+		       .cbu		(cbu[8:1]),
+		       .clock_dr	(clock_dr),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .cbd		([8:1]),
+		       .cbu		([8:1]),
+		       .clock_dr	(),
+		       .data_in		(to_pad),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .data_in		(),		 // Templated
+		       .hiz_n		(hiz_n),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),		 		       .hiz_n		(),
+		       .mode_ctrl	(mode_ctrl),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .mode_ctrl	(),
+		       .odt_enable_mask	(1'b1),			 // Templated
+		       .oe		(1'b1),			 // Templated
+		       .shift_dr	(shift_dr),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .odt_enable_mask	(1bb),			 		       .oe		(1bb),			 		       .shift_dr	(),
+		       .update_dr	(update_dr),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .update_dr	(),
+		       .vdd_h		(vdd_h),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .vdd_h		(),
+		       .vrefcode	(vrefcode[7:0]));
+endmodule
+),
+		       .vrefcode	([7:0]));
+endmodule

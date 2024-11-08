@@ -1,0 +1,184 @@
+
+# #################################################
+# iplacesc.v1 v2.0.0pre46 executed on Fri Oct 25 09:45:47 2019
+# Reading .slib, .sckt, and .scon files...
+# 
+# [look_for_hints]:Found hints in <riscv.sstat> file
+# [look_for_hints]:Number of insts:685
+# [look_for_hints]:Number of nets :1514
+# [look_for_hints]:Number of gpins:5961
+# 
+# no syntax errors in library:riscv.slib
+# no syntax errors in physical description.
+# no syntax problem in circuit file.
+# no syntax errors in netlist description.
+# Reading constraint file riscv.scon...
+# done reading constraint file. No syntax errors.
+# 
+# WARNING[pinlayers_init]:pin_layers not defined.
+# Using first vertical layer:M1 pitch:0.03600 offset:0.01800
+# Pin layers:
+# layer:M1 pitch:0.03600 offset:0.01800
+# 
+# Need timing graph...no
+# [autodetect_port_layers]:didn't autodetect port layers.
+# median:2.61900
+# 
+# [cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+# 
+# 
+# 
+# total cell length: 1296.02700
+# total block length: 1296.02700
+# rowSep                  : 0.000
+# 
+# 
+# [auto_wire_weight]:vertical_wire_weight has been set by user.
+# Effective row separation has been set to 1.00
+# Modified vertical wire weight has been set to 1000000.00
+# WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+# using auto_wire_weight which may cause the results to suffer.
+# If this is due to a small row separation, the problem may be eliminated
+# by turning auto_wire_weight to off in the .par file.
+# WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+# WARNING[SApad_place]:Pad ring given in error.
+# Given padring   : (0,0) (27.18000,27.36000).
+# Adjusted padring: (-0.12925,-0.12925) (27.18000,27.48925).
+# 
+# block x-span:27  block y-span:27.36000
+# 
+# 
+# TIMING FACTOR (COMPUTED) : 4.000000
+# Original Average Cell Width:3.54106
+# average_cell_width is:3.54106
+# standard deviation of cell length is:2.49011
+# narrowest standard cell:0.27000
+# widest standard cell:13.98600
+# average row length:27
+# Normal row control algorithm.
+# ratio:51.8
+# 
+# Row-based Cell Distribution: 
+# [ 1- 10] ( 0.27000  1.64175) : 8.470  2.459  0.546  1.639  0.273  2.732  0.273  0.273 20.765  1.913 
+# [11- 20] ( 1.77875  3.01325) : 1.913  4.098  3.005  0.000  0.546  0.546  0.273  0.273  0.273  1.093 
+# [21- 30] ( 3.15025  4.38500) : 0.273  0.273  0.273  0.273  0.820  0.546  1.639  0.820  1.093  1.093 
+# [31- 40] ( 4.52175  5.75650) : 1.639  0.820  0.546  1.093  1.093  0.273  1.093  1.913  1.093  0.820 
+# [41- 50] ( 5.89350  7.12800) : 1.366  1.913  2.732  1.913  2.186  3.279  4.645  6.011  6.284  0.273 
+# [51- 60] ( 7.26500  8.49975) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+# [61- 70] ( 8.63675  9.87125) : 0.000  0.000  0.000  0.000  0.000  0.273  0.000  0.000  0.000  0.000 
+# [71- 80] (10.00825 11.24300) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+# [81- 90] (11.37975 12.61450) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+# [91-100] (12.75150 13.98600) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.273 
+# Bin width:2194.56 smallest:4320 => largest:223776
+# 
+# iplacesc starting from the beginning
+# raw bin width :10.62312
+# adjusted bin width :8.19200
+# number of x bins    :4
+# number of y bins    :0
+# 
+# 
+# 
+# THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 46989.90750
+# 
+# [findcost]:the large and non-global ignored nets:
+# WARNING[findcost]:Large net <clk> has 256 pins exceeding threshold and is now IGNORED.
+# WARNING[findcost]:Large net <rst> has 177 pins exceeding threshold and is now IGNORED.
+# WARNING[findcost]:Large net <CTRL.cyc> has 132 pins exceeding threshold and is now IGNORED.
+# WARNING[findcost]:Large net <1'h0> has 100 pins exceeding threshold and is now IGNORED.
+# 
+# [findcost]:The active global nets:	NONE
+# 
+# [findcost]:The defined global nets but not present in netlist:	NONE
+# The number of nets with 1 pins is 4
+# The number of nets with 2 pins is 787
+# The number of nets with 3 pins is 279
+# The number of nets with 4 pins is 141
+# The number of nets with 5 pins is 70
+# The number of nets with 6 pins is 40
+# The number of nets with 7 pins is 42
+# The number of nets with 8 pins is 41
+# The number of nets with 9 pins is 36
+# The number of nets with 10 pins is 36
+# The number of nets with 11 pins is 30
+# The number of nets with 16 pins is 1
+# The number of nets with 17 pins is 1
+# The number of nets with 27 pins is 1
+# The number of nets with 31 pins is 1
+# The number of nets with 100 pins or more is 4
+# Average number of pins per net = 3.507285
+# The maximum number of pins on a single net is:256
+# 
+# Pad information:
+# Core: (0,0) (27,27.36000).
+# Padring: (-0.12925,-20.02800) (27.18000,47.38800).
+# Die: (-20.02800,-20.03800) (47.02800,47.39800).
+# 
+# 
+# Percentage of Nets Connecting to at least 2 cells:1.00
+# Percentage of Nets Connecting to at least 3 cells:0.50
+# Percentage of Nets Connecting to at least 4 cells:0.30
+# Percentage of Nets Connecting to at least 5 cells:0.21
+# Percentage of Nets Connecting to at least 6 cells:0.17
+# 
+# mean row var width :1.77053
+# block:   1 (0,0) (27,0.57600) desire:27 val:1.77056
+# block:   2 (0,0.57600) (27,1.15200) desire:27 val:1.77056
+# block:   3 (0,1.15200) (27,1.72800) desire:27 val:1.77056
+# block:   4 (0,1.72800) (27,2.30400) desire:27 val:1.77056
+# block:   5 (0,2.30400) (27,2.88000) desire:27 val:1.77056
+# block:   6 (0,2.88000) (27,3.45600) desire:27 val:1.77056
+# block:   7 (0,3.45600) (27,4.03200) desire:27 val:1.77056
+# block:   8 (0,4.03200) (27,4.60800) desire:27 val:1.77056
+# block:   9 (0,4.60800) (27,5.18400) desire:27 val:1.77056
+# block:  10 (0,5.18400) (27,5.76000) desire:27 val:1.77056
+# block:  11 (0,5.76000) (27,6.33600) desire:27 val:1.77056
+# block:  12 (0,6.33600) (27,6.91200) desire:27 val:1.77056
+# block:  13 (0,6.91200) (27,7.48800) desire:27 val:1.77056
+# block:  14 (0,7.48800) (27,8.06400) desire:27 val:1.77056
+# block:  15 (0,8.06400) (27,8.64000) desire:27 val:1.77056
+# block:  16 (0,8.64000) (27,9.21600) desire:27 val:1.77056
+# block:  17 (0,9.21600) (27,9.79200) desire:27 val:1.77056
+# block:  18 (0,9.79200) (27,10.36800) desire:27 val:1.77056
+# block:  19 (0,10.36800) (27,10.94400) desire:27 val:1.77056
+# block:  20 (0,10.94400) (27,11.52000) desire:27 val:1.77056
+# block:  21 (0,11.52000) (27,12.09600) desire:27 val:1.77056
+# block:  22 (0,12.09600) (27,12.67200) desire:27 val:1.77056
+# block:  23 (0,12.67200) (27,13.24800) desire:27 val:1.77056
+# block:  24 (0,13.24800) (27,13.82400) desire:27 val:1.77056
+# block:  25 (0,13.82400) (27,14.40000) desire:27 val:1.77056
+# block:  26 (0,14.40000) (27,14.97600) desire:27 val:1.77056
+# block:  27 (0,14.97600) (27,15.55200) desire:27 val:1.77056
+# block:  28 (0,15.55200) (27,16.12800) desire:27 val:1.77056
+# block:  29 (0,16.12800) (27,16.70400) desire:27 val:1.77056
+# block:  30 (0,16.70400) (27,17.28000) desire:27 val:1.77056
+# block:  31 (0,17.28000) (27,17.85600) desire:27 val:1.77056
+# block:  32 (0,17.85600) (27,18.43200) desire:27 val:1.77056
+# block:  33 (0,18.43200) (27,19.00800) desire:27 val:1.77056
+# block:  34 (0,19.00800) (27,19.58400) desire:27 val:1.77056
+# block:  35 (0,19.58400) (27,20.16000) desire:27 val:1.77056
+# block:  36 (0,20.16000) (27,20.73600) desire:27 val:1.77056
+# block:  37 (0,20.73600) (27,21.31200) desire:27 val:1.77056
+# block:  38 (0,21.31200) (27,21.88800) desire:27 val:1.77056
+# block:  39 (0,21.88800) (27,22.46400) desire:27 val:1.77056
+# block:  40 (0,22.46400) (27,23.04000) desire:27 val:1.77056
+# block:  41 (0,23.04000) (27,23.61600) desire:27 val:1.77056
+# block:  42 (0,23.61600) (27,24.19200) desire:27 val:1.77056
+# block:  43 (0,24.19200) (27,24.76800) desire:27 val:1.77056
+# block:  44 (0,24.76800) (27,25.34400) desire:27 val:1.77056
+# block:  45 (0,25.34400) (27,25.92000) desire:27 val:1.77056
+# block:  46 (0,25.92000) (27,26.49600) desire:27 val:1.77056
+# block:  47 (0,26.49600) (27,27.07200) desire:27 val:1.77056
+# block:  48 (0,27.07200) (27,27.36000) desire:27 val:1.77056
+# Total Desired Length:1296.02700
+# 
+# bdxlen:27  bdylen:27.36000
+# l:0  t:27.36000  r:27  b:0
+# 
+# 
+# 
+# THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 46729.49050
+icplace
+# Attempts per iteration:1830
+# 
+# Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc

@@ -1,0 +1,166 @@
+module bw_io_misc_chunk6(io_pmi ,pcm_misc_oe ,vddo ,pmo ,io_pmo ,por_l ,
+     pmi );
+output		io_pmi ;
+input		pcm_misc_oe ;
+input		vddo ;
+input		io_pmo ;
+input		por_l ;
+inout		pmo ;
+inout		pmi ;
+supply0		vss ;
+ 
+wire		 ;
+ 
+ 
+bw_io_cmos2_pad pmi_pad (
+     .oe              (vss ),
+     .vddo            (vddo ),
+     .data            (vss ),
+     .to_core         (io_pmi ),
+     .pad             (pmi ),
+     .por_l           (por_l ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ;
+ 
+ 
+bw_io_cmos2_pad  (
+     .oe              (vss ),
+     .vddo            (vddo ),
+     .data            (vss ),
+     .to_core         (io_pmi ),
+     .pad             (pmi ),
+     .por_l           (por_l ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ (
+     .oe              ( ),
+     .vddo            (vddo ),
+     .data            (vss ),
+     .to_core         (io_pmi ),
+     .pad             (pmi ),
+     .por_l           (por_l ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .vddo            ( ),
+     .data            (vss ),
+     .to_core         (io_pmi ),
+     .pad             (pmi ),
+     .por_l           (por_l ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .data            ( ),
+     .to_core         (io_pmi ),
+     .pad             (pmi ),
+     .por_l           (por_l ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .to_core         ( ),
+     .pad             (pmi ),
+     .por_l           (por_l ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .pad             ( ),
+     .por_l           (por_l ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .por_l           ( ) );
+bw_io_cmos2_pad pmo_pad (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ) );
+bw_io_cmos2_pad  (
+     .oe              (pcm_misc_oe ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ (
+     .oe              ( ),
+     .vddo            (vddo ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .vddo            ( ),
+     .data            (io_pmo ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .data            ( ),
+     .to_core         (net26 ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .to_core         ( ),
+     .pad             (pmo ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .pad             ( ),
+     .por_l           (por_l ) );
+endmodule
+ ),
+     .por_l           ( ) );
+endmodule
+ ) );
+endmodule

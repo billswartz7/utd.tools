@@ -1,0 +1,1529 @@
+
+ 
+ 
+
+module dbg_port_chk () ;
+
+wire  ;
+wire iobdg_dbg_portb_lo_dbg_en ;
+wire iob_io_dbg_en ;
+wire creg_dbg_l2_vis_ctrl_2 ;
+
+wire pcx_sctag0_data_rdy_px2 ;
+wire pcx_sctag1_data_rdy_px2 ;
+wire pcx_sctag2_data_rdy_px2 ;
+wire pcx_sctag3_data_rdy_px2 ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+wire  ;
+wire iob_io_dbg_en ;
+wire creg_dbg_l2_vis_ctrl_2 ;
+
+wire pcx_sctag0_data_rdy_px2 ;
+wire pcx_sctag1_data_rdy_px2 ;
+wire pcx_sctag2_data_rdy_px2 ;
+wire pcx_sctag3_data_rdy_px2 ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+wire  ;
+wire creg_dbg_l2_vis_ctrl_2 ;
+
+wire pcx_sctag0_data_rdy_px2 ;
+wire pcx_sctag1_data_rdy_px2 ;
+wire pcx_sctag2_data_rdy_px2 ;
+wire pcx_sctag3_data_rdy_px2 ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+wire  ;
+
+wire pcx_sctag0_data_rdy_px2 ;
+wire pcx_sctag1_data_rdy_px2 ;
+wire pcx_sctag2_data_rdy_px2 ;
+wire pcx_sctag3_data_rdy_px2 ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+
+wire  ;
+wire pcx_sctag1_data_rdy_px2 ;
+wire pcx_sctag2_data_rdy_px2 ;
+wire pcx_sctag3_data_rdy_px2 ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+wire  ;
+wire pcx_sctag2_data_rdy_px2 ;
+wire pcx_sctag3_data_rdy_px2 ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+wire  ;
+wire pcx_sctag3_data_rdy_px2 ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+wire  ;
+
+// l2 queue
+reg  [47:0] l2q [31:0] ;
+reg  [5:0]  l2q_rd_ptr ;
+reg  [5:0]  l2q_rd_ptr_d1 ;
+reg  [5:0]  l2q_wr_ptr ;
+reg  [5:0]  l2q_rd_ptr_cmp ;
+reg  [5:0]  l2q_wr_ptr_jbus ;
+reg  [5:0]  l2q_wr_ptr_jbus_d1 ;
+reg         l2q_drop ;
+wire        l2q_full ;
+wire        l2q_empty ;
+wire        l2q_rd ;
+wire        l2q_wr ;
+wire        l2q_wr_a ;
+wire        l2q_wr_b ;
+wire [5:0]  l2q_wr_ptr_ns ;
+wire [5:0]  l2q_rd_ptr_ns ;
+reg  [7:0]  l2q_timestamp ;
+wire [7:0]  l2q_timestamp_ns ;
+reg  [47:0] l2q_data ;
+reg         l2q_data_vld ;
+
+wire [47:0] l2_bus ;
+reg  [39:0] l2_dbgbus_01_d1 ;
+reg  [39:0] l2_dbgbus_23_d1 ;
+reg  [39:0] l2_dbgbus_01_d2 ;
+reg  [39:0] l2_dbgbus_23_d2 ;
+
+// replicate all control registers
+reg [63:0] iob_vis_select_cfg ; // 0x98_0000_1000
+reg [63:0] l2_vis_control_cfg ; // 0x98_0000_1800
+reg [63:0] l2_vis_mask_a_cfg ; // 0x98_0000_1820
+reg [63:0] l2_vis_mask_b_cfg ; // 0x98_0000_1828
+reg [63:0] l2_vis_compare_a_cfg ; // 0x98_0000_1830
+reg [63:0] l2_vis_compare_b_cfg ; // 0x98_0000_1838
+reg [63:0] l2_trig_delay_cfg ; // 0x98_0000_1840
+reg [63:0] db_enet_control_cfg ; // 0x98_0000_2000
+reg [63:0] db_enet_idleval_cfg ; // 0x98_0000_2008
+reg [63:0] l2c0_control_reg_cfg ; // 0xA9_0000_0000
+reg [63:0] l2c1_control_reg_cfg ; // 0xA9_0000_0040
+reg [63:0] l2c2_control_reg_cfg ; // 0xA9_0000_0080
+reg [63:0] l2c3_control_reg_cfg ; // 0xA9_0000_00c0
+reg [63:0] db_jbus_control_cfg ; // 0x98_0000_2100
+reg [63:0] db_jbus_mask_a_hi_cfg ; // 0x98_0000_2140
+reg [63:0] db_jbus_compare_a_hi_cfg ; // 0x98_0000_2148
+reg [63:0] db_jbus_count_a_hi_cfg ; // 0x98_0000_2150
+reg [63:0] db_jbus_mask_b_hi_cfg ; // 0x98_0000_2160
+reg [63:0] db_jbus_compare_b_hi_cfg ; // 0x98_0000_2168
+reg [63:0] db_jbus_count_b_hi_cfg ; // 0x98_0000_2170
+reg [63:0] db_jbus_mask_a_lo_cfg ; // 0x98_0000_2180
+reg [63:0] db_jbus_compare_a_lo_cfg ; // 0x98_0000_2188
+reg [63:0] db_jbus_count_a_lo_cfg ; // 0x98_0000_2190
+reg [63:0] db_jbus_mask_b_lo_cfg ; // 0x98_0000_21a0
+reg [63:0] db_jbus_compare_b_lo_cfg ; // 0x98_0000_21a8
+reg [63:0] db_jbus_count_b_lo_cfg ; // 0x98_0000_21b0
+
+// replicate the iob debug port buses
+wire [43:0] iob_vis_port_0111 ;
+reg  [43:0] iob_vis_port_0111_d ;
+wire [43:0] iob_vis_port_0110 ;
+reg  [43:0] iob_vis_port_0110_d ;
+wire [43:0] iob_vis_port_0011 ;
+reg  [43:0] iob_vis_port_0011_d ;
+wire [43:0] iob_vis_port_0010 ;
+wire [43:0] iob_vis_port_0001 ;
+reg  [43:0] iob_vis_port_0001_d ;
+wire [43:0] iob_vis_port_0000 ;
+wire [43:0] iob_vis_port ;
+reg  [43:0] iob_vis_port_d ;
+
+// replicate the debug port a buses
+wire [39:0] debug_port_a_0100 ;
+wire [39:0] debug_port_a_0011 ;
+wire [39:0] debug_port_a_0010 ;
+wire [39:0] debug_port_a_0001 ;
+wire [39:0] debug_port_a_0000 ;
+wire [39:0] debug_port_a ;
+wire debug_port_a_vld ;
+
+// permutations of debug port a
+wire [39:0] debug_porta_0100_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0000 ;
+wire [39:0] debug_porta_0010_iob_0001 ;
+wire [39:0] debug_porta_0010_iob_0010 ;
+wire [39:0] debug_porta_0010_iob_0011 ;
+wire [39:0] debug_porta_0010_iob_0110 ;
+wire [39:0] debug_porta_0010_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0111 ;
+wire [39:0] debug_porta_0011_iob_0110 ;
+wire [39:0] debug_porta_0011_iob_0011 ;
+
+wire        debug_porta_0100_iob_0000_vld ;
+wire        debug_porta_0010_iob_0000_vld ;
+wire        debug_porta_0010_iob_0001_vld ;
+wire        debug_porta_0010_iob_0010_vld ;
+wire        debug_porta_0010_iob_0011_vld ;
+wire        debug_porta_0010_iob_0110_vld ;
+wire        debug_porta_0010_iob_0111_vld ;
+wire        debug_porta_0011_iob_0111_vld ;
+wire        debug_porta_0011_iob_0110_vld ;
+wire        debug_porta_0011_iob_0011_vld ;
+
+wire [39:0] dbg_dq_a4i0 ;
+wire [39:0] dbg_dq_a2i0 ;
+wire [39:0] dbg_dq_a2i1 ;
+wire [39:0] dbg_dq_a2i2 ;
+wire [39:0] dbg_dq_a2i3 ;
+wire [39:0] dbg_dq_a2i6 ;
+wire [39:0] dbg_dq_a2i7 ;
+wire [39:0] dbg_dq_a3i7 ;
+wire [39:0] dbg_dq_a3i6 ;
+wire [39:0] dbg_dq_a3i3 ;
+
+wire [39:0] dbg_dq_porta_0100_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0100_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0000 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0000_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0001 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0001_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0010 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0010_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0011_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0010_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0010_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0111 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0111_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0110 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0110_d3 ;
+
+wire [39:0] dbg_dq_porta_0011_iob_0011 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d1 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d2 ;
+reg  [39:0] dbg_dq_porta_0011_iob_0011_d3 ;
+
+// pcx_iob transacton type
+wire [1:0] ttype ;
+wire soh ;
+wire soh_0111 ;
+wire soh_0110 ;
+wire soh_0011 ;
+
+// debug port b
+wire [47:0]   dbg_portb_100 ;
+wire          dbg_portb_100_vld ;
+wire [47:0]   dbg_portb_011 ;
+wire          dbg_portb_011_vld ;
+wire [47:0]   dbg_portb_hi_010 ;
+wire          dbg_portb_hi_010_vld ;
+wire [47:0]   dbg_portb_lo_010 ;
+wire          dbg_portb_lo_010_vld ;
+wire [47:0]   dbg_portb_000 ;
+wire          dbg_portb_000_vld ;
+wire [47:0]   dbg_portb_lo_sel ;
+wire          dbg_portb_lo_vld_sel ;
+wire [47:0]    ;
+
+reg

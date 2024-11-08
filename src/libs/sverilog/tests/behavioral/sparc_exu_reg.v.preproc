@@ -1,0 +1,1631 @@
+module sparc_exu_reg (
+      data_out, 
+      clk, se, thr_out, wen_w, thr_w, data_in_w
+   ) ;
+   parameter SIZE = 3;
+
+   input     clk;
+   input     se;
+   input [3:0]       thr_out;
+   input             wen_w;
+   input [3:0]       thr_w;
+   input [SIZE -1:0] data_in_w;
+
+   output [SIZE-1:0] data_out;
+
+   wire [-1:0]   data_thr0;
+   wire [SIZE-1:0]   data_thr1;
+   wire [SIZE-1:0]   data_thr2;
+   wire [SIZE-1:0]   data_thr3;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+   wire [SIZE-1:0]   data_thr1;
+   wire [SIZE-1:0]   data_thr2;
+   wire [SIZE-1:0]   data_thr3;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire [-1:0]   data_thr1;
+   wire [SIZE-1:0]   data_thr2;
+   wire [SIZE-1:0]   data_thr3;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+   wire [SIZE-1:0]   data_thr2;
+   wire [SIZE-1:0]   data_thr3;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire [-1:0]   data_thr2;
+   wire [SIZE-1:0]   data_thr3;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+   wire [SIZE-1:0]   data_thr3;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire [-1:0]   data_thr3;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+   wire [SIZE-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire [-1:0]   data_thr0_next;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+   wire [SIZE-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire [-1:0]   data_thr1_next;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+   wire [SIZE-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire [-1:0]   data_thr2_next;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+   wire [SIZE-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire [-1:0]   data_thr3_next;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+-1:0]   ;
+
+   wire          wen_thr0_w;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+
+   wire          ;
+   wire          wen_thr1_w;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire          ;
+   wire          wen_thr2_w;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire          ;
+   wire          wen_thr3_w;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+   wire          ;
+
+   //////////////////////////////////
+   //  Output selection for reg
+   //////////////////////////////////
+`ifdef FPGA_SYN_1THREAD
+   assign 	 data_out[SIZE -1:0] = data_thr0[SIZE -1:0];
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));   
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`else // !`ifdef FPGA_SYN_1THREAD
+
+   // mux between the 4 regs
+   mux4ds #(SIZE) mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+;
+
+           
+      mux4ds #() mux_data_out1(.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+) (.dout(data_out[SIZE -1:0]), .sel0(thr_out[0]),
+                               .sel1(thr_out[1]), .sel2(thr_out[2]),
+                               .sel3(thr_out[3]), .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_thr1[SIZE -1:0]), .in2(data_thr2[SIZE -1:0]),
+                               .in3(data_thr3[SIZE -1:0]));
+   
+   //////////////////////////////////////
+   //  Storage of reg
+   //////////////////////////////////////
+   // enable input for each thread
+   assign        wen_thr0_w = (thr_w[0] & wen_w);
+   assign        wen_thr1_w = (thr_w[1] & wen_w);
+   assign        wen_thr2_w = (thr_w[2] & wen_w);
+   assign        wen_thr3_w = (thr_w[3] & wen_w);
+
+   // mux between new and current value
+   mux2ds #(SIZE) data_next0_mux(.dout(data_thr0_next[SIZE -1:0]),
+                               .in0(data_thr0[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr0_w),
+                               .sel1(wen_thr0_w));
+   mux2ds #(SIZE) data_next1_mux(.dout(data_thr1_next[SIZE -1:0]),
+                               .in0(data_thr1[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr1_w),
+                               .sel1(wen_thr1_w));
+   mux2ds #(SIZE) data_next2_mux(.dout(data_thr2_next[SIZE -1:0]),
+                               .in0(data_thr2[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr2_w),
+                               .sel1(wen_thr2_w));
+   mux2ds #(SIZE) data_next3_mux(.dout(data_thr3_next[SIZE -1:0]),
+                               .in0(data_thr3[SIZE -1:0]),
+                               .in1(data_in_w[SIZE -1:0]),
+                               .sel0(~wen_thr3_w),
+                               .sel1(wen_thr3_w));
+
+   // store new value
+   dff_s #(SIZE) dff_reg_thr0(.din(data_thr0_next[SIZE -1:0]), .clk(clk), .q(data_thr0[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr1(.din(data_thr1_next[SIZE -1:0]), .clk(clk), .q(data_thr1[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr2(.din(data_thr2_next[SIZE -1:0]), .clk(clk), .q(data_thr2[SIZE -1:0]),
+                       .se(se), .si(), .so());
+   dff_s #(SIZE) dff_reg_thr3(.din(data_thr3_next[SIZE -1:0]), .clk(clk), .q(data_thr3[SIZE -1:0]),
+                       .se(se), .si(), .so());
+`endif // !`ifdef FPGA_SYN_1THREAD
+   
+endmodule // sparc_exu_reg
+(.dout(

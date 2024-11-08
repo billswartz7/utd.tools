@@ -1,0 +1,9 @@
+icread_itools::state groute
+icwrite_def [file join ../ output riscv.def] -placed  -sections {rows nocoresites vias components pins nets}
+# Copy over the .guide file
+set guide_path [file join groute output riscv.guide]
+if {[file exists $guide_path]} {
+  set output_guide [file join ../output riscv.guide]
+  file copy $guide_path $output_guide
+}
+exit

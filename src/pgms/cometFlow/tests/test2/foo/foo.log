@@ -1,0 +1,44 @@
+####################################################
+time 1571780530 Tue Oct 22 16:42:10 2019:itranslate started...
+@ itranslate -v -g foo 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2 HOST android_357814049342952.utdallas.edu PID 82812 PVERSION v2.0.0pre46
+% Selected file:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef...
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef read.
+icread_synopsys new_lib6.lib
+[icread_synopsys]:reading new_lib6.lib...
+WARNING[syn_init_model]:Could not find model:NAND4_1x
+WARNING[syn_init_model]:Could not find model:NAND4_2x
+WARNING[syn_init_model]:Could not find model:NAND4_3x
+WARNING[syn_init_model]:Could not find model:NAND4_5x
+WARNING[syn_init_model]:Could not find model:NAND4_7x
+WARNING[syn_init_model]:Could not find model:NOR4_1x
+WARNING[syn_init_model]:Could not find model:NOR4_2x
+WARNING[syn_init_model]:Could not find model:NOR4_3x
+WARNING[syn_init_model]:Could not find model:NOR4_5x
+WARNING[syn_init_model]:Could not find model:NOR4_7x
+% 
+itranslate terminated normally with no errors and 10 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1571780691 Tue Oct 22 16:44:51 2019:itranslate started...
+@ itranslate -v -g foo 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 82831 PVERSION v2.0.0pre46
+% Selected file:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef...
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef read.
+% 
+itranslate terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1571781026 Tue Oct 22 16:50:26 2019:itranslate started...
+@ itranslate -v -g foo 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 82853 PVERSION v2.0.0pre46
+% Selected file:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef...
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef read.
+icread_synopsys new_lib6.lib
+[icread_synopsys]:reading new_lib6.lib...
+% 
+itranslate terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+

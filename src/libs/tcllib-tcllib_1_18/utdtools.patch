@@ -1,0 +1,14 @@
+*** pkgIndex.tcl.orig	Tue Jun 19 09:13:33 2018
+--- pkgIndex.tcl	Tue Jun 19 09:15:43 2018
+***************
+*** 5,10 ****
+--- 5,13 ----
+  # All tcllib packages need Tcl 8 (use [namespace])
+  if {![package vsatisfies [package provide Tcl] 8]} {return}
+  
++ global env
++ set dir [file join $env(UTDTOOLS) tcl tcllib lib tcllib]
++ 
+  # Extend the auto_path to make tcllib packages available
+  if {[lsearch -exact $::auto_path $dir] == -1} {
+      lappend ::auto_path $dir

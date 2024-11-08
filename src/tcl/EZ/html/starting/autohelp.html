@@ -1,0 +1,55 @@
+<!DOCTYPE HTML PUBLIC "-//SQ//DTD HTML 2.0 HoTMetaL + extensions//EN"> 
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE> Auto Help Command</TITLE>
+</HEAD>
+ 
+<BODY LINK="#000080">
+<CENTER>
+<H2><FONT COLOR="#000080">Auto Help Command</FONT></H2>
+</CENTER>
+<P>The EZlearn system consists of a set of programs which are Tcl programmable.
+The system may be extended by the users to suit their needs.  The system
+contains two types of Tcl commands : <I>builtin</I> commands and Tcl 
+procedures or <I>procs</I>.  In order to document the available commands 
+for each tool, an <I>autohelp</I> facillity has been built into each of the
+tools.  You may access the <I>autohelp</I> facillity while in the graphics
+mode.   You will find it under the <I>Help</I> menu that you find at
+the upper right corner of the graphics window.  After choosing the 
+<I>Commands</I> option, you will be presented with a window displaying
+the available commands in the current tool.</P>
+<CENTER>
+<P><IMG SRC="help_menu.gif" ALIGN="center" WIDTH="175" HEIGHT="140"></P>
+</CENTER>
+
+<P>Each line contains the name of the command followed by its type.  The
+user may receive more information for each command by double clicking
+on the desired line.   If the command is a <I>builtin</I> command, the command
+will be executed with the <I>-help</I> argument and the result presented
+in the transcript window.  If the command is a Tcl procedure, the source
+for the command will be presented in a scrollable text window.</P>
+
+<CENTER>
+<P><IMG SRC="cmds.gif" ALIGN="center" WIDTH="525" HEIGHT="375"></P>
+</CENTER>
+
+<P>At the bottom of the <I>Command Help</I> window are two buttons :
+<I>Dismiss</I> and <I>Load All Commands</I>.  The <I>Dismiss</I> button
+will exit the <I>Command Help</I> window.  The <I>Load All Commands</I>
+will load all Tcl procedures into the list of commands.  Normally, the
+Tcl procedures are <I>auto-loaded</I>, that is, they are only loaded when they
+are reference.  This makes the program load faster since only the minimal
+set of Tcl commands are loaded.  However, the user may wish to see all
+of the available commands.  The <I>Load All Commands</I> function will
+load all of the Tcl files into the program and then display them.</P>
+
+<CENTER>
+<P><IMG SRC="tclview.gif" ALIGN="center" WIDTH="600" HEIGHT="250"></P>
+</CENTER>
+
+<HR>
+</BODY>
+</HTML>
+ 

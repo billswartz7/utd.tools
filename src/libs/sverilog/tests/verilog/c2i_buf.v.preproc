@@ -1,0 +1,1195 @@
+
+	 			        
+
+
+module c2i_buf (
+      ucb_buf_acpt, iob_ucb_vld, iob_ucb_data, 
+      rst_l, clk, c2i_packet_vld, ucb_sel, c2i_packet, ucb_iob_stall
+   );
+
+      
+   parameter REG_WIDTH = 64;
+   parameter IOB_UCB_WIDTH = 32;
+   
+   
+      input                      rst_l;
+   input 		      clk;
+
+
+      input 		      c2i_packet_vld;
+   input 		      ucb_sel;
+   output 		      ucb_buf_acpt;
+
+   
+      input [REG_WIDTH+63:0]     c2i_packet;
+   
+   
+      output                     iob_ucb_vld;
+   output [IOB_UCB_WIDTH-1:0] iob_ucb_data;
+   input 	              ucb_iob_stall;
+   
+   
+      wire 		      ;
+   wire 		      dbl_buf_rd;
+   wire 		      dbl_buf_vld;
+   wire 		      dbl_buf_full;
+   
+   wire 		      outdata_buf_wr;
+   wire [REG_WIDTH+63:0]      outdata_buf_in;
+   wire [(REG_WIDTH+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   wire 		      ;
+   wire 		      dbl_buf_vld;
+   wire 		      dbl_buf_full;
+   
+   wire 		      outdata_buf_wr;
+   wire [REG_WIDTH+63:0]      outdata_buf_in;
+   wire [(REG_WIDTH+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   wire 		      ;
+   wire 		      dbl_buf_full;
+   
+   wire 		      outdata_buf_wr;
+   wire [REG_WIDTH+63:0]      outdata_buf_in;
+   wire [(REG_WIDTH+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   wire 		      ;
+   
+   wire 		      outdata_buf_wr;
+   wire [REG_WIDTH+63:0]      outdata_buf_in;
+   wire [(REG_WIDTH+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   
+   wire 		      ;
+   wire [REG_WIDTH+63:0]      outdata_buf_in;
+   wire [(REG_WIDTH+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   wire [+63:0]      outdata_buf_in;
+   wire [(REG_WIDTH+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
++63:0]      ;
+   wire [(REG_WIDTH+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   wire [(+64)/IOB_UCB_WIDTH-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
++64)/-1:0] outdata_vec_in;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+-1:0] ;
+   wire 		      outdata_buf_busy;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   wire 		      ;
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+
+   assign 	 dbl_buf_wr = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+
+   
+
+   assign 	  = c2i_packet_vld & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ =  & ucb_sel & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ &  & ~dbl_buf_full;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ & ~;
+   assign 	 ucb_buf_acpt = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   assign 	  = dbl_buf_wr;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ = ;
+   assign 	 dbl_buf_rd = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   assign 	  = dbl_buf_vld & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ =  & ~outdata_buf_busy;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ & ~;
+   assign 	 outdata_buf_wr = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   assign 	  = dbl_buf_rd;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ = ;
+   assign 	 outdata_vec_in = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+;
+   assign 	  = {(REG_WIDTH+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ = {(+64)/IOB_UCB_WIDTH{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
++64)/{1'b1}};
+   
+
+   dbl_buf #(REG_WIDTH+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+{1bb}};
+   
+
+   dbl_buf #(+64) dbl_buf (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
++64)  (.rst_l(rst_l),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ (.rst_l(),
+				    .clk(clk),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+				    .clk(),
+				    .wr(dbl_buf_wr),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+				    .wr(),
+				    .din(c2i_packet),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+				    .din(),
+				    .rd(dbl_buf_rd),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+				    .rd(),
+				    .dout(outdata_buf_in),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+				    .dout(),
+				    .vld(dbl_buf_vld),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+				    .vld(),
+				    .full(dbl_buf_full));
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+				    .full());
+   
+   ucb_bus_out #(IOB_UCB_WIDTH,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+));
+   
+   ucb_bus_out #(,REG_WIDTH) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+,) ucb_bus_out (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+)  (.rst_l(rst_l),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+ (.rst_l(),
+                                                       .clk(clk),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .clk(),
+                                                       .outdata_buf_wr(outdata_buf_wr),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .outdata_buf_wr(),
+                                                       .outdata_buf_in(outdata_buf_in),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .outdata_buf_in(),
+                                                       .outdata_vec_in(outdata_vec_in),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .outdata_vec_in(),
+                                                       .outdata_buf_busy(outdata_buf_busy),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .outdata_buf_busy(),
+                                                       .vld(iob_ucb_vld),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .vld(),
+                                                       .data(iob_ucb_data),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .data(),
+                                                       .stall(ucb_iob_stall));
+
+
+endmodule // c2i_buf
+
+),
+                                                       .stall());
+
+
+endmodule // c2i_buf
+
+));
+
+
+endmodule 

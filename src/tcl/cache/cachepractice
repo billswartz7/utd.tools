@@ -1,0 +1,14 @@
+#!/bin/sh
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/cache/cache.tcl -- $1

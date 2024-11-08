@@ -1,0 +1,158 @@
+
+
+module dffsle_ns (
+    q, 
+    din, en, set_l, clk
+  );
+  
+  parameter SIZE = 1;
+
+  input  [SIZE-1:0] din;	  input 	    en;		  input 	    set_l;	  input 	    clk;	
+  output [SIZE-1:0] q;		
+  wire              ;
+  wire 	 [SIZE-1:0] din_wire, q_wire;
+
+  // Enable Interpretation. Ultimate interpretation depends on design
+  //
+  // set_l   en      out
+  //---------------------
+  // 0       x       1   ; set dominates
+  // 1       1       din
+  // 1       0       q
+  //
+
+  //// synopsys sync_set_reset "set_l"
+  //always @ (posedge clk)
+  //  if (!set_l)
+  //    q[SIZE-1:0] <= {SIZE{1'b1}};
+  //  else if (en)
+  //    q[SIZE-1:0] <= din[SIZE-1:0];
+
+  // When 'set_l' is asserted, the value of '1' is forced onto the .din flop input and the .en pin
+  // is forced on to load the '1' into the flop on the next clock.
+  assign din_wire[SIZE-1:0] =  ((en)? din[SIZE-1:0]: q_wire[SIZE-1:0]) | {SIZE{(~set_l)}};
+  assign en_wire = en || (~set_l);
+
+  dffe_ns #(SIZE) dff_reg (.din(din_wire[SIZE-1:0]), .en(en_wire), .q(q_wire[SIZE-1:0]), .clk(clk));
+
+  assign q = q_wire;
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_int_arb")
+// End:
+;
+  wire 	 [-1:0] din_wire, q_wire;
+
+  // Enable Interpretation. Ultimate interpretation depends on design
+  //
+  // set_l   en      out
+  //---------------------
+  // 0       x       1   ; set dominates
+  // 1       1       din
+  // 1       0       q
+  //
+
+  //// synopsys sync_set_reset "set_l"
+  //always @ (posedge clk)
+  //  if (!set_l)
+  //    q[SIZE-1:0] <= {SIZE{1'b1}};
+  //  else if (en)
+  //    q[SIZE-1:0] <= din[SIZE-1:0];
+
+  // When 'set_l' is asserted, the value of '1' is forced onto the .din flop input and the .en pin
+  // is forced on to load the '1' into the flop on the next clock.
+  assign din_wire[SIZE-1:0] =  ((en)? din[SIZE-1:0]: q_wire[SIZE-1:0]) | {SIZE{(~set_l)}};
+  assign en_wire = en || (~set_l);
+
+  dffe_ns #(SIZE) dff_reg (.din(din_wire[SIZE-1:0]), .en(en_wire), .q(q_wire[SIZE-1:0]), .clk(clk));
+
+  assign q = q_wire;
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_int_arb")
+// End:
+-1:0] , q_wire;
+
+  // Enable Interpretation. Ultimate interpretation depends on design
+  //
+  // set_l   en      out
+  //---------------------
+  // 0       x       1   ; set dominates
+  // 1       1       din
+  // 1       0       q
+  //
+
+  //// synopsys sync_set_reset "set_l"
+  //always @ (posedge clk)
+  //  if (!set_l)
+  //    q[SIZE-1:0] <= {SIZE{1'b1}};
+  //  else if (en)
+  //    q[SIZE-1:0] <= din[SIZE-1:0];
+
+  // When 'set_l' is asserted, the value of '1' is forced onto the .din flop input and the .en pin
+  // is forced on to load the '1' into the flop on the next clock.
+  assign din_wire[SIZE-1:0] =  ((en)? din[SIZE-1:0]: q_wire[SIZE-1:0]) | {SIZE{(~set_l)}};
+  assign en_wire = en || (~set_l);
+
+  dffe_ns #(SIZE) dff_reg (.din(din_wire[SIZE-1:0]), .en(en_wire), .q(q_wire[SIZE-1:0]), .clk(clk));
+
+  assign q = q_wire;
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_int_arb")
+// End:
+, ;
+
+  // Enable Interpretation. Ultimate interpretation depends on design
+  //
+  // set_l   en      out
+  //---------------------
+  // 0       x       1   ; set dominates
+  // 1       1       din
+  // 1       0       q
+  //
+
+  //// synopsys sync_set_reset "set_l"
+  //always @ (posedge clk)
+  //  if (!set_l)
+  //    q[SIZE-1:0] <= {SIZE{1'b1}};
+  //  else if (en)
+  //    q[SIZE-1:0] <= din[SIZE-1:0];
+
+  // When 'set_l' is asserted, the value of '1' is forced onto the .din flop input and the .en pin
+  // is forced on to load the '1' into the flop on the next clock.
+  assign din_wire[SIZE-1:0] =  ((en)? din[SIZE-1:0]: q_wire[SIZE-1:0]) | {SIZE{(~set_l)}};
+  assign en_wire = en || (~set_l);
+
+  dffe_ns #(SIZE) dff_reg (.din(din_wire[SIZE-1:0]), .en(en_wire), .q(q_wire[SIZE-1:0]), .clk(clk));
+
+  assign q = q_wire;
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_int_arb")
+// End:
+;
+
+                
+            
+      assign 

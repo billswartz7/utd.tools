@@ -1,0 +1,2 @@
+module RAM16GEN (DOUT, DIN, ADR, WE, CE);
+specparam

@@ -1,0 +1,20 @@
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:metal2 pitch:1.6 offset:0.8
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (888,900).
+Adjusted padring: (-4,-4) (888,904).
+
+WARNING[findcost]:Large net <rst> has 266 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <clk> has 399 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 175 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h1> has 264 pins exceeding threshold and is now IGNORED.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (-4,-21.3) (888,921.3).
+Adjusted padring: (-4,-21.3) (892,921.3).
+

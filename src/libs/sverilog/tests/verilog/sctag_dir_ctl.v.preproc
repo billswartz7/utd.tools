@@ -1,0 +1,1078 @@
+module sctag_dir_ctl(
+      so, rd_data_en_c4, wr_data_en_c4, cam_en_c4, rw_entry_c4, 
+   inval_mask_c4, warm_rst_c4, rd_data_sel0_c5, rd_data_sel1_c5, 
+   rd_data_sel_right_c6, rd_data_sel_left_c6, 
+      lkup_en_c4_buf, inval_mask_c4_buf, rw_dec_c4_buf, rd_en_c4_buf, 
+   wr_en_c4_buf, rw_entry_c4_buf, dir_clear_c4_buf, rclk, si, se, 
+   sehold
+   );
+
+
+
+input	[3:0]	lkup_en_c4_buf ;  
+input	[7:0]	inval_mask_c4_buf ; 
+input	[3:0]	rw_dec_c4_buf; input		rd_en_c4_buf ; input		wr_en_c4_buf ; 
+input	[5:0]	rw_entry_c4_buf; 
+input		dir_clear_c4_buf ; 
+
+input	rclk;
+input	si, se;
+input	sehold; output	so;
+
+output	[3:0]	rd_data_en_c4, wr_data_en_c4; output	[3:0]	cam_en_c4; 
+output	[5:0]	rw_entry_c4;
+output	[7:0]	inval_mask_c4; output		warm_rst_c4;
+
+
+output		rd_data_sel0_c5;
+output		rd_data_sel1_c5;
+
+output	rd_data_sel_right_c6; 
+
+output	rd_data_sel_left_c6;
+
+wire		, rd_data_sel_right_c5;
+
+wire	[3:0]   rd_data_en_c5;	//( 0 leftTOp, 1 rightTOp, 2 leftBOttom 3 RightBottom )
+
+
+assign	warm_rst_c4 = dir_clear_c4_buf ;
+
+assign	rd_data_en_c4 = {4{rd_en_c4_buf}} & rw_dec_c4_buf ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+, ;
+
+wire	[3:0]   rd_data_en_c5;	//( 0 leftTOp, 1 rightTOp, 2 leftBOttom 3 RightBottom )
+
+
+assign	warm_rst_c4 = dir_clear_c4_buf ;
+
+assign	rd_data_en_c4 = {4{rd_en_c4_buf}} & rw_dec_c4_buf ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+;
+
+wire	[3:0]   ;	//( 0 leftTOp, 1 rightTOp, 2 leftBOttom 3 RightBottom )
+
+
+assign	warm_rst_c4 = dir_clear_c4_buf ;
+
+assign	rd_data_en_c4 = {4{rd_en_c4_buf}} & rw_dec_c4_buf ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+;	
+
+assign	 = dir_clear_c4_buf ;
+
+assign	rd_data_en_c4 = {4{rd_en_c4_buf}} & rw_dec_c4_buf ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ =  ;
+
+assign	rd_data_en_c4 = {4{rd_en_c4_buf}} & rw_dec_c4_buf ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ ;
+
+assign	 = {4{rd_en_c4_buf}} & rw_dec_c4_buf ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ = {4{}} & rw_dec_c4_buf ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+}} &  ;
+//---------------\/ added to prevent a write and valid bit reset conflict \/-----------
+assign	wr_data_en_c4 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ ;
+assign	 = {4{wr_en_c4_buf & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ = {4{ & ~warm_rst_c4 }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ & ~ }} & rw_dec_c4_buf ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ }} &  ;
+
+dffe_s   #(2) ff_rd_data_en_c5_en (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ ;
+
+dffe_s   #(2)  (
+		.q   (rd_data_en_c5[1:0]), .din (rd_data_en_c4[1:0]),
+		.en(~sehold),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ (
+		.q   ([1:0]), .din ([1:0]),
+		.en(~),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+),
+               	.clk (), .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .se(), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2) ff_rd_data_en_c5 (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .si  (), .so  ()
+              ) ;
+
+dff_s   #(2)  (
+		.q   (rd_data_en_c5[3:2]), .din (rd_data_en_c4[3:2]),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ (
+		.q   ([3:2]), .din ([3:2]),
+               	.clk (), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .se(), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel0_c5	= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .si  (), .so  ()
+              ) ;
+
+assign		= rd_data_en_c5[0] ;
+assign	rd_data_sel1_c5	= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+	= [0] ;
+assign		= rd_data_en_c5[1] ;
+
+
+
+assign	rd_data_sel_left_c5 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+	= [1] ;
+
+
+
+assign	 = rd_data_en_c5[0] | rd_data_en_c5[2] ;
+
+dff_s   #(1) ff_rd_data_sel_left_c6 (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ = [0] | [2] ;
+
+dff_s   #(1)  (
+		.q   (rd_data_sel_left_c6), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ (
+		.q   (), .din (rd_data_sel_left_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .din (),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+),
+               	.clk (), .se(se), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .se(), .si  (), .so  ()
+              ) ;
+
+assign	rd_data_sel_right_c5 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .si  (), .so  ()
+              ) ;
+
+assign	 = rd_data_en_c5[1] | rd_data_en_c5[3] ;
+
+dff_s   #(1) ff_rd_data_sel_right_c6 (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ = [1] | [3] ;
+
+dff_s   #(1)  (
+		.q   (rd_data_sel_right_c6), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+ (
+		.q   (), .din (rd_data_sel_right_c5),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .din (),
+               	.clk (rclk), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+),
+               	.clk (), .se(se), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .se(), .si  (), .so  ()
+              ) ;
+
+
+assign	cam_en_c4[3:0] = lkup_en_c4_buf[3:0] ;
+assign	inval_mask_c4[7:0]	= inval_mask_c4_buf[7:0] ;
+assign	rw_entry_c4[5:0] =  rw_entry_c4_buf[5:0] ;
+
+
+endmodule
+
+), .si  (), .so  ()
+              ) ;
+
+
+assign	[3:0] = [3:0] ;
+assign	[7:0]	= [7:0] ;
+assign	[5:0] =  [5:0] ;
+
+
+endmodule
+

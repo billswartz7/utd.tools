@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"> 
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE>Library Creation</TITLE>
+</HEAD>
+ 
+<BODY TEXT="#000010" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B"
+ ALINK="#FF0000">
+<H1><I>Library Creation</I></H1>
+
+<PRE>
+Problem definition:
+In this question, you will need to create a simple  program
+that will use a library to compute the Fibonacci series of
+the following number 
+
+   10,
+
+and then perform the following operation
+ 
+   an x^3 on it.
+ 
+The name of the library function should called:
+
+   UTDfibronacci and should have the following prototype
+
+extern double UTDfibronacci( int number ) ;
+
+which should reside in the header file: utdfib.h.
+
+To identify the program instance, add the following line 
+to the top of your program:
+
+fprintf( stderr, "PROGRAMID: 2\n" ) ;
+You are  to output the answer on a single line followed by 
+a new line.  The output should be printed to the screen 
+using two digits of precision after the decimal place.
+You should output to stderr rather than stdout, that is, 
+use
+ 
+ fprintf ( stderr, format_string, ... )  
+ 
+as a mechanism to output the answer.  You should use the following
+template for your answer:
+
+"ANSWER: %.2lf\n"
+ 
+If your answer is an integer, cast it to a double.
+All floating point operations should be done in double precision.
+
+Put your library function in a file called utdfib.c or utdfib.cpp 
+containing you library function.   This file should include a
+include to the file utdfib.h.
+
+Put your main or calling program in a file called 'problem2.c' or
+'problem2.cpp' if you wish to write using C++.   The name of the
+program must be called problem2.
+ 
+Build a makefile for your program.  The name of the file should be
+'Makefile' and exist in the current working directory.   It should
+create a dynamic library named libfib with the proper suffix.
+</PRE>
+
+
+
+</BODY>
+</HTML>

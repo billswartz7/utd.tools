@@ -1,0 +1,2509 @@
+
+	 			
+ 
+
+ 
+
+
+
+module ccx_arbc(
+      scan_out, ccx_dest_data_rdy_x, arb_src5_grant_a, arb_src4_grant_a, 
+   arb_src3_grant_a, arb_src2_grant_a, arb_src1_grant_a, 
+   arb_src0_grant_a, arb_dp_grant_a, arb_dp_q0_hold_a, 
+   arb_dp_qsel0_a, arb_dp_qsel1_a, arb_dp_shift_x, 
+      src5_arb_req_q, src5_arb_atom_q, src4_arb_req_q, src4_arb_atom_q, 
+   src3_arb_req_q, src3_arb_atom_q, src2_arb_req_q, src2_arb_atom_q, 
+   src1_arb_req_q, src1_arb_atom_q, src0_arb_req_q, src0_arb_atom_q, 
+   se, scan_in, reset_l, rclk, adbginit_l
+   );
+   
+
+output			arb_src0_grant_a;	output			arb_src1_grant_a;	output			arb_src2_grant_a;	output			arb_src3_grant_a;	output			arb_src4_grant_a;	output			arb_src5_grant_a;	output			ccx_dest_data_rdy_x;	output			scan_out;		
+
+
+   output [5:0]		arb_dp_grant_a;		
+   output [5:0]		arb_dp_q0_hold_a;	
+   output [5:0]		arb_dp_qsel0_a;		
+   output [5:0]		arb_dp_qsel1_a;		
+   output [5:0]		arb_dp_shift_x;		
+
+
+   
+      input		adbginit_l;		   input		rclk;			   input		reset_l;		   input		scan_in;		   input		se;			   input		src0_arb_atom_q;	   input		src0_arb_req_q;		   input		src1_arb_atom_q;	   input		src1_arb_req_q;		   input		src2_arb_atom_q;	   input		src2_arb_req_q;		   input		src3_arb_atom_q;	   input		src3_arb_req_q;		   input		src4_arb_atom_q;	   input		src4_arb_req_q;		   input		src5_arb_atom_q;	   input		src5_arb_req_q;		   
+
+   
+
+   wire   ;	
+   wire  src6_arb_req_q ;	
+   wire  src7_arb_atom_q ;	
+   wire  src7_arb_req_q ;	
+   wire  stall1_q ;		
+   wire  stall2_q ;		
+
+
+   wire [1:0] 		sinka;
+   wire [1:0] 		sinkb;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ ;	
+   wire   ;	
+   wire  src7_arb_atom_q ;	
+   wire  src7_arb_req_q ;	
+   wire  stall1_q ;		
+   wire  stall2_q ;		
+
+
+   wire [1:0] 		sinka;
+   wire [1:0] 		sinkb;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ ;	
+   wire   ;	
+   wire  src7_arb_req_q ;	
+   wire  stall1_q ;		
+   wire  stall2_q ;		
+
+
+   wire [1:0] 		sinka;
+   wire [1:0] 		sinkb;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ ;	
+   wire   ;	
+   wire  stall1_q ;		
+   wire  stall2_q ;		
+
+
+   wire [1:0] 		sinka;
+   wire [1:0] 		sinkb;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ ;	
+   wire   ;		
+   wire  stall2_q ;		
+
+
+   wire [1:0] 		sinka;
+   wire [1:0] 		sinkb;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ ;		
+   wire   ;		
+
+
+   wire [1:0] 		sinka;
+   wire [1:0] 		sinkb;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ ;		
+
+
+   wire [1:0] 		;
+   wire [1:0] 		sinkb;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+;
+   wire [1:0] 		;
+   wire [1:0] 		sinkc;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+;
+   wire [1:0] 		;
+   wire [1:0] 		sinkd;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+;
+   wire [1:0] 		;
+   wire [1:0] 		sinke;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+;
+   wire [1:0] 		;
+   
+ 
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   // End of automatics
+
+   assign  src6_arb_atom_q = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+;
+   
+ 
+   
+      
+   assign   = 1'b0;	
+   assign  src6_arb_req_q = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ = 1bb;	
+   assign   = 1'b0;	
+   assign  src7_arb_atom_q = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ = 1bb;	
+   assign   = 1'b0;	
+   assign  src7_arb_req_q = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ = 1bb;	
+   assign   = 1'b0;	
+   assign  stall1_q = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ = 1bb;	
+   assign   = 1'b0;
+   assign  stall2_q = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ = 1bb;
+   assign   = 1'b0;
+
+// commented out - backend does not like this
+//   sink #(2) sink1(.in (sinka[1:0]));
+//   sink #(2) sink2(.in (sinkb[1:0]));
+//   sink #(2) sink3(.in (sinkc[1:0]));
+//   sink #(2) sink4(.in (sinkd[1:0]));
+//   sink #(2) sink5(.in (sinke[1:0]));
+   
+/*
+ 
+  ccx_arb AUTO_TEMPLATE(
+		   .ccx_dest_atom_x	(),
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}),
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}),
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}),
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}),
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}),
+		   .arb_src6_grant_a	(),
+		   .arb_src7_grant_a	());
+ */
+    
+   ccx_arb ccx_arb(/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+ = 1bb;
+
+   
+
+    
+   ccx_arb (/*AUTOINST*/
+		   // Outputs
+		   .arb_dp_grant_a	({sinka[0], sinka[1],arb_dp_grant_a[5:0]}), // Templated
+		   .arb_dp_q0_hold_a	({sinkb[0], sinkb[1],arb_dp_q0_hold_a[5:0]}), // Templated
+		   .arb_dp_qsel0_a	({sinkc[0], sinkc[1],arb_dp_qsel0_a[5:0]}), // Templated
+		   .arb_dp_qsel1_a	({sinkd[0], sinkd[1],arb_dp_qsel1_a[5:0]}), // Templated
+		   .arb_dp_shift_x	({sinke[0], sinke[1],arb_dp_shift_x[5:0]}), // Templated
+		   .arb_src0_grant_a	(arb_src0_grant_a),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+(
+		   		   .arb_dp_grant_a	({[0], [1],[5:0]}), 		   .arb_dp_q0_hold_a	({[0], [1],[5:0]}), 		   .arb_dp_qsel0_a	({[0], [1],[5:0]}), 		   .arb_dp_qsel1_a	({[0], [1],[5:0]}), 		   .arb_dp_shift_x	({[0], [1],[5:0]}), 		   .arb_src0_grant_a	(),
+		   .arb_src1_grant_a	(arb_src1_grant_a),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .arb_src1_grant_a	(),
+		   .arb_src2_grant_a	(arb_src2_grant_a),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .arb_src2_grant_a	(),
+		   .arb_src3_grant_a	(arb_src3_grant_a),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .arb_src3_grant_a	(),
+		   .arb_src4_grant_a	(arb_src4_grant_a),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .arb_src4_grant_a	(),
+		   .arb_src5_grant_a	(arb_src5_grant_a),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .arb_src5_grant_a	(),
+		   .arb_src6_grant_a	(),			 // Templated
+		   .arb_src7_grant_a	(),			 // Templated
+		   .ccx_dest_atom_x	(),			 // Templated
+		   .ccx_dest_data_rdy_x	(ccx_dest_data_rdy_x),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .arb_src6_grant_a	(),			 		   .arb_src7_grant_a	(),			 		   .ccx_dest_atom_x	(),			 		   .ccx_dest_data_rdy_x	(),
+		   .scan_out		(scan_out),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .scan_out		(),
+		   // Inputs
+		   .adbginit_l		(adbginit_l),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   		   .adbginit_l		(),
+		   .rclk		(rclk),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .rclk		(),
+		   .reset_l		(reset_l),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .reset_l		(),
+		   .src0_arb_atom_q	(src0_arb_atom_q),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src0_arb_atom_q	(),
+		   .src0_arb_req_q	(src0_arb_req_q),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src0_arb_req_q	(),
+		   .src1_arb_atom_q	(src1_arb_atom_q),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src1_arb_atom_q	(),
+		   .src1_arb_req_q	(src1_arb_req_q),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src1_arb_req_q	(),
+		   .src2_arb_atom_q	(src2_arb_atom_q),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src2_arb_atom_q	(),
+		   .src2_arb_req_q	(src2_arb_req_q),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src2_arb_req_q	(),
+		   .src3_arb_atom_q	(src3_arb_atom_q),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src3_arb_atom_q	(),
+		   .src3_arb_req_q	(src3_arb_req_q),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src3_arb_req_q	(),
+		   .src4_arb_atom_q	(src4_arb_atom_q),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src4_arb_atom_q	(),
+		   .src4_arb_req_q	(src4_arb_req_q),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src4_arb_req_q	(),
+		   .src5_arb_atom_q	(src5_arb_atom_q),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src5_arb_atom_q	(),
+		   .src5_arb_req_q	(src5_arb_req_q),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src5_arb_req_q	(),
+		   .src6_arb_atom_q	(src6_arb_atom_q),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src6_arb_atom_q	(),
+		   .src6_arb_req_q	(src6_arb_req_q),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src6_arb_req_q	(),
+		   .src7_arb_atom_q	(src7_arb_atom_q),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src7_arb_atom_q	(),
+		   .src7_arb_req_q	(src7_arb_req_q),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .src7_arb_req_q	(),
+		   .stall1_q		(stall1_q),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .stall1_q		(),
+		   .stall2_q		(stall2_q),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .stall2_q		(),
+		   .scan_in		(scan_in),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .scan_in		(),
+		   .se			(se));
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+),
+		   .se			());
+   
+endmodule // ccx_arb
+
+
+
+
+
+
+
+
+
+));
+   
+endmodule 
+
+
+
+
+
+
+
+

@@ -1,0 +1,1265 @@
+
+ 
+ 
+ 
+
+module one_hot_mux_mon ();
+
+wire  = cmp_top.iop.sparc0.rclk ;
+wire rst_l = cmp_top.iop.sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+   = .iop.sparc0.rclk ;
+wire rst_l = cmp_top.iop.sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+  ..sparc0.rclk ;
+wire rst_l = cmp_top.iop.sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+  ..rclk ;
+wire rst_l = cmp_top.iop.sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+  . ;
+wire rst_l = cmp_top.iop.sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+   ;
+wire  = cmp_top.iop.sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+   = .iop.sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+  ..sparc0.spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+  ..spc_grst_l ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+  . ;
+reg check_on ;
+reg rst_done ;
+
+////////////////////////////////////////////////////////////////////////////////
+// Look for proper reset deassertion
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  rst_done = 1'b0 ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  @(posedge cmp_top.iop.sparc0.spc_grst_l) ;
+  repeat (4) @(posedge cmp_top.iop.sparc0.rclk) ;
+  rst_done = 1'b1 ;
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// enable/disable using a +arg
+////////////////////////////////////////////////////////////////////////////////
+
+initial begin
+  check_on = 0 ;
+  if ($test$plusargs("one_hot_mux_mon_on")) begin
+    check_on = 1 ;
+  end
+end
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 3 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux3 ;
+  input rst_l ;
+  input [2:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 3'b001) &&
+        (sel !== 3'b010) && 
+        (sel !== 3'b100)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %3b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+////////////////////////////////////////////////////////////////////////////////
+// check one hot sel for 4 sel muxes
+////////////////////////////////////////////////////////////////////////////////
+
+task one_hot_mux4 ;
+  input rst_l ;
+  input [3:0] sel ;
+  input [4095:0] name ;
+
+  if (rst_l) begin
+    if ((sel !== 4'b0001) &&
+        (sel !== 4'b0010) &&
+        (sel !== 4'b0100) &&
+        (sel !== 4'b1000)) begin
+      $display("%0d : ERROR : %0s is not one hot, it has the value %4b\n", $time, name, sel) ;
+      $finish() ;
+    end
+  end
+endtask
+
+
+`ifdef RTL_SPARC0
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.ifu.icd.icden_mux.sel, "sparc0.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte1_1h_mx.sel, "sparc0.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte2_1st_mx.sel, "sparc0.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dcdp.align_byte3_1st_mx.sel, "sparc0.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.dctldp.tlb_ctxt_mux.sel, "sparc0.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_data_mx.sel, "sparc0.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp0_ldxa_mx") ;
+`ifdef FPGA_SYN_1THREAD
+`else
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_data_mx.sel, "sparc0.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_data_mx.sel, "sparc0.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_data_mx.sel, "sparc0.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc0.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc0.lsu.qdp1.lmq_dthrd_sel1") ;
+`endif
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte2_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte3_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte3_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte4_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte4_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte5_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte5_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte6_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte6_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.stb_rwdp.swap_byte7_mx.sel, "sparc0.lsu.stb_rwdp.swap_byte7_mx") ;
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc0.tlu.mmu_dp.dtag_access_dsel.sel, "sparc0.tlu.mmu_dp.dtag_access_dsel") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54.sel, "sparc0.lsu.qdp2.st_dcfill_wrway_sel_b54") ;
+  end
+end
+
+`endif
+
+
+`ifdef RTL_SPARC1
+
+always @(posedge clk) begin
+  if (rst_done && check_on) begin
+    one_hot_mux3 (rst_l, `TOP_DESIGN.sparc1.ifu.icd.icden_mux.sel, "sparc1.ifu.icd.icden_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte1_1h_mx.sel, "sparc1.lsu.dcdp.align_byte1_1h_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte2_1st_mx.sel, "sparc1.lsu.dcdp.align_byte2_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dcdp.align_byte3_1st_mx.sel, "sparc1.lsu.dcdp.align_byte3_1st_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.dctldp.tlb_ctxt_mux.sel, "sparc1.lsu.dctldp.tlb_ctxt_mux") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_data_mx.sel, "sparc1.lsu.qdp1.ldbyp0_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp0_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp0_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_data_mx.sel, "sparc1.lsu.qdp1.ldbyp1_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp1_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp1_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_data_mx.sel, "sparc1.lsu.qdp1.ldbyp2_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp2_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp2_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_data_mx.sel, "sparc1.lsu.qdp1.ldbyp3_data_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.ldbyp3_ldxa_mx.sel, "sparc1.lsu.qdp1.ldbyp3_ldxa_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.qdp1.lmq_dthrd_sel1.sel, "sparc1.lsu.qdp1.lmq_dthrd_sel1") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte0_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte0_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte1_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte1_mx") ;
+    one_hot_mux4 (rst_l, `TOP_DESIGN.sparc1.lsu.stb_rwdp.swap_byte2_mx.sel, "sparc1.lsu.stb_rwdp.swap_byte2_mx") ;
+   ;
+reg

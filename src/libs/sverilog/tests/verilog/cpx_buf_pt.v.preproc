@@ -1,0 +1,189 @@
+
+
+
+
+
+	
+	
+
+module cpx_buf_pt(
+      out0_l, out1_l, cpx_src_grant_cx, so, 
+      in0, in1, cpx_src_grant_ca, rclk, si, se
+   );
+   
+
+   output [7:0]		out0_l;	
+   output 		out1_l;	
+   output [7:0]		cpx_src_grant_cx;	
+   output 		so;
+
+   input [7:0] 		in0;
+   input            	in1;
+   input [7:0]		cpx_src_grant_ca;	
+   input 		rclk;
+   input 		si;
+   input 		se;
+   
+   assign [7:0] = ~[7:0];
+   assign  = ~in1;
+
+   dff_s #(8) dff_ccx_com_src(
+            .din           (cpx_src_grant_ca[7:0]),
+	    .q             (cpx_src_grant_cx[7:0]),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (8'd0),
+	    .so            ());
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ = ~;
+
+   dff_s #(8) dff_ccx_com_src(
+            .din           (cpx_src_grant_ca[7:0]),
+	    .q             (cpx_src_grant_cx[7:0]),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (8'd0),
+	    .so            ());
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;
+
+   dff_s #(8) (
+            .din           (cpx_src_grant_ca[7:0]),
+	    .q             (cpx_src_grant_cx[7:0]),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (8'd0),
+	    .so            ());
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(
+            .din           ([7:0]),
+	    .q             ([7:0]),
+	    .clk           (),
+	    .se            (1'b0),
+	    .si            (8'd0),
+	    .so            ());
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+),
+	    .se            (1bb),
+	    .si            (8d0),
+	    .so            ());
+
+   
+
+
+
+
+endmodule 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,20 @@
+
+
+
+
+  
+
+module mb2cpx_sm (
+		cpx_fsl_s_read,
+	cpx_shift_out,
+	cpx_spc_data_rdy_cx2,
+
+		rclk,
+	reset_l,
+
+	fsl_cpx_s_exists,
+	fsl_cpx_s_control,
+	atomic_txn
+	);
+
+    parameter CPX_GEAR_RATIO = (((+3-1)/)

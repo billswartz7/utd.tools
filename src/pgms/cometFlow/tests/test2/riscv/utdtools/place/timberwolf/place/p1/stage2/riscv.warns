@@ -1,0 +1,21 @@
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:M1 pitch:0.03600 offset:0.01800
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (27.18000,27.36000).
+Adjusted padring: (-0.12925,-0.12925) (27.18000,27.48925).
+
+WARNING[findcost]:Large net <clk> has 256 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <rst> has 177 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 132 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h0> has 100 pins exceeding threshold and is now IGNORED.

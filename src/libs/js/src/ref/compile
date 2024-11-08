@@ -1,0 +1,81 @@
+Script started on Thu Jul  2 11:24:55 1998
+wolf:/wolf4/version2/netscape/newlayout/js/ref# make
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prarena.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prarena.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prassert.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prassert.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prdtoa.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prdtoa.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prhash.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prhash.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prlog2.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prlog2.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prlong.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prlong.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prprintf.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prprintf.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/prtime.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  prtime.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsapi.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsapi.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsarray.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsarray.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsatom.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsatom.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsbool.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsbool.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jscntxt.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jscntxt.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsdate.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsdate.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsdbgapi.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsdbgapi.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsemit.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsemit.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsfun.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsfun.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsgc.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsgc.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsinterp.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsinterp.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jslock.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jslock.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsmath.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsmath.c
+jsmath.c: In function `random_init':
+jsmath.c:256: warning: left shift count >= width of type
+jsmath.c:265: warning: left shift count >= width of type
+jsmath.c:265: warning: left shift count >= width of type
+jsmath.c:265: warning: right shift count is negative
+jsmath.c:269: warning: left shift count >= width of type
+jsmath.c:269: warning: left shift count >= width of type
+jsmath.c:269: warning: right shift count is negative
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsnum.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsnum.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsobj.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsobj.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsopcode.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsopcode.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsparse.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsparse.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsregexp.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsregexp.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsscan.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsscan.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsscope.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsscope.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsscript.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsscript.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsstr.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsstr.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/jsxdrapi.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  jsxdrapi.c
+ar rv Linux_All_DBG.OBJ/libjs.a Linux_All_DBG.OBJ/prarena.o Linux_All_DBG.OBJ/prassert.o Linux_All_DBG.OBJ/prdtoa.o Linux_All_DBG.OBJ/prhash.o Linux_All_DBG.OBJ/prlog2.o Linux_All_DBG.OBJ/prlong.o Linux_All_DBG.OBJ/prprintf.o Linux_All_DBG.OBJ/prtime.o Linux_All_DBG.OBJ/jsapi.o Linux_All_DBG.OBJ/jsarray.o Linux_All_DBG.OBJ/jsatom.o Linux_All_DBG.OBJ/jsbool.o Linux_All_DBG.OBJ/jscntxt.o Linux_All_DBG.OBJ/jsdate.o Linux_All_DBG.OBJ/jsdbgapi.o Linux_All_DBG.OBJ/jsemit.o Linux_All_DBG.OBJ/jsfun.o Linux_All_DBG.OBJ/jsgc.o Linux_All_DBG.OBJ/jsinterp.o Linux_All_DBG.OBJ/jslock.o Linux_All_DBG.OBJ/jsmath.o Linux_All_DBG.OBJ/jsnum.o Linux_All_DBG.OBJ/jsobj.o Linux_All_DBG.OBJ/jsopcode.o Linux_All_DBG.OBJ/jsparse.o Linux_All_DBG.OBJ/jsregexp.o Linux_All_DBG.OBJ/jsscan.o Linux_All_DBG.OBJ/jsscope.o Linux_All_DBG.OBJ/jsscript.o Linux_All_DBG.OBJ/jsstr.o Linux_All_DBG.OBJ/jsxdrapi.o
+r - Linux_All_DBG.OBJ/prarena.o
+r - Linux_All_DBG.OBJ/prassert.o
+r - Linux_All_DBG.OBJ/prdtoa.o
+r - Linux_All_DBG.OBJ/prhash.o
+r - Linux_All_DBG.OBJ/prlog2.o
+r - Linux_All_DBG.OBJ/prlong.o
+r - Linux_All_DBG.OBJ/prprintf.o
+r - Linux_All_DBG.OBJ/prtime.o
+r - Linux_All_DBG.OBJ/jsapi.o
+r - Linux_All_DBG.OBJ/jsarray.o
+r - Linux_All_DBG.OBJ/jsatom.o
+r - Linux_All_DBG.OBJ/jsbool.o
+r - Linux_All_DBG.OBJ/jscntxt.o
+r - Linux_All_DBG.OBJ/jsdate.o
+r - Linux_All_DBG.OBJ/jsdbgapi.o
+r - Linux_All_DBG.OBJ/jsemit.o
+r - Linux_All_DBG.OBJ/jsfun.o
+r - Linux_All_DBG.OBJ/jsgc.o
+r - Linux_All_DBG.OBJ/jsinterp.o
+r - Linux_All_DBG.OBJ/jslock.o
+r - Linux_All_DBG.OBJ/jsmath.o
+r - Linux_All_DBG.OBJ/jsnum.o
+r - Linux_All_DBG.OBJ/jsobj.o
+r - Linux_All_DBG.OBJ/jsopcode.o
+r - Linux_All_DBG.OBJ/jsparse.o
+r - Linux_All_DBG.OBJ/jsregexp.o
+r - Linux_All_DBG.OBJ/jsscan.o
+r - Linux_All_DBG.OBJ/jsscope.o
+r - Linux_All_DBG.OBJ/jsscript.o
+r - Linux_All_DBG.OBJ/jsstr.o
+r - Linux_All_DBG.OBJ/jsxdrapi.o
+echo Linux_All_DBG.OBJ/libjs.a
+Linux_All_DBG.OBJ/libjs.a
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/js.o -c -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  js.c
+gcc -Wall -Wno-format -o Linux_All_DBG.OBJ/js -g -DXP_UNIX -DSVR4 -DSYSV -D_BSD_SOURCE -DPOSIX_SOURCE -DLINUX  -DDEBUG -DDEBUG_root -ILinux_All_DBG.OBJ -DJSFILE  Linux_All_DBG.OBJ/js.o Linux_All_DBG.OBJ/libjs.a  -lm 
+wolf:/wolf4/version2/netscape/newlayout/js/ref# exit
+exit
+
+Script done on Thu Jul  2 11:26:01 1998

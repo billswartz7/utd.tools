@@ -1,0 +1,45 @@
+#!/bin/sh
+
+# "$RCSfile$ $Revision$ $Date$"
+
+RM=/bin/rm
+
+# ############## shell script to set up directory structure ################
+problem()
+{
+    echo ""
+    echo "ERROR[link_automake_files]: script failure."
+    echo "Problem encountered during creation of automake links"
+    echo "Syntax:"
+    echo "       link_automake_files directoryName"
+    echo ""
+    exit 1 ;
+}
+
+trap problem KILL
+trap problem INT
+trap problem QUIT
+
+if [ $# -lt 1 ] ; then
+  problem
+fi
+
+top_auto_dir=$1
+
+automake_files="compile config.guess config.sub depcomp install-sh ltmain.sh missing"
+
+for f in $automake_files ; do
+  echo "creating link to $f..."
+  auto_file=${top_auto_dir}/${f}
+  if [ -e $auto_file ] ; then
+    if [ -e ${f} ] ; then
+      \rm -rf ${f}
+    fi
+    ln -s ${auto_file}
+  else
+    echo "file:$auto_file does not exist"
+  fi
+done
+
+
+exit 0

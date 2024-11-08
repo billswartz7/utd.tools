@@ -1,0 +1,5551 @@
+ 
+
+module lsu_stb_ctldp (
+      so, stb_state_si_0, stb_state_si_1, stb_state_si_2, 
+   stb_state_si_3, stb_state_si_4, stb_state_si_5, stb_state_si_6, 
+   stb_state_si_7, stb_state_rtype_0, stb_state_rtype_1, 
+   stb_state_rtype_2, stb_state_rtype_3, stb_state_rtype_4, 
+   stb_state_rtype_5, stb_state_rtype_6, stb_state_rtype_7, 
+   stb_state_rmo, 
+      rclk, si, se, stb_clk_en_l, lsu_stb_va_m, lsu_st_rq_type_m, 
+   lsu_st_rmo_m
+   );
+   
+   input rclk;
+   input si;
+   input se;
+
+   output so;
+   
+   input [7:0] stb_clk_en_l;
+
+   input [7:6] lsu_stb_va_m;
+   input [2:1] lsu_st_rq_type_m;
+   input       lsu_st_rmo_m;
+
+   output [3:2] stb_state_si_0;
+   output [3:2] stb_state_si_1;
+   output [3:2] stb_state_si_2;
+   output [3:2] stb_state_si_3;
+   output [3:2] stb_state_si_4;
+   output [3:2] stb_state_si_5;
+   output [3:2] stb_state_si_6;
+   output [3:2] stb_state_si_7;
+
+   output [2:1] stb_state_rtype_0;
+   output [2:1] stb_state_rtype_1;
+   output [2:1] stb_state_rtype_2;
+   output [2:1] stb_state_rtype_3;
+   output [2:1] stb_state_rtype_4;
+   output [2:1] stb_state_rtype_5;
+   output [2:1] stb_state_rtype_6;
+   output [2:1] stb_state_rtype_7;
+
+   output [7:0] stb_state_rmo;
+   
+
+   wire [7:0] ;
+
+   wire       clk;
+   assign     clk = rclk;
+   
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb0_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[0]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[0])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb1_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .;
+
+   wire       ;
+   assign     clk = rclk;
+   
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb0_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[0]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[0])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb1_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .;
+   assign      = rclk;
+   
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb0_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[0]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[0])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb1_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . = ;
+   
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb0_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[0]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[0])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb1_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .;
+   
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[0]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[0])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb1_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[0]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[0])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb1_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([0]),
+                .tmb_l  (~),
+                .clk    (stb_clk[0])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb1_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([0])
+                ) ;
+
+
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[1]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([1]),
+                .tmb_l  (~),
+                .clk    (stb_clk[1])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb2_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([1])
+                ) ;
+
+
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[2]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([2]),
+                .tmb_l  (~),
+                .clk    (stb_clk[2])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb3_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([2])
+                ) ;
+
+
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[3]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([3]),
+                .tmb_l  (~),
+                .clk    (stb_clk[3])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb4_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([3])
+                ) ;
+
+
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[4]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([4]),
+                .tmb_l  (~),
+                .clk    (stb_clk[4])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb5_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([4])
+                ) ;
+
+
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[5]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([5]),
+                .tmb_l  (~),
+                .clk    (stb_clk[5])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb6_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([5])
+                ) ;
+
+
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[6]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([6]),
+                .tmb_l  (~),
+                .clk    (stb_clk[6])
+                ) ;
+`endif
+
+`ifdef FPGA_SYN_CLK_EN
+`else
+   clken_buf stb7_clkbuf (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([6])
+                ) ;
+
+
+ 
+   clken_buf  (
+                .rclk   (clk),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), . (
+                .rclk   (),
+                .enb_l  (stb_clk_en_l[7]),
+                .tmb_l  (~se),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .enb_l  ([7]),
+                .tmb_l  (~),
+                .clk    (stb_clk[7])
+                ) ;
+`endif
+
+   
+   
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .en (~(stb_clk_en_l[0])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_0         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .),
+                .clk    ([7])
+                ) ;
+
+
+   
+   
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .         (
+        .din    ({[7:6], [2:1], 
+		                      }),
+        .q      ({stb_state_si_0[3:2], stb_state_rtype_0[2:1],     
+		                       stb_state_rmo[0]}    ),
+        .clk    (stb_clk[0]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .}),
+        .q      ({[3:2], [2:1],     
+		                       [0]}    ),
+        .clk    ([0]),
+        .se     (), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .en (~(stb_clk_en_l[1])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_1         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .), .si (), .so ()
+        );
+
+
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                      lsu_st_rmo_m}),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .         (
+        .din    ({[7:6], [2:1], 
+		                      }),
+        .q      ({stb_state_si_1[3:2], stb_state_rtype_1[2:1],     
+		                   stb_state_rmo[1]}    ),
+        .clk    (stb_clk[1]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .}),
+        .q      ({[3:2], [2:1],     
+		                   [1]}    ),
+        .clk    ([1]),
+        .se     (), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .en (~(stb_clk_en_l[2])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_2         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .), .si (), .so ()
+        );
+
+
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .         (
+        .din    ({[7:6], [2:1], 
+		                    }),
+        .q      ({stb_state_si_2[3:2], stb_state_rtype_2[2:1],     
+		                   stb_state_rmo[2]}    ),
+        .clk    (stb_clk[2]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .}),
+        .q      ({[3:2], [2:1],     
+		                   [2]}    ),
+        .clk    ([2]),
+        .se     (), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .en (~(stb_clk_en_l[3])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_3         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .), .si (), .so ()
+        );
+
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .         (
+        .din    ({[7:6], [2:1], 
+		                    }),
+        .q      ({stb_state_si_3[3:2], stb_state_rtype_3[2:1],     
+		                   stb_state_rmo[3]}    ),
+        .clk    (stb_clk[3]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .}),
+        .q      ({[3:2], [2:1],     
+		                   [3]}    ),
+        .clk    ([3]),
+        .se     (), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .en (~(stb_clk_en_l[4])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_4         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .), .si (), .so ()
+        );
+
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .         (
+        .din    ({[7:6], [2:1], 
+		                    }),
+        .q      ({stb_state_si_4[3:2], stb_state_rtype_4[2:1],     
+		                   stb_state_rmo[4]}    ),
+        .clk    (stb_clk[4]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .}),
+        .q      ({[3:2], [2:1],     
+		                   [4]}    ),
+        .clk    ([4]),
+        .se     (), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_5         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .en (~(stb_clk_en_l[5])), .clk(clk),
+        .se     (se), .), .si (), .so ()
+        );
+
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .clk    (stb_clk[5]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_6         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .en (~(stb_clk_en_l[6])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_6         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .clk    (stb_clk[6]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .en (~(stb_clk_en_l[7])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+         (
+        .din    ({[7:6], [2:1], 
+		                    }),
+        .q      ({stb_state_si_5[3:2], stb_state_rtype_5[2:1],     
+		                   stb_state_rmo[5]}    ),
+        .clk    (stb_clk[5]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_6         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .en (~(stb_clk_en_l[6])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_6         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .clk    (stb_clk[6]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .en (~(stb_clk_en_l[7])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+}),
+        .q      ({[3:2], [2:1],     
+		                   [5]}    ),
+        .clk    ([5]),
+        .se     (), .si (), .so ()
+        );
+`endif
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_6         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .en (~(stb_clk_en_l[6])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_6         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .clk    (stb_clk[6]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .en (~(stb_clk_en_l[7])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+), .si (), .so ()
+        );
+
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .clk    (stb_clk[6]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .en (~(stb_clk_en_l[7])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+         (
+        .din    ({[7:6], [2:1], 
+		                    }),
+        .q      ({stb_state_si_6[3:2], stb_state_rtype_6[2:1],     
+		                   stb_state_rmo[6]}    ),
+        .clk    (stb_clk[6]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .en (~(stb_clk_en_l[7])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+}),
+        .q      ({[3:2], [2:1],     
+		                   [6]}    ),
+        .clk    ([6]),
+        .se     (), .si (), .so ()
+        );
+`endif
+
+`ifdef FPGA_SYN_CLK_DFF
+  dffe_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .en (~(stb_clk_en_l[7])), .clk(clk),
+        .se     (se), .si (), .so ()
+        );
+`else
+  dff_s #(5)  ff_spec_write_7         (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+), .si (), .so ()
+        );
+
+
+ 
+  dff_s #(5)           (
+        .din    ({lsu_stb_va_m[7:6], lsu_st_rq_type_m[2:1], 
+		                    lsu_st_rmo_m}),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+         (
+        .din    ({[7:6], [2:1], 
+		                    }),
+        .q      ({stb_state_si_7[3:2], stb_state_rtype_7[2:1],     
+              		     stb_state_rmo[7]}    ),
+        .clk    (stb_clk[7]),
+        .se     (se), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+}),
+        .q      ({[3:2], [2:1],     
+              		     [7]}    ),
+        .clk    ([7]),
+        .se     (), .si (), .so ()
+        );
+`endif
+
+
+endmodule // lsu_stb_ctldp
+), .si (), .so ()
+        );
+
+
+
+endmodule 

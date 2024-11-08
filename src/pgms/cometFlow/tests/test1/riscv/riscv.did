@@ -1,0 +1,77 @@
+
+# #################################################
+# cometFlow 1.0 executed on Tue Oct 22 13:59:39 2019
+# TCL Directory=/Users/bill/version1/utdtools/utdtools.1.0/tcl/utdtools
+###################################################################
+# Set up environment variables for various options.
+###################################################################
+# These two are initialized for you!
+set routine grand.do
+# Read in the user's design settings
+if {[file exists grand.init]} {
+  utdmsg imsg $routine "sourcing grand.init...\n"
+  source grand.init
+} else {
+  puts stderr "wd: [pwd]"
+  utdmsg errmsg $routine "grand.init file not found.  Fatal!\n"
+  exit 1
+}
+# [grand.do]:sourcing grand.init...
+# This is to make the operation OS independent.
+set utdos [file join $::utdtools::rootdirS bin utdos]
+set rootdir $::utdtools::rootdirS
+set dsn $::utdtools::designNameS
+utdmsg imsg $routine "utdtools is $rootdir\n"
+# [grand.do]:utdtools is /Users/bill/version1/utdtools/utdtools.1.0
+utdmsg imsg $routine "design is $dsn\n"
+# [grand.do]:design is riscv
+set opts "-v"
+set newdir [::utdtools::flow::init $dsn $::utdtools::numPartitionS default]
+# The residence of the flow file. 
+set flowfile [file join $rootdir tcl flow flow.do]
+# Build the necessary do files.   Note we are going to override the defaults
+set scriptdir [file join $rootdir scripts flow]
+# ####################   LOGIC PROGRAM ############################
+::utdtools::flow::set_program_path logic [file join $scriptdir logic]
+# ####################   CUT PROGRAM ############################
+::utdtools::flow::set_program_path cut [file join $scriptdir twcut]
+# ####################   FLOORPLAN PROGRAM ############################
+::utdtools::flow::set_program_path floorplan [file join $scriptdir twfloorplan]
+# ####################   PLACE PROGRAM ############################
+::utdtools::flow::set_program_path place [file join $scriptdir twplace]
+# ####################   CTS PROGRAM ############################
+::utdtools::flow::set_program_path cts [file join $scriptdir twcts]
+# ####################   GLOBAL ROUTING PROGRAM ############################
+::utdtools::flow::set_program_path groute [file join $scriptdir twgrouter]
+# ####################   DETAILED ROUTING PROGRAM ############################
+::utdtools::flow::set_program_path droute [file join $scriptdir twdrouter]
+# ####################   ASSEMBLY PROGRAM ############################
+::utdtools::flow::set_program_path assembly [file join $scriptdir twassemble]
+# ####################   METAL FILL PROGRAM ############################
+::utdtools::flow::set_program_path metalfill [file join $scriptdir twmetalfill]
+# ####################   FINAL TRANSLATE OUTPUT PROGRAM ############################
+::utdtools::flow::set_program_path final [file join $scriptdir twfinal]
+cd utdtools
+# Just run in the current shell
+::utdtools::flow::run $::utdtools::flow::flowgraphS $dsn
+# [exec_pgm]:Our status after running logic was EXITED 80672 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running cut was EXITED 80681 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running floorplan was EXITED 80693 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running place was EXITED 80774 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running cts was EXITED 80911 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running groute was EXITED 80924 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running droute was EXITED 81128 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running assembly was EXITED 81753 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running metalfill was EXITED 81787 0 {child completed normally}
+# 
+# [exec_pgm]:Our status after running final was EXITED 81802 0 {child completed normally}
+# 
+exit 0

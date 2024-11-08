@@ -1,0 +1,26 @@
+ 
+	                         
+        
+
+                  
+module ucb_flow_2buf (
+      ucb_iob_stall, rd_req_vld, wr_req_vld, thr_id_in, buf_id_in, 
+   size_in, addr_in, data_in, ack_busy, int_busy, ucb_iob_vld, 
+   ucb_iob_data, 
+      clk, rst_l, iob_ucb_vld, iob_ucb_data, req_acpted, rd_ack_vld, 
+   rd_nack_vld, thr_id_out, buf_id_out, data128, data_out, int_vld, 
+   int_typ, int_thr_id, dev_id, int_stat, int_vec, iob_ucb_stall
+   );
+      
+   parameter IOB_UCB_WIDTH = 32;     parameter UCB_IOB_WIDTH = 8;      parameter REG_WIDTH     = 64;     
+
+      input                                clk;
+   input 				rst_l;
+   
+      input 				iob_ucb_vld;
+   input [IOB_UCB_WIDTH-1:0] 		iob_ucb_data;
+   output 				ucb_iob_stall;
+
+      output 				rd_req_vld;
+   output 				wr_req_vld;
+   output [-:

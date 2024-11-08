@@ -1,0 +1,1523 @@
+
+ 
+ 
+ 
+
+module ctu_clsp(
+pll_reset_ref_l, jbus_grst_out_l, jbus_gdbginit_out_l, jbus_gclk_out, 
+jbus_gclk_dup_out, jbus_arst_l, jbus_adbginit_l, dram_grst_out_l, 
+dram_gdbginit_out_l, dram_gclk_out, dram_arst_l, dram_adbginit_l, 
+ctu_tst_pre_grst_l, ctu_spc_const_maskid, ctu_sparc7_cmp_cken, 
+ctu_sparc6_cmp_cken, ctu_sparc5_cmp_cken, ctu_sparc4_cmp_cken, 
+ctu_sparc3_cmp_cken, ctu_sparc2_cmp_cken, ctu_sparc1_cmp_cken, 
+ctu_sparc0_cmp_cken, ctu_sctag3_cmp_cken, ctu_sctag2_cmp_cken, 
+ctu_sctag1_cmp_cken, ctu_sctag0_cmp_cken, ctu_scdata3_cmp_cken, 
+ctu_scdata2_cmp_cken, ctu_scdata1_cmp_cken, ctu_scdata0_cmp_cken, 
+ctu_misc_jbus_cken, ctu_jbusr_jbus_cken, ctu_jbusl_jbus_cken, 
+ctu_jbus_tx_sync_out, ctu_jbi_ssiclk, ctu_jbi_jbus_cken, 
+ctu_jbi_cmp_cken, ctu_iob_wake_thr, ctu_iob_resetstat_wr, 
+ctu_iob_resetstat, ctu_iob_jbus_cken, ctu_iob_cmp_cken, ctu_io_j_err, 
+ctu_fpu_cmp_cken, ctu_efc_read_start, ctu_efc_jbus_cken, 
+ctu_dram_tx_sync_out, ctu_dram_selfrsh, ctu_dram_rx_sync_out, 
+ctu_dram13_jbus_cken, ctu_dram13_dram_cken, ctu_dram13_cmp_cken, 
+ctu_dram02_jbus_cken, ctu_dram02_dram_cken, ctu_dram02_cmp_cken, 
+ctu_dll3_byp_val, ctu_dll3_byp_l, ctu_dll2_byp_val, ctu_dll2_byp_l, 
+ctu_dll1_byp_val, ctu_dll1_byp_l, ctu_dll0_byp_val, ctu_dll0_byp_l, 
+ctu_ddr3_iodll_rst_l, ctu_ddr3_dram_cken, ctu_ddr3_dll_delayctr, 
+ctu_ddr2_iodll_rst_l, ctu_ddr2_dram_cken, ctu_ddr2_dll_delayctr, 
+ctu_ddr1_iodll_rst_l, ctu_ddr1_dram_cken, ctu_ddr1_dll_delayctr, 
+ctu_ddr0_dram_cken, ctu_ddr0_dll_delayctr, ctu_dbg_jbus_cken, 
+ctu_ccx_cmp_cken, cmp_grst_out_l, cmp_gdbginit_out_l, cmp_gclk_out, 
+cmp_arst_l, cmp_adbginit_l, clsp_iob_vld, clsp_iob_stall, 
+clsp_iob_data, clsp_bist_type, clsp_bist_dobist, clsp_bist_ctrl, 
+ctu_ddr0_iodll_rst_l, ctu_jbus_rx_sync_out, start_clk_jl, 
+start_clk_early_jl, 
+testmode_l, se, sctag3_ctu_tr, sctag2_ctu_tr, sctag1_ctu_tr, 
+sctag0_ctu_tr, pll_raw_clk_out, pll_clk_out_pre_l, pll_clk_out_pre, 
+pll_clk_out_l, pll_clk_out, mask_minor_id, mask_major_id, 
+jtag_nstep_vld, jtag_nstep_domain, jtag_nstep_count, 
+jtag_clsp_stop_id_vld, jtag_clsp_stop_id, jtag_clsp_sel_tck2, 
+jtag_clsp_sel_jbus, jtag_clsp_sel_dram, jtag_clsp_sel_cpu, 
+jtag_clsp_ignore_wrm_rst, jtag_clsp_force_cken_jbus, 
+jtag_clsp_force_cken_dram, jtag_clsp_force_cken_cmp, jtag_clock_dr, 
+jbus_tx_sync, jbus_rx_sync, jbus_rst_l, jbus_gclk, jbus_clk, 
+jbi_ctu_tr, iob_ctu_tr, iob_ctu_l2_tr, iob_clsp_vld, iob_clsp_stall, 
+iob_clsp_data, io_tck2, io_pwron_rst_l, io_pll_char_in, io_j_rst_l, 
+io_do_bist, io_clk_stretch, dram_gclk, dram13_ctu_tr, dram02_ctu_tr, 
+dll3_ctu_ctrl, dll2_ctu_ctrl, dll1_ctu_ctrl, dll0_ctu_ctrl, 
+dft_wake_thr, dft_clsp_nstep_capture_l, ddr3_ctu_dll_overflow, 
+ddr3_ctu_dll_lock, ddr2_ctu_dll_overflow, ddr2_ctu_dll_lock, 
+ddr1_ctu_dll_overflow, ddr1_ctu_dll_lock, ddr0_ctu_dll_overflow, 
+ddr0_ctu_dll_lock, ctu_dram_tx_sync_early, cmp_gclk, cmp_clk
+);
+
+         parameter REG_WIDTH = 64;                                        
+
+
+
+
+input			cmp_clk;		input			cmp_gclk;		input			ctu_dram_tx_sync_early;	input			ddr0_ctu_dll_lock;	input			ddr0_ctu_dll_overflow;	input			ddr1_ctu_dll_lock;	input			ddr1_ctu_dll_overflow;	input			ddr2_ctu_dll_lock;	input			ddr2_ctu_dll_overflow;	input			ddr3_ctu_dll_lock;	input			ddr3_ctu_dll_overflow;	input			dft_clsp_nstep_capture_l;input			dft_wake_thr;		input [4:0]		dll0_ctu_ctrl;		input [4:0]		dll1_ctu_ctrl;		input [4:0]		dll2_ctu_ctrl;		input [4:0]		dll3_ctu_ctrl;		input			dram02_ctu_tr;		input			dram13_ctu_tr;		input			dram_gclk;		input			io_clk_stretch;		input			io_do_bist;		input			io_j_rst_l;		input			io_pll_char_in;		input			io_pwron_rst_l;		input			io_tck2;		input [-1:0]iob_clsp_data;	input			iob_clsp_stall;		input			iob_clsp_vld;		input			iob_ctu_l2_tr;		input			iob_ctu_tr;		input			jbi_ctu_tr;		input			jbus_clk;		input			jbus_gclk;		input			jbus_rst_l;		input			jbus_rx_sync;		input			jbus_tx_sync;		input			jtag_clock_dr;		input			jtag_clsp_force_cken_cmp;input			jtag_clsp_force_cken_dram;input			jtag_clsp_force_cken_jbus;input			jtag_clsp_ignore_wrm_rst;input [2:0]		jtag_clsp_sel_cpu;	input [2:0]		jtag_clsp_sel_dram;	input [2:0]		jtag_clsp_sel_jbus;	input			jtag_clsp_sel_tck2;	input [5:0]		jtag_clsp_stop_id;	input			jtag_clsp_stop_id_vld;	input [3:0]		jtag_nstep_count;	input [2:0]		jtag_nstep_domain;	input			jtag_nstep_vld;		input [3:0]		mask_major_id;		input [3:0]		mask_minor_id;		input			pll_clk_out;		input			pll_clk_out_l;		input			pll_clk_out_pre;	input			pll_clk_out_pre_l;	input			pll_raw_clk_out;	input			sctag0_ctu_tr;		input			sctag1_ctu_tr;		input			sctag2_ctu_tr;		input			sctag3_ctu_tr;		input			se;			input			testmode_l;		
+output [5:0]		clsp_bist_ctrl;		output			clsp_bist_dobist;	output			clsp_bist_type;		output [-1:0]clsp_iob_data;	output			clsp_iob_stall;		output			clsp_iob_vld;		output			cmp_adbginit_l;		output			cmp_arst_l;		output			cmp_gclk_out;		output			cmp_gdbginit_out_l;	output			cmp_grst_out_l;		output			ctu_ccx_cmp_cken;	output			ctu_dbg_jbus_cken;	output [2:0]		ctu_ddr0_dll_delayctr;	output			ctu_ddr0_dram_cken;	output [2:0]		ctu_ddr1_dll_delayctr;	output			ctu_ddr1_dram_cken;	output			ctu_ddr1_iodll_rst_l;	output [2:0]		ctu_ddr2_dll_delayctr;	output			ctu_ddr2_dram_cken;	output			ctu_ddr2_iodll_rst_l;	output [2:0]		ctu_ddr3_dll_delayctr;	output			ctu_ddr3_dram_cken;	output			ctu_ddr3_iodll_rst_l;	output			ctu_dll0_byp_l;		output [4:0]		ctu_dll0_byp_val;	output			ctu_dll1_byp_l;		output [4:0]		ctu_dll1_byp_val;	output			ctu_dll2_byp_l;		output [4:0]		ctu_dll2_byp_val;	output			ctu_dll3_byp_l;		output [4:0]		ctu_dll3_byp_val;	output			ctu_dram02_cmp_cken;	output			ctu_dram02_dram_cken;	output			ctu_dram02_jbus_cken;	output			ctu_dram13_cmp_cken;	output			ctu_dram13_dram_cken;	output			ctu_dram13_jbus_cken;	output			ctu_dram_rx_sync_out;	output			ctu_dram_selfrsh;	output			ctu_dram_tx_sync_out;	output			ctu_efc_jbus_cken;	output			ctu_efc_read_start;	output			ctu_fpu_cmp_cken;	output			ctu_io_j_err;		output			ctu_iob_cmp_cken;	output			ctu_iob_jbus_cken;	output [2:0]		ctu_iob_resetstat;	output			ctu_iob_resetstat_wr;	output			ctu_iob_wake_thr;	output			ctu_jbi_cmp_cken;	output			ctu_jbi_jbus_cken;	output			ctu_jbi_ssiclk;		output			ctu_jbus_tx_sync_out;	output			ctu_jbusl_jbus_cken;	output			ctu_jbusr_jbus_cken;	output			ctu_misc_jbus_cken;	output			ctu_scdata0_cmp_cken;	output			ctu_scdata1_cmp_cken;	output			ctu_scdata2_cmp_cken;	output			ctu_scdata3_cmp_cken;	output			ctu_sctag0_cmp_cken;	output			ctu_sctag1_cmp_cken;	output			ctu_sctag2_cmp_cken;	output			ctu_sctag3_cmp_cken;	output			ctu_sparc0_cmp_cken;	output			ctu_sparc1_cmp_cken;	output			ctu_sparc2_cmp_cken;	output			ctu_sparc3_cmp_cken;	output			ctu_sparc4_cmp_cken;	output			ctu_sparc5_cmp_cken;	output			ctu_sparc6_cmp_cken;	output			ctu_sparc7_cmp_cken;	output [7:0]		ctu_spc_const_maskid;	output			ctu_tst_pre_grst_l;	output			dram_adbginit_l;	output			dram_arst_l;		output			dram_gclk_out;		output			dram_gdbginit_out_l;	output			dram_grst_out_l;	output			jbus_adbginit_l;	output			jbus_arst_l;		output			jbus_gclk_dup_out;	output			jbus_gclk_out;		output			jbus_gdbginit_out_l;	output			jbus_grst_out_l;	output			pll_reset_ref_l;	output                  ctu_ddr0_iodll_rst_l ;
+output			ctu_jbus_rx_sync_out;	output                  start_clk_jl;
+output                  start_clk_early_jl;
+
+
+wire			;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			a_dbginit_dg;		// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			a_dbginit_dl;		//;		wire			;		// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			a_dbginit_dl;		//;		wire			;		//;		wire			;		// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			a_grst_cl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			a_grst_dg;		// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			a_grst_dl;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			a_grst_jl;		// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			clk_stretch_cnt_val_6;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_cnt_val_odd;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_trig;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;		wire			;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			a_grst_dg;		// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			a_grst_dl;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			a_grst_jl;		// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			clk_stretch_cnt_val_6;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_cnt_val_odd;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_trig;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;		wire			;		// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			a_grst_dl;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			a_grst_jl;		// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			clk_stretch_cnt_val_6;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_cnt_val_odd;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_trig;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;		wire			;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			a_grst_jl;		// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			clk_stretch_cnt_val_6;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_cnt_val_odd;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_trig;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;		wire			;		// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			clk_stretch_cnt_val_6;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_cnt_val_odd;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_trig;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;		wire			;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_cnt_val_odd;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_trig;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;	wire			;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clk_stretch_trig;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;wire			;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [63:0]		clkctrl_data_in_reg;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;	wire [63:0]		;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clkctrl_dn_cl;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;	wire			;		// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clkctrl_dn_jl;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;		wire			;		// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [63:0]		clsp_ctrl_rd_bus_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;		wire [63:0]		;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;	wire			;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			clsp_ctrl_srarm_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;	wire			;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			clsp_ctrl_srarm_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;	wire			;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire [`UCB_BUF_HI-`UCB_BUF_LO:0]clsp_ucb_buf_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [REG_WIDTH-1:0]	clsp_ucb_data_out;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_ack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			clsp_ucb_rd_nack_vld;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [`UCB_THR_HI-`UCB_THR_LO:0]clsp_ucb_thr_id_out;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			cmp_dbginit_cl_l;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			cmp_grst_cl_l;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			coin_edge;		// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			creg_cken_vld_cl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			creg_cken_vld_jl;	// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ccx_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_ccx_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dbg_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dbg_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dbg_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_ddr0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr0_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr0_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr0_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr0_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr1_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr1_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr1_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr1_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr2_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr2_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr2_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr2_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_ddr3_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire [2:0]		ctu_ddr3_dll_delayctr_jl;// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_ddr3_dram_cken_dg;	// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_ddr3_dram_cken_dl;	// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_ddr3_iodll_rst_jl_l;// From u_ctu_clsp_ctrl of ctu_clsp_ctrl.v
+wire			ctu_dll0_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll0_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll1_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll1_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll2_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll2_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dll3_byp_l_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire [4:0]		ctu_dll3_byp_val_jl;	// From u_ctu_clsp_creg of ctu_clsp_creg.v
+wire			ctu_dram02_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram02_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram02_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram02_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram02_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram13_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_dram13_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_dram13_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_dram13_dram_cken_dg;// From u_ctu_clsp_synch_dldg of ctu_clsp_synch_dldg.v
+wire			ctu_dram13_dram_cken_dl;// From u_ctu_clsp_synch_jldl of ctu_clsp_synch_jldl.v
+wire			ctu_dram_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_dram_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_efc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_efc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_efc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_fpu_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_fpu_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_io_j_err_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_io_j_err_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_iob_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_iob_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_iob_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbi_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbi_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbi_cmp_cken_cg;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbus_rx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbus_tx_sync_cl;	// From u_ctu_clsp_clkgn of ctu_clsp_clkgn.v
+wire			ctu_jbusl_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusl_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusl_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_jbusr_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_jbusr_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_jbusr_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_misc_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_misc_cken_jl;	// From u_ctu_clsp_synch_cljl of ctu_clsp_synch_cljl.v
+wire			ctu_misc_cken_pre_jl;	// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata0_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata0_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata1_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata1_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata2_cken_cl;	// From u_ctu_clsp_clkctrl of ctu_clsp_clkctrl.v
+wire			ctu_scdata2_cmp_cken_cg;// From u_ctu_clsp_synch_jlcl of ctu_clsp_synch_jlcl.v
+wire			ctu_scdata3_cken_cl;	;	wire [-:

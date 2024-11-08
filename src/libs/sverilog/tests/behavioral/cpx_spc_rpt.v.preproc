@@ -1,0 +1,37 @@
+ 
+ 
+ 
+ 
+
+module cpx_spc_rpt (
+      so, cpx_spc_data_cx3, cpx_spc_data_rdy_cx3, 
+   cpx_spc_data_cx3_b144to140, cpx_spc_data_cx3_b120to118, 
+   cpx_spc_data_cx3_b0, cpx_spc_data_cx3_b4, cpx_spc_data_cx3_b8, 
+   cpx_spc_data_cx3_b12, cpx_spc_data_cx3_b16, cpx_spc_data_cx3_b20, 
+   cpx_spc_data_cx3_b24, cpx_spc_data_cx3_b28, cpx_spc_data_cx3_b32, 
+   cpx_spc_data_cx3_b35, cpx_spc_data_cx3_b38, cpx_spc_data_cx3_b41, 
+   cpx_spc_data_cx3_b44, cpx_spc_data_cx3_b47, cpx_spc_data_cx3_b50, 
+   cpx_spc_data_cx3_b53, cpx_spc_data_cx3_b56, cpx_spc_data_cx3_b60, 
+   cpx_spc_data_cx3_b64, cpx_spc_data_cx3_b68, cpx_spc_data_cx3_b72, 
+   cpx_spc_data_cx3_b76, cpx_spc_data_cx3_b80, cpx_spc_data_cx3_b84, 
+   cpx_spc_data_cx3_b88, cpx_spc_data_cx3_b91, cpx_spc_data_cx3_b94, 
+   cpx_spc_data_cx3_b97, cpx_spc_data_cx3_b100, 
+   cpx_spc_data_cx3_b103, cpx_spc_data_cx3_b106, 
+   cpx_spc_data_cx3_b109, 
+      rclk, si, se, cpx_spc_data_cx2, cpx_spc_data_rdy_cx2
+   );
+
+input rclk;
+   input si;
+   input se;
+
+   
+input  [-1:0] cpx_spc_data_cx2;      
+input                   cpx_spc_data_rdy_cx2;
+
+   output               so;
+output [-1:0] cpx_spc_data_cx3;
+output                  cpx_spc_data_rdy_cx3;    
+
+output [-1:140] cpx_spc_data_cx3_b144to140 ;
+output [:

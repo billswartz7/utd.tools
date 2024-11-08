@@ -1,0 +1,1757 @@
+
+
+module fpu_out (
+	d8stg_fdiv_in,
+	m6stg_fmul_in,
+	a6stg_fadd_in,
+	div_id_out_in,
+	m6stg_id_in,
+	add_id_out_in,
+	div_exc_out,
+	d8stg_fdivd,
+	d8stg_fdivs,
+	div_sign_out,
+	div_exp_out,
+	div_frac_out,
+	mul_exc_out,
+	m6stg_fmul_dbl_dst,
+	m6stg_fmuls,
+	mul_sign_out,
+	mul_exp_out,
+	mul_frac_out,
+	add_exc_out,
+	a6stg_fcmpop,
+	add_cc_out,
+	add_fcc_out,
+	a6stg_dbl_dst,
+	a6stg_sng_dst,
+	a6stg_long_dst,
+	a6stg_int_dst,
+	add_sign_out,
+	add_exp_out,
+	add_frac_out,
+	arst_l,
+	grst_l,
+	rclk,
+	
+	fp_cpx_req_cq,
+	add_dest_rdy,
+	mul_dest_rdy,
+	div_dest_rdy,
+	fp_cpx_data_ca,
+
+	se,
+	si,
+	so
+);
+
+
+input		d8stg_fdiv_in;		input		m6stg_fmul_in;		input		a6stg_fadd_in;		input [9:0]	div_id_out_in;		input [9:0]	m6stg_id_in;		input [9:0]	add_id_out_in;		input [4:0]	div_exc_out;		input		d8stg_fdivd;		input		d8stg_fdivs;		input		div_sign_out;		input [10:0]	div_exp_out;		input [51:0]	div_frac_out;		input [4:0]	mul_exc_out;		input		m6stg_fmul_dbl_dst;	input		m6stg_fmuls;		input		mul_sign_out;		input [10:0]	mul_exp_out;		input [51:0]	mul_frac_out;		input [4:0]	add_exc_out;		input		a6stg_fcmpop;		input [1:0]	add_cc_out;		input [1:0]	add_fcc_out;		input		a6stg_dbl_dst;		input		a6stg_sng_dst;		input		a6stg_long_dst;		input		a6stg_int_dst;		input		add_sign_out;		input [10:0]	add_exp_out;		input [63:0]	add_frac_out;		input		arst_l;			input		grst_l;			input		rclk;			
+output [7:0]	fp_cpx_req_cq;		output		add_dest_rdy;		output		mul_dest_rdy;		output		div_dest_rdy;		output [144:0]	fp_cpx_data_ca;		
+input           se;                     input           si;                     output          so;                     
+
+
+wire [7:0]	;		// FPU result request to CPX
+wire [1:0]	req_thread;		// thread ID of result req this cycle
+wire [2:0]	dest_rdy;		// pipe with result request this cycle
+wire		add_dest_rdy;		// add pipe result request this cycle
+wire		mul_dest_rdy;		// mul pipe result request this cycle
+wire		div_dest_rdy;		// div pipe result request this cycle
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_out_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [144:0]	fp_cpx_data_ca;		// FPU result to CPX
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_out_ctl fpu_out_ctl (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		wire [1:0]	;		// thread ID of result req this cycle
+wire [2:0]	dest_rdy;		// pipe with result request this cycle
+wire		add_dest_rdy;		// add pipe result request this cycle
+wire		mul_dest_rdy;		// mul pipe result request this cycle
+wire		div_dest_rdy;		// div pipe result request this cycle
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_out_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [144:0]	fp_cpx_data_ca;		// FPU result to CPX
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_out_ctl fpu_out_ctl (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		wire [2:0]	;		// pipe with result request this cycle
+wire		add_dest_rdy;		// add pipe result request this cycle
+wire		mul_dest_rdy;		// mul pipe result request this cycle
+wire		div_dest_rdy;		// div pipe result request this cycle
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_out_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [144:0]	fp_cpx_data_ca;		// FPU result to CPX
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_out_ctl fpu_out_ctl (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		wire		;		// add pipe result request this cycle
+wire		mul_dest_rdy;		// mul pipe result request this cycle
+wire		div_dest_rdy;		// div pipe result request this cycle
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_out_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [144:0]	fp_cpx_data_ca;		// FPU result to CPX
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_out_ctl fpu_out_ctl (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		wire		;		// mul pipe result request this cycle
+wire		div_dest_rdy;		// div pipe result request this cycle
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_out_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [144:0]	fp_cpx_data_ca;		// FPU result to CPX
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_out_ctl fpu_out_ctl (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		wire		;		// div pipe result request this cycle
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_out_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [144:0]	fp_cpx_data_ca;		// FPU result to CPX
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_out_ctl fpu_out_ctl (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		
+
+
+wire [144:0]	;		// FPU result to CPX
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_out_ctl fpu_out_ctl (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		
+
+
+fpu_out_ctl  (
+	.d8stg_fdiv_in			(d8stg_fdiv_in),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+ (
+	.d8stg_fdiv_in			(),
+	.m6stg_fmul_in			(m6stg_fmul_in),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.m6stg_fmul_in			(),
+	.a6stg_fadd_in			(a6stg_fadd_in),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.a6stg_fadd_in			(),
+	.div_id_out_in			(div_id_out_in[9:0]),
+	.m6stg_id_in			(m6stg_id_in[9:0]),
+	.add_id_out_in			(add_id_out_in[9:0]),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.div_id_out_in			([9:0]),
+	.m6stg_id_in			([9:0]),
+	.add_id_out_in			([9:0]),
+	.arst_l				(),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.grst_l				(),
+	.rclk			(rclk),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.rclk			(),
+
+	.fp_cpx_req_cq			(fp_cpx_req_cq[7:0]),
+	.req_thread			(req_thread[1:0]),
+	.dest_rdy			(dest_rdy[2:0]),
+	.add_dest_rdy			(add_dest_rdy),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+
+	.fp_cpx_req_cq			([7:0]),
+	.req_thread			([1:0]),
+	.dest_rdy			([2:0]),
+	.add_dest_rdy			(),
+	.mul_dest_rdy			(mul_dest_rdy),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.mul_dest_rdy			(),
+	.div_dest_rdy			(div_dest_rdy),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.div_dest_rdy			(),
+
+	.se                             (se),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+
+	.se                             (),
+        .si                             (si),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+        .si                             (),
+        .so                             (scan_out_fpu_out_ctl)
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+        .so                             ()
+);
+
+
+fpu_out_dp fpu_out_dp (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+)
+);
+
+
+fpu_out_dp  (
+	.dest_rdy			(dest_rdy[2:0]),
+	.req_thread			(req_thread[1:0]),
+	.div_exc_out			(div_exc_out[4:0]),
+	.d8stg_fdivd			(d8stg_fdivd),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+ (
+	.dest_rdy			([2:0]),
+	.req_thread			([1:0]),
+	.div_exc_out			([4:0]),
+	.d8stg_fdivd			(),
+	.d8stg_fdivs			(d8stg_fdivs),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.d8stg_fdivs			(),
+	.div_sign_out			(div_sign_out),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.div_sign_out			(),
+	.div_exp_out			(div_exp_out[10:0]),
+	.div_frac_out			(div_frac_out[51:0]),
+	.mul_exc_out			(mul_exc_out[4:0]),
+	.m6stg_fmul_dbl_dst		(m6stg_fmul_dbl_dst),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.div_exp_out			([10:0]),
+	.div_frac_out			([51:0]),
+	.mul_exc_out			([4:0]),
+	.m6stg_fmul_dbl_dst		(),
+	.m6stg_fmuls			(m6stg_fmuls),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.m6stg_fmuls			(),
+	.mul_sign_out			(mul_sign_out),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.mul_sign_out			(),
+	.mul_exp_out			(mul_exp_out[10:0]),
+	.mul_frac_out			(mul_frac_out[51:0]),
+	.add_exc_out			(add_exc_out[4:0]),
+	.a6stg_fcmpop			(a6stg_fcmpop),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.mul_exp_out			([10:0]),
+	.mul_frac_out			([51:0]),
+	.add_exc_out			([4:0]),
+	.a6stg_fcmpop			(),
+	.add_cc_out			(add_cc_out[1:0]),
+	.add_fcc_out			(add_fcc_out[1:0]),
+	.a6stg_dbl_dst			(a6stg_dbl_dst),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.add_cc_out			([1:0]),
+	.add_fcc_out			([1:0]),
+	.a6stg_dbl_dst			(),
+	.a6stg_sng_dst			(a6stg_sng_dst),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.a6stg_sng_dst			(),
+	.a6stg_long_dst			(a6stg_long_dst),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.a6stg_long_dst			(),
+	.a6stg_int_dst			(a6stg_int_dst),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.a6stg_int_dst			(),
+	.add_sign_out			(add_sign_out),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.add_sign_out			(),
+	.add_exp_out			(add_exp_out[10:0]),
+	.add_frac_out			(add_frac_out[63:0]),
+	.rclk			(rclk),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.add_exp_out			([10:0]),
+	.add_frac_out			([63:0]),
+	.rclk			(),
+
+	.fp_cpx_data_ca			(fp_cpx_data_ca[144:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+
+	.fp_cpx_data_ca			([144:0]),
+
+	.se                             (),
+        .si                             (scan_out_fpu_out_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+        .si                             (),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+        .so                             ()
+);
+
+
+endmodule
+
+
+)
+);
+
+
+endmodule
+
+

@@ -1,0 +1,12 @@
+
+problem2 : problem2.o libutdfib.a
+	gcc -o problem2 problem2.o libutdfib.a
+
+libutdfib.a : utdfib.o
+	ar crv libutdfib.a utdfib.o
+
+problem2.o : problem2.c
+	gcc -g -c problem2.c
+
+utdfib.o : utdfib.c
+	gcc -g -c utdfib.c

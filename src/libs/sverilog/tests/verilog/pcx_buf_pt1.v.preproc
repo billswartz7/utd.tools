@@ -1,0 +1,178 @@
+
+
+
+
+
+	
+	
+
+module pcx_buf_pt1(
+      out0, out1, pcx_spc_grant_px, so, 
+      in0, in1, pcx_spc_grant_buf_pa, rclk, si, se
+   );
+   
+
+   output [4:0]		out0;	
+   output 		out1;	
+   output [4:0]		pcx_spc_grant_px;	
+   output 		so;
+
+   input [4:0] 		in0;
+   input            	in1;
+   input [4:0]		pcx_spc_grant_buf_pa;	
+   input 		rclk;
+   input 		si, se;
+
+   dff_s #(5) (
+            .din           (pcx_spc_grant_buf_pa[4:0]),
+	    .q             (pcx_spc_grant_px[4:0]),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (5'd0),
+	    .so            ());
+   
+   assign out0[4:0] = in0[4:0];
+   assign out1 = in1;
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(
+            .din           ([4:0]),
+	    .q             ([4:0]),
+	    .clk           (),
+	    .se            (1'b0),
+	    .si            (5'd0),
+	    .so            ());
+   
+   assign out0[4:0] = in0[4:0];
+   assign out1 = in1;
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+),
+	    .se            (1bb),
+	    .si            (5d0),
+	    .so            ());
+   
+   assign [4:0] = [4:0];
+   assign  = in1;
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ = ;
+
+   
+
+
+
+
+endmodule // pcx_grant_ff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+;
+
+   
+
+
+
+
+endmodule 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

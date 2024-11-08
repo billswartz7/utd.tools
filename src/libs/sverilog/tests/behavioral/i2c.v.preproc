@@ -1,0 +1,3795 @@
+
+	 			        
+
+
+
+module i2c (
+      rd_nack_rd, iob_tap_vld, iob_tap_data, iob_man_int_rd, 
+   iob_man_ack_rd, iob_jbi_spi_stall, iob_jbi_pio_stall, 
+   iob_jbi_mondo_nack, iob_jbi_mondo_ack, iob_int_ack_rd, 
+   iob_dram13_stall, iob_dram02_stall, iob_cpx_req_cq, 
+   iob_cpx_data_ca, iob_clk_stall, io_mondo_source_din_s, 
+   io_mondo_data_wr_s, io_mondo_data_wr_addr_s, io_mondo_data1_din_s, 
+   io_mondo_data0_din_s, io_intman_addr, io_buf_wr, io_buf_tail_ptr, 
+   io_buf_head_ptr, io_buf_din_raw, io_buf_avail, int_srvcd, 
+   int_buf_wr, int_buf_tail_ptr, int_buf_hit_hwm, int_buf_head_ptr, 
+   bounce_ack_rd, int_srvcd_d1, 
+      wr_ack_io_buf_din, tx_sync, tap_iob_stall, srvc_wr_ack, rx_sync, 
+   rst_l, rd_nack_vld, rd_nack_packet, mondo_busy_vec_f, 
+   jbi_iob_spi_vld, jbi_iob_spi_data, jbi_iob_pio_vld, 
+   jbi_iob_pio_data, jbi_iob_mondo_vld, jbi_iob_mondo_data, 
+   iob_man_int_vld, iob_man_int_packet, iob_man_ack_vld, 
+   iob_man_ack_packet, iob_int_ack_vld, iob_int_ack_packet, 
+   io_buf_dout_raw, int_vec_dout_raw, int_cpu_dout_raw, 
+   int_buf_dout_raw, first_availcore, dram13_iob_vld, 
+   dram13_iob_data, dram02_iob_vld, dram02_iob_data, creg_jintv_vec, 
+   creg_intctrl_mask, cpx_iob_grant_cx2, cpu_rst_l, cpu_mondo_wr_d2, 
+   cpu_mondo_rd_d2, cpu_intman_acc, cpu_intctrl_acc, cpu_clk, 
+   clk_iob_vld, clk_iob_data, clk, bounce_ack_vld, bounce_ack_packet
+   );
+   
+   
+      input [-1:0]bounce_ack_packet;   input		bounce_ack_vld;		   input		clk;			   input [-1:0]clk_iob_data;	   input		clk_iob_vld;		   input		cpu_clk;		   input		cpu_intctrl_acc;	   input		cpu_intman_acc;		   input		cpu_mondo_rd_d2;	   input		cpu_mondo_wr_d2;	   input		cpu_rst_l;		   input [-1:0]cpx_iob_grant_cx2;	   input		creg_intctrl_mask;	   input [-1:0]creg_jintv_vec;   input [-1:0]dram02_iob_data;	   input		dram02_iob_vld;		   input [-1:0]dram13_iob_data;	   input		dram13_iob_vld;		   input [-1:0]first_availcore;	   input [159:0]	int_buf_dout_raw;	   input [14:0]		int_cpu_dout_raw;	   input [14:0]		int_vec_dout_raw;	   input [159:0]	io_buf_dout_raw;	   input [-1:0]iob_int_ack_packet;   input		iob_int_ack_vld;	   input [-1:0]iob_man_ack_packet;   input		iob_man_ack_vld;	   input [-1:0]iob_man_int_packet;   input		iob_man_int_vld;	   input [-1:0]jbi_iob_mondo_data;   input		jbi_iob_mondo_vld;	   input [-1:0]jbi_iob_pio_data;	   input		jbi_iob_pio_vld;	   input [-1:0]jbi_iob_spi_data;	   input		jbi_iob_spi_vld;	   input [-1:0]mondo_busy_vec_f;   input [-1:0]rd_nack_packet;   input		rd_nack_vld;		   input		rst_l;			   input		rx_sync;		   input		srvc_wr_ack;		   input		tap_iob_stall;		   input		tx_sync;		   input [-1:0]wr_ack_io_buf_din;   
+   
+   
+      output		bounce_ack_rd;		   output [-1:0]int_buf_head_ptr;   output		int_buf_hit_hwm;	   output [-1:0]int_buf_tail_ptr;   output		int_buf_wr;		   output		int_srvcd;		   output		io_buf_avail;		   output [159:0]	io_buf_din_raw;		   output [-1:0]io_buf_head_ptr;   output [-1:0]io_buf_tail_ptr;   output		io_buf_wr;		   output [-1:0]io_intman_addr;   output [63:0]	io_mondo_data0_din_s;	   output [63:0]	io_mondo_data1_din_s;	   output [-1:0]io_mondo_data_wr_addr_s;   output		io_mondo_data_wr_s;	   output [-1:0]io_mondo_source_din_s;   output		iob_clk_stall;		   output [-1:0]iob_cpx_data_ca;	   output [-1:0]iob_cpx_req_cq;	   output		iob_dram02_stall;	   output		iob_dram13_stall;	   output		iob_int_ack_rd;		   output		iob_jbi_mondo_ack;	   output		iob_jbi_mondo_nack;	   output		iob_jbi_pio_stall;	   output		iob_jbi_spi_stall;	   output		iob_man_ack_rd;		   output		iob_man_int_rd;		   output [-1:0]iob_tap_data;	   output		iob_tap_vld;		   output		rd_nack_rd;		      
+      output 		int_srvcd_d1;		   
+   
+      wire [-1:0];// From i2c_sdp of i2c_sdp.v
+   wire [`IOB_ACK_AVEC_WIDTH-1:0]ack_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire			ack_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]clk_ack_packet;// From clk_ucb_buf of i2c_buf.v
+   wire			clk_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_ack_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]clk_int_packet;	// From clk_ucb_buf of i2c_buf.v
+   wire			clk_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;   wire [-1:0];	// From i2c_sctrl of i2c_sctrl.v
+   wire			ack_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]clk_ack_packet;// From clk_ucb_buf of i2c_buf.v
+   wire			clk_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_ack_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]clk_int_packet;	// From clk_ucb_buf of i2c_buf.v
+   wire			clk_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;	   wire			;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]clk_ack_packet;// From clk_ucb_buf of i2c_buf.v
+   wire			clk_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_ack_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]clk_int_packet;	// From clk_ucb_buf of i2c_buf.v
+   wire			clk_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire [-1:0];// From clk_ucb_buf of i2c_buf.v
+   wire			clk_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_ack_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]clk_int_packet;	// From clk_ucb_buf of i2c_buf.v
+   wire			clk_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;   wire			;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_ack_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]clk_int_packet;	// From clk_ucb_buf of i2c_buf.v
+   wire			clk_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire			;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]clk_int_packet;	// From clk_ucb_buf of i2c_buf.v
+   wire			clk_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire [-1:0];	// From clk_ucb_buf of i2c_buf.v
+   wire			clk_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;	   wire			;		// From i2c_sctrl of i2c_sctrl.v
+   wire			clk_int_vld;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire			;		// From clk_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram0_ack_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire [-1:0];// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;   wire			;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_ack_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire			;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram0_int_packet;// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire [-1:0];// From dram0_ucb_buf of i2c_buf.v
+   wire			dram0_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;   wire			;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram0_int_vld;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire			;		// From dram0_ucb_buf of i2c_buf.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]dram1_ack_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire [-1:0];// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;   wire			;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_ack_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire			;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]dram1_int_packet;// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire [-1:0];// From dram1_ucb_buf of i2c_buf.v
+   wire			dram1_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;   wire			;		// From i2c_sctrl of i2c_sctrl.v
+   wire			dram1_int_vld;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire			;		// From dram1_ucb_buf of i2c_buf.v
+   wire [`IOB_CPU_WIDTH-1:0]int_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire [-1:0];	// From i2c_fdp of i2c_fdp.v
+   wire			int_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;	   wire			;		// From i2c_fctrl of i2c_fctrl.v
+   wire			int_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;		   wire			;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_INT_AVEC_WIDTH-1:0]int_sel;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;	   wire [-1:0];	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]io_buf_cpx_req;	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;	   wire [-1:0];	// From i2c_fdp of i2c_fdp.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_head_f;	// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_rd;		// From i2c_fctrl of i2c_fctrl.v
+   wire			io_buf_sel_next;	// From i2c_fctrl of i2c_fctrl.v
+   wire [`IOB_IO_BUF_INDEX:0]io_buf_tail_s;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`IOB_CPU_WIDTH-1:0]iob_cpx_req_next;	// From i2c_fdp of i2c_fdp.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]iob_tap_packet;// From i2c_sdp of i2c_sdp.v
+   wire			iob_tap_packet_vld;	// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_128PAY_PKT_WIDTH-1:0]jbi_ack_packet;// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_ack_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]jbi_int_packet;	// From jbi_ucb_buf of i2c_buf.v
+   wire			jbi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			jbi_int_vld;		// From jbi_ucb_buf of i2c_buf.v
+   wire [63:0]		jbi_mondo_data0;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [63:0]		jbi_mondo_data1;	// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`JBI_IOB_MONDO_SRC_WIDTH-1:0]jbi_mondo_source;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire [`JBI_IOB_MONDO_TRG_WIDTH-1:0]jbi_mondo_target;// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			jbi_mondo_vld;		// From jbus_mondo_buf of iobdg_jbus_mondo_buf.v
+   wire			mondo_srvcd_d1;		// From i2c_sctrl of i2c_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]spi_ack_packet;// From spi_ucb_buf of i2c_buf.v
+   wire			spi_ack_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_ack_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire [`UCB_INT_PKT_WIDTH-1:0]spi_int_packet;	// From spi_ucb_buf of i2c_buf.v
+   wire			spi_int_rd;		// From i2c_sctrl of i2c_sctrl.v
+   wire			spi_int_vld;		// From spi_ucb_buf of i2c_buf.v
+   wire			tap_iob_busy;		// From tap_ucb_buf of ucb_bus_out.v
+   // End of automatics
+
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * io-to-cpu fast control
+    *****************************************************************/
+   i2c_fctrl i2c_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.int_buf_sel_next(int_buf_sel_next),
+			.io_buf_sel_next(io_buf_sel_next),
+			.int_buf_rd	(int_buf_rd),
+			.io_buf_rd	(io_buf_rd),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_buf_head_f	(io_buf_head_f[`IOB_IO_BUF_INDEX:0]),
+			.int_buf_wr	(int_buf_wr),
+			.int_buf_tail_ptr(int_buf_tail_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.int_buf_head_ptr(int_buf_head_ptr[`IOB_INT_BUF_INDEX-1:0]),
+			.io_buf_head_ptr(io_buf_head_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.cpx_iob_grant_cx2(cpx_iob_grant_cx2[`IOB_CPU_WIDTH-1:0]),
+			.int_buf_cpx_req(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+			.iob_cpx_req_next(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]));
+   
+   
+   /*****************************************************************
+    * io-to-cpu fast datapath
+    *****************************************************************/
+   i2c_fdp i2c_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .iob_cpx_req_cq	(iob_cpx_req_cq[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_data_ca	(iob_cpx_data_ca[`CPX_WIDTH-1:0]),
+		    .int_buf_cpx_req	(int_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .io_buf_cpx_req	(io_buf_cpx_req[`IOB_CPU_WIDTH-1:0]),
+		    .iob_cpx_req_next	(iob_cpx_req_next[`IOB_CPU_WIDTH-1:0]),
+		    // Inputs
+		    .cpu_clk		(cpu_clk),
+		    .rx_sync		(rx_sync),
+		    .int_buf_sel_next	(int_buf_sel_next),
+		    .io_buf_sel_next	(io_buf_sel_next),
+		    .int_buf_rd		(int_buf_rd),
+		    .io_buf_rd		(io_buf_rd),
+		    .int_buf_dout_raw	(int_buf_dout_raw[159:0]),
+		    .io_buf_dout_raw	(io_buf_dout_raw[159:0]));
+   
+
+   /*****************************************************************
+    * io-to-cpu slow control
+    *****************************************************************/
+   i2c_sctrl i2c_sctrl (/*AUTOINST*/
+			// Outputs
+			.jbi_mondo_rd	(jbi_mondo_rd),
+			.jbi_int_rd	(jbi_int_rd),
+			.clk_int_rd	(clk_int_rd),
+			.dram0_int_rd	(dram0_int_rd),
+			.dram1_int_rd	(dram1_int_rd),
+			.iob_man_int_rd	(iob_man_int_rd),
+			.spi_int_rd	(spi_int_rd),
+			.jbi_ack_rd	(jbi_ack_rd),
+			.clk_ack_rd	(clk_ack_rd),
+			.dram0_ack_rd	(dram0_ack_rd),
+			.dram1_ack_rd	(dram1_ack_rd),
+			.iob_man_ack_rd	(iob_man_ack_rd),
+			.iob_int_ack_rd	(iob_int_ack_rd),
+			.spi_ack_rd	(spi_ack_rd),
+			.bounce_ack_rd	(bounce_ack_rd),
+			.rd_nack_rd	(rd_nack_rd),
+			.int_sel	(int_sel[`IOB_INT_AVEC_WIDTH-1:0]),
+			.ack_sel	(ack_sel[`IOB_ACK_AVEC_WIDTH-1:0]),
+			.mondo_srvcd_d1	(mondo_srvcd_d1),
+			.int_srvcd_d1	(int_srvcd_d1),
+			.ack_srvcd_d1	(ack_srvcd_d1),
+			.io_buf_tail_s	(io_buf_tail_s[`IOB_IO_BUF_INDEX:0]),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_buf_avail	(io_buf_avail),
+			.int_srvcd	(int_srvcd),
+			.io_buf_wr	(io_buf_wr),
+			.io_buf_tail_ptr(io_buf_tail_ptr[`IOB_IO_BUF_INDEX-1:0]),
+			.iob_tap_packet_vld(iob_tap_packet_vld),
+			.iob_jbi_mondo_ack(iob_jbi_mondo_ack),
+			.iob_jbi_mondo_nack(iob_jbi_mondo_nack),
+			// Inputs
+			.rst_l		(rst_l),
+			.clk		(clk),
+			.jbi_mondo_vld	(jbi_mondo_vld),
+			.jbi_mondo_target(jbi_mondo_target[`IOB_CPUTHR_INDEX-1:0]),
+			.spi_int_vld	(spi_int_vld),
+			.iob_man_int_vld(iob_man_int_vld),
+			.dram1_int_vld	(dram1_int_vld),
+			.dram0_int_vld	(dram0_int_vld),
+			.clk_int_vld	(clk_int_vld),
+			.jbi_int_vld	(jbi_int_vld),
+;	   wire [:

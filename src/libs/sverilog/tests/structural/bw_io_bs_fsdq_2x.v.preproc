@@ -1,0 +1,198 @@
+
+
+module bw_io_bs_fsdq_2x (
+    q, 
+    d, up_dr
+  );
+
+  output [2:0]	q;
+  input  [2:0]	d;
+  input		up_dr;
+
+
+  supply1	vdd;
+
+
+  bw_u1_scanlg_2x  (
+    .so              (q[0]),
+    .sd              (d[0]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  bw_u1_scanlg_2x Iq1 (
+    .so              (q[1]),
+    .sd              (d[1]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  bw_u1_scanlg_2x Iq2 (
+    .so              (q[2]),
+    .sd              (d[2]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+    .so              ([0]),
+    .sd              ([0]),
+    .ck              (),
+    .se              (vdd)
+    );
+
+  bw_u1_scanlg_2x Iq1 (
+    .so              (q[1]),
+    .sd              (d[1]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  bw_u1_scanlg_2x Iq2 (
+    .so              (q[2]),
+    .sd              (d[2]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .se              ()
+    );
+
+  bw_u1_scanlg_2x Iq1 (
+    .so              (q[1]),
+    .sd              (d[1]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  bw_u1_scanlg_2x Iq2 (
+    .so              (q[2]),
+    .sd              (d[2]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+    );
+
+  bw_u1_scanlg_2x  (
+    .so              (q[1]),
+    .sd              (d[1]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  bw_u1_scanlg_2x Iq2 (
+    .so              (q[2]),
+    .sd              (d[2]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+    .so              ([1]),
+    .sd              ([1]),
+    .ck              (),
+    .se              (vdd)
+    );
+
+  bw_u1_scanlg_2x Iq2 (
+    .so              (q[2]),
+    .sd              (d[2]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .se              ()
+    );
+
+  bw_u1_scanlg_2x Iq2 (
+    .so              (q[2]),
+    .sd              (d[2]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+    );
+
+  bw_u1_scanlg_2x  (
+    .so              (q[2]),
+    .sd              (d[2]),
+    .ck              (up_dr),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+    .so              ([2]),
+    .sd              ([2]),
+    .ck              (),
+    .se              (vdd)
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .se              ()
+    );
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+    );
+
+  endmodule
+
+

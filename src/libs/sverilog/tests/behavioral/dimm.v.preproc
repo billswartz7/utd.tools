@@ -1,0 +1,9 @@
+ 
+
+
+
+module dimm(	clk, cs, ras, cas, we, ba, addr, cs_sel,
+		dataq, ecc, dqs, dm_rdqs
+	);
+
+   parameter addr_width=17,

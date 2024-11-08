@@ -1,0 +1,151 @@
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine floorplan
+set previous cut
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+lappend auto_path $icdirG/tcl/common
+
+set args $argv
+set num_args [llength $args]
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+incr i -1
+set dsn [lindex $args $i]
+
+icbackup_directory floorplan
+cd floorplan
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn f
+
+set num_parts $::utdtools::numPartitionS
+set dsn $::utdtools::designNameS
+icmessage imsg null "Welcome to the TimberWolf SimFloorplan Program...\n"
+icmessage imsg null "We are going to process $num_parts...\n"
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s c -dir cut .... 
+set dirname [pwd]
+set folder [file tail $dirname]
+if {$folder != "floorplan"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+icmessage imsg $routine "reading LEF file:$fpath\n"
+icread_lef $fpath -scale -model_obs keepout
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+icread_synopsys -new $fpath
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+icmessage imsg $routine "reading DEF file:$fpath\n"
+icread_def $fpath -no_pad_extract
+
+
+# Now output the TimberWolf files
+icbackup_directory timberwolf
+icbackup_directory output
+cd timberwolf
+icwrite_ic -notplaced -hierarchy -sitedefs
+
+set f [open ${dsn}.fdo w]
+puts $f ""
+puts $f "proc fix_the_pads { } {"
+puts $f "  icplacepads::extract_vectors_from_pads"
+puts $f "  icplacepads::equalize_sides {L B R T}"
+puts $f "  icplace_pads uniform -free_side -core_to_padspace 20t"
+puts $f "  icplacepads::convert_to_exact"
+puts $f "  twpad dumpconstraints output/itools.con -append"
+puts $f "}"
+puts $f ""
+puts $f "icprerouting convert"
+puts $f "icfloorplan"
+puts $f "iccontext placement"
+puts $f "fix_the_pads"
+close $f
+
+
+set icos [file join $icdirG bin icos]
+
+###################################################################
+# Now call the floorplanner flow.
+###################################################################
+set opts "-stop ifp -x -v"
+if {([info exists ::utdtools::nographicsS]) && ($::utdtools::nographicS)} {
+  append opts " -n"
+}
+set flow flow.route1
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG itools $opts -flow $flow ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+# Create the ${dsn}_final.tdo script.
+set f [open ${dsn}_final.tdo w]
+puts $f "icread_itools::state floorplan"
+puts $f "icwrite_def \[file join ../ output ${dsn}.def] -unplaced"
+puts $f "exit"
+close $f
+
+# Next call translator to create output files.
+if {[catch {bgexec statusTG -output outputG $icos icdir $icdirG itranslate -v -do ${dsn}_final.tdo ${dsn}} msg]} {  
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+icexit 0

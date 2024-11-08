@@ -1,0 +1,64 @@
+
+     
+
+module aurora_201_LANE_INIT_SM
+(
+        RX_NOT_IN_TABLE,
+    RX_DISP_ERR,
+    RX_CHAR_IS_COMMA,
+    RX_REALIGN,
+
+    RX_RESET,
+    TX_RESET,
+    RX_POLARITY,
+
+
+        ENA_COMMA_ALIGN,
+
+
+        GEN_K,
+    GEN_SP_DATA,
+    GEN_SPA_DATA,
+
+
+        RX_SP,
+    RX_SPA,
+    RX_NEG,
+
+    DO_WORD_ALIGN,
+
+
+        ENABLE_ERROR_DETECT,
+    HARD_ERROR_RESET,
+
+
+        LANE_UP,
+
+
+        USER_CLK,
+    RESET
+
+);
+ 
+
+
+        input   [1:0]   RX_NOT_IN_TABLE;         input   [1:0]   RX_DISP_ERR;             input   [1:0]   RX_CHAR_IS_COMMA;        input           RX_REALIGN;          
+    output          RX_RESET;                output          TX_RESET;                output          RX_POLARITY;         
+
+        output          ENA_COMMA_ALIGN;     
+
+        output          GEN_K;                   output  [0:1]   GEN_SP_DATA;             output  [0:1]   GEN_SPA_DATA;        
+
+        input           RX_SP;                   input           RX_SPA;                  input           RX_NEG;              
+    output          DO_WORD_ALIGN;       
+
+        input           HARD_ERROR_RESET;    
+    output          ENABLE_ERROR_DETECT; 
+
+
+        output          LANE_UP;             
+
+        input           USER_CLK;                input           RESET;               
+
+
+    reg

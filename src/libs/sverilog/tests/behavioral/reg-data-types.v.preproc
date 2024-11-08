@@ -1,0 +1,4 @@
+
+module reg_data_types();
+
+reg

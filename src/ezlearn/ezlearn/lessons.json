@@ -1,0 +1,120 @@
+{
+    "Embedded Systems": {
+        "lessons": {
+	  "lesson1": {
+	    "name": "Memory Mapped Register Boolean Operations",
+	    "problem": 1,
+	    "type": "boolean",
+	    "program": -1,
+	    "project": "memory_mapped",
+	    "tcl_init": "::twez::eval_tclIndex ${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/tcl/tclIndex",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/embedded/boolean.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/embedded/boolean_problems.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/embedded/boolean_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/embedded/boolean_resources.html",
+	    "description": "learn about how to manipulate memory-mapped registers found in microncontrollers"
+	  },
+	  "lesson2": {
+	    "name": "Data Processing",
+	    "problem": 1,
+	    "type": "data_processing",
+	    "program": 1,
+	    "project": "data_processing",
+	    "tcl_init": "::twez::eval_tclIndex ${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/tclIndex",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p1_lesson.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p1_problems.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p1_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p1_resources.html",
+	    "description": "create a simple program that will process data and output the result to the terminal"
+	  },
+	  "lesson3" : {
+	    "name": "Fibonacci",
+	    "problem": 2,
+	    "type": "library",
+	    "program": 1,
+	    "project": "fib",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p2_problems.html",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p2_lesson.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p2_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p2_resources.html",
+	    "description": "create a simple  program that will use a library to compute the Fibonacci series of a given number"
+	  }
+	}
+    },
+    "Hardware Description Languages": {
+        "lessons": {
+	  "lesson1": {
+	    "name": "Verilog Modules",
+	    "problem": 1,
+	    "project": "module",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/verilog/modules.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/verilog/modules_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/verilog/modules_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/verilog/modules_resources.html",
+	    "description": "learn about Verilog modules and their use."
+	  },
+	  "lesson2" : {
+	    "name": "Wires",
+	    "problem": 2,
+	    "type": "library",
+	    "program": 1,
+	    "project": "wires",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p2_problems.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p2_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/autotest/html/p2_resources.html",
+	    "description": "create a simple  program that will use a library to compute the Fibonacci series of a given number"
+	  },
+	  "lesson3" : {
+	    "name": "ALU",
+	    "problem": 3,
+	    "type": "combinatorial",
+	    "project": "alu",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/verilog/alu.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/verilog/alu_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/autotest/html/alu_resources.html",
+	    "description": "learn and create an Arithmetic Logic Unit (ALU) in Verilog"
+	  }
+	}
+    },
+    "Digital Logic Design": {
+        "lessons": {
+	  "lesson1": {
+	    "name": "Assertions",
+	    "problem": 1,
+	    "project": "assertions",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/digital/assertions.html",
+	    "prob_html": "null",
+	    "sol_html": "null",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/digital/assertions_resources.html",
+	    "description": "learn about the System Verilog Assertions and how to use them."
+	  }
+	}
+    },
+    "Computer Architecture": {
+        "lessons": {
+	  "lesson1": {
+	    "name": "dummy",
+	    "problem": 1,
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/ca/dummy.html",
+	    "prob_html": "null",
+	    "sol_html": "null",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/ca/dummy_resources.html",
+	    "description": "learn about the Computer Architecture."
+	  }
+	}
+    },
+    "Unix": {
+        "lessons": {
+	  "lesson1": {
+	    "name": "Files and Directories",
+	    "problem": 1,
+	    "project": "files",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/unix/filesystem.html",
+	    "prob_html": "null",
+	    "sol_html": "null",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/unix/filesystem_resources.html",
+	    "description": "learn about the Unix file system and how to traverse files and directories."
+	  }
+	}
+    }
+}

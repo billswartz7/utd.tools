@@ -1,0 +1,12 @@
+*** tix.h.old	2023-03-16 11:40:45.000000000 -0500
+--- tix.h	2023-03-16 11:40:52.000000000 -0500
+***************
+*** 401,406 ****
+--- 401,407 ----
+  EXTERN void		Tix_SetRcFileName _ANSI_ARGS_((
+  			    Tcl_Interp * interp, CONST84 char * rcFileName));
+  EXTERN char *           Tix_ZAlloc _ANSI_ARGS_((unsigned int nbytes));
++ EXTERN int 		Tix_ExitCleanup(Tcl_Interp * interp) ;
+  
+  /*
+   * Commands exported by Tix

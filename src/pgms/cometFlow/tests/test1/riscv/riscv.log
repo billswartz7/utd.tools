@@ -1,0 +1,28 @@
+####################################################
+time 1571770779 Tue Oct 22 13:59:39 2019:program started...
+@ cometFlow -v -do grand.do riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80670 PVERSION 1.0
+TCL Directory=/Users/bill/version1/utdtools/utdtools.1.0/tcl/utdtools
+[grand.do]:sourcing grand.init...
+[grand.do]:utdtools is /Users/bill/version1/utdtools/utdtools.1.0
+[grand.do]:design is riscv
+[exec_pgm]:Our status after running logic was EXITED 80672 0 {child completed normally}
+
+[exec_pgm]:Our status after running cut was EXITED 80681 0 {child completed normally}
+
+[exec_pgm]:Our status after running floorplan was EXITED 80693 0 {child completed normally}
+
+[exec_pgm]:Our status after running place was EXITED 80774 0 {child completed normally}
+
+[exec_pgm]:Our status after running cts was EXITED 80911 0 {child completed normally}
+
+[exec_pgm]:Our status after running groute was EXITED 80924 0 {child completed normally}
+
+[exec_pgm]:Our status after running droute was EXITED 81128 0 {child completed normally}
+
+[exec_pgm]:Our status after running assembly was EXITED 81753 0 {child completed normally}
+
+[exec_pgm]:Our status after running metalfill was EXITED 81787 0 {child completed normally}
+
+[exec_pgm]:Our status after running final was EXITED 81802 0 {child completed normally}
+

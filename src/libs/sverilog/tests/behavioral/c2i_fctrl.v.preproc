@@ -1,0 +1,35 @@
+
+	 			        
+
+
+
+module c2i_fctrl (
+      iob_pcx_stall_pq, io_mondo_data_wr, mondo_data_bypass_d1, 
+   mondo_addr_creg_mdata0_dec_d1, mondo_addr_creg_mdata1_dec_d1, 
+   mondo_addr_creg_mbusy_dec_d1, cpu_mondo_rd_d1, tap_mondo_rd_d1, 
+   cpu_mondo_rd_d2, cpu_mondo_addr_invld_d2, mondo_data_addr_p0_d1, 
+   cpu_buf_tail_f, cpu_mondo_wr_d2, tap_mondo_acc_addr_invld_d2_f, 
+   tap_mondo_acc_seq_d2_f, mondo_data_addr_p0, mondo_data_addr_p1, 
+   mondo_data0_wr_lo_l, mondo_data0_wr_hi_l, mondo_data1_wr_lo_l, 
+   mondo_data1_wr_hi_l, mondo_source_wr_l, mondo_busy_addr_p0, 
+   mondo_busy_addr_p1, mondo_busy_addr_p2, mondo_busy_wr_p1, 
+   mondo_busy_wr_p2, cpu_buf_wr_l, cpu_buf_tail_ptr, 
+      cpu_rst_l, cpu_clk, tx_sync, rx_sync, pcx_iob_data_rdy_px2, 
+   pcx_iob_vld, pcx_iob_req, pcx_iob_addr, pcx_iob_cputhr, 
+   cpu_buf_head_s, int_buf_hit_hwm, io_mondo_data_wr_s, 
+   io_mondo_data_wr_addr_s, tap_mondo_acc_addr_s, 
+   tap_mondo_acc_seq_s, tap_mondo_wr_s
+   );
+   
+      input                              cpu_rst_l;
+   input 			      cpu_clk;
+   input 			      tx_sync;
+   input 			      rx_sync;
+
+   
+      input 			      pcx_iob_data_rdy_px2;
+   output 			      iob_pcx_stall_pq;
+   
+ 
+      input 			      pcx_iob_vld;
+   input [-:

@@ -1,0 +1,559 @@
+
+                                                 
+module tlu_rrobin_picker (
+      pick_one_hot, 
+      events, tlu_rst_l, clk
+   );
+
+input 	[3:0]	events ;		input		tlu_rst_l ;			input		clk ;
+
+output	[3:0]	pick_one_hot ;  wire	 ;	
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// reg	[3:0]	pick_status ;	
+wire	pick_status_reset ;	
+wire	[3:0]	pick_status_in ;	
+wire	[3:0]	pick_status ;	
+
+wire	events_unpicked ;
+wire	[3:0]	pe_mask ;
+
+//
+// this signal was added to abide to the Niagara reset methodology
+assign tlu_rst = ~tlu_rst_l;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ ;	
+
+wire	 ;	
+wire	[3:0]	pick_status_in ;	
+wire	[3:0]	pick_status ;	
+
+wire	events_unpicked ;
+wire	[3:0]	pe_mask ;
+
+//
+// this signal was added to abide to the Niagara reset methodology
+assign tlu_rst = ~tlu_rst_l;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ ;	
+wire	[3:0]	 ;	
+wire	[3:0]	pick_status ;	
+
+wire	events_unpicked ;
+wire	[3:0]	pe_mask ;
+
+//
+// this signal was added to abide to the Niagara reset methodology
+assign tlu_rst = ~tlu_rst_l;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ ;	
+wire	[3:0]	 ;	
+
+wire	events_unpicked ;
+wire	[3:0]	pe_mask ;
+
+//
+// this signal was added to abide to the Niagara reset methodology
+assign tlu_rst = ~tlu_rst_l;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ ;	
+
+wire	 ;
+wire	[3:0]	pe_mask ;
+
+//
+// this signal was added to abide to the Niagara reset methodology
+assign tlu_rst = ~tlu_rst_l;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ ;
+wire	[3:0]	 ;
+
+//
+// this signal was added to abide to the Niagara reset methodology
+assign tlu_rst = ~tlu_rst_l;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ ;
+
+assign  = ~tlu_rst_l;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ = ~;
+
+assign	events_unpicked = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+;
+
+assign	 = |(events[3:0] & ~pick_status[3:0]) ;
+			// term replicated.
+
+// priority encode mask
+assign	pe_mask[3:0] =
+		events_unpicked ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ = |([3:0] & ~[3:0]) ;
+			
+assign	[3:0] =
+		 ? 
+		(events[3:0] & ~pick_status[3:0]) : 	// choose from eventss that have not picked.
+		events[3:0] ;				// else all eventss on equal terms
+
+assign	pick_one_hot[0] = 
+		pe_mask[0] ;
+		//pe_mask[0] | ~(|pe_mask[3:0]);		// none requesting then 0 is forced hot
+assign	pick_one_hot[1] = 
+		pe_mask[1] & ~pe_mask[0] ;
+assign	pick_one_hot[2] = 
+		pe_mask[2] & ~(|pe_mask[1:0]) ;
+assign	pick_one_hot[3] = 
+		pe_mask[3] & ~(|pe_mask[2:0]) ;
+
+// This section was modified to abide to the Niagara synthesis methodology
+//
+// Define Pick Status
+//always	@ (posedge clk)
+//	begin
+//		if ((&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst) 
+//			pick_status[3:0] <= 4'b0000 ;	// clear pick_status
+//		else
+//			pick_status[3:0] <= pick_status[3:0] | pick_one_hot[3:0] ;
+//					// term replicated
+//	end
+
+assign pick_status_reset = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ ? 
+		([3:0] & ~[3:0]) : 			[3:0] ;				
+assign	[0] = 
+		[0] ;
+		assign	[1] = 
+		[1] & ~[0] ;
+assign	[2] = 
+		[2] & ~(|[1:0]) ;
+assign	[3] = 
+		[3] & ~(|[2:0]) ;
+
+
+assign  = (&(pick_status[3:0] | pick_one_hot[3:0])) | tlu_rst;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+ = (&([3:0] | [3:0])) | ;
+assign pick_status_in    = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+;
+assign     = pick_status[3:0] | pick_one_hot[3:0]; 
+
+dffr_s #(4)  dffre_pick_status  (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+    = [3:0] | [3:0]; 
+
+dffr_s #(4)    (
+        .din (pick_status_in[3:0]), .q (pick_status[3:0]),
+        .rst (pick_status_reset), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+  (
+        .din ([3:0]), .q ([3:0]),
+        .rst (), .clk (clk),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+), .clk (),
+        .se  (1'b0),  .si  (),       .so ()
+        );
+
+endmodule
+),
+        .se  (1bb),  .si  (),       .so ()
+        );
+
+endmodule

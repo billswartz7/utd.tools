@@ -1,0 +1,42 @@
+ 
+
+module bw_r_l2d_32k (
+      decc_out, so, l2d_fuse_data_out, 
+      decc_in_l, decc_read_in, word_en_l, way_sel_l, set_l, 
+   col_offset_l, wr_en_l, rclk, arst_l, mem_write_disable, 
+   sehold, se, si, fuse_l2d_wren, fuse_l2d_rden, 
+   fuse_l2d_rid, fuse_clk1, fuse_clk2, 
+   fuse_l2d_data_in, fuse_read_data_in
+   );
+
+   input [155:0]	decc_in_l;
+   input [155:0] 	decc_read_in;
+   input [3:0] 		word_en_l;
+   input [1:0] 		way_sel_l;
+   input [9:0] 		set_l;
+   input		col_offset_l;
+   input		wr_en_l;
+   input 		rclk;
+   input 		arst_l;
+   
+      input  		mem_write_disable;
+   input 		sehold;
+   input 		se;
+   input 		si;
+   
+
+      input 		fuse_l2d_wren;
+   input 		fuse_l2d_rden;
+   input [2:0] 		fuse_l2d_rid;
+   input 		fuse_clk1;
+   input 		fuse_clk2;
+   input 		fuse_l2d_data_in;
+   input 		fuse_read_data_in;
+
+
+   output [155:0] 	decc_out ;
+   output 		so;
+
+      output 		l2d_fuse_data_out;
+      
+   reg

@@ -1,0 +1,217 @@
+module bw_clk_cl_dram_ddr (
+      so, rclk, dbginit_l, cluster_grst_l, 
+      si, se, grst_l, gdbginit_l, gclk, cluster_cken, arst_l, 
+   adbginit_l
+   );
+
+   
+      output		cluster_grst_l;		   output		dbginit_l;		   output		rclk;			   output		so;			      
+   
+      input		adbginit_l;		   input		arst_l;			   input		cluster_cken;		   input		gclk;			   input		gdbginit_l;		   input		grst_l;			   input		se;			   input		si;			   
+   
+
+   cluster_header 
+   (/*AUTOINST*/
+    // Outputs
+    .dbginit_l				(dbginit_l),
+    .cluster_grst_l			(cluster_grst_l),
+    .rclk				(rclk),
+    .so					(so),
+    // Inputs
+    .gclk				(gclk),
+    .cluster_cken			(cluster_cken),
+    .arst_l				(arst_l),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+   (
+        .dbginit_l				(),
+    .cluster_grst_l			(cluster_grst_l),
+    .rclk				(rclk),
+    .so					(so),
+    // Inputs
+    .gclk				(gclk),
+    .cluster_cken			(cluster_cken),
+    .arst_l				(arst_l),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .cluster_grst_l			(),
+    .rclk				(rclk),
+    .so					(so),
+    // Inputs
+    .gclk				(gclk),
+    .cluster_cken			(cluster_cken),
+    .arst_l				(arst_l),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .rclk				(),
+    .so					(so),
+    // Inputs
+    .gclk				(gclk),
+    .cluster_cken			(cluster_cken),
+    .arst_l				(arst_l),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .so					(),
+    // Inputs
+    .gclk				(gclk),
+    .cluster_cken			(cluster_cken),
+    .arst_l				(arst_l),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+        .gclk				(),
+    .cluster_cken			(cluster_cken),
+    .arst_l				(arst_l),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .cluster_cken			(),
+    .arst_l				(arst_l),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .arst_l				(),
+    .grst_l				(grst_l),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .grst_l				(),
+    .adbginit_l				(adbginit_l),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .adbginit_l				(),
+    .gdbginit_l				(gdbginit_l),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .gdbginit_l				(),
+    .si					(si),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .si					(),
+    .se					(se));
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+    .se					());
+
+endmodule // bw_clk_cl_ddr_ddr
+
+// Local Variables:
+// verilog-library-directories:("../../common/rtl")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+endmodule 

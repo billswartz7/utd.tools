@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE> Dynamic Documentation</TITLE>
+</HEAD>
+
+<BODY TEXT="#000010" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B"
+ ALINK="#FF0000">
+<H1><I>Dynamic Documentation</I></H1>
+<P><B><FONT COLOR="#ff0000">Dynamic Documentation</FONT></B><FONT
+COLOR="#ff0000"></FONT> is the first <FONT COLOR="#ff0000"><I>active</I></FONT>
+hypertext system for Integrated Circuit Place and Route Systems. Unlike other
+passive help systems where documentation is added as an afterthought,
+<B>Dynamic Documentation</B> *IS* an active documentation wizard which does the
+work for you! But <B>Dynamic Documentation</B> is much more than just a wizard;
+it is a system where the software and documentation are one. </P>
+<P><B>Dynamic Documentation</B> is a revolutionary new graphical user interface
+(GUI) which allows users of all levels, from beginners to experts, to
+productively interact with a program. <B>Dynamic Documentation</B> supplies
+precisely the right amount of documentation detail based on the user's
+experience. Users will be led through the necessary documentation, and actually
+execute the program from within the documentation itself! <B>Dynamic
+Documentation </B> incorporates the latest advances in usability engineering,
+passing knowledge directly to the user.</P>
+<HR>
+<H1><U>How it works</U></H1>
+<P>This section describes a user's perspective of Dynamic Documentation. For a
+technical discussion please <A HREF="technical.html#plugin">click here</A>.</P>
+<P> </P>
+<P>Dynamic Documentation is written in HTML (Hypertext Markup Language). Two
+extensions to standard HTML are used, JavaScript and plugins. Both of these
+extensions are available from the native browser. You must use the native
+browser in order to unlock the power of Dynamic Documentation. </P>
+<P>The native browser is based on the general purpose <A HREF="http://www.tcltk.com">
+Tcl/Tk</A> interpreter. Tcl/Tk is an interpreted
+scripting language for creating textual and graphical interfaces. 
+Applications use Tcl/Tk user interfaces and they can be invoked and communicate
+between themselves using Tcl/Tk. Learning Tcl is easy and we provide a list of 
+<A HREF="reading.html">recommended books for Tcl</A>.</P>
+<B>EZlearn</B> browser is written completely in Tcl/Tk augmented with
+a Javascript interpreter. It is generally more stable than the Netscape's
+browser but supports only features needed to implement Dynamic Documentation. 
+</P>
+<P>The other major function of Dynamic Documentation is to save and restore the
+user's state. This allows users to start up EZ where it was last exited. The
+state of design and display are stored in a number of Tcl variables. These
+variables are written out to the &quot;~/.utdtools/eztcl.ini&quot; file whenever
+they change. This file is read on startup. </P>
+<HR>
+<H3><U>Native Browser Graphical Interface</U></H3>
+<P><FONT COLOR="#ff0000">This section only applies to <B>itools</B> native
+browser</FONT></P>
+<P>EZCAD graphical user interface is composed of seven major parts namely, the
+main menu bar, the icon bar, the hypertext notebook, the hypertext display
+window, the hypertext scrollbar, the current status bar, and the user message
+area as shown in the picture below</P>
+<P>. </P>
+<CENTER>
+<P><IMG SRC="gui.gif" ALIGN="center" WIDTH="609" HEIGHT="468"></P>
+</CENTER>
+<H4><U>The Main Menu Bar</U></H4>
+<P>The main menu bar contains pull down submenus which allow the user to
+execute commands. There are currently four pulldown menus in the menubar:
+<B>File</B>, <B>Edit</B>, <B>Options</B>, and <B>Help</B>.</P>
+<P>Here we unroll the <B>File</B> pulldown menu: </P>
+<CENTER>
+<IMG SRC="file.gif" ALIGN="center" WIDTH="140" HEIGHT="112"> 
+</CENTER>
+<P>The <B>Source Tcl</B> command is only available in <I>Developer</I> mode. It
+allows the developer to source a Tcl file without leaving EZ CAD. This is a
+productivity enhancement that allows the developer to write the Tk procedures
+incrementally without having to exit the entire program.</P>
+<P>The <B>Print</B> command is available in all user modes and prints the
+contents of the currently displayed hypertext to a PostScript printer.</P>
+<P>The <B>Exit</B> command terminates the EZ CAD program.</P>
+<P>Now we present the <B>Edit</B> pulldown menu: </P>
+<CENTER>
+<IMG SRC="edit.gif" ALIGN="center" WIDTH="119" HEIGHT="96"> 
+</CENTER>
+<P>The <B>Cut</B>, <B>Copy</B>, and <B>Paste</B> commands under the <B>Edit</B>
+menu are only available in the <I>Developer</I> user mode during a hypertext
+edit. Otherwise, these commands are inactive.</P>
+<P>Now we unroll the <B>Options</B> pulldown menu: </P>
+<CENTER>
+<IMG SRC="options.gif" ALIGN="center" WIDTH="138" HEIGHT="96"> 
+</CENTER>
+<P>The <B>Font Size</B> command changes the font size of the hypertext. The
+cascade menu which is displayed offers <I>small</I>, <I>medium</I>, and
+<I>large</I> fonts. The <B>Indent Amount</B> command modifies the indentation
+distance for the display of ordered lists. Here too, the available choices are
+<I>small</I>, <I>medium</I>, and <I>large</I>. The <B>User Mode</B> command
+controls the current user knowledge level. The supported modes are
+<B>Novice</B>, <B>Intermediate</B>, <B>Expert</B>, and <B>Developer</B>. Each
+successive knowledge level allows the user access to more of the tools'
+capabilities.</P>
+<P>The final submenu, the <B>Help</B> pulldown menu: </P>
+<CENTER>
+<IMG SRC="help.gif" ALIGN="center" WIDTH="253" HEIGHT="119"> 
+</CENTER>
+<P>The <B>Man Pages</B> command displays the Unix <B>man</B>ual pages from <I>Tcl</I>,
+<I>Tk</I>, <I>Tix</I>, and section 1 of the Unix system. A file selection
+dialog is presented and allows the user to determine the man page to display.
+By changing the directory in the file selection dialog, this command can
+display any man page on the system.  Compressed man pages are supported.
+
+<P>The <B>Where Is It?</B> command performs a
+search of the hypertext or editing window. The following window is presented to
+the user:</P>
+<CENTER>
+<P><IMG SRC="where.gif" ALIGN="center" WIDTH="413" HEIGHT="292"></P>
+</CENTER>
+<P>The search string is entered on text entry area. A carriage command should
+be entered in order to add the pattern to the history list. The pattern entered
+may be either a regular expression or an exact search using glob style
+matching. In addition, the search may be made case sensitive or insensitive.
+The search is started by depressing the <B> &quot;Start Search&quot;</B>
+button. The search may continue either forward or backward by depressing the
+appropriate buttons. If no match is found you will be warned on the user
+message line. The <B>Close</B> button removes the search engine from the
+screen.</P>
+<P></P>
+<H4><U>The Icon Bar</U></H4>
+<CENTER>
+<P><IMG SRC="icons.gif" ALIGN="center" WIDTH="471" HEIGHT="47"></P>
+</CENTER>
+<P>The Icon Bar presents the often used commands to the user. The hypertext
+traversal buttons - back and forward are prominently displayed in the icon bar.
+Back revisits the previously visited hypertext links. If the user, traverses
+backwards, they may return to their previous location by depressing the forward
+icon. The <B>Reload</B> icon is used to redisplay the current hypertext
+document. If the user was viewing or editing the source of the hypertext,
+source is replaced with the rendering of it. The <B>Home</B> icon redisplays
+the entry point HTML for the current topic denoted by the raised tab. It allows
+the easy traversal to the top of the current topic. The <B>Search</B> mode
+renders the search hypertext system in order to find a topic. The <B>View</B>
+or <B>Edit</B> icon allows the user to view and edit the hypertext source
+respectively. The <B>Edit</B> icon is available only in the
+<I>&quot;Developer&quot;</I> user mode; otherwise, the <B>View</B> icon is
+presented. The <B>Save</B> icon is only available in
+<I>&quot;Developer&quot;</I> mode and saves the current copy of the hypertext
+source. The original hypertext source is renamed to <I>filename</I>.orig. The
+<B>Stop</B> icon stops the rendering of the current HTML. </P>
+<P></P>
+<H4><U>The Hypertext Display</U></H4>
+<P>The hypertext display consists of the <B>Tix</B> notebook, the main
+hypertext window, and its accompanying scrollbar. The key feature to the
+hypertext display is the ability to access the documentation both sequentially
+and randomly. The tabs on the notebook choose the general topic of interest
+whereas the scrollbar permits sequential access of the current document. It is
+this power to access documentation both sequentially and randomly that makes
+<B>Dynamic Documentation</B> a leader in usability engineering.</P>
+<P></P>
+<H4><U>User Feedback</U></H4>
+<P>The current status bar, and the user message area are designed to give the
+user feedback during interaction session. The current status bar has two
+messages: <B><FONT COLOR="green">Ready </FONT></B><FONT COLOR="green"></FONT>
+and <B><FONT COLOR="red">Busy</FONT></B><FONT COLOR="red"></FONT>. The
+<B>busy</B> message indicates that the program is executing and that the user
+should wait before entering a new command. It should be noted that the system
+periodically displays the incompletely drawn hypertext in order to inform the
+user of its progress. The <B>ready</B> message indicates that EZ CAD is waiting
+for its next command.</P>
+<P>The user message area displays messages from the execution of the hypertext.
+Normal messages are displayed with a foreground color of black, warning
+messages are displayed with a foreground color of blue, and error messages are
+displayed in red. The message area is <I>persistent</I>, that is, the message
+remains displayed until another message occurs to overwrite it.</P>
+<P></P>
+<HR>
+<H4><U>Summary</U></H4>
+<P>We have presented a revolutionary new active hypertext documentation system
+and graphical user interface. This system understands different user knowledge
+levels, actively integrates the program into the documentation, and
+incorporates the latest research in usability engineering.</P>
+<P><A HREF="welcome.html">(Back)</A> <A HREF="technical.html">(Next) Technical
+Discussion</A></P>
+</BODY>
+</HTML>
+

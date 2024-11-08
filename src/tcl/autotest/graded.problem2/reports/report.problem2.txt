@@ -1,0 +1,18 @@
+User: billswartz7
+Date: Thu Dec 08 14:16:50 CST 2022
+Does Makefile exists? yes but not exactly (2)
+Does problem2.c or problem2.cpp exists? yes but not exactly (2)
+Does makefile execute? yes (0)
+Is the program C++? no
+Will the source compile with proper Makefile? not applicable (-1)
+Is the program process generated? yes (0)
+Is the program process executable? yes (0)
+Does Program gives correct data? yes (0) match id:5
+Correct answer:166375.00
+Your answer:'166375.00'
+Code doesn't exist: -5
+Makefile doesn't exist: -5
+Your grade: 30 out of 40
+# -------------------------------
+
+

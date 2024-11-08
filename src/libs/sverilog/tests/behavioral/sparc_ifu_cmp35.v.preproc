@@ -1,0 +1,13 @@
+
+
+module sparc_ifu_cmp35(
+      hit, 
+      a, b, valid
+   );
+
+   input [34:0] a, b;
+   input 	valid;
+   
+   output 	hit;
+
+   reg

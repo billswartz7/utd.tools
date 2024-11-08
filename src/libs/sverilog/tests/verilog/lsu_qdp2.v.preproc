@@ -1,0 +1,45 @@
+
+                       
+ 
+  
+
+
+ 
+
+module lsu_qdp2 ( 
+      so, lsu_l2fill_data, dfq_wdata, dfq_tid, lsu_dcache_fill_data_e, 
+   lsu_ifill_pkt, lsu_pcx_fwd_pkt, lsu_cpx_pkt_strm_ack, 
+   lsu_cpx_pkt_vld, lsu_cpx_pkt_atm_st_cmplt, lsu_cpx_pkt_tid, 
+   lsu_cpx_pkt_invwy, lsu_cpx_pkt_inv_pa, lsu_cpx_pkt_l2miss, 
+   lsu_dfq_byp_invwy_vld, lsu_dfq_byp_type, lsu_dfq_byp_flush, 
+   lsu_dfq_byp_tid, lsu_cpu_inv_data_b13to9, lsu_cpu_inv_data_b7to2, 
+   lsu_cpu_inv_data_b0, lsu_iobrdge_wr_data, lsu_iobrdge_tap_rq_type, 
+   lsu_cpx_pkt_perror_dinv, lsu_cpx_pkt_perror_iinv, 
+   lsu_cpx_pkt_perror_set, lsu_cpx_pkt_ld_err, lsu_dfq_byp_binit_st, 
+   lsu_cpx_pkt_binit_st, lsu_cpx_pkt_prefetch, lsu_cpx_pkt_prefetch2, 
+   lsu_dfq_byp_cpx_inv, lsu_dfq_byp_stack_adr_b54, 
+   lsu_dfq_byp_stack_wrway, lsu_dfq_byp_atm, dcache_iob_addr_e, 
+   st_dcfill_addr, lsu_st_way_e, lsu_dcache_iob_way_e, 
+   lsu_st_dcfill_size_e, lsu_cpx_pkt_ifill_type, lsu_cpx_pkt_atomic, 
+      rst_tri_en, rclk, si, se, lsu_dfill_data_sel_hi, dfq_byp_ff_en, 
+   dfq_rd_vld_d1, dfq_rdata, cpx_spc_data_cx, stb_rdata_ramd_buf, 
+   stb_rdata_ramd_b74_buf, stb_rdata_ramc_buf, lsu_stb_pcx_rvld_d1, 
+   lsu_diagnstc_wr_data_e, lsu_diagnstc_dc_prty_invrt_e, 
+   mbist_write_data, cpx_fwd_pkt_en_cx, lsu_cpu_dcd_sel, 
+   lsu_cpu_uhlf_sel, lsu_cpxpkt_type_dcd_cx, lsu_dc_iob_access_e, 
+   lsu_dcfill_data_mx_sel_e, lsu_cpx_spc_inv_vld, lsu_cpx_thrdid, 
+   lsu_cpx_stack_dcfill_vld, pcx_rq_for_stb_d1, lsu_dfq_ld_vld, 
+   lsu_dfq_st_vld, lsu_dfq_ldst_vld
+   ) ;  
+
+
+   input rst_tri_en;
+   
+input                     rclk ;
+input                     si;
+input                     se;
+output                    so;
+
+input                       lsu_dfill_data_sel_hi ; input                       dfq_byp_ff_en ;
+input                       dfq_rd_vld_d1 ;
+input [:

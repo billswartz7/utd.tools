@@ -1,0 +1,367 @@
+ 
+
+module ctu_clsp_clkgn_ssiclk(
+ctu_jbi_ssiclk, 
+io_pwron_rst_l, jbus_clk, ssiclk_enable
+);
+
+input io_pwron_rst_l;
+input jbus_clk;
+input ssiclk_enable;
+output ctu_jbi_ssiclk;
+
+
+   wire ;
+   wire jbus_clk_stage1;
+   wire ctu_jbi_ssiclk;
+
+
+      assign  jbus_clk_stage1_nxt =  jbus_clk_stage1 | ctu_jbi_ssiclk?
+                                     ~ctu_jbi_ssiclk : (~ctu_jbi_ssiclk & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+   wire ;
+   wire ctu_jbi_ssiclk;
+
+
+      assign  jbus_clk_stage1_nxt =  jbus_clk_stage1 | ctu_jbi_ssiclk?
+                                     ~ctu_jbi_ssiclk : (~ctu_jbi_ssiclk & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+   wire ;
+
+
+      assign  jbus_clk_stage1_nxt =  jbus_clk_stage1 | ctu_jbi_ssiclk?
+                                     ~ctu_jbi_ssiclk : (~ctu_jbi_ssiclk & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+
+
+      assign   =  jbus_clk_stage1 | ctu_jbi_ssiclk?
+                                     ~ctu_jbi_ssiclk : (~ctu_jbi_ssiclk & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ =   | ctu_jbi_ssiclk?
+                                     ~ctu_jbi_ssiclk : (~ctu_jbi_ssiclk & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ | ?
+                                     ~ctu_jbi_ssiclk : (~ctu_jbi_ssiclk & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+?
+                                     ~ : (~ctu_jbi_ssiclk & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ : (~ & ssiclk_enable);
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ & );
+
+      dffrl_async_ns u_ctu_jbi_ssiclk_d1 (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+);
+
+      dffrl_async_ns  (
+                      .din (jbus_clk_stage1_nxt),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+                      .din (),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                      .clk (),
+                      .rst_l(io_pwron_rst_l),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                      .rst_l(),
+                      .q(jbus_clk_stage1));
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                      .q());
+      dffrl_async_ns u_ctu_jbi_ssiclk_d2 (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+      dffrl_async_ns  (
+                      .din (jbus_clk_stage1),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (
+                      .din (),
+                      .clk (jbus_clk),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                      .clk (),
+                      .rst_l(io_pwron_rst_l),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                      .rst_l(),
+                      .q(ctu_jbi_ssiclk));
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                      .q());
+
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+
+endmodule

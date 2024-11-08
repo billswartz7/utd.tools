@@ -1,0 +1,1350 @@
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:44:13 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine cut
+# cut
+set previous logic
+# logic
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory cut
+cd cut
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn c
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.cdo...
+# riscv.cdo
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../logic/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [cut]:reading LEF file:../../ASAP7.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# ######################## VERILOG ############################
+set input_name $::utdtools::verilog_fileS
+# riscv.v
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.v does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.v does not exist.  Looking in ../logic/output ...
+# [::utdtools::search_input]:found... creating link to ../logic/output/riscv.v...link:riscv.v
+icmessage imsg $routine "reading Verilog file:$fpath\n"
+# [cut]:reading Verilog file:../logic/output/riscv.v
+icread_verilog -auto  -flatten $fpath
+# [icread_verilog]:../logic/output/riscv.v read.
+# [make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+# You may wish to edit this cells characteristics in the library.
+# [make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+# You may wish to edit this cells characteristics in the library.
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../logic/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [cut]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## OUTPUT ############################
+icbackup_directory output
+cd output
+
+icwrite_def ${dsn}.def -unplaced
+# [write_def]:riscv.def written.
+
+icmessage imsg null "waiting here\n"
+# waiting here
+icexit 0
+
+# itranslate terminated normally at Fri Oct 25 09:44:13 2019
+# with no errors and 0 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:44:13 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine floorplan
+# floorplan
+set previous cut
+# cut
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory floorplan
+cd floorplan
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn f
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.fdo...
+# riscv.fdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimFloorplan Program...\n"
+# Welcome to the TimberWolf SimFloorplan Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s c -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan
+set folder [file tail $dirname]
+# floorplan
+if {$folder != "floorplan"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../cut/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [floorplan]:reading LEF file:../../ASAP7.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../cut/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [floorplan]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cut/output ...
+# [::utdtools::search_input]:found... creating link to ../cut/output/riscv.def...link:riscv.def
+icmessage imsg $routine "reading DEF file:$fpath\n"
+# [floorplan]:reading DEF file:../cut/output/riscv.def
+icread_def $fpath -no_pad_extract
+#     components:4788
+# [convert_sites_to_rows]:No sites found.
+#     nets:4925
+# WARNING[sites_available]:Did not find 4 pad sites.
+# [icread_def]:../cut/output/riscv.def read.
+
+
+# Now output the TimberWolf files
+icbackup_directory timberwolf
+icbackup_directory output
+cd timberwolf
+icwrite_ic -notplaced -hierarchy -sitedefs
+# [write_con]:riscv.con written.
+# [write_ckt]:riscv.ckt written.
+# [icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+# [add_feedthru]:No feed thru cell found.  Adding a default one.
+# WARNING[add_feedthru]:Not enough space for additional feed layer:M3 in feed model:icfeed1 pitch:0.05400 width of model:0.03600
+# 
+# WARNING[add_feedthru]:Not enough space for additional feed layer:M5 in feed model:icfeed1 pitch:0.04800 width of model:0.03600
+# 
+# WARNING[add_feedthru]:Not enough space for additional feed layer:M7 in feed model:icfeed1 pitch:0.06400 width of model:0.03600
+# 
+# [icwrite_lib]:riscv.lib written.
+# [write_par]:riscv.par written.
+
+set f [open ${dsn}.fdo w]
+# file8
+puts $f ""
+puts $f "proc fix_the_pads { } {"
+puts $f "  icplacepads::extract_vectors_from_pads"
+puts $f "  icplacepads::equalize_sides {L B R T}"
+puts $f "  icplace_pads uniform -free_side -core_to_padspace 20"
+puts $f "  icplacepads::convert_to_exact"
+puts $f "  twpad dumpconstraints output/itools.con -append"
+puts $f "}"
+puts $f ""
+puts $f "icprerouting convert"
+puts $f "icfloorplan"
+puts $f "iccontext placement"
+puts $f "fix_the_pads"
+close $f
+
+
+set icos [file join $icdirG bin icos]
+# /Users/bill/version1/itools/bin/icos
+
+###################################################################
+# Now call the floorplanner flow.
+###################################################################
+set opts "-stop ifp -x -v"
+# -stop ifp -x -v
+if {([info exists ::utdtools::nographicsS]) && ($::utdtools::nographicS)} {
+  append opts " -n"
+}
+set flow flow.route1
+# flow.route1
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG itools $opts -flow $flow ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+# Create the ${dsn}_final.tdo script.
+set f [open ${dsn}_final.tdo w]
+# file8
+puts $f "icread_itools::state floorplan"
+puts $f "icwrite_def \[file join ../ output ${dsn}.def] -unplaced"
+puts $f "exit"
+close $f
+
+# Next call translator to create output files.
+if {[catch {bgexec statusTG -output outputG $icos icdir $icdirG itranslate -v -do ${dsn}_final.tdo ${dsn}} msg]} {  
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+icexit 0
+
+# itranslate terminated normally at Fri Oct 25 09:45:25 2019
+# with no errors and 1 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:45:25 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine place
+# place
+set previous floorplan
+# floorplan
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory place
+cd place
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn p
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.pdo...
+# riscv.pdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimPlace Program...\n"
+# Welcome to the TimberWolf SimPlace Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place
+set folder [file tail $dirname]
+# place
+if {$folder != "place"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../floorplan/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [place]:reading LEF file:../../ASAP7.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../floorplan/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [place]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../floorplan/output ...
+# [::utdtools::search_input]:found... creating link to ../floorplan/output/riscv.def...link:riscv.def
+icmessage imsg $routine "reading DEF file:$fpath\n"
+# [place]:reading DEF file:../floorplan/output/riscv.def
+icread_def $fpath -convert_to_exact_pads
+#     components:4788
+# [convert_sites_to_rows]:95 rows found.
+#     nets:4925
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:46:02 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine cts
+# cts
+set previous place
+# place
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory cts
+cd cts
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn t
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.tdo...
+# riscv.tdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimCTS Program...\n"
+# Welcome to the TimberWolf SimCTS Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/cts
+set folder [file tail $dirname]
+# cts
+if {$folder != "cts"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../place/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [cts]:reading LEF file:../../ASAP7.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../place/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [cts]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$def_path == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../place/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:46:03 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine grouter
+# grouter
+set previous cts
+# cts
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory groute
+cd groute
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn g
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.gdo...
+# riscv.gdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimGrouter Program...\n"
+# Welcome to the TimberWolf SimGrouter Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/groute
+set folder [file tail $dirname]
+# groute
+if {$folder != "groute"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../cts/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [grouter]:reading LEF file:../../ASAP7.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../cts/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [grouter]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cts/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:46:04 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine drouter
+# drouter
+set previous groute
+# groute
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory droute
+cd droute
+
+# Now source any necessary do files.
+set do_file [::utdtools::source_flow_do_files $dsn d -nosource]
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.ddo...
+# riscv.ddo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf Detailer Router Program...\n"
+# Welcome to the TimberWolf Detailer Router Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/droute
+set folder [file tail $dirname]
+# droute
+if {$folder != "droute"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../groute/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [drouter]:reading LEF file:../../ASAP7.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../groute/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [drouter]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../groute/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:46:05 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine assemble
+# assemble
+set previous droute
+# droute
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory assemble
+cd assemble
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn a
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.ado...
+# riscv.ado
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the Sim Assembly Program...\n"
+# Welcome to the Sim Assembly Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/assemble
+set folder [file tail $dirname]
+# assemble
+if {$folder != "assemble"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../droute/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [assemble]:reading LEF file:../../ASAP7.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../droute/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [assemble]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+if {$num_parts == 1} {  
+  set input_name $::utdtools::def_fileS
+  if {$input_name != ""} {
+    # change this to multiple files if needed
+    set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+    if {$def_path == ""} {
+      icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+      icwait
+      exit 1
+    }
+  }
+  icmessage imsg $routine "reading DEF file:$def_path\n"
+  icread_def $def_path -convert_to_exact_pads
+} else {
+  icmessage errmsg $routine "multiple partitions not supported yet.\n"
+  exit 1
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../droute/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:46:05 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine metalfill
+# metalfill
+set previous assemble
+# assemble
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory metalfill
+cd metalfill
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn m
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.mdo...
+# riscv.mdo
+
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the Sim MetalFill Program...\n"
+# Welcome to the Sim MetalFill Program...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/metalfill
+set folder [file tail $dirname]
+# metalfill
+if {$folder != "metalfill"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../assemble/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [metalfill]:reading LEF file:../../ASAP7.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../assemble/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [metalfill]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$def_path == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../assemble/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:46:05 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine final
+# final
+set previous metalfill
+# metalfill
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory final
+cd final
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn o
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.odo...
+# riscv.odo
+
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the Final Output Program...\n"
+# Welcome to the Final Output Program...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/final
+set folder [file tail $dirname]
+# final
+if {$folder != "final"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# ASAP7.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../metalfill/output ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [final]:reading LEF file:../../ASAP7.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout -merge_layers
+# [icread_lef]:Options: -model_obs keepout -scale -merge_layers
+# [icread_lef]:../../ASAP7.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# [add_feedthru]:Model FILL requested but not found.
+# 1
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# new_lib6.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../metalfill/output ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [final]:reading Synopsys Library file:../../new_lib6.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../new_lib6.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$def_path == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../metalfill/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...

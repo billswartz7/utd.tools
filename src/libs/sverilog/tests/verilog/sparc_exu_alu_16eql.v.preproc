@@ -1,0 +1,153 @@
+
+module sparc_exu_alu_16eql (
+      equal, 
+      in
+   ) ;
+   input [16:0] in;
+
+   output       equal;
+
+   wire [15:0]  ;
+   wire [7:0]   nor1;
+   wire [1:0]   nand2;
+
+   assign inxor[0] = in[15] ^ in[14];
+   assign inxor[1] = in[14] ^ in[13];
+   assign inxor[2] = in[13] ^ in[12];
+   assign inxor[3] = in[12] ^ in[11];
+   assign inxor[4] = in[11] ^ in[10];
+   assign inxor[5] = in[10] ^ in[9];
+   assign inxor[6] = in[9] ^ in[8];
+   assign inxor[7] = in[8] ^ in[7];
+   assign inxor[8] = in[7] ^ in[6];
+   assign inxor[9] = in[6] ^ in[5];
+   assign inxor[10] = in[5] ^ in[4];
+   assign inxor[11] = in[4] ^ in[3];
+   assign inxor[12] = in[3] ^ in[2];
+   assign inxor[13] = in[2] ^ in[1];
+   assign inxor[14] = in[1] ^ in[0];
+   assign inxor[15] = in[16] ^ in[15];
+
+   assign nor1[0] = ~(inxor[15] | inxor[14]);
+   assign       nor1[1] = ~(inxor[1] | inxor[0]);
+   assign       nor1[2] = ~(inxor[3] | inxor[2]);
+   assign       nor1[3] = ~(inxor[5] | inxor[4]);
+   assign       nor1[4] = ~(inxor[7] | inxor[6]);
+   assign       nor1[5] = ~(inxor[9] | inxor[8]);
+   assign       nor1[6] = ~(inxor[11] | inxor[10]);
+   assign       nor1[7] = ~(inxor[13] | inxor[12]);
+
+   assign       nand2[0] = ~(nor1[1] & nor1[2] & nor1[3] & nor1[4]);
+   assign       nand2[1] = ~(nor1[5] & nor1[6] & nor1[7] & nor1[0]);
+
+   assign       equal = ~(nand2[1] | nand2[0]);
+   
+endmodule // sparc_exu_div_32eql
+;
+   wire [7:0]   ;
+   wire [1:0]   nand2;
+
+   assign inxor[0] = in[15] ^ in[14];
+   assign inxor[1] = in[14] ^ in[13];
+   assign inxor[2] = in[13] ^ in[12];
+   assign inxor[3] = in[12] ^ in[11];
+   assign inxor[4] = in[11] ^ in[10];
+   assign inxor[5] = in[10] ^ in[9];
+   assign inxor[6] = in[9] ^ in[8];
+   assign inxor[7] = in[8] ^ in[7];
+   assign inxor[8] = in[7] ^ in[6];
+   assign inxor[9] = in[6] ^ in[5];
+   assign inxor[10] = in[5] ^ in[4];
+   assign inxor[11] = in[4] ^ in[3];
+   assign inxor[12] = in[3] ^ in[2];
+   assign inxor[13] = in[2] ^ in[1];
+   assign inxor[14] = in[1] ^ in[0];
+   assign inxor[15] = in[16] ^ in[15];
+
+   assign nor1[0] = ~(inxor[15] | inxor[14]);
+   assign       nor1[1] = ~(inxor[1] | inxor[0]);
+   assign       nor1[2] = ~(inxor[3] | inxor[2]);
+   assign       nor1[3] = ~(inxor[5] | inxor[4]);
+   assign       nor1[4] = ~(inxor[7] | inxor[6]);
+   assign       nor1[5] = ~(inxor[9] | inxor[8]);
+   assign       nor1[6] = ~(inxor[11] | inxor[10]);
+   assign       nor1[7] = ~(inxor[13] | inxor[12]);
+
+   assign       nand2[0] = ~(nor1[1] & nor1[2] & nor1[3] & nor1[4]);
+   assign       nand2[1] = ~(nor1[5] & nor1[6] & nor1[7] & nor1[0]);
+
+   assign       equal = ~(nand2[1] | nand2[0]);
+   
+endmodule // sparc_exu_div_32eql
+;
+   wire [1:0]   ;
+
+   assign inxor[0] = in[15] ^ in[14];
+   assign inxor[1] = in[14] ^ in[13];
+   assign inxor[2] = in[13] ^ in[12];
+   assign inxor[3] = in[12] ^ in[11];
+   assign inxor[4] = in[11] ^ in[10];
+   assign inxor[5] = in[10] ^ in[9];
+   assign inxor[6] = in[9] ^ in[8];
+   assign inxor[7] = in[8] ^ in[7];
+   assign inxor[8] = in[7] ^ in[6];
+   assign inxor[9] = in[6] ^ in[5];
+   assign inxor[10] = in[5] ^ in[4];
+   assign inxor[11] = in[4] ^ in[3];
+   assign inxor[12] = in[3] ^ in[2];
+   assign inxor[13] = in[2] ^ in[1];
+   assign inxor[14] = in[1] ^ in[0];
+   assign inxor[15] = in[16] ^ in[15];
+
+   assign nor1[0] = ~(inxor[15] | inxor[14]);
+   assign       nor1[1] = ~(inxor[1] | inxor[0]);
+   assign       nor1[2] = ~(inxor[3] | inxor[2]);
+   assign       nor1[3] = ~(inxor[5] | inxor[4]);
+   assign       nor1[4] = ~(inxor[7] | inxor[6]);
+   assign       nor1[5] = ~(inxor[9] | inxor[8]);
+   assign       nor1[6] = ~(inxor[11] | inxor[10]);
+   assign       nor1[7] = ~(inxor[13] | inxor[12]);
+
+   assign       nand2[0] = ~(nor1[1] & nor1[2] & nor1[3] & nor1[4]);
+   assign       nand2[1] = ~(nor1[5] & nor1[6] & nor1[7] & nor1[0]);
+
+   assign       equal = ~(nand2[1] | nand2[0]);
+   
+endmodule // sparc_exu_div_32eql
+;
+
+   assign [0] = [15] ^ [14];
+   assign [1] = [14] ^ [13];
+   assign [2] = [13] ^ [12];
+   assign [3] = [12] ^ [11];
+   assign [4] = [11] ^ [10];
+   assign [5] = [10] ^ [9];
+   assign [6] = [9] ^ [8];
+   assign [7] = [8] ^ [7];
+   assign [8] = [7] ^ [6];
+   assign [9] = [6] ^ [5];
+   assign [10] = [5] ^ [4];
+   assign [11] = [4] ^ [3];
+   assign [12] = [3] ^ [2];
+   assign [13] = [2] ^ [1];
+   assign [14] = [1] ^ [0];
+   assign [15] = [16] ^ [15];
+
+   assign [0] = ~([15] | [14]);
+   assign       [1] = ~([1] | [0]);
+   assign       [2] = ~([3] | [2]);
+   assign       [3] = ~([5] | [4]);
+   assign       [4] = ~([7] | [6]);
+   assign       [5] = ~([9] | [8]);
+   assign       [6] = ~([11] | [10]);
+   assign       [7] = ~([13] | [12]);
+
+   assign       [0] = ~([1] & [2] & [3] & [4]);
+   assign       [1] = ~([5] & [6] & [7] & [0]);
+
+   assign        = ~(nand2[1] | nand2[0]);
+   
+endmodule // sparc_exu_div_32eql
+ = ~([1] | [0]);
+   
+endmodule 

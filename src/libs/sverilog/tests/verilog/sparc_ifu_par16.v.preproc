@@ -1,0 +1,19 @@
+
+
+module sparc_ifu_par16 (
+      out, 
+      in
+   );
+
+   input [15:0] in;
+   output 	out;
+
+   assign   = (^in[15:0]);
+
+endmodule // sparc_ifu_par16
+
+   
+ = (^[15:0]);
+
+endmodule 
+   

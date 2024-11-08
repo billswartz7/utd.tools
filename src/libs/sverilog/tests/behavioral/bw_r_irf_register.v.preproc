@@ -1,0 +1,18 @@
+ 
+
+
+module bw_r_irf_register(clk, wrens, save, save_addr, restore, restore_addr, wr_data0, wr_data1, wr_data2, wr_data3, rd_thread, rd_data);
+	input		clk;
+	input	[3:0]	wrens;
+	input		save;
+	input	[4:0]	save_addr;
+	input		restore;
+	input	[4:0]	restore_addr;
+	input	[71:0]	wr_data0;
+	input	[71:0]	wr_data1;
+	input	[71:0]	wr_data2;
+	input	[71:0]	wr_data3;
+	input	[1:0]	rd_thread;
+	output	[71:0]	rd_data;
+ 
+    reg

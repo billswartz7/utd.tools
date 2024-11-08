@@ -1,0 +1,235 @@
+
+
+# ============================================================================
+# Configuration
+# ============================================================================
+
+$(warning Current user name -- $(HOME))
+
+DEBUG_MODE      := 0
+PROFILE_MODE    := 0
+
+ARCH := 
+# Intel i7
+#ARCH += -march=corei7
+#ARCH += -march=native
+
+
+ifeq ($(PROFILE_MODE),1)
+ifneq ($(DEBUG_MODE),1)
+$(error To use profiling, you must also set DEBUG_MODE=1)
+endif
+$(warning Compiling with profiling -- PROFILE_MODE=1)
+else
+$(warning Compiling without profiling -- PROFILE_MODE=0)
+endif
+
+
+ifeq ($(DEBUG_MODE),1)
+$(warning Compiling in debug mode -- DEBUG_MODE=1)
+else
+$(warning Compiling in release mode -- DEBUG_MODE=0)
+endif
+
+export TARGET_PROGRAM
+
+# ============================================================================
+# Configuration
+# ============================================================================
+TARGET :=
+OBJS :=
+OPTS := 
+
+# Determine the correct "main" program depending on the contest, etc. and/or
+# other target specific files.
+
+
+CXX         := c++
+CXX         := g++
+OPTS 	    += -g
+
+CC          := gcc
+CFLAGS      := -g -DDEBUG
+
+#LIBS		:= -Wl -Bstatic
+#CXXFLAGS    := -Wl,-stack_size -Wl,0x1000000
+CXXFLAGS    := 
+TOPDIR      := $(shell if [ "$$PWD" != "" ]; then echo $$PWD; else pwd; fi)
+X11INC	    := /usr/X11R6/include
+
+INCDIRS     := $(TOPDIR) 
+INCDIRS     += $(UTDTOOLS)/include 
+INCDIRS     += $(X11INC)
+
+UTDLIB     := $(UTDTOOLS)/lib/$(UTDTOOLSOS)
+LIBDIRS     := $(UTDTOOLS)
+LIBDIRS     += /usr/X11R6/lib
+
+LIBS        += ./.libs/libutd.a
+# LIBS        += -lXss -lX11 -lz -lm -ldl -lutil
+LIBS        += -lm -ldl -lutil
+
+
+
+CXXFLAGS += $(OPTS) $(ARCH)
+CXXFLAGS += -Wno-write-strings -Wno-unused-result -Wno-deprecated -Wno-int-to-pointer-cast
+CXXFLAGS += -Wno-write-strings -Wno-deprecated 
+CXXFLAGS += -I. $(foreach i,$(INCDIRS),-I$i)
+
+CFLAGS += -I. $(foreach i,$(INCDIRS),-I$i)
+
+LINKFLAGS   := $(CXXFLAGS)
+LINKFLAGS   += $(foreach i,$(LIBDIRS),-L$i)
+
+# ============================================================================
+# Building
+# ============================================================================
+PROGRAMS = 	test.bitset \
+		test.cleanup \
+		test.deck \
+		test.dset \
+		test.dstring \
+		test.exec \
+		test.file \
+		test.grid \
+		test.hash \
+		test.log \
+		test.memory \
+		test.mempools \
+		test.mmap \
+		test.msg \
+		test.path \
+		test.program \
+		test.rand \
+		test.rbtree \
+		test.rint \
+		test.stats \
+		test.string \
+		test.stringhash \
+		test.system \
+		test.tile \
+		test.timer \
+
+all:	$(PROGRAMS)
+
+test.bitset: bitset.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c bitset.c
+	$(CC) $(LINKFLAGS) -o test.bitset bitset.o $(LIBS) 
+
+test.cleanup: cleanup.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c cleanup.c
+	$(CC) $(LINKFLAGS) -o test.cleanup cleanup.o $(LIBS) 
+
+test.deck: deck.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c deck.c
+	$(CC) $(LINKFLAGS) -o test.deck deck.o $(LIBS) 
+
+test.dset: dset.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c dset.c
+	$(CC) $(LINKFLAGS) -o test.dset dset.o $(LIBS) 
+
+test.dstring: dstring.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c dstring.c
+	$(CC) $(LINKFLAGS) -o test.dstring dstring.o $(LIBS) 
+
+test.exec: exec.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c exec.c
+	$(CC) $(LINKFLAGS) -o test.exec exec.o $(LIBS) 
+
+test.file: file.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c file.c
+	$(CC) $(LINKFLAGS) -o test.file file.o $(LIBS) 
+
+test.grid: grid.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c grid.c
+	$(CC) $(LINKFLAGS) -o test.grid grid.o $(LIBS) 
+
+test.hash: hash.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c hash.c
+	$(CC) $(LINKFLAGS) -o test.hash hash.o $(LIBS) 
+
+test.mempools: mempools.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c mempools.c
+	$(CC) $(LINKFLAGS) -o test.mempools mempools.o $(LIBS) 
+
+test.memory: okmalloc.c $(OBJS) okmalloc.c
+	$(CC) $(CFLAGS) -DTEST -DHAVE_CONFIG_H -DUTDMEM_DEBUG=1 -c okmalloc.c -o test.memory.o
+	$(CC) $(LINKFLAGS) -o test.memory test.memory.o $(LIBS) 
+
+test.memory2: memtrack.cxx $(OBJS) memtrack.cxx okmalloc.c
+	$(CXX) $(CFLAGS) -DTEST -DHAVE_CONFIG_H -DUTDMEM_DEBUG=1 -c memtrack.cxx -o test.memory2.o
+	$(CXX) $(LINKFLAGS) -o test.memory2 test.memory2.o $(LIBS) 
+
+test.log: log.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c log.c
+	$(CC) $(LINKFLAGS) -o test.log log.o $(LIBS) 
+
+test.mmap: mmap.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c mmap.c
+	$(CC) $(LINKFLAGS) -o test.mmap mmap.o $(LIBS) 
+
+test.msg: msg.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c msg.c
+	$(CC) $(LINKFLAGS) -o test.msg msg.o $(LIBS) 
+
+test.path: path.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c path.c
+	$(CC) $(LINKFLAGS) -o test.path path.o $(LIBS) 
+
+test.program: program.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c program.c
+	$(CC) $(LINKFLAGS) -o test.program program.o $(LIBS) 
+
+test.rand: rand.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c rand.c
+	$(CC) $(LINKFLAGS) -o test.rand rand.o $(LIBS) 
+
+test.rbtree: rbtree.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c rbtree.c
+	$(CC) $(LINKFLAGS) -o test.rbtree rbtree.o $(LIBS) 
+
+test.rint: rint.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c rint.c
+	$(CC) $(LINKFLAGS) -o test.rint rint.o $(LIBS) 
+
+test.stats: stats.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c stats.c
+	$(CC) $(LINKFLAGS) -o test.stats stats.o $(LIBS) 
+
+test.string: string.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c string.c
+	$(CC) $(LINKFLAGS) -o test.string string.o $(LIBS) 
+
+test.stringhash: stringhash.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c stringhash.c
+	$(CC) $(LINKFLAGS) -o test.stringhash stringhash.o $(LIBS) 
+
+test.system: system.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -DHAVE_CONFIG_H -c system.c
+	$(CC) $(LINKFLAGS) -o test.system system.o $(LIBS) 
+
+test.time: time.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c time.c
+	$(CC) $(LINKFLAGS) -o test.time time.o $(LIBS) 
+
+test.tile: tile.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c tile.c
+	$(CC) $(LINKFLAGS) -o test.tile tile.o $(LIBS) 
+
+test.timer: timer.c $(OBJS)
+	$(CC) $(CFLAGS) -DTEST -c timer.c
+	$(CC) $(LINKFLAGS) -o test.timer timer.o $(LIBS) 
+
+
+
+clean:
+	rm -r -f *.lo *.o *.a $(PROGRAMS) cktName.log *.dSYM *~ user_file_test /tmp/file_test_lock_file *.met
+
+
+# Individual files -----------------------------------------------------------
+%.o : %.cpp 
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+%.o : %.cxx
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+%.o : %.c
+	$(CC) $(CFLAGS) -c $< -o $@

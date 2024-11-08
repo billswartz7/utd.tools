@@ -1,0 +1,47 @@
+
+
+ 
+
+
+ 
+
+module bw_r_irf (
+      so, irf_byp_rs1_data_d_l, irf_byp_rs2_data_d_l, 
+   irf_byp_rs3_data_d_l, irf_byp_rs3h_data_d_l, 
+      rclk, reset_l, si, se, sehold, rst_tri_en, ifu_exu_tid_s2, 
+   ifu_exu_rs1_s, ifu_exu_rs2_s, ifu_exu_rs3_s, ifu_exu_ren1_s, 
+   ifu_exu_ren2_s, ifu_exu_ren3_s, ecl_irf_wen_w, ecl_irf_wen_w2, 
+   ecl_irf_rd_m, ecl_irf_rd_g, byp_irf_rd_data_w, byp_irf_rd_data_w2, 
+   ecl_irf_tid_m, ecl_irf_tid_g, rml_irf_old_lo_cwp_e, 
+   rml_irf_new_lo_cwp_e, rml_irf_old_e_cwp_e, rml_irf_new_e_cwp_e, 
+   rml_irf_swap_even_e, rml_irf_swap_odd_e, rml_irf_swap_local_e, 
+   rml_irf_kill_restore_w, rml_irf_cwpswap_tid_e, rml_irf_old_agp, 
+   rml_irf_new_agp, rml_irf_swap_global, rml_irf_global_tid
+   ) ;
+   input rclk;
+   input reset_l;
+   input si;
+   input se;
+   input sehold;
+   input rst_tri_en;
+   input [1:0]  ifu_exu_tid_s2;     input [4:0]  ifu_exu_rs1_s;     input [4:0]  ifu_exu_rs2_s;
+   input [4:0]  ifu_exu_rs3_s;
+   input ifu_exu_ren1_s;           input ifu_exu_ren2_s;
+   input ifu_exu_ren3_s;
+   input ecl_irf_wen_w;           input ecl_irf_wen_w2;
+   input [4:0]  ecl_irf_rd_m;      input [4:0]  ecl_irf_rd_g;     input [71:0] byp_irf_rd_data_w;   input [71:0] byp_irf_rd_data_w2;        input [1:0]  ecl_irf_tid_m;     input [1:0]  ecl_irf_tid_g; 
+   input [2:0]  rml_irf_old_lo_cwp_e;     input [2:0]  rml_irf_new_lo_cwp_e;     input [2:1]  rml_irf_old_e_cwp_e;     input [2:1]  rml_irf_new_e_cwp_e;     input        rml_irf_swap_even_e;
+   input        rml_irf_swap_odd_e;
+   input        rml_irf_swap_local_e;
+   input        rml_irf_kill_restore_w;
+   input [1:0]  rml_irf_cwpswap_tid_e;
+
+   input [1:0]  rml_irf_old_agp;    input [1:0]  rml_irf_new_agp;    input        rml_irf_swap_global;
+   input [1:0]  rml_irf_global_tid;
+   
+   output       so;
+   output [71:0] irf_byp_rs1_data_d_l;
+   output [71:0] irf_byp_rs2_data_d_l;
+   output [71:0] irf_byp_rs3_data_d_l;
+   output [31:0] irf_byp_rs3h_data_d_l;
+   reg

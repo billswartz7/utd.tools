@@ -1,0 +1,5386 @@
+
+
+ 
+
+ 
+
+
+module sparc_tlu_intdp (
+      int_pending_i2_l, ind_inc_thrid_i1,    ind_inc_type_i1, tlu_lsu_int_ldxa_data_w2, int_tlu_rstid_m, 
+   tlu_lsu_pcxpkt, so, 
+               rclk, se, si, tlu_rst_l, lsu_tlu_st_rs3_data_g,    inc_ind_ld_int_i1, inc_ind_rstthr_i1, inc_ind_asi_thr, 
+   inc_ind_asi_wr_indr, inc_ind_indr_grant,    inc_ind_thr_m, inc_ind_asi_wr_inrr, inc_ind_asi_rd_invr, 
+   inc_indr_req_valid, inc_indr_req_thrid, tlu_asi_rdata_mxsel_g,
+   tlu_asi_queue_rdata_g, tlu_scpd_asi_rdata_g, lsu_ind_intpkt_id,
+   lsu_ind_intpkt_type, lsu_ind_intpkt_thr 
+   );
+
+            input      rclk, se, si, tlu_rst_l;
+
+         input [63:0]  lsu_tlu_st_rs3_data_g;     
+      input [3:0] 	 inc_ind_ld_int_i1;               input [3:0] 	 inc_ind_rstthr_i1;
+   
+         input [3:0] 	 inc_ind_asi_thr;               input [3:0] 	 inc_ind_asi_wr_indr;                   input [3:0] 	 inc_ind_indr_grant;                        input [3:0]	 inc_ind_thr_m;
+   
+      input [3:0] 	 inc_ind_asi_wr_inrr;     input [3:0] 	 inc_ind_asi_rd_invr;     
+      input 	 inc_indr_req_valid;      input [1:0] 	 inc_indr_req_thrid;            input [3:0] tlu_asi_rdata_mxsel_g;
+      input [-1:0] tlu_scpd_asi_rdata_g;
+   input [-1:0]   tlu_asi_queue_rdata_g;
+   input [4:0]  lsu_ind_intpkt_thr;
+   input [1:0]  lsu_ind_intpkt_type;
+   input [5:0]  lsu_ind_intpkt_id;
+
+      output [3:0]  int_pending_i2_l;        
+   output [4:0]  ind_inc_thrid_i1;
+   output [1:0]  ind_inc_type_i1;
+   
+      output [63:0] tlu_lsu_int_ldxa_data_w2;    output [5:0]  int_tlu_rstid_m;
+   
+   output [25:0] tlu_lsu_pcxpkt;          
+   output 	 so;
+
+            wire ; // local reset signal 
+   //
+   wire [63:0] int_tlu_asi_data;     // read data from int regs
+   // interrupt and reset id
+   wire [5:0] 	 int_id_i1;
+   wire [5:0] 	 t0_rstid_i2,
+		 t1_rstid_i2,
+		 t2_rstid_i2,
+		 t3_rstid_i2,
+		 next_t0_rstid_i1,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;       wire [63:0] ;     // read data from int regs
+   // interrupt and reset id
+   wire [5:0] 	 int_id_i1;
+   wire [5:0] 	 t0_rstid_i2,
+		 t1_rstid_i2,
+		 t2_rstid_i2,
+		 t3_rstid_i2,
+		 next_t0_rstid_i1,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;           wire [5:0] 	 ;
+   wire [5:0] 	 t0_rstid_i2,
+		 t1_rstid_i2,
+		 t2_rstid_i2,
+		 t3_rstid_i2,
+		 next_t0_rstid_i1,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+   wire [5:0] 	 ,
+		 t1_rstid_i2,
+		 t2_rstid_i2,
+		 t3_rstid_i2,
+		 next_t0_rstid_i1,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t2_rstid_i2,
+		 t3_rstid_i2,
+		 next_t0_rstid_i1,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_rstid_i2,
+		 next_t0_rstid_i1,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t0_rstid_i1,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t1_rstid_i1,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t2_rstid_i1,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t3_rstid_i1;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ;
+
+   // Interrupt receive register
+   wire [63:0]	 inrr_dec_i1,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+      wire [63:0]	 ,
+		 inrr_rd_data_i2;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ;
+
+   wire [63:0] 	 t0_inrr_i2,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+   wire [63:0] 	 ,
+ 		 t1_inrr_i2,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+ 		 ,
+		 t2_inrr_i2,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_inrr_i2,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t0_inrr_aw_i2,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t1_inrr_aw_i2,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t2_inrr_aw_i2,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_inrr_aw_i2,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t0_inrr_arw_i1,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t1_inrr_arw_i1,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t2_inrr_arw_i1,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_inrr_arw_i1,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t0_inrr_i1,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t1_inrr_i1,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t2_inrr_i1,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 next_t3_inrr_i1;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ;
+   
+   wire [63:0] 	 new_t0_inrr_i1,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+   
+   wire [63:0] 	 ,
+		 new_t1_inrr_i1,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 new_t2_inrr_i1,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 new_t3_inrr_i1;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ;
+
+   // clear interrupt through asi
+   wire [63:0]   t0_asi_wr_data,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+      wire [63:0]   ,
+		 t1_asi_wr_data,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t2_asi_wr_data,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_asi_wr_data;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ;
+
+   // interrupt vector
+   wire [5:0] 	 t0_invr_i3,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+      wire [5:0] 	 ,
+ 		 t1_invr_i3,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+ 		 ,
+ 		 t2_invr_i3,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+ 		 ,
+ 		 t3_invr_i3,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+ 		 ,
+    		 t0_invr_i2,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+    		 ,
+ 		 t1_invr_i2,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+ 		 ,
+ 		 t2_invr_i2,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+ 		 ,
+ 		 t3_invr_i2;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+ 		 ;
+   wire [5:0] 	 invr_rd_data_i3;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+   wire [5:0] 	 ;
+
+   // highest priority interrupt
+   wire [63:0] 	 pe_ivec_i3,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+      wire [63:0] 	 ,
+		 t0_pe_ivec_i3,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t1_pe_ivec_i3,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t2_pe_ivec_i3,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_pe_ivec_i3;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ;
+
+   // interrupt dispatch
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_wr_pkt;
+   wire [10:0] 	 indr_wr_pkt;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+            wire [10:0] 	 ;
+
+   // removed the obsolete bits 
+   // wire [12:0] 	 indr_pcxpkt,
+   wire [10:0] 	 indr_pcxpkt,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+         wire [10:0] 	 ,
+		 t0_indr,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t1_indr,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t2_indr,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_indr,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t0_indr_next,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t1_indr_next,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t2_indr_next,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ,
+		 t3_indr_next;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_,
+		 ;
+   // 
+   // local clock
+   wire clk;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+         wire ;
+
+   //
+   // Code Starts Here
+   //
+   //----------------------------------------------------------------------
+   // creating local clock
+   //----------------------------------------------------------------------
+   assign clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+                     assign  = rclk;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_ = ;
+
+   //----------------------------------------------------------------------
+   // Interrupt Receive
+   //----------------------------------------------------------------------
+   //
+   // create local reset signal
+   assign local_rst = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+
+                  assign  = ~tlu_rst_l;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_ = ~;
+   
+   // I1 Stage
+   // decode interrupt vector
+   // modified due to interface clean-up
+   /*
+   assign  int_id_i1 = lsu_tlu_intpkt[`INT_VEC_HI:`INT_VEC_LO];
+   assign  ind_inc_type_i1 = lsu_tlu_intpkt[`INT_TYPE_HI:`INT_TYPE_LO];
+   assign  ind_inc_thrid_i1 = lsu_tlu_intpkt[`INT_THR_HI:`INT_THR_LO];
+   */
+   assign  int_id_i1[5:0]        = lsu_ind_intpkt_id[5:0];
+   assign  ind_inc_type_i1[1:0]  = lsu_ind_intpkt_type[1:0];
+   assign  ind_inc_thrid_i1[4:0] = lsu_ind_intpkt_thr[4:0];
+
+   // rstid enable mux
+   dp_mux2es #6 rid_mux0(.dout  (next_t0_rstid_i1[5:0]),
+			 .in0   (t0_rstid_i2[5:0]),
+			 .in1   (int_id_i1[5:0]),
+			 .sel   (inc_ind_rstthr_i1[0]));
+
+`ifdef FPGA_SYN_1THREAD
+     dff_s #6 rid0_reg(.din (next_t0_rstid_i1[5:0]),
+		   .q   (t0_rstid_i2[5:0]),
+		   .clk (clk),
+		   .se  (se), .si(), .so());
+   assign  int_tlu_;
+   
+            
+   assign  [5:0]        = [5:0];
+   assign  [1:0]  = [1:0];
+   assign  [4:0] = [4:0];
+
+      dp_mux2es #6

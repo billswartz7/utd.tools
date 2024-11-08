@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Usage:
+#       mempractice
+#       mempractice low_res
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/memory/memory.tcl -- libpath ${utdtools}/${UTDTOOLSVERSION}/tcl/memory $1

@@ -1,0 +1,32 @@
+/* XPM */
+static char *save[] = {
+/* width height num_colors chars_per_pixel */
+"    22    22        3            1",
+/* colors */
+". c #000000",
+"# c #808000",
+"a c #c0c0c0",
+/* pixels */
+"aaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaa",
+"aaaa..............aaaa",
+"aaaa.#.aaaaaaaa.a.aaaa",
+"aaaa.#.aaaaaaaa...aaaa",
+"aaaa.#.aaaaaaaa.#.aaaa",
+"aaaa.#.aaaaaaaa.#.aaaa",
+"aaaa.#.aaaaaaaa.#.aaaa",
+"aaaa.#.aaaaaaaa.#.aaaa",
+"aaaa.##........##.aaaa",
+"aaaa.############.aaaa",
+"aaaa.##.........#.aaaa",
+"aaaa.##......aa.#.aaaa",
+"aaaa.##......aa.#.aaaa",
+"aaaa.##......aa.#.aaaa",
+"aaaaa.............aaaa",
+"aaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaa"
+};

@@ -1,0 +1,51 @@
+
+module bw_r_l2t( 
+      so, l2t_fuse_repair_value, l2t_fuse_repair_en, way_sel, way_sel_1, 
+   tag_way0, tag_way1, tag_way2, tag_way3, tag_way4, tag_way5, 
+   tag_way6, tag_way7, tag_way8, tag_way9, tag_way10, tag_way11, 
+      index, bist_index, rd_en, bist_rd_en, way, bist_way, wr_en, 
+   bist_wr_en, wrdata0, bist_wrdata0, wrdata1, bist_wrdata1, 
+   lkup_tag_d1, rclk, fuse_l2t_wren, fuse_l2t_rid, 
+   fuse_l2t_repair_value, fuse_l2t_repair_en, efc_sctag_fuse_clk1, 
+   rst_tri_en, si, se, arst_l, sehold
+   );
+
+
+input	[9:0]	index ; input	[9:0]	bist_index ; 
+
+input		rd_en ;  input		bist_rd_en ; 
+input	[11:0]	way; input	[11:0]	bist_way;
+input	 	wr_en; input		bist_wr_en ; 
+input	[27:0]	wrdata0 ; input	[7:0]	bist_wrdata0 ; input	[27:0]	wrdata1 ; input	[7:0]	bist_wrdata1 ; 
+input	[27:1]	lkup_tag_d1 ; 
+input		rclk;
+
+
+
+input          fuse_l2t_wren;          input [5:0]    fuse_l2t_rid;           input [6:0]    fuse_l2t_repair_value;  input [1:0]    fuse_l2t_repair_en;     input	       efc_sctag_fuse_clk1;
+
+
+
+
+input		rst_tri_en;
+input 		si, se;
+output 		so;
+input		arst_l;
+input		sehold;
+
+output  [6:0]    l2t_fuse_repair_value;  output  [1:0]    l2t_fuse_repair_en;     
+output	[11:0]	way_sel; output	[11:0]	way_sel_1; 
+output	[27:0] tag_way0;
+output	[27:0] tag_way1;
+output	[27:0] tag_way2;
+output	[27:0] tag_way3;
+output	[27:0] tag_way4;
+output	[27:0] tag_way5;
+output	[27:0] tag_way6;
+output	[27:0] tag_way7;
+output	[27:0] tag_way8;
+output	[27:0] tag_way9;
+output	[27:0] tag_way10;
+output	[27:0] tag_way11;
+
+reg

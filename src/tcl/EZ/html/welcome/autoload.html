@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-//SoftQuad Software//DTD HoTMetaL PRO 5.0::19981217::extensions to HTML 4.0//EN" "hmpro5.dtd">
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE> Autoloading</TITLE>
+</HEAD>
+
+<BODY>
+<H1>Autoloading Function</H1>
+<P>Copyright (c) 1996-2005. TimberWolf Systems Inc. All right reserved.</P>
+<BLOCKQUOTE><P>One of the most useful functions performed by the
+<CODE>unknown</CODE> procedure is <I>autoloading</I>. Autoloading allows you to
+write collections of Tcl procedures and place them in script files in library
+directories. You can then use these procedures in your Tcl applications without
+having to <CODE>source</CODE> the files that define them explicitly. You simply
+invoke the procedures. The first time that you invoke a library procedure it
+won't exist, so <CODE>unknown</CODE> will be called. <CODE>unknown</CODE> will
+find the file that defines the procedure, <CODE>source</CODE> the file to
+define the procedure, and then reinvoke the original command. The next time the
+procedure is invoked it will exist, so the autoloading mechanism won't be
+triggered. </P>
+</BLOCKQUOTE>
+<BLOCKQUOTE><P>Autoloading provides two benefits. First, it makes it easy to
+build large libraries of useful procedures and use them in Tcl scripts. You
+need not know exactly which files to <CODE>source</CODE> to define which
+procedures, since the autoloader takes care of that for you. The second benefit
+of autoloading is efficiency. Without autoloading an application must
+<CODE>source</CODE> all of its scripts when it starts. Autoloading allows an
+application to start up without loading any script files at all; the files will
+be loaded later when their procedures are needed, and some files may never be
+loaded at all. Thus autoloading reduces the startup time and saves memory. </P>
+</BLOCKQUOTE>
+<P></P>
+<HR>
+<P><CITE>Ousterhout, John K., &quot;Tcl and the Tk Toolkit&quot;, pp.
+137-138.</CITE></P>
+</BODY>
+</HTML>
+

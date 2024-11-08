@@ -1,0 +1,589 @@
+
+	 			        
+
+
+
+module iobdg_dbg_iob (
+      iob_dbg_bus, iob_jbi_pio_data_d1, jbi_iob_pio_data_d1, 
+      rst_l, clk, c2i_packet, ucb_buf_acpt, creg_dbg_iob_vis_ctrl, 
+   iob_clk_vld, iob_clk_data, clk_iob_stall, iob_dram02_vld, 
+   iob_dram02_data, dram02_iob_stall, iob_dram13_vld, 
+   iob_dram13_data, dram13_iob_stall, iob_jbi_pio_vld, 
+   iob_jbi_pio_data, jbi_iob_pio_stall, iob_jbi_spi_vld, 
+   iob_jbi_spi_data, jbi_iob_spi_stall, iob_tap_vld, iob_tap_data, 
+   tap_iob_stall, clk_iob_vld, clk_iob_data, iob_clk_stall, 
+   dram02_iob_vld, dram02_iob_data, iob_dram02_stall, dram13_iob_vld, 
+   dram13_iob_data, iob_dram13_stall, jbi_iob_pio_vld, 
+   jbi_iob_pio_data, iob_jbi_pio_stall, jbi_iob_spi_vld, 
+   jbi_iob_spi_data, iob_jbi_spi_stall, tap_iob_vld, tap_iob_data, 
+   iob_tap_stall
+   );
+
+      input                                    rst_l;
+   input 				    clk;
+   
+
+      output [43:0] 			    iob_dbg_bus;
+
+
+      input [-1:0] 	    c2i_packet;
+   input 				    ucb_buf_acpt;
+
+   input [63:0] 			    creg_dbg_iob_vis_ctrl;
+
+   
+      input 				    iob_clk_vld;
+   input [-1:0] 		    iob_clk_data;
+   input 				    clk_iob_stall;
+   
+   input 				    iob_dram02_vld;
+   input [-1:0] 		    iob_dram02_data;
+   input 				    dram02_iob_stall;
+   
+   input 				    iob_dram13_vld;
+   input [-1:0] 		    iob_dram13_data;
+   input 				    dram13_iob_stall;
+   
+   input 				    iob_jbi_pio_vld;
+   input [-1:0] 		    iob_jbi_pio_data;
+   input 				    jbi_iob_pio_stall;
+   
+   input 				    iob_jbi_spi_vld;
+   input [-1:0] 		    iob_jbi_spi_data;
+   input 				    jbi_iob_spi_stall;
+   
+   input 				    iob_tap_vld;
+   input [-1:0] 		    iob_tap_data;
+   input 				    tap_iob_stall;
+   
+   input 				    clk_iob_vld;
+   input [-1:0] 		    clk_iob_data;
+   input 				    iob_clk_stall;
+   
+   input 				    dram02_iob_vld;
+   input [-1:0] 		    dram02_iob_data;
+   input 				    iob_dram02_stall;
+   
+   input 				    dram13_iob_vld;
+   input [-1:0] 		    dram13_iob_data;
+   input 				    iob_dram13_stall;
+   
+   input 				    jbi_iob_pio_vld;
+   input [-1:0] 		    jbi_iob_pio_data;
+   input 				    iob_jbi_pio_stall;
+   
+   input 				    jbi_iob_spi_vld;
+   input [-1:0] 		    jbi_iob_spi_data;
+   input 				    iob_jbi_spi_stall;
+   
+   input 				    tap_iob_vld;
+   input [-1:0] 		    tap_iob_data;
+   input 				    iob_tap_stall;
+   
+
+      wire [-1:0] 	    ;
+   wire 				    ucb_buf_acpt_d1;
+   wire [`IOB_ADDR_WIDTH-1:0] 		    c2i_packet_addr_d1;
+   wire [`IOB_CPUTHR_INDEX-1:0] 	    c2i_packet_cputhr_d1;
+   wire 				    c2i_packet_src_d1;
+   reg [1:0] 				    c2i_packet_tt_d1;
+   
+   wire 				    iob_clk_vld_d1;
+   wire [`IOB_CLK_WIDTH-1:0] 		    iob_clk_data_d1;
+   wire 				    clk_iob_stall_d1;
+
+   wire 				    iob_dram02_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram02_data_d1;
+   wire 				    dram02_iob_stall_d1;
+
+   wire 				    iob_dram13_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram13_data_d1;
+   wire 				    dram13_iob_stall_d1;
+
+   wire 				    iob_jbi_pio_vld_d1;
+   output [`IOB_JBI_WIDTH-1:0] 		    iob_jbi_pio_data_d1; // need to tap this for Port B Low
+   wire 				    jbi_iob_pio_stall_d1;
+   
+   wire 				    iob_jbi_spi_vld_d1;
+   wire [`IOB_SPI_WIDTH-1:0] 		    iob_jbi_spi_data_d1;
+   wire 				    jbi_iob_spi_stall_d1;
+
+   wire 				    iob_tap_vld_d1;
+   wire [`IOB_TAP_WIDTH-1:0] 		    iob_tap_data_d1;
+   wire 				    tap_iob_stall_d1;
+
+   wire 				    clk_iob_vld_d1;
+   wire [`CLK_IOB_WIDTH-1:0] 		    clk_iob_data_d1;
+   wire 				    iob_clk_stall_d1;
+
+   wire 				    dram02_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram02_iob_data_d1;
+   wire 				    iob_dram02_stall_d1;
+
+   wire 				    dram13_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram13_iob_data_d1;
+   wire 				    iob_dram13_stall_d1;
+   
+   wire 				    jbi_iob_pio_vld_d1;
+   output [`JBI_IOB_WIDTH-1:0] 		    jbi_iob_pio_data_d1;  // need to tap this for Port B Low
+   wire 				    iob_jbi_pio_stall_d1;
+
+   wire 				    jbi_iob_spi_vld_d1;
+   wire [`SPI_IOB_WIDTH-1:0] 		    jbi_iob_spi_data_d1;
+   wire 				    iob_jbi_spi_stall_d1;
+
+   wire 				    tap_iob_vld_d1;
+   wire [`TAP_IOB_WIDTH-1:0] 		    tap_iob_data_d1;
+   wire 				    iob_tap_stall_d1;
+
+   reg [43:0] 				    iob_dbg_bus;
+
+       
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * Flop c2i packet
+    *****************************************************************/
+   dff_ns #(`UCB_64PAY_PKT_WIDTH) c2i_packet_d1_ff (.din(c2i_packet),
+						    .clk(clk),
+						    .q(c2i_packet_d1));
+   
+   dff_ns #(1) ucb_buf_acpt_d1_ff (.din(ucb_buf_acpt),
+				   .clk(clk),
+				   .q(ucb_buf_acpt_d1));
+
+   assign 	c2i_packet_addr_d1 = c2i_packet_d1[`UCB_ADDR_HI:`UCB_ADDR_LO];
+
+   assign 	c2i_packet_cputhr_d1 = c2i_packet_d1[`IOB_CPUTHR_INDEX+`UCB_THR_LO-1:`UCB_THR_LO];
+
+   // source
+   // 0 = cpu
+   // 1 = tap
+   assign 	c2i_packet_src_d1 = (c2i_packet_d1[`UCB_BUF_HI:`UCB_BUF_LO] == `UCB_BID_TAP);
+
+   // transaction type
+   // 00 = read
+   // 01 = write
+   // 10 = ifill
+   // 11 = others/undefined
+   always @(/*AUTOSENSE*/c2i_packet_d1)
+     case (c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+       `UCB_READ_REQ:  c2i_packet_tt_d1 = 2'b00;
+       `UCB_WRITE_REQ: c2i_packet_tt_d1 = 2'b01;
+       `UCB_IFILL_REQ: c2i_packet_tt_d1 = 2'b10;
+       default:        c2i_packet_tt_d1 = 2'b11;
+     endcase // case(c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+   
+
+   /*****************************************************************
+    * Flop IOB->UCB buses
+    *****************************************************************/
+   dff_ns #(1) iob_clk_vld_d1_ff (.din(iob_clk_vld),
+				  .clk(clk),
+				  .q(iob_clk_vld_d1));
+   
+   dff_ns #(`IO;
+   wire 				    ;
+   wire [`IOB_ADDR_WIDTH-1:0] 		    c2i_packet_addr_d1;
+   wire [`IOB_CPUTHR_INDEX-1:0] 	    c2i_packet_cputhr_d1;
+   wire 				    c2i_packet_src_d1;
+   reg [1:0] 				    c2i_packet_tt_d1;
+   
+   wire 				    iob_clk_vld_d1;
+   wire [`IOB_CLK_WIDTH-1:0] 		    iob_clk_data_d1;
+   wire 				    clk_iob_stall_d1;
+
+   wire 				    iob_dram02_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram02_data_d1;
+   wire 				    dram02_iob_stall_d1;
+
+   wire 				    iob_dram13_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram13_data_d1;
+   wire 				    dram13_iob_stall_d1;
+
+   wire 				    iob_jbi_pio_vld_d1;
+   output [`IOB_JBI_WIDTH-1:0] 		    iob_jbi_pio_data_d1; // need to tap this for Port B Low
+   wire 				    jbi_iob_pio_stall_d1;
+   
+   wire 				    iob_jbi_spi_vld_d1;
+   wire [`IOB_SPI_WIDTH-1:0] 		    iob_jbi_spi_data_d1;
+   wire 				    jbi_iob_spi_stall_d1;
+
+   wire 				    iob_tap_vld_d1;
+   wire [`IOB_TAP_WIDTH-1:0] 		    iob_tap_data_d1;
+   wire 				    tap_iob_stall_d1;
+
+   wire 				    clk_iob_vld_d1;
+   wire [`CLK_IOB_WIDTH-1:0] 		    clk_iob_data_d1;
+   wire 				    iob_clk_stall_d1;
+
+   wire 				    dram02_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram02_iob_data_d1;
+   wire 				    iob_dram02_stall_d1;
+
+   wire 				    dram13_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram13_iob_data_d1;
+   wire 				    iob_dram13_stall_d1;
+   
+   wire 				    jbi_iob_pio_vld_d1;
+   output [`JBI_IOB_WIDTH-1:0] 		    jbi_iob_pio_data_d1;  // need to tap this for Port B Low
+   wire 				    iob_jbi_pio_stall_d1;
+
+   wire 				    jbi_iob_spi_vld_d1;
+   wire [`SPI_IOB_WIDTH-1:0] 		    jbi_iob_spi_data_d1;
+   wire 				    iob_jbi_spi_stall_d1;
+
+   wire 				    tap_iob_vld_d1;
+   wire [`TAP_IOB_WIDTH-1:0] 		    tap_iob_data_d1;
+   wire 				    iob_tap_stall_d1;
+
+   reg [43:0] 				    iob_dbg_bus;
+
+       
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * Flop c2i packet
+    *****************************************************************/
+   dff_ns #(`UCB_64PAY_PKT_WIDTH) c2i_packet_d1_ff (.din(c2i_packet),
+						    .clk(clk),
+						    .q(c2i_packet_d1));
+   
+   dff_ns #(1) ucb_buf_acpt_d1_ff (.din(ucb_buf_acpt),
+				   .clk(clk),
+				   .q(ucb_buf_acpt_d1));
+
+   assign 	c2i_packet_addr_d1 = c2i_packet_d1[`UCB_ADDR_HI:`UCB_ADDR_LO];
+
+   assign 	c2i_packet_cputhr_d1 = c2i_packet_d1[`IOB_CPUTHR_INDEX+`UCB_THR_LO-1:`UCB_THR_LO];
+
+   // source
+   // 0 = cpu
+   // 1 = tap
+   assign 	c2i_packet_src_d1 = (c2i_packet_d1[`UCB_BUF_HI:`UCB_BUF_LO] == `UCB_BID_TAP);
+
+   // transaction type
+   // 00 = read
+   // 01 = write
+   // 10 = ifill
+   // 11 = others/undefined
+   always @(/*AUTOSENSE*/c2i_packet_d1)
+     case (c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+       `UCB_READ_REQ:  c2i_packet_tt_d1 = 2'b00;
+       `UCB_WRITE_REQ: c2i_packet_tt_d1 = 2'b01;
+       `UCB_IFILL_REQ: c2i_packet_tt_d1 = 2'b10;
+       default:        c2i_packet_tt_d1 = 2'b11;
+     endcase // case(c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+   
+
+   /*****************************************************************
+    * Flop IOB->UCB buses
+    *****************************************************************/
+   dff_ns #(1) iob_clk_vld_d1_ff (.din(iob_clk_vld),
+				  .clk(clk),
+				  .q(iob_clk_vld_d1));
+   
+   dff_ns #(`IO;
+   wire [-1:0] 		    ;
+   wire [`IOB_CPUTHR_INDEX-1:0] 	    c2i_packet_cputhr_d1;
+   wire 				    c2i_packet_src_d1;
+   reg [1:0] 				    c2i_packet_tt_d1;
+   
+   wire 				    iob_clk_vld_d1;
+   wire [`IOB_CLK_WIDTH-1:0] 		    iob_clk_data_d1;
+   wire 				    clk_iob_stall_d1;
+
+   wire 				    iob_dram02_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram02_data_d1;
+   wire 				    dram02_iob_stall_d1;
+
+   wire 				    iob_dram13_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram13_data_d1;
+   wire 				    dram13_iob_stall_d1;
+
+   wire 				    iob_jbi_pio_vld_d1;
+   output [`IOB_JBI_WIDTH-1:0] 		    iob_jbi_pio_data_d1; // need to tap this for Port B Low
+   wire 				    jbi_iob_pio_stall_d1;
+   
+   wire 				    iob_jbi_spi_vld_d1;
+   wire [`IOB_SPI_WIDTH-1:0] 		    iob_jbi_spi_data_d1;
+   wire 				    jbi_iob_spi_stall_d1;
+
+   wire 				    iob_tap_vld_d1;
+   wire [`IOB_TAP_WIDTH-1:0] 		    iob_tap_data_d1;
+   wire 				    tap_iob_stall_d1;
+
+   wire 				    clk_iob_vld_d1;
+   wire [`CLK_IOB_WIDTH-1:0] 		    clk_iob_data_d1;
+   wire 				    iob_clk_stall_d1;
+
+   wire 				    dram02_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram02_iob_data_d1;
+   wire 				    iob_dram02_stall_d1;
+
+   wire 				    dram13_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram13_iob_data_d1;
+   wire 				    iob_dram13_stall_d1;
+   
+   wire 				    jbi_iob_pio_vld_d1;
+   output [`JBI_IOB_WIDTH-1:0] 		    jbi_iob_pio_data_d1;  // need to tap this for Port B Low
+   wire 				    iob_jbi_pio_stall_d1;
+
+   wire 				    jbi_iob_spi_vld_d1;
+   wire [`SPI_IOB_WIDTH-1:0] 		    jbi_iob_spi_data_d1;
+   wire 				    iob_jbi_spi_stall_d1;
+
+   wire 				    tap_iob_vld_d1;
+   wire [`TAP_IOB_WIDTH-1:0] 		    tap_iob_data_d1;
+   wire 				    iob_tap_stall_d1;
+
+   reg [43:0] 				    iob_dbg_bus;
+
+       
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * Flop c2i packet
+    *****************************************************************/
+   dff_ns #(`UCB_64PAY_PKT_WIDTH) c2i_packet_d1_ff (.din(c2i_packet),
+						    .clk(clk),
+						    .q(c2i_packet_d1));
+   
+   dff_ns #(1) ucb_buf_acpt_d1_ff (.din(ucb_buf_acpt),
+				   .clk(clk),
+				   .q(ucb_buf_acpt_d1));
+
+   assign 	c2i_packet_addr_d1 = c2i_packet_d1[`UCB_ADDR_HI:`UCB_ADDR_LO];
+
+   assign 	c2i_packet_cputhr_d1 = c2i_packet_d1[`IOB_CPUTHR_INDEX+`UCB_THR_LO-1:`UCB_THR_LO];
+
+   // source
+   // 0 = cpu
+   // 1 = tap
+   assign 	c2i_packet_src_d1 = (c2i_packet_d1[`UCB_BUF_HI:`UCB_BUF_LO] == `UCB_BID_TAP);
+
+   // transaction type
+   // 00 = read
+   // 01 = write
+   // 10 = ifill
+   // 11 = others/undefined
+   always @(/*AUTOSENSE*/c2i_packet_d1)
+     case (c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+       `UCB_READ_REQ:  c2i_packet_tt_d1 = 2'b00;
+       `UCB_WRITE_REQ: c2i_packet_tt_d1 = 2'b01;
+       `UCB_IFILL_REQ: c2i_packet_tt_d1 = 2'b10;
+       default:        c2i_packet_tt_d1 = 2'b11;
+     endcase // case(c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+   
+
+   /*****************************************************************
+    * Flop IOB->UCB buses
+    *****************************************************************/
+   dff_ns #(1) iob_clk_vld_d1_ff (.din(iob_clk_vld),
+				  .clk(clk),
+				  .q(iob_clk_vld_d1));
+   
+   dff_ns #(`IO;
+   wire [-1:0] 	    ;
+   wire 				    c2i_packet_src_d1;
+   reg [1:0] 				    c2i_packet_tt_d1;
+   
+   wire 				    iob_clk_vld_d1;
+   wire [`IOB_CLK_WIDTH-1:0] 		    iob_clk_data_d1;
+   wire 				    clk_iob_stall_d1;
+
+   wire 				    iob_dram02_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram02_data_d1;
+   wire 				    dram02_iob_stall_d1;
+
+   wire 				    iob_dram13_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram13_data_d1;
+   wire 				    dram13_iob_stall_d1;
+
+   wire 				    iob_jbi_pio_vld_d1;
+   output [`IOB_JBI_WIDTH-1:0] 		    iob_jbi_pio_data_d1; // need to tap this for Port B Low
+   wire 				    jbi_iob_pio_stall_d1;
+   
+   wire 				    iob_jbi_spi_vld_d1;
+   wire [`IOB_SPI_WIDTH-1:0] 		    iob_jbi_spi_data_d1;
+   wire 				    jbi_iob_spi_stall_d1;
+
+   wire 				    iob_tap_vld_d1;
+   wire [`IOB_TAP_WIDTH-1:0] 		    iob_tap_data_d1;
+   wire 				    tap_iob_stall_d1;
+
+   wire 				    clk_iob_vld_d1;
+   wire [`CLK_IOB_WIDTH-1:0] 		    clk_iob_data_d1;
+   wire 				    iob_clk_stall_d1;
+
+   wire 				    dram02_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram02_iob_data_d1;
+   wire 				    iob_dram02_stall_d1;
+
+   wire 				    dram13_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram13_iob_data_d1;
+   wire 				    iob_dram13_stall_d1;
+   
+   wire 				    jbi_iob_pio_vld_d1;
+   output [`JBI_IOB_WIDTH-1:0] 		    jbi_iob_pio_data_d1;  // need to tap this for Port B Low
+   wire 				    iob_jbi_pio_stall_d1;
+
+   wire 				    jbi_iob_spi_vld_d1;
+   wire [`SPI_IOB_WIDTH-1:0] 		    jbi_iob_spi_data_d1;
+   wire 				    iob_jbi_spi_stall_d1;
+
+   wire 				    tap_iob_vld_d1;
+   wire [`TAP_IOB_WIDTH-1:0] 		    tap_iob_data_d1;
+   wire 				    iob_tap_stall_d1;
+
+   reg [43:0] 				    iob_dbg_bus;
+
+       
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * Flop c2i packet
+    *****************************************************************/
+   dff_ns #(`UCB_64PAY_PKT_WIDTH) c2i_packet_d1_ff (.din(c2i_packet),
+						    .clk(clk),
+						    .q(c2i_packet_d1));
+   
+   dff_ns #(1) ucb_buf_acpt_d1_ff (.din(ucb_buf_acpt),
+				   .clk(clk),
+				   .q(ucb_buf_acpt_d1));
+
+   assign 	c2i_packet_addr_d1 = c2i_packet_d1[`UCB_ADDR_HI:`UCB_ADDR_LO];
+
+   assign 	c2i_packet_cputhr_d1 = c2i_packet_d1[`IOB_CPUTHR_INDEX+`UCB_THR_LO-1:`UCB_THR_LO];
+
+   // source
+   // 0 = cpu
+   // 1 = tap
+   assign 	c2i_packet_src_d1 = (c2i_packet_d1[`UCB_BUF_HI:`UCB_BUF_LO] == `UCB_BID_TAP);
+
+   // transaction type
+   // 00 = read
+   // 01 = write
+   // 10 = ifill
+   // 11 = others/undefined
+   always @(/*AUTOSENSE*/c2i_packet_d1)
+     case (c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+       `UCB_READ_REQ:  c2i_packet_tt_d1 = 2'b00;
+       `UCB_WRITE_REQ: c2i_packet_tt_d1 = 2'b01;
+       `UCB_IFILL_REQ: c2i_packet_tt_d1 = 2'b10;
+       default:        c2i_packet_tt_d1 = 2'b11;
+     endcase // case(c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+   
+
+   /*****************************************************************
+    * Flop IOB->UCB buses
+    *****************************************************************/
+   dff_ns #(1) iob_clk_vld_d1_ff (.din(iob_clk_vld),
+				  .clk(clk),
+				  .q(iob_clk_vld_d1));
+   
+   dff_ns #(`IO;
+   wire 				    ;
+   reg [1:0] 				    c2i_packet_tt_d1;
+   
+   wire 				    iob_clk_vld_d1;
+   wire [`IOB_CLK_WIDTH-1:0] 		    iob_clk_data_d1;
+   wire 				    clk_iob_stall_d1;
+
+   wire 				    iob_dram02_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram02_data_d1;
+   wire 				    dram02_iob_stall_d1;
+
+   wire 				    iob_dram13_vld_d1;
+   wire [`IOB_DRAM_WIDTH-1:0] 		    iob_dram13_data_d1;
+   wire 				    dram13_iob_stall_d1;
+
+   wire 				    iob_jbi_pio_vld_d1;
+   output [`IOB_JBI_WIDTH-1:0] 		    iob_jbi_pio_data_d1; // need to tap this for Port B Low
+   wire 				    jbi_iob_pio_stall_d1;
+   
+   wire 				    iob_jbi_spi_vld_d1;
+   wire [`IOB_SPI_WIDTH-1:0] 		    iob_jbi_spi_data_d1;
+   wire 				    jbi_iob_spi_stall_d1;
+
+   wire 				    iob_tap_vld_d1;
+   wire [`IOB_TAP_WIDTH-1:0] 		    iob_tap_data_d1;
+   wire 				    tap_iob_stall_d1;
+
+   wire 				    clk_iob_vld_d1;
+   wire [`CLK_IOB_WIDTH-1:0] 		    clk_iob_data_d1;
+   wire 				    iob_clk_stall_d1;
+
+   wire 				    dram02_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram02_iob_data_d1;
+   wire 				    iob_dram02_stall_d1;
+
+   wire 				    dram13_iob_vld_d1;
+   wire [`DRAM_IOB_WIDTH-1:0] 		    dram13_iob_data_d1;
+   wire 				    iob_dram13_stall_d1;
+   
+   wire 				    jbi_iob_pio_vld_d1;
+   output [`JBI_IOB_WIDTH-1:0] 		    jbi_iob_pio_data_d1;  // need to tap this for Port B Low
+   wire 				    iob_jbi_pio_stall_d1;
+
+   wire 				    jbi_iob_spi_vld_d1;
+   wire [`SPI_IOB_WIDTH-1:0] 		    jbi_iob_spi_data_d1;
+   wire 				    iob_jbi_spi_stall_d1;
+
+   wire 				    tap_iob_vld_d1;
+   wire [`TAP_IOB_WIDTH-1:0] 		    tap_iob_data_d1;
+   wire 				    iob_tap_stall_d1;
+
+   reg [43:0] 				    iob_dbg_bus;
+
+       
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * Flop c2i packet
+    *****************************************************************/
+   dff_ns #(`UCB_64PAY_PKT_WIDTH) c2i_packet_d1_ff (.din(c2i_packet),
+						    .clk(clk),
+						    .q(c2i_packet_d1));
+   
+   dff_ns #(1) ucb_buf_acpt_d1_ff (.din(ucb_buf_acpt),
+				   .clk(clk),
+				   .q(ucb_buf_acpt_d1));
+
+   assign 	c2i_packet_addr_d1 = c2i_packet_d1[`UCB_ADDR_HI:`UCB_ADDR_LO];
+
+   assign 	c2i_packet_cputhr_d1 = c2i_packet_d1[`IOB_CPUTHR_INDEX+`UCB_THR_LO-1:`UCB_THR_LO];
+
+   // source
+   // 0 = cpu
+   // 1 = tap
+   assign 	c2i_packet_src_d1 = (c2i_packet_d1[`UCB_BUF_HI:`UCB_BUF_LO] == `UCB_BID_TAP);
+
+   // transaction type
+   // 00 = read
+   // 01 = write
+   // 10 = ifill
+   // 11 = others/undefined
+   always @(/*AUTOSENSE*/c2i_packet_d1)
+     case (c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+       `UCB_READ_REQ:  c2i_packet_tt_d1 = 2'b00;
+       `UCB_WRITE_REQ: c2i_packet_tt_d1 = 2'b01;
+       `UCB_IFILL_REQ: c2i_packet_tt_d1 = 2'b10;
+       default:        c2i_packet_tt_d1 = 2'b11;
+     endcase // case(c2i_packet_d1[`UCB_PKT_HI:`UCB_PKT_LO])
+   
+
+   /*****************************************************************
+    * Flop IOB->UCB buses
+    *****************************************************************/
+   dff_ns #(1) iob_clk_vld_d1_ff (.din(iob_clk_vld),
+				  .clk(clk),
+				  .q(iob_clk_vld_d1));
+   
+   dff_ns #(`IO;
+   reg

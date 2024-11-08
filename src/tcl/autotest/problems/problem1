@@ -1,0 +1,43 @@
+TYPE: data_processing
+FILECHECK:{C code} problem1.c problem1.cpp problem1.cxx
+OUTPUT:ANSWER: %.2lf\n
+PROBLEM:
+In this question, you will need to create a simple  program
+that will process data. You are given the following data:
+ 
+   UTDx{D1},
+   UTDx{D2},
+   UTDx{D3},
+   UTDx{D4},
+   UTDx{D5},
+   UTDx{D6}
+ 
+Write a programs that adds them together and then process 
+the sum by then doing UTDx{Doperation}
+ 
+To identify the program instance, add the following line to the
+top of your program:
+
+fprintf( stderr, "PROGRAMID: UTDx{UTDID}\n" ) ;
+ 
+You should initially put the values in an array.  You are  to output the
+answer on a single line followed by a new line.  The output should be
+printed to the screen using two digits of  precision after the decimal place.
+You should output to stderr  rather than stdout, that is, use
+ 
+ fprintf ( stderr, format_string, ... )  
+ 
+as a mechanism to output the answer.  You should use the following
+template for your answer:
+
+"ANSWER: %.2lf\n"
+ 
+If your answer is an integer, cast it to a double.
+All floating point operations should be done in double precision.
+
+Put all of your code in a single file called 'problem1.c' or
+'problem1.cpp' if you wish to write using C++.   The name 
+of the program must be called problem1.
+ 
+Build a makefile for your program.  The name of the file should be
+'Makefile' and exist in the current working directory.

@@ -1,0 +1,7 @@
+# Message Suppression Mechanism
+# Generated @ Tue Oct 22 13:59:46 2019 by itranslate
+# Message_Identifier  Output_Limit      Message_Occurrence    Message_type   Example_string
+
+# Note: to suppress all messages of a given identifier
+# use 0 as a limit.  To allow unlimited number of messages
+# set limit to -1.  The default output is 100 messages.

@@ -1,0 +1,28 @@
+module bw_rf_16x81(
+   rd_clk,       wr_clk,       csn_rd,       csn_wr,       hold,         testmux_sel,    scan_en,      margin,       rd_a,         wr_a,         di,           si,           so,           listen_out,    do          
+);
+
+   input rd_clk;
+   input wr_clk;
+   input csn_rd;
+   input csn_wr;
+   input hold;
+   input testmux_sel;
+   input scan_en;
+   input [4:0] margin;
+   input [3:0] rd_a;
+   input [3:0] wr_a;
+   input [80:0] di;
+   input si;
+   output so;
+   output [80:0] do;
+   output [80:0] listen_out;
+
+parameter  SYNC_CLOCK_CHK1 = 1;
+parameter  SYNC_CLOCK_CHK2 = 1;
+parameter  SYNC_CLOCK_CHK3 = 1;
+parameter  MARGIN_WARNING = 1; 
+
+
+
+reg

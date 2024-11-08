@@ -1,0 +1,327 @@
+
+riscv.aoutWARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+track.pitch: 258
+except_threshold       : default
+cannonical_suffixes    : off
+cluster_file           : default
+compress_files         : off
+driver_opt             : off
+driver_factor          : 0
+general_mode           : off
+include_macros         : off
+ignore_keepouts        : on
+new_weight             : off
+random_seed            : 579004042
+target                 : default
+tolerance              : 0.25
+upper_bound            : default
+
+The random number generator seed is: 579004042
+The random number probe offset is    : 0
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:1786
+[look_for_hints]:Number of nets :2268
+[look_for_hints]:Number of gpins:9094
+
+no syntax errors in library:riscv.slib
+no syntax problem in circuit file.
+no syntax errors in physical description.
+WARNING[check_nets]:Net <CTRL.cyc> has 182 pins
+WARNING[check_nets]:Net <1'h0> has 134 pins
+WARNING[check_nets]:Net <clk> has 399 pins
+WARNING[check_nets]:Net <rst> has 267 pins
+[check_nets]:Max pins on a net is:399 pins
+
+WARNING[gather_info2]:Net <clk> has 399 pins
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 1188
+The number of nets with 3 pins is 467
+The number of nets with 4 pins is 196
+The number of nets with 5 pins is 83
+The number of nets with 6 pins is 47
+The number of nets with 7 pins is 32
+The number of nets with 8 pins is 25
+The number of nets with 9 pins is 34
+The number of nets with 10 pins is 60
+The number of nets with 11 pins is 120
+The number of nets with 13 pins is 1
+The number of nets with 14 pins is 1
+The number of nets with 15 pins is 1
+The number of nets with 16 pins is 1
+The number of nets with 28 pins is 1
+The number of nets with 30 pins is 1
+The number of nets with 37 pins is 1
+The number of nets with 47 pins is 1
+The number of nets with 134 pins is 1
+The number of nets with 182 pins is 1
+The number of nets with 267 pins is 1
+The number of nets with 399 pins or more is 1
+Average number of pins per net = 3.835465
+The maximum number of pins on a single net is:399
+
+Percentage of Nets Connecting to at least 2 cells:1.00
+Percentage of Nets Connecting to at least 3 cells:0.48
+Percentage of Nets Connecting to at least 4 cells:0.27
+Percentage of Nets Connecting to at least 5 cells:0.18
+Percentage of Nets Connecting to at least 6 cells:0.15
+
+Percentage of gpins of at most 2 pins net:0.26
+Percentage of gpins of at most 3 pins net:0.42
+Percentage of gpins of at most 4 pins net:0.50
+Percentage of gpins of at most 5 pins net:0.55
+Percentage of gpins of at most 6 pins net:1.00
+
+
+Cell Statistics:
+Average cell width     :1.74847
+Standard dev. of width :1.23424
+Narrowest standard cell:0.32400 instance: _TW_00006 model: cl1_5
+Widest standard cell   :3.45600 instance: _TW_00034 model: cl1_19 
+Median standard cell   :1.72800
+Ratio largest/smallest :10.6667
+
+Average cell area      :0.50356
+Standard dev. of area  :0.35546
+Smallest area cell     :0.09331
+Largest area cell      :0.99533
+Median area cell       :0.49766
+Ratio largest/smallest :10.6667
+Cells considered       :1467
+
+total cell length: 10260000
+total block length: 10342080
+block x-span:0  block y-span:0
+Seed = 579004042
+[read_cschedule]:Target cell counts not set in riscv.csched, using internal calculation.
+[build_cluster]:Number in cluster=4.009700,lower bound=0.52454,upper bound=14.02165
+
+Iter T        Wire       Acc.
+ -1: 0.00e+00 0          0.938
+  0: 2.57e+03 4202472    0.932 84        
+  1: 2.66e+03 4139011    0.912 116       
+  2: 2.67e+03 4130683    0.906 97        
+  3: 2.62e+03 4114486    0.904 99        
+  4: 2.51e+03 4097328    0.901 98        
+  5: 2.38e+03 4096826    0.877 90        
+  6: 2.21e+03 4091533    0.879 102       
+  7: 2.01e+03 4080927    0.871 120       
+  8: 1.81e+03 4058935    0.852 106       
+  9: 1.54e+03 4064233    0.889 113       
+ 10: 1.32e+03 4033812    0.858 132       
+ 11: 1.16e+03 4010617    0.815 126       
+ 12: 1.00e+03 3990635    0.797 151       
+ 13: 8.85e+02 3960121    0.758 133       
+ 14: 7.86e+02 3934522    0.725 150       
+ 15: 7.03e+02 3909004    0.698 167       
+ 16: 6.50e+02 3898459    0.635 169       
+ 17: 6.07e+02 3866106    0.612 161       
+ 18: 5.49e+02 3836454    0.630 193       
+ 19: 4.94e+02 3817502    0.608 170       
+ 20: 4.55e+02 3788804    0.567 167       
+ 21: 4.28e+02 3763349    0.528 223       
+ 22: 4.25e+02 3751725    0.460 195       
+ 23: 4.00e+02 3732107    0.505 188       
+ 24: 3.84e+02 3703463    0.483 194       
+ 25: 3.86e+02 3697023    0.435 197       
+ 26: 3.77e+02 3686729    0.460 192       
+ 27: 3.79e+02 3681144    0.435 241       
+ 28: 3.78e+02 3674702    0.446 239       
+ 29: 3.88e+02 3668629    0.409 238       
+ 30: 3.96e+02 3655686    0.421 257       
+ 31: 4.11e+02 3654235    0.398 227       
+ 32: 3.97e+02 3657119    0.478 227       
+ 33: 3.93e+02 3664381    0.452 215       
+ 34: 3.91e+02 3652280    0.444 218       
+ 35: 3.87e+02 3644576    0.448 208       
+ 36: 3.82e+02 3632841    0.452 238       
+ 37: 3.88e+02 3636316    0.427 269       
+ 38: 3.97e+02 3631218    0.415 235       
+ 39: 3.94e+02 3617942    0.452 223       
+ 40: 4.00e+02 3615871    0.419 245       
+ 41: 4.04e+02 3612469    0.427 240       
+ 42: 4.15e+02 3609066    0.415 219       
+ 43: 4.03e+02 3601913    0.474 208       
+ 44: 3.90e+02 3600048    0.476 227       
+ 45: 4.00e+02 3599377    0.413 277       
+ 46: 4.05e+02 3595610    0.425 252       
+ 47: 4.12e+02 3593606    0.423 264       
+ 48: 4.19e+02 3592232    0.423 213       
+ 49: 4.16e+02 3592582    0.446 246       
+ 50: 4.21e+02 3593941    0.421 261       
+ 51: 4.22e+02 3585815    0.441 250       
+ 52: 4.26e+02 3582459    0.431 209       
+ 53: 4.44e+02 3571433    0.404 251       
+ 54: 4.51e+02 3575250    0.417 266       
+ 55: 4.62e+02 3585587    0.411 261       
+ 56: 4.75e+02 3587741    0.409 273       
+ 57: 4.66e+02 3603297    0.460 237       
+ 58: 4.45e+02 3612931    0.491 220       
+ 59: 4.52e+02 3605090    0.415 212       
+ 60: 4.51e+02 3596146    0.446 248       
+ 61: 4.46e+02 3600696    0.452 242       
+ 62: 4.42e+02 3596008    0.448 226       
+ 63: 4.52e+02 3590116    0.415 292       
+ 64: 4.68e+02 3596227    0.400 204       
+ 65: 4.78e+02 3599120    0.415 228       
+ 66: 4.79e+02 3597393    0.441 253       
+ 67: 4.68e+02 3590053    0.466 242       
+ 68: 4.66e+02 3590172    0.448 215       
+ 69: 4.74e+02 3589721    0.419 224       
+ 70: 4.67e+02 3584295    0.460 249       
+ 71: 4.48e+02 3582367    0.485 285       
+ 72: 4.35e+02 3584103    0.474 266       
+ 73: 4.28e+02 3580064    0.462 291       
+ 74: 4.30e+02 3570277    0.435 263       
+ 75: 4.36e+02 3572995    0.427 263       
+ 76: 4.34e+02 3566249    0.444 232       
+ 77: 4.47e+02 3555523    0.411 276       
+ 78: 4.57e+02 3554524    0.415 230       
+ 79: 4.37e+02 3550875    0.483 254       
+ 80: 4.42e+02 3553957    0.425 265       
+ 81: 4.34e+02 3551558    0.448 230       
+ 82: 4.30e+02 3544554    0.421 242       
+ 83: 4.31e+02 3543671    0.388 274       
+ 84: 4.13e+02 3543357    0.419 280       
+ 85: 4.00e+02 3540097    0.394 305       
+ 86: 3.86e+02 3538264    0.384 292       
+ 87: 3.54e+02 3534762    0.425 246       
+ 88: 3.30e+02 3537861    0.392 273       
+ 89: 3.02e+02 3530983    0.396 273       
+ 90: 2.79e+02 3522122    0.378 278       
+ 91: 2.63e+02 3514680    0.337 294       
+ 92: 2.40e+02 3505966    0.365 347       
+ 93: 2.24e+02 3495362    0.324 300       
+ 94: 2.23e+02 3493222    0.250 325       
+ 95: 2.12e+02 3487641    0.283 299       
+ 96: 2.00e+02 3475026    0.285 262       
+ 97: 1.90e+02 3463301    0.267 305       
+ 98: 1.83e+02 3455681    0.240 272       
+ 99: 1.77e+02 3452128    0.230 328       
+100: 1.69e+02 3448868    0.230 339       
+101: 1.65e+02 3441163    0.203 364       
+102: 1.56e+02 3439163    0.222 376       
+103: 1.51e+02 3437497    0.199 306       
+104: 1.46e+02 3432459    0.187 310       
+105: 1.38e+02 3428805    0.207 308       
+106: 1.32e+02 3425134    0.181 364       
+107: 1.30e+02 3420951    0.150 313       
+108: 1.24e+02 3419522    0.172 331       
+109: 1.21e+02 3417719    0.154 376       
+110: 1.15e+02 3416309    0.168 404       
+111: 1.12e+02 3414347    0.146 322       
+112: 1.07e+02 3413501    0.160 356       
+113: 1.01e+02 3409727    0.158 358       
+114: 9.85e+01 3408103    0.129 374       
+115: 9.60e+01 3406074    0.119 395       
+116: 9.01e+01 3405415    0.156 332       
+117: 8.75e+01 3401666    0.117 368       
+118: 8.42e+01 3401885    0.125 378       
+119: 8.07e+01 3400448    0.123 351       
+120: 7.79e+01 3399644    0.113 361       
+121: 7.47e+01 3397905    0.119 395       
+122: 7.18e+01 3396373    0.109 348       
+123: 7.07e+01 3394140    0.082 368       
+124: 6.79e+01 3393935    0.103 318       
+125: 4.20e+01 3393078    0.109 364       
+126: 4.02e+01 3392389    0.060 338       
+127: 3.10e+01 3390464    0.086 346       
+128: 2.61e+01 3389495    0.072 371       
+129: 2.40e+01 3388953    0.064 346       
+130: 2.17e+01 3387359    0.062 316       
+131: 1.93e+01 3385945    0.062 315       
+132: 1.92e+01 3386005    0.047 367       
+133: 1.70e+01 3385741    0.055 356       
+134: 1.09e+01 3384517    0.092 359       
+135: 8.88e+00 3384252    0.060 357       
+136: 7.48e+00 3381690    0.057 417       
+137: 6.41e+00 3381573    0.053 348       
+138: 4.84e+00 3381079    0.064 355       
+139: 4.71e+00 3381031    0.035 355       
+140: 4.42e+00 3379751    0.037 372       
+141: 4.15e+00 3379646    0.033 411       
+142: 3.43e+00 3379532    0.047 360       
+143: 2.50e+00 3379206    0.058 333       
+144: 2.11e+00 3379121    0.039 395       
+145: 1.91e+00 3378784    0.029 343       
+146: 1.34e+00 3378587    0.057 369       
+147: 1.09e+00 3378255    0.037 375       
+148: 8.40e-01 3377933    0.041 326       
+149: 6.57e-01 3377428    0.037 374       
+150: 5.43e-01 3377421    0.029 326       
+151: 4.18e-01 3377093    0.037 394       
+152: 2.98e-01 3377092    0.041 373       
+153: 2.34e-01 3377092    0.029 371       
+154: 1.83e-01 3377092    0.027 350       
+155: 1.40e-01 3377088    0.029 357       
+[build_cluster]:
+Total attempts=80028, is 54 times number of stdcells
+Final cluster cost:3377088   
+#  1 pin, avg_w= 0.0, net(    4)=    0 ( 0.0%), pin(    4)=    0 ( 0.0%)
+#  2 pin, avg_w= 0.5, net( 1188)=  641 (54.0%), pin( 2376)= 1282 (54.0%)
+#  3 pin, avg_w= 1.0, net(  467)=   92 (19.7%), pin( 1401)=  457 (32.6%)
+#  4 pin, avg_w= 1.6, net(  196)=   16 ( 8.2%), pin(  784)=  195 (24.9%)
+#  5 pin, avg_w= 2.0, net(   83)=    4 ( 4.8%), pin(  415)=  109 (26.3%)
+#  6 pin, avg_w= 2.6, net(   47)=    0 ( 0.0%), pin(  282)=   72 (25.5%)
+#  7 pin, avg_w= 3.0, net(   32)=    0 ( 0.0%), pin(  224)=   58 (25.9%)
+#  8 pin, avg_w= 3.4, net(   25)=    0 ( 0.0%), pin(  200)=   60 (30.0%)
+#  9 pin, avg_w= 3.6, net(   34)=    0 ( 0.0%), pin(  306)=  109 (35.6%)
+# 10 pin, avg_w= 4.4, net(   60)=    1 ( 1.7%), pin(  600)=  167 (27.8%)
+# 11 pin, avg_w= 5.2, net(  120)=    0 ( 0.0%), pin( 1320)=  231 (17.5%)
+# 13 pin, avg_w= 6.1, net(    1)=    0 ( 0.0%), pin(   13)=    4 (30.8%)
+# 14 pin, avg_w= 6.3, net(    1)=    0 ( 0.0%), pin(   14)=    7 (50.0%)
+# 15 pin, avg_w= 6.9, net(    1)=    0 ( 0.0%), pin(   15)=    6 (40.0%)
+# 16 pin, avg_w= 5.6, net(    1)=    0 ( 0.0%), pin(   16)=    8 (50.0%)
+# 28 pin, avg_w=13.3, net(    1)=    0 ( 0.0%), pin(   28)=   12 (42.9%)
+# 30 pin, avg_w=14.4, net(    1)=    0 ( 0.0%), pin(   30)=   13 (43.3%)
+# 37 pin, avg_w=18.3, net(    1)=    0 ( 0.0%), pin(   37)=    6 (16.2%)
+# 47 pin, avg_w=22.0, net(    1)=    0 ( 0.0%), pin(   47)=   20 (42.6%)
+#134 pin, avg_w=66.7, net(    1)=    0 ( 0.0%), pin(  134)=   34 (25.4%)
+#182 pin, avg_w=90.6, net(    1)=    0 ( 0.0%), pin(  182)=   50 (27.5%)
+#267 pin, avg_w=133.1, net(    1)=    0 ( 0.0%), pin(  267)=   90 (33.7%)
+#399 pin, avg_w=199.0, net(    1)=    0 ( 0.0%), pin(  399)=  143 (35.8%)
+[output_hierarchy]:total  754 nets eliminated(33%),  3133 pins shrunk(34%)
+[output_hierarchy]:total 1514 nets left(67%),  5961 pins left(66%)
+[output_hier]:total instances:685 original instances:1786
+[main]:Generating hierarchical netlist.
+[main]:Writing riscv.cckt and riscv.cluster files.
+
+
+Runtime Statistics
+-------------------------
+Machine name: mac4.local
+Machine type: Darwin
+Date        : Fri Oct 25 09:45:40 2019
+
+User    time:   0.2 seconds
+System  time:   0.0 seconds
+Elapsed time:   0.3 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =    4268032B (4168KB)
+Virtual memory size              =    4251648K (4152MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =     6497984 (6345KB)
+Current heap size                =     6384720 (6235KB)
+
+Major page faults = 2
+Minor page faults = 2823
+Swaps = 0
+
+Input blocks = 0
+Output blocks = 5
+
+Context switch (voluntary) = 16
+Context switch (involuntary) = 450
+
+
+cluster terminated normally with no errors and 6 warning[s] (status arg:0 status:0 status given:0) 
+

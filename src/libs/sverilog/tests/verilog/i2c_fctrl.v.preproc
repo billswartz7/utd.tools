@@ -1,0 +1,41 @@
+
+	 			        
+
+
+
+module i2c_fctrl (
+      int_buf_sel_next, io_buf_sel_next, int_buf_rd, io_buf_rd, 
+   int_buf_hit_hwm, io_buf_head_f, int_buf_wr, int_buf_tail_ptr, 
+   int_buf_head_ptr, io_buf_head_ptr, 
+      cpu_rst_l, cpu_clk, tx_sync, rx_sync, cpx_iob_grant_cx2, 
+   int_buf_cpx_req, io_buf_cpx_req, iob_cpx_req_next, 
+   cpu_mondo_rd_d2, cpu_mondo_wr_d2, io_buf_tail_s
+   );
+   
+      input                           cpu_rst_l;
+   input 			   cpu_clk;
+   input 			   tx_sync;
+   input 			   rx_sync;
+
+   
+      input [-1:0] 	   cpx_iob_grant_cx2;
+   
+    
+      input [-1:0] 	   int_buf_cpx_req;
+   input [-1:0] 	   io_buf_cpx_req;
+   input [-1:0] 	   iob_cpx_req_next;
+   
+   output 			   int_buf_sel_next;
+   output 			   io_buf_sel_next;
+   
+   output 			   int_buf_rd;
+   output 			   io_buf_rd;
+
+   
+      input 			   cpu_mondo_rd_d2;
+   input 			   cpu_mondo_wr_d2;
+   
+   output 			   int_buf_hit_hwm;
+
+   
+      input [:

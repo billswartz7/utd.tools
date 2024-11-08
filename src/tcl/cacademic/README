@@ -1,0 +1,14 @@
+To create a database
+cat create_db | sqlite3 students.db
+But there is a bug in this version.
+So we had to add the create table line.
+
+No, we used randomize and loadsql to make the original database.
+Next use rename_table to change the exam table to students
+Then we use add_columns script to add a column to the database.
+./columns students.db -column requested -type INTEGER -default 1724565600
+./columns students.db -column cadence_reply -type INTEGER
+./columns students.db -column expires -type INTEGER
+
+All of this is put in a script called create_db
+ 

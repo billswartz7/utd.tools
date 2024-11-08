@@ -1,0 +1,3286 @@
+####################################################
+time 1571770785 Tue Oct 22 13:59:45 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80682 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.cdo...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../logic/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[cut]:reading LEF file:../../osu035.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+[::utdtools::search_input]:input file:riscv.v does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.v does not exist.  Looking in ../logic/output ...
+[::utdtools::search_input]:found... creating link to ../logic/output/riscv.v...link:riscv.v
+[cut]:reading Verilog file:../logic/output/riscv.v
+[icread_verilog]:../logic/output/riscv.v read.
+[make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+You may wish to edit this cells characteristics in the library.
+[make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+You may wish to edit this cells characteristics in the library.
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../logic/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[cut]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[write_def]:riscv.def written.
+waiting here
+
+itranslate terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1571770786 Tue Oct 22 13:59:46 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80694 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.fdo...
+Welcome to the TimberWolf SimFloorplan Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../cut/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[floorplan]:reading LEF file:../../osu035.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../cut/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[floorplan]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cut/output ...
+[::utdtools::search_input]:found... creating link to ../cut/output/riscv.def...link:riscv.def
+[floorplan]:reading DEF file:../cut/output/riscv.def
+    components:4902
+[convert_sites_to_rows]:No sites found.
+    nets:5039
+WARNING[sites_available]:Did not find 4 pad sites.
+[icread_def]:../cut/output/riscv.def read.
+[write_con]:riscv.con written.
+[write_ckt]:riscv.ckt written.
+[icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+[icwrite_lib]:riscv.lib written.
+[write_par]:riscv.par written.
+####################################################
+time 1571770786 Tue Oct 22 13:59:46 2019:iflow started...
+@ iflow -stop ifp -x -v -flow flow.route1 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80706 PVERSION v2.0.0pre46
+
+iTools master control
+
+iflow version:v2.0.0pre46
+iTools/TimberWolf compilation:Mon Oct 21 16:19:06 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+iflow switches:
+	Verbose mode on.
+	Graphics mode on.
+	Flow will terminate on error.
+	Automatic flow execution on - Autoflow ON.
+	Last programs in flow: ifp
+	iTools mode on.
+
+	Flow directory given:flow.route1
+
+
+% time 1571770787 Tue Oct 22 13:59:47 2019:Syntax started...
+####################################################
+time 1571770788 Tue Oct 22 13:59:48 2019:syntax started...
+@ /Users/bill/version1/itools/bin/Darwin/syntax riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80738 PVERSION v2.0.0pre46
+
+iTools System Syntax Checker
+
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+syntax switches:
+
+
+Determining intrinsic scale...
+no syntax errors in library:riscv.lib
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found.
+
+
+syntax terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770788 Tue Oct 22 13:59:48 2019:syntax exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80738
+
+time 1571770788 Tue Oct 22 13:59:48 2019:Syntax completed...
+time 1571770788 Tue Oct 22 13:59:48 2019:ifp started pid 80746 from iflow...
+@ flow: flow.route1 flowfile: flow.route1/standard.flow
+####################################################
+time 1571770788 Tue Oct 22 13:59:48 2019:ifp started...
+@ /Users/bill/version1/itools/bin/Darwin/ifp -v -w 29360140 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf/floorplan HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80746 PVERSION v2.0.0pre46
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 1.2 1 1.2 1
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 1.2
+default_block_yspace       : 1
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 1352977730
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 10.00
+script                     : /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf/riscv.fdo (auto detected)
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 1.2
+                               y: 1
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% ####################################################
+time 1571770790 Tue Oct 22 13:59:50 2019:simplify started...
+@ /Users/bill/version1/itools/bin/Darwin/simplify -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80756 PVERSION v2.0.0pre46
+
+
+iTools System Netlist Simplifier
+
+simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:38 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+simplify switches:
+
+iTools System Netlist Simplifier
+
+simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:38 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+Memory status ->   0KB in use.
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+
+Read  450 cell instances so far...
+
+Read  500 cell instances so far...
+simplify switches:
+Read  550 cell instances so far...
+
+Read  600 cell instances so far...
+Options specified:
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+coreinstance             : none
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+time 1571770790 Tue Oct 22 13:59:50 2019:simplify completed...
+
+simplify terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770790 Tue Oct 22 13:59:50 2019:simplify exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80756
+
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Memory status ->1024KB in use.
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Memory status ->2048KB in use.
+Read 3000 cell instances so far...
+Memory status ->3072KB in use.
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+Memory status ->4096KB in use.
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+
+simplify terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+
+The rand generator seed was: 1352977730
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 3.15e+08
+mean cell area : 3.15e+08      std deviation cell area : 0.00e+00
+mean short side : 1.75e+04      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 788040
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:887.7    bdylength:887.7
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 159091
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :2221.8
+   overlap penalty     :435547.2
+   lapFactor * overlap :147.6
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :2369.4
+Wirelength:
+	All nets             :44437
+	Limited nets         :44437
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:875.6 t:900
+   xspan     = 875.6
+   yspan     = 900
+   core area = 7.88e+05
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :2257.3
+   overlap penalty     :435547.2
+   lapFactor * overlap :147.6
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :2404.9
+Wirelength:
+	All nets             :45146
+	Limited nets         :45146
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:887.8 t:900
+   xspan     = 887.8
+   yspan     = 900
+   core area = 7.99e+05
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+ifp terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770792 Tue Oct 22 13:59:52 2019:ifp exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf/floorplan HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80746
+
+time 1571770792 Tue Oct 22 13:59:52 2019:ifp completed pid 80746 from iflow with status:0...
+[auto_flow]:Stop program criteria met after execution of ifp
+
+iflow terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770793 Tue Oct 22 13:59:53 2019:iflow exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80706
+
+
+itranslate terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1571770793 Tue Oct 22 13:59:53 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80775 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.pdo...
+Welcome to the TimberWolf SimPlace Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../floorplan/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[place]:reading LEF file:../../osu035.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../floorplan/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[place]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../floorplan/output ...
+[::utdtools::search_input]:found... creating link to ../floorplan/output/riscv.def...link:riscv.def
+[place]:reading DEF file:../floorplan/output/riscv.def
+    components:4902
+[convert_sites_to_rows]:45 rows found.
+    nets:5039
+WARNING[sites_available]:Did not find 4 pad sites.
+[icread_def]:../floorplan/output/riscv.def read.
+[compact_rows]:Number of rows compacted from 45 to 45.
+[write_con]:riscv.con written.
+[write_ckt]:riscv.ckt written.
+[icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+[icwrite_lib]:riscv.lib written.
+[write_par]:riscv.par written.
+####################################################
+time 1571770793 Tue Oct 22 13:59:53 2019:syntax started...
+@ /Users/bill/version1/itools/bin/Darwin/syntax -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80789 PVERSION v2.0.0pre46
+
+iTools System Syntax Checker
+
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+syntax switches:
+
+
+Determining intrinsic scale...
+no syntax errors in library:riscv.lib
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found.
+
+Reading constraint file riscv.con...
+done reading constraint file. No syntax errors.
+
+syntax terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770793 Tue Oct 22 13:59:53 2019:syntax exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80789
+
+####################################################
+time 1571770793 Tue Oct 22 13:59:53 2019:iplacesc started...
+@ /Users/bill/version1/itools/bin/Darwin/iplacesc -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80798 PVERSION v2.0.0pre46
+
+Row-Based Placement Control Program
+
+iplacesc version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:29:51 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplacesc switches:
+	Graphics mode on.
+	Errors will not be displayed graphically.
+	Verbose mode on.
+
+% 
+Please Note!!!
+	You have requested to run iplacesc version 1 in
+	{hierarchical} mode by default.  Hierarchical mode is 5-7x faster
+	and yields better quality placements for circuits with
+	more than roughly 300 cells.  For circuits smaller
+	than this, flat mode will be enforced.
+####################################################
+time 1571770795 Tue Oct 22 13:59:55 2019:iplace_simplify started...
+@ /Users/bill/version1/itools/bin/Darwin/iplace_simplify -s -v -n riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80807 PVERSION v2.0.0pre46
+
+iTools System Netlist Simplifier
+
+iplace_simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:38 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplace_simplify switches:
+	output netlist will be simplified
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file itools.con
+
+Row information found in constraint file itools.con
+Ignoring any future row definitions.
+
+
+No syntax errors in constraint file riscv.con
+
+
+No syntax errors in constraint file itools.con
+
+[set_ignore]:force ignore net rst
+[set_ignore]:force ignore net CTRL.cyc
+[set_ignore]:force ignore net clk
+[set_ignore]:force ignore net 1'h1
+
+
+Writing riscv.sckt file...
+Writing riscv.slib file...
+Writing riscv.scon file...
+time 1571770795 Tue Oct 22 13:59:55 2019:simplify completed...
+
+iplace_simplify terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770795 Tue Oct 22 13:59:55 2019:iplace_simplify exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80807
+
+####################################################
+time 1571770795 Tue Oct 22 13:59:55 2019:syntax started...
+@ /Users/bill/version1/itools/bin/Darwin/syntax -st riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80817 PVERSION v2.0.0pre46
+
+iTools System Syntax Checker
+
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+syntax switches:
+	check .sckt instead of .ckt
+
+
+Determining intrinsic scale...
+no syntax errors in library:riscv.slib
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+no syntax errors in library:riscv.slib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found.
+
+
+syntax terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770796 Tue Oct 22 13:59:56 2019:syntax exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80817
+
+####################################################
+time 1571770796 Tue Oct 22 13:59:56 2019:cluster started...
+@ /Users/bill/version1/itools/bin/Darwin/cluster -v -n -R 1520708458 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage0 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80826 PVERSION v2.0.0pre46
+
+Row-Based Hierarchical Cluster Program
+
+cluster version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:27:44 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+except_threshold       : default
+cannonical_suffixes    : off
+cluster_file           : default
+compress_files         : off
+driver_opt             : off
+driver_factor          : 0
+general_mode           : off
+include_macros         : off
+ignore_keepouts        : on
+new_weight             : off
+random_seed            : 1520708458
+target                 : default
+tolerance              : 0.25
+upper_bound            : default
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+no syntax errors in library:riscv.slib
+no syntax problem in circuit file.
+no syntax errors in physical description.
+WARNING[check_nets]:Net <rst> has 266 pins
+WARNING[check_nets]:Net <CTRL.cyc> has 232 pins
+WARNING[check_nets]:Net <clk> has 399 pins
+WARNING[check_nets]:Net <1'h1> has 264 pins
+[check_nets]:Max pins on a net is:399 pins
+WARNING[gather_info2]:Net <clk> has 399 pins
+
+Cell Statistics:
+Average cell width     :8.0
+Standard dev. of width :7.1
+Narrowest standard cell:3.2 instance: _4250_ model: INVX1
+Widest standard cell   :35.2 instance: _8888_ model: DFFSR 
+Median standard cell   :6.4
+Ratio largest/smallest :11
+
+Average cell area      :160.8
+Standard dev. of area  :142.4
+Smallest area cell     :64
+Largest area cell      :704
+Median area cell       :128
+Ratio largest/smallest :11
+Cells considered       :4902
+
+Seed = 1520708458
+[read_cschedule]:Target cell counts not set in riscv.csched, using internal calculation.
+[build_cluster]:Number in cluster=3.347688,lower bound=2.4,upper bound=53.8
+
+Iter T        Wire       Acc.
+ -1: 0.00e+00 0          0.947
+  0: 3.36e+03 6978084    0.943 914       
+  1: 3.56e+03 6884560    0.935 956       
+  2: 3.28e+03 6812860    0.932 1028      
+  3: 2.80e+03 6818193    0.916 1142      
+  4: 2.21e+03 6740468    0.902 1040      
+  5: 1.70e+03 6703665    0.878 1109      
+  6: 1.35e+03 6646417    0.842 1155      
+  7: 1.10e+03 6592022    0.809 1143      
+  8: 9.28e+02 6505430    0.774 1323      
+  9: 8.05e+02 6400864    0.742 1365      
+ 10: 7.80e+02 6308853    0.694 1409      
+ 11: 6.91e+02 6273418    0.689 1432      
+ 12: 6.71e+02 6234677    0.646 1491      
+ 13: 6.00e+02 6183628    0.642 1609      
+ 14: 5.80e+02 6081473    0.603 1604      
+ 15: 5.44e+02 6023567    0.589 1682      
+ 16: 5.27e+02 5983547    0.562 1771      
+ 17: 5.56e+02 5949317    0.524 1780      
+ 18: 5.07e+02 5942858    0.537 1834      
+ 19: 4.86e+02 5904991    0.507 1882      
+ 20: 4.42e+02 5849240    0.502 1928      
+ 21: 4.33e+02 5819633    0.468 2000      
+ 22: 4.00e+02 5768768    0.465 1987      
+ 23: 4.11e+02 5754360    0.435 2063      
+ 24: 4.10e+02 5728169    0.441 2084      
+ 25: 4.21e+02 5701854    0.434 2178      
+ 26: 4.08e+02 5715304    0.446 2110      
+ 27: 4.13e+02 5689625    0.438 2246      
+ 28: 4.30e+02 5680905    0.431 2181      
+ 29: 4.24e+02 5695361    0.443 2154      
+ 30: 4.25e+02 5672008    0.439 2243      
+ 31: 4.20e+02 5666340    0.443 2149      
+ 32: 4.21e+02 5668235    0.439 2251      
+ 33: 4.09e+02 5679048    0.446 2295      
+ 34: 4.26e+02 5669078    0.431 2250      
+ 35: 4.23e+02 5664942    0.441 2293      
+ 36: 4.28e+02 5661813    0.437 2130      
+ 37: 4.20e+02 5658233    0.443 2080      
+ 38: 4.23e+02 5649470    0.438 2173      
+ 39: 4.33e+02 5658872    0.436 2178      
+ 40: 4.29e+02 5669812    0.442 2243      
+ 41: 4.28e+02 5665268    0.442 2209      
+ 42: 4.44e+02 5642255    0.431 2206      
+ 43: 4.47e+02 5669323    0.438 2051      
+ 44: 4.18e+02 5666388    0.454 2083      
+ 45: 4.19e+02 5648352    0.439 2143      
+ 46: 4.35e+02 5660018    0.431 2177      
+ 47: 4.42e+02 5653600    0.436 2216      
+ 48: 4.26e+02 5670696    0.448 2159      
+ 49: 4.07e+02 5663265    0.450 2305      
+ 50: 4.59e+02 5660710    0.414 2221      
+ 51: 4.26e+02 5653294    0.455 2243      
+ 52: 4.24e+02 5676714    0.441 2208      
+ 53: 4.21e+02 5664146    0.441 2155      
+ 54: 4.55e+02 5657011    0.423 2182      
+ 55: 4.84e+02 5645573    0.426 2163      
+ 56: 4.68e+02 5660312    0.447 2080      
+ 57: 4.74e+02 5689635    0.436 2316      
+ 58: 4.59e+02 5689351    0.446 2165      
+ 59: 4.36e+02 5657011    0.452 2172      
+ 60: 4.38e+02 5671698    0.437 2050      
+ 61: 4.20e+02 5655446    0.449 2063      
+ 62: 4.20e+02 5661448    0.440 2163      
+ 63: 4.25e+02 5643847    0.437 2068      
+ 64: 4.18e+02 5652142    0.443 2132      
+ 65: 4.34e+02 5636398    0.431 2284      
+ 66: 4.29e+02 5623557    0.442 2149      
+ 67: 4.61e+02 5637269    0.425 2190      
+ 68: 4.49e+02 5651509    0.446 2163      
+ 69: 4.29e+02 5650362    0.449 2080      
+ 70: 4.21e+02 5649935    0.444 2198      
+ 71: 4.18e+02 5654983    0.441 2142      
+ 72: 4.48e+02 5635401    0.425 2215      
+ 73: 4.13e+02 5638189    0.457 2277      
+ 74: 4.37e+02 5635032    0.429 2133      
+ 75: 4.51e+02 5638606    0.433 2102      
+ 76: 4.24e+02 5656373    0.453 2176      
+ 77: 4.31e+02 5645363    0.435 2212      
+ 78: 4.34e+02 5626604    0.438 2242      
+ 79: 4.37e+02 5634300    0.439 2362      
+ 80: 4.33e+02 5644830    0.442 2231      
+ 81: 4.14e+02 5672884    0.440 2275      
+ 82: 4.03e+02 5654223    0.418 2266      
+ 83: 3.51e+02 5662177    0.421 2379      
+ 84: 3.18e+02 5598886    0.397 2388      
+ 85: 3.16e+02 5546681    0.361 2215      
+ 86: 3.09e+02 5537120    0.347 2450      
+ 87: 2.84e+02 5514887    0.346 2540      
+ 88: 2.95e+02 5492398    0.306 2601      
+ 89: 2.92e+02 5475530    0.302 2554      
+ 90: 2.61e+02 5460557    0.309 2580      
+ 91: 2.37e+02 5450631    0.294 2499      
+ 92: 2.25e+02 5420661    0.273 2654      
+ 93: 2.06e+02 5398869    0.268 2604      
+ 94: 2.07e+02 5385836    0.237 2737      
+ 95: 1.94e+02 5356397    0.242 2678      
+ 96: 1.80e+02 5327824    0.233 2775      
+ 97: 1.84e+02 5308865    0.204 2887      
+ 98: 1.85e+02 5301676    0.197 2846      
+ 99: 1.75e+02 5279017    0.203 2744      
+100: 1.71e+02 5262027    0.186 2953      
+101: 1.63e+02 5242599    0.184 3137      
+102: 1.64e+02 5232829    0.165 2981      
+103: 1.64e+02 5221339    0.158 2996      
+104: 1.66e+02 5212395    0.150 3024      
+105: 1.63e+02 5209955    0.148 3078      
+106: 1.55e+02 5196327    0.149 3039      
+107: 1.39e+02 5185581    0.156 3246      
+108: 1.33e+02 5178458    0.137 3110      
+109: 1.27e+02 5172009    0.132 3153      
+110: 1.20e+02 5163546    0.127 3185      
+111: 1.12e+02 5160057    0.125 3001      
+112: 1.04e+02 5154643    0.123 3061      
+113: 9.82e+01 5150258    0.112 3281      
+114: 9.58e+01 5146397    0.102 3219      
+115: 9.17e+01 5141431    0.102 3212      
+116: 9.04e+01 5136875    0.091 3308      
+117: 8.33e+01 5132101    0.102 3423      
+118: 7.65e+01 5129774    0.099 3292      
+119: 7.19e+01 5125535    0.091 3301      
+120: 6.30e+01 5118064    0.102 3450      
+121: 6.01e+01 5115506    0.080 3385      
+122: 5.64e+01 5112260    0.081 3257      
+123: 5.30e+01 5110057    0.078 3474      
+124: 4.86e+01 5109187    0.080 3236      
+125: 1.88e+01 5108015    0.079 3305      
+126: 1.23e+01 5106039    0.065 3534      
+127: 7.77e+00 5105256    0.064 3460      
+128: 4.70e+00 5101924    0.063 3303      
+129: 2.74e+00 5101447    0.062 3326      
+130: 1.65e+00 5100058    0.059 3461      
+131: 7.45e-01 5098717    0.064 3308      
+132: 4.01e-01 5097191    0.058 3514      
+133: 2.19e-01 5095934    0.055 3359      
+134: 1.00e-01 5095430    0.057 3451      
+135: 4.97e-02 5093497    0.054 3466      
+136: 1.75e-02 5093272    0.059 3352      
+137: 7.06e-03 5092572    0.054 3344      
+[build_cluster]:
+Total attempts=358524, is 73 times number of stdcells
+Final cluster cost:5092572   
+#  1 pin, avg_w= 0.0, net(    4)=    0 ( 0.0%), pin(    4)=    0 ( 0.0%)
+#  2 pin, avg_w= 0.3, net( 3016)= 2144 (71.1%), pin( 6032)= 4288 (71.1%)
+#  3 pin, avg_w= 0.8, net( 1032)=  400 (38.8%), pin( 3096)= 1548 (50.0%)
+#  4 pin, avg_w= 1.3, net(  357)=   68 (19.0%), pin( 1428)=  565 (39.6%)
+#  5 pin, avg_w= 2.1, net(  185)=    4 ( 2.2%), pin(  925)=  219 (23.7%)
+#  6 pin, avg_w= 2.7, net(   97)=    0 ( 0.0%), pin(  582)=  106 (18.2%)
+#  7 pin, avg_w= 3.2, net(   34)=    0 ( 0.0%), pin(  238)=   44 (18.5%)
+#  8 pin, avg_w= 3.7, net(   23)=    0 ( 0.0%), pin(  184)=   28 (15.2%)
+#  9 pin, avg_w= 4.4, net(   16)=    0 ( 0.0%), pin(  144)=   14 ( 9.7%)
+# 10 pin, avg_w= 4.9, net(   14)=    0 ( 0.0%), pin(  140)=   15 (10.7%)
+# 11 pin, avg_w= 5.4, net(  249)=    0 ( 0.0%), pin( 2739)=  176 ( 6.4%)
+# 12 pin, avg_w= 5.9, net(    1)=    0 ( 0.0%), pin(   12)=    1 ( 8.3%)
+# 15 pin, avg_w= 7.4, net(    1)=    0 ( 0.0%), pin(   15)=    2 (13.3%)
+# 16 pin, avg_w= 7.9, net(    1)=    0 ( 0.0%), pin(   16)=    1 ( 6.2%)
+# 21 pin, avg_w=10.4, net(    1)=    0 ( 0.0%), pin(   21)=    2 ( 9.5%)
+# 25 pin, avg_w=12.5, net(    1)=    0 ( 0.0%), pin(   25)=    1 ( 4.0%)
+# 32 pin, avg_w=15.9, net(    1)=    0 ( 0.0%), pin(   32)=    2 ( 6.2%)
+# 36 pin, avg_w=17.8, net(    1)=    0 ( 0.0%), pin(   36)=    8 (22.2%)
+# 39 pin, avg_w=19.4, net(    1)=    0 ( 0.0%), pin(   39)=    4 (10.3%)
+#232 pin, avg_w=115.7, net(    1)=    0 ( 0.0%), pin(  232)=   57 (24.6%)
+#264 pin, avg_w=132.0, net(    1)=    0 ( 0.0%), pin(  264)=    0 ( 0.0%)
+#266 pin, avg_w=133.0, net(    1)=    0 ( 0.0%), pin(  266)=    0 ( 0.0%)
+#399 pin, avg_w=199.5, net(    1)=    0 ( 0.0%), pin(  399)=    0 ( 0.0%)
+[output_hierarchy]:total 2616 nets eliminated(52%),  7081 pins shrunk(42%)
+[output_hierarchy]:total 2423 nets left(48%),  9788 pins left(58%)
+[output_hier]:total instances:1784 original instances:5221
+[main]:Generating hierarchical netlist.
+[main]:Writing riscv.cckt and riscv.cluster files.
+time 1571770797 Tue Oct 22 13:59:57 2019:cluster completed...
+
+cluster terminated normally with no errors and 5 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770797 Tue Oct 22 13:59:57 2019:cluster exits 0 errors 5 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage0 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80826
+
+####################################################
+time 1571770797 Tue Oct 22 13:59:57 2019:cluster started...
+@ /Users/bill/version1/itools/bin/Darwin/cluster -v -n -R 1520708458 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage1 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80837 PVERSION v2.0.0pre46
+
+Row-Based Hierarchical Cluster Program
+
+cluster version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:27:44 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+except_threshold       : default
+cannonical_suffixes    : off
+cluster_file           : default
+compress_files         : off
+driver_opt             : off
+driver_factor          : 0
+general_mode           : off
+include_macros         : off
+ignore_keepouts        : on
+new_weight             : off
+random_seed            : 1520708458
+target                 : default
+tolerance              : 0.25
+upper_bound            : default
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:1784
+[look_for_hints]:Number of nets :2423
+[look_for_hints]:Number of gpins:9788
+
+no syntax errors in library:riscv.slib
+no syntax problem in circuit file.
+no syntax errors in physical description.
+WARNING[check_nets]:Net <rst> has 266 pins
+WARNING[check_nets]:Net <clk> has 399 pins
+WARNING[check_nets]:Net <CTRL.cyc> has 175 pins
+WARNING[check_nets]:Net <1'h1> has 264 pins
+[check_nets]:Max pins on a net is:399 pins
+WARNING[gather_info2]:Net <clk> has 399 pins
+
+Cell Statistics:
+Average cell width     :26.9
+Standard dev. of width :19.0
+Narrowest standard cell:3.2 instance: _TW_00002 model: cl1_2
+Widest standard cell   :52.8 instance: _TW_00007 model: cl1_6 
+Median standard cell   :27.2
+Ratio largest/smallest :16.5
+
+Average cell area      :537.9
+Standard dev. of area  :380.5
+Smallest area cell     :64
+Largest area cell      :1056
+Median area cell       :544
+Ratio largest/smallest :16.5
+Cells considered       :1465
+
+Seed = 1520708458
+[read_cschedule]:Target cell counts not set in riscv.csched, using internal calculation.
+[build_cluster]:Number in cluster=4.039620,lower bound=8.1,upper bound=217.3
+
+Iter T        Wire       Acc.
+ -1: 0.00e+00 0          0.941
+  0: 2.53e+03 4536765    0.947 90        
+  1: 2.59e+03 4486452    0.918 88        
+  2: 2.59e+03 4446436    0.916 106       
+  3: 2.63e+03 4406507    0.867 92        
+  4: 2.53e+03 4404186    0.893 102       
+  5: 2.44e+03 4394361    0.861 125       
+  6: 2.25e+03 4387252    0.885 112       
+  7: 2.03e+03 4403336    0.881 98        
+  8: 1.83e+03 4373999    0.854 114       
+  9: 1.60e+03 4364468    0.863 116       
+ 10: 1.43e+03 4377620    0.814 122       
+ 11: 1.23e+03 4364070    0.828 119       
+ 12: 1.07e+03 4352091    0.797 116       
+ 13: 9.48e+02 4315134    0.752 130       
+ 14: 8.25e+02 4275393    0.750 114       
+ 15: 7.39e+02 4243724    0.697 129       
+ 16: 6.68e+02 4208023    0.664 135       
+ 17: 6.14e+02 4178142    0.625 160       
+ 18: 5.33e+02 4137771    0.678 166       
+ 19: 4.96e+02 4106519    0.578 168       
+ 20: 4.83e+02 4083276    0.510 169       
+ 21: 4.50e+02 4075297    0.545 168       
+ 22: 4.16e+02 4057821    0.533 168       
+ 23: 4.03e+02 4045373    0.477 183       
+ 24: 3.80e+02 4019286    0.508 202       
+ 25: 3.60e+02 4012540    0.496 186       
+ 26: 3.54e+02 3991329    0.455 212       
+ 27: 3.61e+02 3984969    0.420 205       
+ 28: 3.44e+02 3955118    0.488 218       
+ 29: 3.52e+02 3941595    0.410 260       
+ 30: 3.59e+02 3937435    0.418 200       
+ 31: 3.70e+02 3926020    0.406 239       
+ 32: 3.78e+02 3912748    0.422 250       
+ 33: 3.87e+02 3920884    0.410 236       
+ 34: 4.02e+02 3910661    0.400 233       
+ 35: 3.96e+02 3905718    0.453 248       
+ 36: 3.99e+02 3904757    0.434 237       
+ 37: 4.10e+02 3906926    0.410 208       
+ 38: 4.09e+02 3896546    0.445 217       
+ 39: 4.23e+02 3888925    0.404 222       
+ 40: 4.10e+02 3876999    0.479 263       
+ 41: 4.11e+02 3879894    0.436 247       
+ 42: 4.00e+02 3869798    0.469 228       
+ 43: 4.21e+02 3870014    0.389 236       
+ 44: 4.11e+02 3862373    0.467 243       
+ 45: 4.34e+02 3851570    0.383 236       
+ 46: 4.57e+02 3857523    0.383 236       
+ 47: 4.51e+02 3871432    0.453 210       
+ 48: 4.55e+02 3872757    0.432 233       
+ 49: 4.51e+02 3872918    0.445 236       
+ 50: 4.52e+02 3871957    0.438 276       
+ 51: 4.55e+02 3866118    0.430 254       
+ 52: 4.60e+02 3862364    0.430 261       
+ 53: 4.57e+02 3866587    0.447 240       
+ 54: 4.62e+02 3875206    0.430 265       
+ 55: 4.72e+02 3884218    0.410 251       
+ 56: 4.63e+02 3887729    0.461 213       
+ 57: 4.67e+02 3887690    0.426 224       
+ 58: 4.65e+02 3887310    0.445 272       
+ 59: 4.59e+02 3890243    0.453 229       
+ 60: 4.58e+02 3891115    0.445 215       
+ 61: 4.57e+02 3875415    0.443 226       
+ 62: 4.51e+02 3864757    0.451 245       
+ 63: 4.55e+02 3869910    0.432 218       
+ 64: 4.52e+02 3873913    0.449 233       
+ 65: 4.63e+02 3870353    0.410 227       
+ 66: 4.65e+02 3876244    0.436 193       
+ 67: 4.74e+02 3858086    0.424 236       
+ 68: 4.89e+02 3855429    0.408 233       
+ 69: 4.77e+02 3863161    0.467 232       
+ 70: 4.76e+02 3856309    0.443 247       
+ 71: 4.77e+02 3862691    0.439 219       
+ 72: 4.76e+02 3861156    0.441 255       
+ 73: 4.84e+02 3864801    0.416 269       
+ 74: 4.73e+02 3865509    0.465 256       
+ 75: 4.68e+02 3872326    0.451 241       
+ 76: 4.60e+02 3858432    0.461 212       
+ 77: 4.55e+02 3860339    0.453 247       
+ 78: 4.55e+02 3861999    0.439 234       
+ 79: 4.47e+02 3855612    0.457 197       
+ 80: 4.42e+02 3854953    0.453 234       
+ 81: 4.44e+02 3851948    0.430 267       
+ 82: 4.30e+02 3858620    0.445 263       
+ 83: 4.11e+02 3857252    0.441 270       
+ 84: 3.78e+02 3855127    0.467 277       
+ 85: 3.60e+02 3848608    0.410 229       
+ 86: 3.44e+02 3844247    0.393 242       
+ 87: 3.41e+02 3840665    0.332 200       
+ 88: 3.29e+02 3831685    0.352 260       
+ 89: 3.10e+02 3829508    0.367 261       
+ 90: 2.89e+02 3815126    0.359 255       
+ 91: 2.78e+02 3803576    0.316 239       
+ 92: 2.59e+02 3800071    0.342 258       
+ 93: 2.39e+02 3800031    0.340 299       
+ 94: 2.28e+02 3793641    0.287 268       
+ 95: 2.14e+02 3786794    0.299 283       
+ 96: 2.03e+02 3786837    0.273 280       
+ 97: 1.85e+02 3778641    0.314 261       
+ 98: 1.70e+02 3767213    0.289 266       
+ 99: 1.62e+02 3760182    0.238 269       
+100: 1.55e+02 3753901    0.229 292       
+101: 1.48e+02 3748715    0.230 283       
+102: 1.43e+02 3744485    0.203 329       
+103: 1.40e+02 3741959    0.186 308       
+104: 1.32e+02 3736589    0.211 297       
+105: 1.27e+02 3733084    0.189 311       
+106: 1.22e+02 3728287    0.184 335       
+107: 1.18e+02 3728128    0.172 336       
+108: 1.14e+02 3727715    0.160 300       
+109: 1.07e+02 3725273    0.193 300       
+110: 1.02e+02 3722581    0.174 339       
+111: 9.42e+01 3719414    0.197 330       
+112: 8.99e+01 3716047    0.156 341       
+113: 8.71e+01 3712156    0.141 292       
+114: 8.34e+01 3710134    0.143 304       
+115: 8.17e+01 3708552    0.113 349       
+116: 7.96e+01 3708241    0.115 306       
+117: 7.55e+01 3706656    0.143 332       
+118: 7.22e+01 3705114    0.127 323       
+119: 7.03e+01 3700535    0.107 345       
+120: 6.71e+01 3699305    0.123 363       
+121: 6.57e+01 3699028    0.092 363       
+122: 6.29e+01 3698194    0.115 326       
+123: 5.98e+01 3697534    0.119 347       
+124: 5.73e+01 3694668    0.107 332       
+125: 3.95e+01 3694237    0.102 360       
+126: 3.64e+01 3693637    0.066 315       
+127: 3.01e+01 3691457    0.076 366       
+128: 2.68e+01 3690682    0.066 351       
+129: 2.34e+01 3689931    0.066 328       
+130: 2.49e+01 3689834    0.041 334       
+131: 2.30e+01 3689734    0.055 291       
+132: 2.28e+01 3689548    0.045 338       
+133: 1.95e+01 3687792    0.059 357       
+134: 1.61e+01 3686878    0.062 332       
+135: 1.63e+01 3686441    0.037 347       
+136: 1.42e+01 3686288    0.053 334       
+137: 1.16e+01 3685648    0.059 343       
+138: 1.03e+01 3685655    0.045 348       
+139: 9.49e+00 3685452    0.039 359       
+140: 9.92e+00 3685286    0.023 384       
+141: 8.83e+00 3684814    0.039 321       
+142: 7.86e+00 3684692    0.037 344       
+143: 8.08e+00 3683964    0.020 362       
+144: 7.72e+00 3683972    0.025 354       
+145: 7.12e+00 3683674    0.031 368       
+146: 5.89e+00 3683557    0.037 345       
+147: 5.14e+00 3683551    0.029 322       
+148: 3.96e+00 3683557    0.041 319       
+149: 3.46e+00 3683330    0.025 323       
+150: 2.76e+00 3683324    0.033 342       
+151: 2.24e+00 3683174    0.029 330       
+152: 1.79e+00 3683174    0.029 347       
+153: 1.30e+00 3682196    0.037 355       
+154: 1.18e+00 3682196    0.012 361       
+155: 8.83e-01 3682196    0.031 332       
+[build_cluster]:
+Total attempts=79872, is 54 times number of stdcells
+Final cluster cost:3682196   
+#  1 pin, avg_w= 0.0, net(    4)=    0 ( 0.0%), pin(    4)=    0 ( 0.0%)
+#  2 pin, avg_w= 0.5, net( 1323)=  660 (49.9%), pin( 2646)= 1320 (49.9%)
+#  3 pin, avg_w= 0.9, net(  447)=  115 (25.7%), pin( 1341)=  513 (38.3%)
+#  4 pin, avg_w= 1.5, net(  201)=   17 ( 8.5%), pin(  804)=  217 (27.0%)
+#  5 pin, avg_w= 1.9, net(   95)=    5 ( 5.3%), pin(  475)=  155 (32.6%)
+#  6 pin, avg_w= 2.4, net(   44)=    0 ( 0.0%), pin(  264)=   85 (32.2%)
+#  7 pin, avg_w= 2.8, net(   25)=    0 ( 0.0%), pin(  175)=   53 (30.3%)
+#  8 pin, avg_w= 3.5, net(   21)=    0 ( 0.0%), pin(  168)=   42 (25.0%)
+#  9 pin, avg_w= 4.1, net(   35)=    0 ( 0.0%), pin(  315)=   69 (21.9%)
+# 10 pin, avg_w= 4.6, net(   59)=    0 ( 0.0%), pin(  590)=  121 (20.5%)
+# 11 pin, avg_w= 5.2, net(  158)=    0 ( 0.0%), pin( 1738)=  267 (15.4%)
+# 13 pin, avg_w= 5.6, net(    1)=    0 ( 0.0%), pin(   13)=    5 (38.5%)
+# 15 pin, avg_w= 7.3, net(    1)=    0 ( 0.0%), pin(   15)=    3 (20.0%)
+# 19 pin, avg_w= 8.9, net(    1)=    0 ( 0.0%), pin(   19)=    6 (31.6%)
+# 24 pin, avg_w=11.5, net(    1)=    0 ( 0.0%), pin(   24)=    6 (25.0%)
+# 28 pin, avg_w=13.8, net(    1)=    0 ( 0.0%), pin(   28)=    5 (17.9%)
+# 30 pin, avg_w=14.4, net(    1)=    0 ( 0.0%), pin(   30)=   10 (33.3%)
+# 35 pin, avg_w=16.6, net(    1)=    0 ( 0.0%), pin(   35)=   10 (28.6%)
+#175 pin, avg_w=87.1, net(    1)=    0 ( 0.0%), pin(  175)=   45 (25.7%)
+#264 pin, avg_w=131.6, net(    1)=    0 ( 0.0%), pin(  264)=   80 (30.3%)
+#266 pin, avg_w=132.6, net(    1)=    0 ( 0.0%), pin(  266)=   80 (30.1%)
+#399 pin, avg_w=199.0, net(    1)=    0 ( 0.0%), pin(  399)=  156 (39.1%)
+[output_hierarchy]:total  797 nets eliminated(33%),  3248 pins shrunk(33%)
+[output_hierarchy]:total 1626 nets left(67%),  6540 pins left(67%)
+[output_hier]:total instances:682 original instances:1784
+[main]:Generating hierarchical netlist.
+[main]:Writing riscv.cckt and riscv.cluster files.
+time 1571770797 Tue Oct 22 13:59:57 2019:cluster completed...
+
+cluster terminated normally with no errors and 5 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770797 Tue Oct 22 13:59:57 2019:cluster exits 0 errors 5 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage1 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80837
+
+####################################################
+time 1571770797 Tue Oct 22 13:59:57 2019:iplacesc.v1 started...
+@ /Users/bill/version1/itools/bin/Darwin/iplacesc.v1 -s 2 -v -w 29360140 -R 1520708458 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage2 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80849 PVERSION v2.0.0pre46
+
+Row-Based Placement Program
+
+iplacesc.v1 version:v2.0.0pre46
+iTools/TimberWolf compilation:Mon Oct 14 19:37:27 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplacesc.v1 switches:
+	Graphics mode on
+	Exit iteration:85
+	Verbose mode on
+
+
+
+Options specified:
+adaptive_row_spacing     : 0
+add_feeds                : off
+add_rigid_spacers        : on
+adjust_cell_offset       : on
+adjust_gate_array_rows   : on
+alignment_tolerance      : 0
+allow_long_rows          : off
+allow_uneven_rows        : off
+allow_pad_overlap        : off
+autodetect_script        : off
+auto_row_lengths         : default (on but off for complex rows)
+auto_wire_weight         : on
+background               : white
+bendcost_threshold       : 0.000 (default) 
+buffer_timing            : on
+calc_row_index           : off
+check_overlap            : on
+check_pin_access         : on
+check_ports              : off
+cluster                  : off
+cluster_priority         : off
+cluster_split_param      : default (calculated)
+cluster_split_weight     : 1000.00
+compact_ports            : autodetect
+compact_port_algorithm   : 3
+compress_files           : off
+contiguous_pad_groups    : on
+convert_paths_to_pinpairs: off
+core_to_padspace         : 2 2 2 2
+corner_pads              : on
+cost_obstacles           : on
+cost_only                : off
+cover_cell_transparent   : off
+create_pl1in_instances   : off
+default_pin_capacitance  : (20.00 fF)
+design_style             : stdcell
+eco_autodetect           : off
+eco_buffer_tree          : off
+eco_constraint_factor    : -1
+eco_constraint_xfactor   : -1.00 relative
+eco_driver_weight        : 1
+eco_ignore_version       : off
+eco_placement_improve    : off
+eco_preview              : off
+eco_start_iteration      : 100
+eco_use_pl1_in_data      : on
+equalize_rows            : off
+even_placement           : off
+except_threshold         : default
+exit_on_error            : off
+fast                     : 10
+fix_orientation_problems : on
+fix_side_pin_access      : off
+gate_array_exit          : off
+gate_array_spacer        : ~TWSPACER
+graphics                 : on
+grid                     : none
+horizontal_path_weight   : 0.037 (calculated)
+horizontal_weight        : 1.000
+ignore_feeds             : off
+ignore_keepouts          : on
+iterate                  : off
+iterate_debug            : off
+iterate_script           : default
+large_net_threshold      : 100
+load balancing           : off
+merge_port_layers        : autodetected
+minimum_pad_space        : calculated
+net_reporting            : on
+orientation_optimization : off
+overlap_algorithm        : ordered
+overlap_mode             : left_justify
+padspacing               : uniform
+over_the_cell_feed_layer : default
+parallel_daemons         : on
+parallel_debug           : off
+parallel execution       : off
+parallel_row_update      : default
+parallel_slave_graphics  : off
+parallel timeout         : 0
+parallel_remote_start    : on
+path_detail_limit        : 10
+pdef_factor              : 10.000
+pdef_filename            : default
+pin_layers               : default
+power_domain_attempts    : 4
+power_domain_height      : 0
+power_domain_isolation   : on
+power_domain_spacing     : 0
+power_domain_width       : 0
+power_domain_exec        : off
+power_domain_start       : default
+power_domain_weight      : 1
+pre_equalize_rows        : off
+precision_row_control    : default
+preload_rows             : off
+probe_offset             : 0
+processor limit          : unlimited
+process_model_pins       : on
+prune_amount             : default
+quench                   : off
+random_seed              : 1520708458
+relax_pin_access         : off
+require_vias             : on
+restart                  : off
+restrict_ports_to_channel: off
+row_blockage_percent     : 50.000
+row_definitions          : fixed
+row_var_percent          : 0.000
+save_file                : on
+scale                    : 10.00
+schematic_ordering       : off
+script                   : none
+shared_boundary_opt      : on
+slow                     : 0
+soft_fold_weight         : 1.00
+spare_columns            : 5 (default)
+spare_extent             : 1.000000 1.000000 (default)
+spare_place_gravity      : on
+spare_place_globals      : 2
+spare_global_weight      : 1.00
+stage termination        : 85
+steiner_wire_length      : off
+strict_row_constraints   : off
+taper_percentage         : 0.100
+time_factor              : 3.000
+time_update              : 5 (default)
+timeout                  : none
+track.pitch              : 2
+uniform_spacer_algorithm : FIXED
+unlap_max_checking       : off
+update_overlap           : 0
+use_initial_placement    : off
+vertical_path_weight     : 1.000 (user supplied)
+vertical_wire_weight     : 1.000
+zsa_read_pth             : off
+% Reading .slib, .sckt, and .scon files...
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:682
+[look_for_hints]:Number of nets :1626
+[look_for_hints]:Number of gpins:6540
+
+no syntax errors in library:riscv.slib
+no syntax errors in physical description.
+no syntax problem in circuit file.
+no syntax errors in netlist description.
+Reading constraint file riscv.scon...
+done reading constraint file. No syntax errors.
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:metal2 pitch:1.6 offset:0.8
+Pin layers:
+layer:metal2 pitch:1.6 offset:0.8
+
+Need timing graph...no
+[autodetect_port_layers]:didn't autodetect port layers.
+median:83.2
+
+[cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+
+
+
+total cell length: 39401.6
+total block length: 39395.2
+rowSep                  : 0.000
+
+
+[auto_wire_weight]:vertical_wire_weight has been set by user.
+Effective row separation has been set to 1.00
+Modified vertical wire weight has been set to 1000000.00
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (888,900).
+Adjusted padring: (-4,-4) (888,904).
+
+block x-span:875.5  block y-span:900
+
+
+TIMING FACTOR (COMPUTED) : 4.000000
+Original Average Cell Width:108.5
+average_cell_width is:108.544
+standard deviation of cell length is:74.6241
+narrowest standard cell:9.6
+widest standard cell:216
+average row length:875.5
+Normal row control algorithm.
+ratio:22.5
+
+Row-based Cell Distribution: 
+[ 1- 10] (     9.6     30.3) : 7.713  1.377  1.102  1.653  0.275  0.551  0.826  0.275  0.000  0.000 
+[11- 20] (    32.3     50.9) : 0.275  0.275  0.551  4.683  0.000  0.551  1.102  1.102  4.132  5.510 
+[21- 30] (    52.9     71.6) : 9.642  1.102  0.551  0.000  1.377  1.653  0.000  0.551  0.275  0.551 
+[31- 40] (    73.5     92.2) : 0.826  0.551  0.000  0.275  0.551  1.102  0.275  0.826  0.275  0.000 
+[41- 50] (    94.2    112.8) : 0.000  1.377  0.551  0.551  0.275  0.275  0.275  0.000  0.275  0.000 
+[51- 60] (   114.8    133.5) : 0.000  0.551  0.275  0.275  0.000  0.551  0.000  0.275  0.275  0.000 
+[61- 70] (   135.5    154.1) : 0.000  0.275  1.377  0.275  0.000  1.102  0.826  0.000  0.826  1.102 
+[71- 80] (   156.1    174.8) : 0.000  0.551  0.275  0.275  0.551  1.102  0.000  0.000  0.551  1.653 
+[81- 90] (   176.7    195.4) : 0.551  0.551  0.826  0.826  0.826  0.275  1.377  0.275  0.826  1.102 
+[91-100] (   197.4      216) : 1.102  1.653  1.653  2.479  0.826  1.102  3.581  2.755  1.928  6.612 
+Bin width:82.56 smallest:384 => largest:8640
+
+iplacesc starting from the beginning
+raw bin width :325.6
+adjusted bin width :204.8
+number of x bins    :6
+number of y bins    :0
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 1367329.4
+
+[findcost]:the large and non-global ignored nets:
+WARNING[findcost]:Large net <rst> has 186 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <clk> has 243 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h1> has 184 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 130 pins exceeding threshold and is now IGNORED.
+
+[findcost]:The active global nets:	NONE
+
+[findcost]:The defined global nets but not present in netlist:	NONE
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 896
+The number of nets with 3 pins is 271
+The number of nets with 4 pins is 127
+The number of nets with 5 pins is 51
+The number of nets with 6 pins is 32
+The number of nets with 7 pins is 40
+The number of nets with 8 pins is 57
+The number of nets with 9 pins is 42
+The number of nets with 10 pins is 48
+The number of nets with 11 pins is 48
+The number of nets with 12 pins is 1
+The number of nets with 13 pins is 1
+The number of nets with 18 pins is 1
+The number of nets with 20 pins is 1
+The number of nets with 23 pins is 1
+The number of nets with 25 pins is 1
+The number of nets with 100 pins or more is 4
+Average number of pins per net = 3.573983
+The maximum number of pins on a single net is:243
+
+Pad information:
+Core: (0,0) (875.5,900).
+Padring: (-4,-21.3) (888,921.3).
+Die: (-21.3,-22) (896.9,922).
+
+
+Percentage of Nets Connecting to at least 2 cells:1.00
+Percentage of Nets Connecting to at least 3 cells:0.47
+Percentage of Nets Connecting to at least 4 cells:0.28
+Percentage of Nets Connecting to at least 5 cells:0.21
+Percentage of Nets Connecting to at least 6 cells:0.19
+
+mean row var width :54.3
+block:   1 (0,0) (875.5,20) desire:875.5 val:54.3
+block:   2 (0,20) (875.5,40) desire:875.5 val:54.3
+block:   3 (0,40) (875.5,60) desire:875.5 val:54.3
+block:   4 (0,60) (875.5,80) desire:875.5 val:54.3
+block:   5 (0,80) (875.5,100) desire:875.5 val:54.3
+block:   6 (0,100) (875.5,120) desire:875.5 val:54.3
+block:   7 (0,120) (875.5,140) desire:875.5 val:54.3
+block:   8 (0,140) (875.5,160) desire:875.5 val:54.3
+block:   9 (0,160) (875.5,180) desire:875.5 val:54.3
+block:  10 (0,180) (875.5,200) desire:875.5 val:54.3
+block:  11 (0,200) (875.5,220) desire:875.5 val:54.3
+block:  12 (0,220) (875.5,240) desire:875.5 val:54.3
+block:  13 (0,240) (875.5,260) desire:875.5 val:54.3
+block:  14 (0,260) (875.5,280) desire:875.5 val:54.3
+block:  15 (0,280) (875.5,300) desire:875.5 val:54.3
+block:  16 (0,300) (875.5,320) desire:875.5 val:54.3
+block:  17 (0,320) (875.5,340) desire:875.5 val:54.3
+block:  18 (0,340) (875.5,360) desire:875.5 val:54.3
+block:  19 (0,360) (875.5,380) desire:875.5 val:54.3
+block:  20 (0,380) (875.5,400) desire:875.5 val:54.3
+block:  21 (0,400) (875.5,420) desire:875.5 val:54.3
+block:  22 (0,420) (875.5,440) desire:875.5 val:54.3
+block:  23 (0,440) (875.5,460) desire:875.5 val:54.3
+block:  24 (0,460) (875.5,480) desire:875.5 val:54.3
+block:  25 (0,480) (875.5,500) desire:875.5 val:54.3
+block:  26 (0,500) (875.5,520) desire:875.5 val:54.3
+block:  27 (0,520) (875.5,540) desire:875.5 val:54.3
+block:  28 (0,540) (875.5,560) desire:875.5 val:54.3
+block:  29 (0,560) (875.5,580) desire:875.5 val:54.3
+block:  30 (0,580) (875.5,600) desire:875.5 val:54.3
+block:  31 (0,600) (875.5,620) desire:875.5 val:54.3
+block:  32 (0,620) (875.5,640) desire:875.5 val:54.3
+block:  33 (0,640) (875.5,660) desire:875.5 val:54.3
+block:  34 (0,660) (875.5,680) desire:875.5 val:54.3
+block:  35 (0,680) (875.5,700) desire:875.5 val:54.3
+block:  36 (0,700) (875.5,720) desire:875.5 val:54.3
+block:  37 (0,720) (875.5,740) desire:875.5 val:54.3
+block:  38 (0,740) (875.5,760) desire:875.5 val:54.3
+block:  39 (0,760) (875.5,780) desire:875.5 val:54.3
+block:  40 (0,780) (875.5,800) desire:875.5 val:54.3
+block:  41 (0,800) (875.5,820) desire:875.5 val:54.3
+block:  42 (0,820) (875.5,840) desire:875.5 val:54.3
+block:  43 (0,840) (875.5,860) desire:875.5 val:54.3
+block:  44 (0,860) (875.5,880) desire:875.5 val:54.3
+block:  45 (0,880) (875.5,900) desire:875.5 val:54.3
+Total Desired Length:39395.2
+
+bdxlen:875.5  bdylen:900
+l:0  t:900  r:875.5  b:0
+
+
+
+THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 1360724.9
+Attempts per iteration:1815
+
+Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc
+ -1: 5.96e+05 5.96e+05    1351903          0  1.00   0   1332    386    808 0.946 0.964 0.950
+  0: 5.96e+05 5.96e+05    1343608          0  1.00   0   1307    411    949 0.946 0.963 0.982
+  1: 5.76e+05 5.14e+05    1347467          0  1.00   0   1320    410    936 0.952 0.984 0.948
+  2: 5.79e+05 2.92e+05    1352001          0  1.00   0   1242    448    941 0.932 0.908 0.915
+  3: 5.42e+05 2.47e+05    1314216          0  1.00   0   1199    413    955 0.886 0.939 0.883
+  4: 4.83e+05 1.66e+05    1322010          0  1.00   0   1201    371   1077 0.862 0.969 0.852
+  5: 4.05e+05 1.30e+05    1299950          0  1.00   0   1138    375   1030 0.828 0.959 0.822
+  6: 3.66e+05 1.38e+05    1308730          0  1.00   0   1087    353   1001 0.789 0.899 0.793
+  7: 3.11e+05 1.42e+05    1269763          0  1.00   0   1114    280   1023 0.763 0.874 0.765
+  8: 2.70e+05 1.18e+05    1245772          0  1.00   0   1009    347   1039 0.742 0.889 0.738
+  9: 2.41e+05 9.67e+04    1288859          0  1.00   0    974    335    940 0.717 0.875 0.712
+ 10: 2.10e+05 8.30e+04    1257253          0  1.00   0    956    306   1067 0.690 0.833 0.687
+ 11: 1.85e+05 8.26e+04    1256137          0  1.00   0    941    269   1016 0.663 0.789 0.663
+ 12: 1.42e+05 7.01e+04    1217958          0  1.00   0    893    288    920 0.643 0.833 0.640
+ 13: 1.26e+05 8.14e+04    1241349          0  1.00   0    852    267    941 0.611 0.744 0.618
+ 14: 1.08e+05 5.71e+04    1203867          0  1.00   0    868    234    972 0.603 0.682 0.596
+ 15: 8.90e+04 5.67e+04    1200175          0  1.00   0    805    249    969 0.573 0.738 0.575
+ 16: 7.64e+04 5.94e+04    1145175          0  1.00   0    777    233    907 0.552 0.671 0.555
+ 17: 6.78e+04 5.79e+04    1167104          0  1.00   0    771    206    999 0.534 0.634 0.535
+ 18: 5.84e+04 6.17e+04    1156541          0  1.00   0    736    202    933 0.513 0.627 0.517
+ 19: 5.40e+04 5.20e+04    1146155          0  1.00   0    685    228    990 0.501 0.571 0.499
+ 20: 4.73e+04 4.80e+04    1135355          0  1.00   0    692    190    966 0.481 0.603 0.481
+ 21: 4.84e+04 4.83e+04    1132804          0  1.00   0    655    184    935 0.462 0.458 0.464
+ 22: 3.72e+04 5.16e+04    1088075          0  1.00   0    644    177    910 0.444 0.616 0.448
+ 23: 3.51e+04 4.14e+04    1075046          0  1.00   0    635    173    853 0.444 0.468 0.440
+ 24: 3.35e+04 5.12e+04    1099211          0  1.00   0    620    166    956 0.431 0.482 0.440
+ 25: 3.22e+04 4.64e+04    1055512          0  1.00   0    634    169   1007 0.441 0.466 0.440
+ 26: 2.87e+04 4.40e+04    1094835          0  1.00   0    656    149    967 0.439 0.542 0.440
+ 27: 2.81e+04 4.75e+04    1094681          0  1.00   0    628    162    975 0.434 0.457 0.440
+ 28: 2.90e+04 3.92e+04    1070812          0  1.00   0    662    142   1037 0.444 0.418 0.440
+ 29: 2.88e+04 4.32e+04    1080952          0  1.00   0    621    171   1029 0.435 0.462 0.440
+ 30: 3.18e+04 4.36e+04    1037828          0  1.00   0    617    169   1109 0.437 0.347 0.440
+ 31: 3.41e+04 5.26e+04    1035438          0  1.00   0    619    165    913 0.434 0.400 0.440
+ 32: 3.16e+04 4.68e+04    1031833          0  1.00   0    654    154    990 0.441 0.532 0.440
+ 33: 3.26e+04 5.43e+04    1051487          0  1.00   0    615    168    965 0.432 0.416 0.440
+ 34: 3.36e+04 4.29e+04    1065688          0  1.00   0    631    175   1005 0.446 0.390 0.440
+ 35: 2.91e+04 3.69e+04    1059303          0  1.00   0    651    161   1017 0.443 0.513 0.440
+ 36: 2.62e+04 3.41e+04    1030962          0  1.00   0    662    139   1065 0.439 0.467 0.440
+ 37: 2.75e+04 3.58e+04    1005811          0  1.00   0    659    131    884 0.436 0.419 0.440
+ 38: 2.85e+04 3.29e+04    1026574          0  1.00   0    616    180    961 0.439 0.425 0.440
+ 39: 2.80e+04 3.91e+04    1000206          0  1.00   0    639    147    905 0.432 0.447 0.440
+ 40: 3.13e+04 3.87e+04     985106          0  1.00   0    632    158    895 0.438 0.394 0.440
+ 41: 3.20e+04 2.82e+04     988886          0  1.00   0    638    173    972 0.448 0.423 0.440
+ 42: 3.23e+04 3.68e+04     995142          0  1.00   0    611    166   1026 0.428 0.430 0.440
+ 43: 3.35e+04 3.06e+04    1007557          0  1.00   0    628    177   1014 0.444 0.432 0.440
+ 44: 2.76e+04 2.52e+04     977875          0  1.00   0    657    164    927 0.446 0.522 0.440
+ 45: 3.32e+04 3.71e+04     978628          0  1.00   0    637    129    944 0.425 0.389 0.440
+ 46: 2.99e+04 2.86e+04     967466          0  1.00   0    667    148    980 0.446 0.483 0.440
+ 47: 2.70e+04 2.57e+04     957282          0  1.00   0    649    162    983 0.442 0.491 0.440
+ 48: 2.67e+04 2.98e+04     949608          0  1.00   0    634    154    934 0.432 0.443 0.440
+ 49: 2.69e+04 3.38e+04     943511          0  1.00   0    641    147    856 0.434 0.435 0.440
+ 50: 2.69e+04 2.62e+04     962206          0  1.00   0    657    155    978 0.445 0.455 0.440
+ 51: 2.99e+04 2.56e+04     951466          0  1.00   0    638    149    955 0.438 0.399 0.440
+ 52: 3.09e+04 2.55e+04     925496          0  1.00   0    648    147    927 0.437 0.437 0.440
+ 53: 3.13e+04 2.13e+04     933299          0  1.00   0    665    139   1010 0.445 0.431 0.440
+ 54: 4.15e+04 2.36e+04     944784          0  1.00   0    608    164   1003 0.432 0.368 0.440
+ 55: 3.62e+04 2.48e+04     920905          0  1.00   0    650    150    967 0.435 0.471 0.440
+ 56: 3.18e+04 2.35e+04     889522          0  1.00   0    656    152    881 0.441 0.463 0.440
+ 57: 3.11e+04 1.94e+04     908090          0  1.00   0    662    146    888 0.445 0.445 0.440
+ 58: 3.58e+04 2.16e+04     903748          0  1.00   0    641    143    791 0.435 0.411 0.440
+ 59: 4.74e+04 2.09e+04     909864          0  1.00   0    647    134    859 0.439 0.382 0.440
+ 60: 4.57e+04 2.09e+04     891489          0  1.00   0    680    114    884 0.436 0.439 0.440
+ 61: 4.06e+04 2.24e+04     891794          0  1.00   0    645    155    893 0.437 0.458 0.440
+ 62: 3.47e+04 1.85e+04     900004          0  1.00   0    658    158    940 0.446 0.464 0.440
+ 63: 4.71e+04 1.43e+04     878244          0  1.00   0    626    166    908 0.446 0.390 0.440
+ 64: 4.39e+04 2.23e+04     892971          0  1.00   0    603    170    851 0.419 0.447 0.440
+ 65: 3.30e+04 1.79e+04     897923          0  1.00   0    674    152   1006 0.447 0.477 0.440
+ 66: 3.39e+04 1.68e+04     887359          0  1.00   0    664    135    969 0.441 0.432 0.440
+ 67: 2.70e+04 1.25e+04     871268          0  1.00   0    687    137    928 0.450 0.465 0.440
+ 68: 3.60e+04 1.67e+04     862045          0  1.00   0    626    135   1017 0.426 0.398 0.440
+ 69: 3.82e+04 1.49e+04     880775          0  1.00   0    654    147    939 0.443 0.431 0.440
+ 70: 3.96e+04 1.21e+04     875097          0  1.00   0    663    150    817 0.447 0.442 0.440
+ 71: 3.70e+04 1.30e+04     877526          0  1.00   0    643    154    861 0.434 0.446 0.440
+ 72: 3.32e+04 1.17e+04     862621          0  1.00   0    657    151   1110 0.442 0.445 0.440
+ 73: 3.83e+04 1.07e+04     853846          0  1.00   0    647    144    833 0.442 0.422 0.440
+ 74: 3.19e+04 1.61e+04     857888          0  1.00   0    662    129    899 0.419 0.452 0.440
+ 75: 2.87e+04 1.09e+04     860633          0  1.00   0    695    122    963 0.452 0.440 0.433
+ 76: 2.98e+04 8.76e+03     849873          0  1.00   0    658    114    986 0.429 0.416 0.419
+ 77: 2.98e+04 9.30e+03     855370          0  1.00   0    630    104    992 0.401 0.405 0.405
+ 78: 2.48e+04 8.38e+03     852796          0  1.00   0    599    129    955 0.395 0.403 0.391
+ 79: 2.06e+04 5.40e+03     836334          0  1.00   0    619     99    863 0.400 0.387 0.377
+ 80: 1.98e+04 5.08e+03     819561          0  1.00   0    564    100    921 0.363 0.366 0.363
+ 81: 2.68e+04 6.28e+03     811150          0  1.00   0    502    101    904 0.333 0.327 0.349
+ 82: 2.41e+04 5.17e+03     817761          0  1.00   0    543     82    889 0.344 0.341 0.335
+ 83: 2.00e+04 3.79e+03     810967          0  1.00   0    505    108    890 0.337 0.331 0.321
+ 84: 1.90e+04 3.38e+03     803838          0  1.00   0    470     97    918 0.314 0.308 0.307
+ 85: 1.83e+04 5.85e+03     801311          0  1.00   0    486     72    918 0.288 0.324 0.323
+Removed the cell overlaps --- Will do neighbor interchanges only now
+
+TOTAL INTERCONNECT LENGTH: 801310.6
+
+BLOCK   LENGTHS ORIG_DESIRE    OVER/UNDER       MIN       MAX    DESIRE DEVIATION DESIRE_DEV
+   1       822       875       -53  -6.1%       821       930       875       -53         0
+   2       854       875       -21  -2.4%       821       930       875       -21         0
+   3       877       875         1   0.2%       821       930       875         1         0
+   4       856       875       -19  -2.2%       821       930       875       -19         0
+   5       862       875       -13  -1.5%       821       930       875       -13         0
+   6       861       875       -15  -1.7%       821       930       875       -15         0
+   7       845       875       -31  -3.5%       821       930       875       -31         0
+   8       902       875        27   3.1%       821       930       875        27         0
+   9       894       875        19   2.2%       821       930       875        19         0
+  10       832       875       -43  -5.0%       821       930       875       -43         0
+  11       880       875         5   0.5%       821       930       875         5         0
+  12       854       875       -21  -2.4%       821       930       875       -21         0
+  13       885       875         9   1.1%       821       930       875         9         0
+  14       925       875        49   5.6%       821       930       875        49         0
+  15       830       875       -45  -5.1%       821       930       875       -45         0
+  16       877       875         1   0.2%       821       930       875         1         0
+  17       894       875        19   2.2%       821       930       875        19         0
+  18       869       875        -7  -0.8%       821       930       875        -7         0
+  19       867       875        -8  -0.9%       821       930       875        -8         0
+  20       906       875        30   3.4%       821       930       875        30         0
+  21       874       875        -2  -0.2%       821       930       875        -2         0
+  22       925       875        49   5.6%       821       930       875        49         0
+  23       883       875         8   0.9%       821       930       875         8         0
+  24       867       875        -8  -0.9%       821       930       875        -8         0
+  25       898       875        22   2.5%       821       930       875        22         0
+  26       874       875        -2  -0.2%       821       930       875        -2         0
+  27       888       875        13   1.4%       821       930       875        13         0
+  28       859       875       -16  -1.9%       821       930       875       -16         0
+  29       890       875        14   1.6%       821       930       875        14         0
+  30       856       875       -19  -2.2%       821       930       875       -19         0
+  31       915       875        40   4.5%       821       930       875        40         0
+  32       899       875        24   2.7%       821       930       875        24         0
+  33       920       875        45   5.1%       821       930       875        45         0
+  34       896       875        21   2.3%       821       930       875        21         0
+  35       854       875       -21  -2.4%       821       930       875       -21         0
+  36       862       875       -13  -1.5%       821       930       875       -13         0
+  37       885       875         9   1.1%       821       930       875         9         0
+  38       882       875         6   0.7%       821       930       875         6         0
+  39       888       875        13   1.4%       821       930       875        13         0
+  40       902       875        27   3.1%       821       930       875        27         0
+  41       826       875       -50  -5.7%       821       930       875       -50         0
+  42       874       875        -2  -0.2%       821       930       875        -2         0
+  43       926       875        51   5.8%       821       930       875        51         0
+  44       843       875       -32  -3.7%       821       930       875       -32         0
+  45       822       875       -53  -6.1%       821       930       875       -53         0
+The longest row is:43, its length:926.4, deviation is:51.0
+The shortest row is:1, its length:822.4 Unevenness:104 12.65%
+
+iter     T      Wire      Time   accept
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (-4,-21.3) (888,921.3).
+Adjusted padring: (-4,-21.3) (930.4,921.3).
+
+134  0.001     800713          0       0%
+135  0.001     800713          0       (no fixed constraint processing)
+135  0.001     770133          0      11%
+136  0.001     769369          0       2%
+137  0.001     767832          0       2%
+138  0.001     767792          0       2%
+139  0.001     767674          0       2%
+
+
+Annealing information:
+Iteration           Temp          Temp2       Totalcost            Wire  Sparebin      Time     TimeC   row  flips  pairflips  reject    accept   accept2     ratio
+---------  -------------  -------------  --------------  --------------  --------  --------  --------  ----  -----  ---------  ------  --------  --------  --------
+       -1  595845.617710  595845.617710  1351902.900000  1351902.900000  0.000000  0.000000  1.000000  1332    386        386     808  0.964286  0.945992  0.950000
+        0  595845.617710  595845.617710  1343607.800000  1343607.800000  0.000000  0.000000  1.000000  1307    411        411     949  0.963415  0.945759  0.982311
+        1  576197.393162  514275.529286  1347466.600000  1347466.600000  0.000000  0.000000  1.000000  1320    410        410     936  0.984375  0.952000  0.947866
+        2  578754.708467  292304.877777  1352000.850000  1352000.850000  0.000000  0.000000  1.000000  1242    448        448     941  0.907692  0.932000  0.914629
+        3  542496.121307  247029.416905  1314216.050000  1314216.050000  0.000000  0.000000  1.000000  1199    413        413     955  0.939394  0.886156  0.882557
+        4  483163.063862  166151.243203  1322010.200000  1322010.200000  0.000000  0.000000  1.000000  1201    371        371    1077  0.969231  0.862207  0.851610
+        5  405244.363225  130031.286103  1299949.700000  1299949.700000  0.000000  0.000000  1.000000  1138    375        375    1030  0.958904  0.828260  0.821748
+        6  366194.065138  137555.811440  1308729.900000  1308729.900000  0.000000  0.000000  1.000000  1087    353        353    1001  0.898551  0.789233  0.792933
+        7  311255.237830  142445.390715  1269762.600000  1269762.600000  0.000000  0.000000  1.000000  1114    280        280    1023  0.873563  0.762594  0.765129
+        8  270203.253330  118372.336494  1245772.350000  1245772.350000  0.000000  0.000000  1.000000  1009    347        347    1039  0.888889  0.741862  0.738299
+        9  241152.772961   96698.088719  1288859.150000  1288859.150000  0.000000  0.000000  1.000000   974    335        335     940  0.875000  0.716874  0.712411
+       10  210032.757167   83006.007752  1257253.100000  1257253.100000  0.000000  0.000000  1.000000   956    306        306    1067  0.833333  0.690109  0.687430
+       11  184678.287796   82600.335771  1256137.400000  1256137.400000  0.000000  0.000000  1.000000   941    269        269    1016  0.789474  0.662685  0.663325
+       12  142166.604314   70092.336285  1217957.850000  1217957.850000  0.000000  0.000000  1.000000   893    288        288     920  0.833333  0.642939  0.640065
+       13  125805.932918   81385.555305  1241348.950000  1241348.950000  0.000000  0.000000  1.000000   852    267        267     941  0.743902  0.610502  0.617621
+       14  108346.900639   57115.221533  1203866.800000  1203866.800000  0.000000  0.000000  1.000000   868    234        234     972  0.682353  0.603468  0.595964
+       15   88982.591486   56733.346967  1200175.000000  1200175.000000  0.000000  0.000000  1.000000   805    249        249     969  0.737500  0.573241  0.575067
+       16   76418.902789   59428.949163  1145174.600000  1145174.600000  0.000000  0.000000  1.000000   777    233        233     907  0.671429  0.551862  0.554902
+       17   67827.771164   57883.669907  1167104.000000  1167104.000000  0.000000  0.000000  1.000000   771    206        206     999  0.633803  0.534404  0.535444
+       18   58369.345330   61655.644989  1156540.900000  1156540.900000  0.000000  0.000000  1.000000   736    202        202     933  0.627119  0.513098  0.516668
+       19   54028.100957   51956.523272  1146155.400000  1146155.400000  0.000000  0.000000  1.000000   685    228        228     990  0.571429  0.500569  0.498551
+       20   47261.939472   47993.841576  1135355.200000  1135355.200000  0.000000  0.000000  1.000000   692    190        190     966  0.603175  0.481439  0.481069
+       21   48405.399667   48279.305622  1132803.600000  1132803.600000  0.000000  0.000000  1.000000   655    184        184     935  0.458333  0.462421  0.464201
+       22   37156.870127   51600.377074  1088074.550000  1088074.550000  0.000000  0.000000  1.000000   644    177        177     910  0.616279  0.444187  0.447923
+       23   35065.526038   41438.879073  1075045.800000  1075045.800000  0.000000  0.000000  1.000000   635    173        173     853  0.467532  0.444189  0.440000
+       24   33541.024089   51186.154259  1099211.200000  1099211.200000  0.000000  0.000000  1.000000   620    166        166     956  0.482143  0.431495  0.440000
+       25   32156.603833   46379.878285  1055512.300000  1055512.300000  0.000000  0.000000  1.000000   634    169        169    1007  0.465753  0.441126  0.440000
+       26   28706.380723   43990.071077  1094834.900000  1094834.900000  0.000000  0.000000  1.000000   656    149        149     967  0.541667  0.439472  0.440000
+       27   28082.152741   47541.991782  1094680.900000  1094680.900000  0.000000  0.000000  1.000000   628    162        162     975  0.456790  0.434256  0.440000
+       28   28956.611327   39203.826355  1070812.500000  1070812.500000  0.000000  0.000000  1.000000   662    142        142    1037  0.418367  0.444380  0.440000
+       29   28766.039192   43205.778591  1080951.750000  1080951.750000  0.000000  0.000000  1.000000   621    171        171    1029  0.461538  0.435233  0.440000
+       30   31803.485509   43636.288589  1037827.950000  1037827.950000  0.000000  0.000000  1.000000   617    169        169    1109  0.347222  0.436604  0.440000
+       31   34100.974836   52621.960138  1035438.400000  1035438.400000  0.000000  0.000000  1.000000   619    165        165     913  0.400000  0.433526  0.440000
+       32   31587.433799   46807.146920  1031833.000000  1031833.000000  0.000000  0.000000  1.000000   654    154        154     990  0.532468  0.441312  0.440000
+       33   32570.145938   54258.203955  1051487.150000  1051487.150000  0.000000  0.000000  1.000000   615    168        168     965  0.415842  0.431991  0.440000
+       34   33550.614503   42873.310503  1065687.800000  1065687.800000  0.000000  0.000000  1.000000   631    175        175    1005  0.390244  0.446305  0.440000
+       35   29112.941679   36877.938978  1059303.100000  1059303.100000  0.000000  0.000000  1.000000   651    161        161    1017  0.513043  0.442941  0.440000
+       36   26178.784697   34111.341556  1030961.800000  1030961.800000  0.000000  0.000000  1.000000   662    139        139    1065  0.467213  0.439457  0.440000
+       37   27474.046667   35843.958738  1005810.950000  1005810.950000  0.000000  0.000000  1.000000   659    131        131     884  0.419048  0.436257  0.440000
+       38   28510.114793   32886.891024  1026574.000000  1026574.000000  0.000000  0.000000  1.000000   616    180        180     961  0.424779  0.439483  0.440000
+       39   28031.645101   39137.433287  1000205.950000  1000205.950000  0.000000  0.000000  1.000000   639    147        147     905  0.446602  0.432243  0.440000
+       40   31333.808850   38717.876083   985106.400000   985106.400000  0.000000  0.000000  1.000000   632    158        158     895  0.393939  0.437835  0.440000
+       41   32006.258813   28223.571110   988886.250000   988886.250000  0.000000  0.000000  1.000000   638    173        173     972  0.423077  0.448337  0.440000
+       42   32260.031930   36801.106597   995142.050000   995142.050000  0.000000  0.000000  1.000000   611    166        166    1026  0.430380  0.427882  0.440000
+       43   33498.738884   30627.538433  1007556.950000  1007556.950000  0.000000  0.000000  1.000000   628    177        177    1014  0.431818  0.444444  0.440000
+       44   27595.122172   25236.600904   977875.000000   977875.000000  0.000000  0.000000  1.000000   657    164        164     927  0.522059  0.446365  0.440000
+       45   33200.749299   37075.220804   978628.500000   978628.500000  0.000000  0.000000  1.000000   637    129        129     944  0.388889  0.424939  0.440000
+       46   29858.080595   28609.005121   967465.800000   967465.800000  0.000000  0.000000  1.000000   667    148        148     980  0.482517  0.446172  0.440000
+       47   26989.904077   25719.841860   957282.050000   957282.050000  0.000000  0.000000  1.000000   649    162        162     983  0.490909  0.441748  0.440000
+       48   26664.310580   29775.140954   949607.600000   949607.600000  0.000000  0.000000  1.000000   634    154        154     934  0.443114  0.432219  0.440000
+       49   26919.835392   33798.804157   943510.800000   943510.800000  0.000000  0.000000  1.000000   641    147        147     856  0.434524  0.434123  0.440000
+       50   26881.360737   26231.054440   962206.200000   962206.200000  0.000000  0.000000  1.000000   657    155        155     978  0.454545  0.445415  0.440000
+       51   29901.068996   25626.766320   951466.400000   951466.400000  0.000000  0.000000  1.000000   638    149        149     955  0.399015  0.437965  0.440000
+       52   30873.657731   25533.884725   925496.150000   925496.150000  0.000000  0.000000  1.000000   648    147        147     927  0.436893  0.437461  0.440000
+       53   31301.466372   21307.856452   933299.250000   933299.250000  0.000000  0.000000  1.000000   665    139        139    1010  0.431034  0.444725  0.440000
+       54   41544.237812   23603.886471   944783.700000   944783.700000  0.000000  0.000000  1.000000   608    164        164    1003  0.367713  0.432347  0.440000
+       55   36159.448137   24772.033553   920904.600000   920904.600000  0.000000  0.000000  1.000000   650    150        150     967  0.471311  0.434588  0.440000
+       56   31810.566377   23452.113466   889522.300000   889522.300000  0.000000  0.000000  1.000000   656    152        152     881  0.463415  0.440656  0.440000
+       57   31144.196952   19385.243637   908089.800000   908089.800000  0.000000  0.000000  1.000000   662    146        146     888  0.445255  0.445165  0.440000
+       58   35763.496541   21648.171841   903748.300000   903748.300000  0.000000  0.000000  1.000000   641    143        143     791  0.411348  0.434641  0.440000
+       59   47357.450573   20883.591878   909864.200000   909864.200000  0.000000  0.000000  1.000000   647    134        134     859  0.381579  0.439364  0.440000
+       60   45658.350503   20909.304726   891489.300000   891489.300000  0.000000  0.000000  1.000000   680    114        114     884  0.439252  0.435949  0.440000
+       61   40647.075843   22361.428841   891794.200000   891794.200000  0.000000  0.000000  1.000000   645    155        155     893  0.457534  0.436552  0.440000
+       62   34741.900061   18547.728577   900004.250000   900004.250000  0.000000  0.000000  1.000000   658    158        158     940  0.464387  0.445660  0.440000
+       63   47082.562115   14326.906996   878243.700000   878243.700000  0.000000  0.000000  1.000000   626    166        166     908  0.390244  0.446218  0.440000
+       64   43920.762264   22284.957732   892971.000000   892971.000000  0.000000  0.000000  1.000000   603    170        170     851  0.446575  0.419489  0.440000
+       65   33037.727231   17863.950485   897922.700000   897922.700000  0.000000  0.000000  1.000000   674    152        152    1006  0.477327  0.446839  0.440000
+       66   33873.206937   16791.059502   887358.700000   887358.700000  0.000000  0.000000  1.000000   664    135        135     969  0.432203  0.441374  0.440000
+       67   27025.960521   12536.226548   871267.800000   871267.800000  0.000000  0.000000  1.000000   687    137        137     928  0.465066  0.449853  0.440000
+       68   36020.571436   16662.828440   862045.400000   862045.400000  0.000000  0.000000  1.000000   626    135        135    1017  0.397614  0.425841  0.440000
+       69   38233.519301   14870.061400   880775.400000   880775.400000  0.000000  0.000000  1.000000   654    147        147     939  0.431452  0.443346  0.440000
+       70   39566.043461   12093.458814   875096.900000   875096.900000  0.000000  0.000000  1.000000   663    150        150     817  0.441509  0.447142  0.440000
+       71   36964.655168   13011.026632   877526.200000   877526.200000  0.000000  0.000000  1.000000   643    154        154     861  0.446488  0.433636  0.440000
+       72   33199.036356   11678.271035   862621.200000   862621.200000  0.000000  0.000000  1.000000   657    151        151    1110  0.445364  0.442324  0.440000
+       73   38259.908571   10740.288011   853846.500000   853846.500000  0.000000  0.000000  1.000000   647    144        144     833  0.422151  0.442017  0.440000
+       74   31912.451116   16141.069433   857887.800000   857887.800000  0.000000  0.000000  1.000000   662    129        129     899  0.452247  0.418882  0.440000
+       75   28690.415376   10918.726315   860632.700000   860632.700000  0.000000  0.000000  1.000000   695    122        122     963  0.440171  0.452489  0.433000
+       76   29835.223290    8760.289468   849872.900000   849872.900000  0.000000  0.000000  1.000000   658    114        114     986  0.415567  0.428571  0.419000
+       77   29805.720527    9296.794947   855370.200000   855370.200000  0.000000  0.000000  1.000000   630    104        104     992  0.404551  0.400786  0.405000
+       78   24806.399803    8378.203855   852796.500000   852796.500000  0.000000  0.000000  1.000000   599    129        129     955  0.402628  0.394845  0.391000
+       79   20636.057631    5395.834384   836333.800000   836333.800000  0.000000  0.000000  1.000000   619     99         99     863  0.386555  0.400205  0.377000
+       80   19814.397059    5079.230031   819561.300000   819561.300000  0.000000  0.000000  1.000000   564    100        100     921  0.366133  0.362860  0.363000
+       81   26762.466205    6278.120196   811150.300000   811150.300000  0.000000  0.000000  1.000000   502    101        101     904  0.327093  0.332963  0.349000
+       82   24090.831811    5170.651056   817760.600000   817760.600000  0.000000  0.000000  1.000000   543     82         82     889  0.341149  0.344468  0.335000
+       83   20045.840366    3789.379509   810967.100000   810967.100000  0.000000  0.000000  1.000000   505    108        108     890  0.330986  0.336831  0.321000
+       84   18994.866769    3383.760518   803838.300000   803838.300000  0.000000  0.000000  1.000000   470     97         97     918  0.308400  0.313892  0.307000
+       85   18299.341710    5846.566335   801310.600000   801310.600000  0.000000  0.000000  1.000000   486     72         72     918  0.324022  0.288210  0.322757
+
+
+[output]:output core with 0 errors and 0 warnings.
+
+
+[neighborhood_report]:No neighborhood constraints.
+
+
+
+FINAL CLUSTERED INTERCONNECT LENGTH:767674.1
+MAX NUMBER OF ATTEMPTED FLIPS PER T:1815
+
+Statistics:
+Number of Standard Cells: 363
+Number of Macros: 0 
+Number of Pads: 319 
+Number of PadGroups: 0 
+Number of Instances: 682 
+Number of Nets: 1626 
+Number of Pins: 6859 
+Number of Implicit Feed Thrus: 319
+
+
+Runtime Statistics
+-------------------------
+Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+Machine type: Darwin
+Date        : Tue Oct 22 14:00:19 2019
+
+User    time:   1.8 seconds
+System  time:   0.2 seconds
+Elapsed time:  21.8 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =    6576128B (6422KB)
+Virtual memory size              =    4257792K (4158MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =     7295296 (7124KB)
+Current heap size                =     7213968 (7044KB)
+
+Major page faults = 0
+Minor page faults = 4631
+Swaps = 0
+
+Input blocks = 1
+Output blocks = 5
+
+Context switch (voluntary) = 3734
+Context switch (involuntary) = 474
+
+time 1571770819 Tue Oct 22 14:00:19 2019:iplacesc completed...
+
+iplacesc.v1 terminated normally with no errors and 9 warning[s] (status arg:1024 status:0 status given:1024) 
+
+time 1571770819 Tue Oct 22 14:00:19 2019:iplacesc.v1 exits 0 errors 9 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage2 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80849
+
+####################################################
+time 1571770820 Tue Oct 22 14:00:20 2019:iplacesc.v1 started...
+@ /Users/bill/version1/itools/bin/Darwin/iplacesc.v1 -s 1 -c -v -w 29360140 -R 1520708458 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage1 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80864 PVERSION v2.0.0pre46
+
+Row-Based Placement Program
+
+iplacesc.v1 version:v2.0.0pre46
+iTools/TimberWolf compilation:Mon Oct 14 19:37:27 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplacesc.v1 switches:
+	Graphics mode on
+	Will read cluster netlist
+	First iteration:85
+	Exit iteration:100
+	Verbose mode on
+
+
+
+Options specified:
+adaptive_row_spacing     : 0
+add_feeds                : off
+add_rigid_spacers        : on
+adjust_cell_offset       : on
+adjust_gate_array_rows   : on
+alignment_tolerance      : 0
+allow_long_rows          : off
+allow_uneven_rows        : off
+allow_pad_overlap        : off
+autodetect_script        : off
+auto_row_lengths         : default (on but off for complex rows)
+auto_wire_weight         : on
+background               : white
+bendcost_threshold       : 0.000 (default) 
+buffer_timing            : on
+calc_row_index           : off
+check_overlap            : on
+check_pin_access         : on
+check_ports              : off
+cluster                  : on
+cluster_priority         : off
+cluster_split_param      : default (calculated)
+cluster_split_weight     : 1000.00
+compact_ports            : autodetect
+compact_port_algorithm   : 3
+compress_files           : off
+contiguous_pad_groups    : on
+convert_paths_to_pinpairs: off
+core_to_padspace         : 2 2 2 2
+corner_pads              : on
+cost_obstacles           : on
+cost_only                : off
+cover_cell_transparent   : off
+create_pl1in_instances   : off
+default_pin_capacitance  : (20.00 fF)
+design_style             : stdcell
+eco_autodetect           : off
+eco_buffer_tree          : off
+eco_constraint_factor    : -1
+eco_constraint_xfactor   : -1.00 relative
+eco_driver_weight        : 1
+eco_ignore_version       : off
+eco_placement_improve    : off
+eco_preview              : off
+eco_start_iteration      : 100
+eco_use_pl1_in_data      : on
+equalize_rows            : off
+even_placement           : off
+except_threshold         : default
+exit_on_error            : off
+fast                     : 10
+fix_orientation_problems : on
+fix_side_pin_access      : off
+gate_array_exit          : off
+gate_array_spacer        : ~TWSPACER
+graphics                 : on
+grid                     : none
+horizontal_path_weight   : 0.037 (calculated)
+horizontal_weight        : 1.000
+ignore_feeds             : off
+ignore_keepouts          : on
+iterate                  : off
+iterate_debug            : off
+iterate_script           : default
+large_net_threshold      : 100
+load balancing           : off
+merge_port_layers        : autodetected
+minimum_pad_space        : calculated
+net_reporting            : on
+orientation_optimization : off
+overlap_algorithm        : ordered
+overlap_mode             : left_justify
+padspacing               : uniform
+over_the_cell_feed_layer : default
+parallel_daemons         : on
+parallel_debug           : off
+parallel execution       : off
+parallel_row_update      : default
+parallel_slave_graphics  : off
+parallel timeout         : 0
+parallel_remote_start    : on
+path_detail_limit        : 10
+pdef_factor              : 10.000
+pdef_filename            : default
+pin_layers               : default
+power_domain_attempts    : 4
+power_domain_height      : 0
+power_domain_isolation   : on
+power_domain_spacing     : 0
+power_domain_width       : 0
+power_domain_exec        : off
+power_domain_start       : default
+power_domain_weight      : 1
+pre_equalize_rows        : off
+precision_row_control    : default
+preload_rows             : off
+probe_offset             : 0
+processor limit          : unlimited
+process_model_pins       : on
+prune_amount             : default
+quench                   : off
+random_seed              : 1520708458
+relax_pin_access         : off
+require_vias             : on
+restart                  : cluster
+restrict_ports_to_channel: off
+row_blockage_percent     : 50.000
+row_definitions          : fixed
+row_var_percent          : 0.000
+save_file                : on
+scale                    : 10.00
+schematic_ordering       : off
+script                   : none
+shared_boundary_opt      : on
+slow                     : 0
+soft_fold_weight         : 1.00
+spare_columns            : 5 (default)
+spare_extent             : 1.000000 1.000000 (default)
+spare_place_gravity      : on
+spare_place_globals      : 2
+spare_global_weight      : 1.00
+stage termination        : 100
+steiner_wire_length      : off
+strict_row_constraints   : off
+taper_percentage         : 0.100
+time_factor              : 3.000
+time_update              : 5 (default)
+timeout                  : none
+track.pitch              : 2
+uniform_spacer_algorithm : FIXED
+unlap_max_checking       : off
+update_overlap           : 0
+use_initial_placement    : off
+vertical_path_weight     : 1.000 (user supplied)
+vertical_wire_weight     : 1.000
+zsa_read_pth             : off
+% Reading .slib, .sckt, and .scon files...
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:1784
+[look_for_hints]:Number of nets :2423
+[look_for_hints]:Number of gpins:9788
+
+no syntax errors in library:riscv.slib
+no syntax errors in physical description.
+no syntax problem in circuit file.
+no syntax errors in netlist description.
+Reading constraint file riscv.scon...
+done reading constraint file. No syntax errors.
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:metal2 pitch:1.6 offset:0.8
+Pin layers:
+layer:metal2 pitch:1.6 offset:0.8
+
+Need timing graph...no
+[autodetect_port_layers]:didn't autodetect port layers.
+median:27.2
+
+[cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+
+
+
+total cell length: 39401.6
+total block length: 39395.2
+rowSep                  : 0.000
+
+
+[auto_wire_weight]:vertical_wire_weight has been set by user.
+Effective row separation has been set to 1.00
+Modified vertical wire weight has been set to 1000000.00
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (888,900).
+Adjusted padring: (-4,-4) (888,904).
+
+block x-span:875.5  block y-span:900
+
+
+TIMING FACTOR (COMPUTED) : 4.000000
+Original Average Cell Width:26.9
+average_cell_width is:26.8953
+standard deviation of cell length is:19.0272
+narrowest standard cell:3.2
+widest standard cell:52.8
+average row length:875.5
+Normal row control algorithm.
+ratio:16.5
+
+Row-based Cell Distribution: 
+[ 1- 10] (     3.2      8.2) : 9.352  0.000  0.000 15.085  0.000  0.000  5.734  0.000  0.000  0.205 
+[11- 20] (     8.6     13.2) : 0.000  0.000  2.321  0.000  0.000  0.000  4.778  0.000  0.000  2.253 
+[21- 30] (    13.6     18.1) : 0.000  0.000  0.683  0.000  0.000  1.229  0.000  0.000  0.000  1.297 
+[31- 40] (    18.5     23.1) : 0.000  0.000  2.321  0.000  0.000  0.410  0.000  0.000  1.297  0.000 
+[41- 50] (    23.5       28) : 0.000  1.160  0.000  0.000  0.000  1.570  0.000  0.000  0.887  0.000 
+[51- 60] (    28.4       33) : 0.000  1.024  0.000  0.000  1.502  0.000  0.000  0.000  1.024  0.000 
+[61- 70] (    33.4       38) : 0.000  0.887  0.000  0.000  1.570  0.000  0.000  1.911  0.000  0.000 
+[71- 80] (    38.4     42.9) : 5.529  0.000  0.000  0.000  0.956  0.000  0.000  1.297  0.000  0.000 
+[81- 90] (    43.3     47.9) : 2.935  0.000  0.000  3.481  0.000  0.000  0.000  2.867  0.000  0.000 
+[91-100] (    48.3     52.8) : 4.983  0.000  0.000  6.485  0.000  0.000  7.235  0.000  0.000  5.734 
+Bin width:19.84 smallest:128 => largest:2112
+
+Cluster input complete...
+
+[calc_stat]:Average cluster size = 57.8, dev = 76.8
+Range limiter = 57.8, starting TG=10.000000
+raw bin width :80.7
+adjusted bin width :51.2
+number of x bins    :22
+number of y bins    :0
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 805895.3
+
+[findcost]:the large and non-global ignored nets:
+WARNING[findcost]:Large net <rst> has 266 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <clk> has 399 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 175 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h1> has 264 pins exceeding threshold and is now IGNORED.
+
+[findcost]:The active global nets:	NONE
+
+[findcost]:The defined global nets but not present in netlist:	NONE
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 1323
+The number of nets with 3 pins is 447
+The number of nets with 4 pins is 201
+The number of nets with 5 pins is 95
+The number of nets with 6 pins is 44
+The number of nets with 7 pins is 25
+The number of nets with 8 pins is 21
+The number of nets with 9 pins is 35
+The number of nets with 10 pins is 59
+The number of nets with 11 pins is 158
+The number of nets with 13 pins is 1
+The number of nets with 15 pins is 1
+The number of nets with 19 pins is 1
+The number of nets with 24 pins is 1
+The number of nets with 28 pins is 1
+The number of nets with 30 pins is 1
+The number of nets with 35 pins is 1
+The number of nets with 100 pins or more is 4
+Average number of pins per net = 3.589913
+The maximum number of pins on a single net is:399
+
+Pad information:
+Core: (0,0) (875.5,900).
+Padring: (-4,-21.3) (888,921.3).
+Die: (-21.3,-22) (896.9,922).
+
+
+Percentage of Nets Connecting to at least 2 cells:1.00
+Percentage of Nets Connecting to at least 3 cells:0.46
+Percentage of Nets Connecting to at least 4 cells:0.27
+Percentage of Nets Connecting to at least 5 cells:0.19
+Percentage of Nets Connecting to at least 6 cells:0.16
+
+mean row var width :13.4
+block:   1 (0,0) (875.5,20) desire:875.5 val:13.4
+block:   2 (0,20) (875.5,40) desire:875.5 val:13.4
+block:   3 (0,40) (875.5,60) desire:875.5 val:13.4
+block:   4 (0,60) (875.5,80) desire:875.5 val:13.4
+block:   5 (0,80) (875.5,100) desire:875.5 val:13.4
+block:   6 (0,100) (875.5,120) desire:875.5 val:13.4
+block:   7 (0,120) (875.5,140) desire:875.5 val:13.4
+block:   8 (0,140) (875.5,160) desire:875.5 val:13.4
+block:   9 (0,160) (875.5,180) desire:875.5 val:13.4
+block:  10 (0,180) (875.5,200) desire:875.5 val:13.4
+block:  11 (0,200) (875.5,220) desire:875.5 val:13.4
+block:  12 (0,220) (875.5,240) desire:875.5 val:13.4
+block:  13 (0,240) (875.5,260) desire:875.5 val:13.4
+block:  14 (0,260) (875.5,280) desire:875.5 val:13.4
+block:  15 (0,280) (875.5,300) desire:875.5 val:13.4
+block:  16 (0,300) (875.5,320) desire:875.5 val:13.4
+block:  17 (0,320) (875.5,340) desire:875.5 val:13.4
+block:  18 (0,340) (875.5,360) desire:875.5 val:13.4
+block:  19 (0,360) (875.5,380) desire:875.5 val:13.4
+block:  20 (0,380) (875.5,400) desire:875.5 val:13.4
+block:  21 (0,400) (875.5,420) desire:875.5 val:13.4
+block:  22 (0,420) (875.5,440) desire:875.5 val:13.4
+block:  23 (0,440) (875.5,460) desire:875.5 val:13.4
+block:  24 (0,460) (875.5,480) desire:875.5 val:13.4
+block:  25 (0,480) (875.5,500) desire:875.5 val:13.4
+block:  26 (0,500) (875.5,520) desire:875.5 val:13.4
+block:  27 (0,520) (875.5,540) desire:875.5 val:13.4
+block:  28 (0,540) (875.5,560) desire:875.5 val:13.4
+block:  29 (0,560) (875.5,580) desire:875.5 val:13.4
+block:  30 (0,580) (875.5,600) desire:875.5 val:13.4
+block:  31 (0,600) (875.5,620) desire:875.5 val:13.4
+block:  32 (0,620) (875.5,640) desire:875.5 val:13.4
+block:  33 (0,640) (875.5,660) desire:875.5 val:13.4
+block:  34 (0,660) (875.5,680) desire:875.5 val:13.4
+block:  35 (0,680) (875.5,700) desire:875.5 val:13.4
+block:  36 (0,700) (875.5,720) desire:875.5 val:13.4
+block:  37 (0,720) (875.5,740) desire:875.5 val:13.4
+block:  38 (0,740) (875.5,760) desire:875.5 val:13.4
+block:  39 (0,760) (875.5,780) desire:875.5 val:13.4
+block:  40 (0,780) (875.5,800) desire:875.5 val:13.4
+block:  41 (0,800) (875.5,820) desire:875.5 val:13.4
+block:  42 (0,820) (875.5,840) desire:875.5 val:13.4
+block:  43 (0,840) (875.5,860) desire:875.5 val:13.4
+block:  44 (0,860) (875.5,880) desire:875.5 val:13.4
+block:  45 (0,880) (875.5,900) desire:875.5 val:13.4
+Total Desired Length:39395.2
+
+ 86  0.001     815573          0      27%
+THIS IS THE ROUTE COST OF THE MODIFIED PLACEMENT: 815573.3
+bdxlen:875.5  bdylen:900
+l:0  t:900  r:875.5  b:0
+
+
+
+THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 815573.3
+Attempts per iteration:7325
+
+Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc
+ 85: 2.17e+03 1.91e+03     804876          0  4.00   8   1632    495   2846 0.274 0.286 0.323
+ 86: 1.68e+03 1.52e+03     790367          0  4.00   0   1848    462   2728 0.307 0.306 0.301
+ 87: 2.31e+03 1.31e+03     773918          0  4.00   0   1657    433   2768 0.285 0.273 0.281
+ 88: 2.18e+03 1.28e+03     758751          0  4.00   0   1579    398   2648 0.262 0.263 0.263
+ 89: 1.76e+03 1.02e+03     747066          0  4.00   0   1501    379   2638 0.250 0.249 0.245
+ 90: 1.84e+03 9.45e+02     736120          0  4.00   0   1423    318   2733 0.230 0.227 0.229
+ 91: 1.81e+03 8.80e+02     729400          0  4.00   0   1331    291   2555 0.215 0.214 0.214
+ 92: 1.83e+03 7.84e+02     723069          0  4.00   0   1255    251   2591 0.202 0.198 0.199
+ 93: 1.36e+03 7.90e+02     714653          0  4.00   0   1195    250   2499 0.185 0.193 0.186
+ 94: 1.37e+03 8.11e+02     712261          0  4.00   0   1106    220   2563 0.173 0.172 0.174
+ 95: 1.07e+03 5.22e+02     704238          0  4.00   0   1106    213   2723 0.174 0.168 0.162
+ 96: 1.16e+03 5.21e+02     699602          0  4.00   0    972    203   2559 0.151 0.149 0.151
+ 97: 9.38e+02 4.66e+02     694936          0  4.00   0    933    192   2626 0.145 0.146 0.141
+ 98: 1.06e+03 4.63e+02     690459          0  4.00   0    902    132   2657 0.131 0.128 0.132
+ 99: 7.92e+02 6.16e+02     688341          0  4.00   0    859    117   2662 0.115 0.130 0.123
+100: 9.37e+02 4.66e+02     684989          0  4.00   0    791    129   2566 0.123 0.111 0.115
+Removed the cell overlaps --- Will do neighbor interchanges only now
+
+TOTAL INTERCONNECT LENGTH: 684988.6
+
+BLOCK   LENGTHS ORIG_DESIRE    OVER/UNDER       MIN       MAX    DESIRE DEVIATION DESIRE_DEV
+   1       858       875       -18  -2.0%       862       889       875       -18         0
+   2       862       875       -13  -1.5%       862       889       875       -13         0
+   3       864       875       -11  -1.3%       862       889       875       -11         0
+   4       862       875       -13  -1.5%       862       889       875       -13         0
+   5       864       875       -11  -1.3%       862       889       875       -11         0
+   6       872       875        -3  -0.4%       862       889       875        -3         0
+   7       862       875       -13  -1.5%       862       889       875       -13         0
+   8       867       875        -8  -0.9%       862       889       875        -8         0
+   9       880       875         5   0.5%       862       889       875         5         0
+  10       885       875         9   1.1%       862       889       875         9         0
+  11       866       875       -10  -1.1%       862       889       875       -10         0
+  12       877       875         1   0.2%       862       889       875         1         0
+  13       885       875         9   1.1%       862       889       875         9         0
+  14       874       875        -2  -0.2%       862       889       875        -2         0
+  15       877       875         1   0.2%       862       889       875         1         0
+  16       875       875        -0  -0.0%       862       889       875        -0         0
+  17       886       875        11   1.3%       862       889       875        11         0
+  18       875       875        -0  -0.0%       862       889       875        -0         0
+  19       885       875         9   1.1%       862       889       875         9         0
+  20       880       875         5   0.5%       862       889       875         5         0
+  21       885       875         9   1.1%       862       889       875         9         0
+  22       880       875         5   0.5%       862       889       875         5         0
+  23       872       875        -3  -0.4%       862       889       875        -3         0
+  24       869       875        -7  -0.8%       862       889       875        -7         0
+  25       885       875         9   1.1%       862       889       875         9         0
+  26       877       875         1   0.2%       862       889       875         1         0
+  27       888       875        13   1.4%       862       889       875        13         0
+  28       882       875         6   0.7%       862       889       875         6         0
+  29       886       875        11   1.3%       862       889       875        11         0
+  30       885       875         9   1.1%       862       889       875         9         0
+  31       888       875        13   1.4%       862       889       875        13         0
+  32       872       875        -3  -0.4%       862       889       875        -3         0
+  33       886       875        11   1.3%       862       889       875        11         0
+  34       888       875        13   1.4%       862       889       875        13         0
+  35       878       875         3   0.3%       862       889       875         3         0
+  36       875       875        -0  -0.0%       862       889       875        -0         0
+  37       864       875       -11  -1.3%       862       889       875       -11         0
+  38       883       875         8   0.9%       862       889       875         8         0
+  39       886       875        11   1.3%       862       889       875        11         0
+  40       875       875        -0  -0.0%       862       889       875        -0         0
+  41       885       875         9   1.1%       862       889       875         9         0
+  42       866       875       -10  -1.1%       862       889       875       -10         0
+  43       866       875       -10  -1.1%       862       889       875       -10         0
+  44       862       875       -13  -1.5%       862       889       875       -13         0
+  45       862       875       -13  -1.5%       862       889       875       -13         0
+The longest row is:34, its length:888, deviation is:12.6
+The shortest row is:1, its length:857.6 Unevenness:30.4 3.54%
+
+iter     T      Wire      Time   accept
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (-4,-21.3) (888,921.3).
+Adjusted padring: (-4,-21.3) (892,921.3).
+
+134  0.001     683737          0       6%
+135  0.001     683737          0       (no fixed constraint processing)
+135  0.001     675484          0      14%
+136  0.001     674972          0       6%
+137  0.001     673874          0       8%
+138  0.001     673745          0       6%
+139  0.001     673594          0       6%
+
+
+Annealing information:
+Iteration         Temp        Temp2      Totalcost           Wire  Sparebin      Time     TimeC   row  flips  pairflips  reject    accept   accept2     ratio
+---------  -----------  -----------  -------------  -------------  --------  --------  --------  ----  -----  ---------  ------  --------  --------  --------
+       85  2172.084554  1906.685217  804876.200000  804876.200000  0.000000  0.000000  4.000000  1632    495        495    2846  0.285508  0.274356  0.322757
+       86  1684.981012  1521.397925  790367.100000  790367.100000  0.000000  0.000000  4.000000  1848    462        462    2728  0.306137  0.306880  0.301280
+       87  2308.931867  1314.236046  773917.900000  773917.900000  0.000000  0.000000  4.000000  1657    433        433    2768  0.272953  0.284606  0.281232
+       88  2184.897494  1282.737902  758751.300000  758751.300000  0.000000  0.000000  4.000000  1579    398        398    2648  0.262944  0.262077  0.262517
+       89  1764.904370  1019.951465  747066.000000  747066.000000  0.000000  0.000000  4.000000  1501    379        379    2638  0.249233  0.250448  0.245049
+       90  1843.715288   945.317850  736120.200000  736120.200000  0.000000  0.000000  4.000000  1423    318        318    2733  0.226704  0.230190  0.228742
+       91  1809.355866   880.225661  729399.500000  729399.500000  0.000000  0.000000  4.000000  1331    291        291    2555  0.213650  0.214508  0.213521
+       92  1829.709129   783.859410  723068.800000  723068.800000  0.000000  0.000000  4.000000  1255    251        251    2591  0.198096  0.202008  0.199312
+       93  1362.454588   790.037513  714653.000000  714653.000000  0.000000  0.000000  4.000000  1195    250        250    2499  0.192622  0.184713  0.186049
+       94  1369.674484   811.349922  712260.700000  712260.700000  0.000000  0.000000  4.000000  1106    220        220    2563  0.172264  0.172640  0.173669
+       95  1065.493683   522.201811  704238.100000  704238.100000  0.000000  0.000000  4.000000  1106    213        213    2723  0.167522  0.174342  0.162113
+       96  1156.948992   521.169480  699602.100000  699602.100000  0.000000  0.000000  4.000000   972    203        203    2559  0.148703  0.151008  0.151325
+       97   937.875576   465.904386  694935.800000  694935.800000  0.000000  0.000000  4.000000   933    192        192    2626  0.145617  0.144635  0.141255
+       98  1064.605662   462.789907  690458.600000  690458.600000  0.000000  0.000000  4.000000   902    132        132    2657  0.128102  0.130717  0.131856
+       99   792.309234   615.675369  688341.400000  688341.400000  0.000000  0.000000  4.000000   859    117        117    2662  0.129883  0.115186  0.123082
+      100   937.291066   465.842362  684988.600000  684988.600000  0.000000  0.000000  4.000000   791    129        129    2566  0.110567  0.122661  0.114891
+
+
+[output]:output core with 0 errors and 0 warnings.
+
+
+[neighborhood_report]:No neighborhood constraints.
+
+
+
+FINAL CLUSTERED INTERCONNECT LENGTH:673593.8
+MAX NUMBER OF ATTEMPTED FLIPS PER T:7325
+
+Statistics:
+Number of Standard Cells: 1465
+Number of Macros: 0 
+Number of Pads: 319 
+Number of PadGroups: 0 
+Number of Instances: 1784 
+Number of Nets: 2423 
+Number of Pins: 10107 
+Number of Implicit Feed Thrus: 319
+
+
+Runtime Statistics
+-------------------------
+Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+Machine type: Darwin
+Date        : Tue Oct 22 14:00:35 2019
+
+User    time:   0.8 seconds
+System  time:   0.1 seconds
+Elapsed time:  15.2 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =    6727680B (6570KB)
+Virtual memory size              =    4249600K (4150MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =     7028240 (6863KB)
+Current heap size                =     6975136 (6811KB)
+
+Major page faults = 0
+Minor page faults = 4770
+Swaps = 0
+
+Input blocks = 0
+Output blocks = 8
+
+Context switch (voluntary) = 2187
+Context switch (involuntary) = 288
+
+time 1571770835 Tue Oct 22 14:00:35 2019:iplacesc completed...
+
+iplacesc.v1 terminated normally with no errors and 9 warning[s] (status arg:1024 status:0 status given:1024) 
+
+time 1571770835 Tue Oct 22 14:00:35 2019:iplacesc.v1 exits 0 errors 9 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place/p1/stage1 HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80864
+
+####################################################
+time 1571770835 Tue Oct 22 14:00:35 2019:iplacesc.v1 started...
+@ /Users/bill/version1/itools/bin/Darwin/iplacesc.v1 -c -v -w 29360140 -R 1520708458 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80881 PVERSION v2.0.0pre46
+
+Row-Based Placement Program
+
+iplacesc.v1 version:v2.0.0pre46
+iTools/TimberWolf compilation:Mon Oct 14 19:37:27 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplacesc.v1 switches:
+	Graphics mode on
+	Will read cluster netlist
+	First iteration:100
+	Verbose mode on
+
+
+
+Options specified:
+adaptive_row_spacing     : 0
+add_feeds                : off
+add_rigid_spacers        : on
+adjust_cell_offset       : on
+adjust_gate_array_rows   : on
+alignment_tolerance      : 0
+allow_long_rows          : off
+allow_uneven_rows        : off
+allow_pad_overlap        : off
+autodetect_script        : off
+auto_row_lengths         : default (on but off for complex rows)
+auto_wire_weight         : on
+background               : white
+bendcost_threshold       : 0.000 (default) 
+buffer_timing            : on
+calc_row_index           : off
+check_overlap            : on
+check_pin_access         : on
+check_ports              : off
+cluster                  : on
+cluster_priority         : off
+cluster_split_param      : default (calculated)
+cluster_split_weight     : 1000.00
+compact_ports            : autodetect
+compact_port_algorithm   : 3
+compress_files           : off
+contiguous_pad_groups    : on
+convert_paths_to_pinpairs: off
+core_to_padspace         : 2 2 2 2
+corner_pads              : on
+cost_obstacles           : on
+cost_only                : off
+cover_cell_transparent   : off
+create_pl1in_instances   : off
+default_pin_capacitance  : (20.00 fF)
+design_style             : stdcell
+eco_autodetect           : off
+eco_buffer_tree          : off
+eco_constraint_factor    : -1
+eco_constraint_xfactor   : -1.00 relative
+eco_driver_weight        : 1
+eco_ignore_version       : off
+eco_placement_improve    : off
+eco_preview              : off
+eco_start_iteration      : 100
+eco_use_pl1_in_data      : on
+equalize_rows            : off
+even_placement           : off
+except_threshold         : default
+exit_on_error            : off
+fast                     : 10
+fix_orientation_problems : on
+fix_side_pin_access      : off
+gate_array_exit          : off
+gate_array_spacer        : ~TWSPACER
+graphics                 : on
+grid                     : none
+horizontal_path_weight   : 0.037 (calculated)
+horizontal_weight        : 1.000
+ignore_feeds             : off
+ignore_keepouts          : on
+iterate                  : off
+iterate_debug            : off
+iterate_script           : default
+large_net_threshold      : 100
+load balancing           : off
+merge_port_layers        : autodetected
+minimum_pad_space        : calculated
+net_reporting            : on
+orientation_optimization : off
+overlap_algorithm        : ordered
+overlap_mode             : left_justify
+padspacing               : uniform
+over_the_cell_feed_layer : default
+parallel_daemons         : on
+parallel_debug           : off
+parallel execution       : off
+parallel_row_update      : default
+parallel_slave_graphics  : off
+parallel timeout         : 0
+parallel_remote_start    : on
+path_detail_limit        : 10
+pdef_factor              : 10.000
+pdef_filename            : default
+pin_layers               : default
+power_domain_attempts    : 4
+power_domain_height      : 0
+power_domain_isolation   : on
+power_domain_spacing     : 0
+power_domain_width       : 0
+power_domain_exec        : off
+power_domain_start       : default
+power_domain_weight      : 1
+pre_equalize_rows        : off
+precision_row_control    : default
+preload_rows             : off
+probe_offset             : 0
+processor limit          : unlimited
+process_model_pins       : on
+prune_amount             : default
+quench                   : off
+random_seed              : 1520708458
+relax_pin_access         : off
+require_vias             : on
+restart                  : cluster
+restrict_ports_to_channel: off
+row_blockage_percent     : 50.000
+row_definitions          : fixed
+row_var_percent          : 0.000
+save_file                : on
+scale                    : 10.00
+schematic_ordering       : off
+script                   : none
+shared_boundary_opt      : on
+slow                     : 0
+soft_fold_weight         : 1.00
+spare_columns            : 5 (default)
+spare_extent             : 1.000000 1.000000 (default)
+spare_place_gravity      : on
+spare_place_globals      : 2
+spare_global_weight      : 1.00
+stage termination        : 0
+steiner_wire_length      : off
+strict_row_constraints   : off
+taper_percentage         : 0.100
+time_factor              : 3.000
+time_update              : 5 (default)
+timeout                  : none
+track.pitch              : 2
+uniform_spacer_algorithm : FIXED
+unlap_max_checking       : off
+update_overlap           : 0
+use_initial_placement    : off
+vertical_path_weight     : 1.000 (user supplied)
+vertical_wire_weight     : 1.000
+zsa_read_pth             : off
+% Reading .slib, .sckt, and .scon files...
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+no syntax errors in library:riscv.slib
+no syntax errors in physical description.
+no syntax problem in circuit file.
+no syntax errors in netlist description.
+Reading constraint file riscv.scon...
+done reading constraint file. No syntax errors.
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:metal2 pitch:1.6 offset:0.8
+Pin layers:
+layer:metal2 pitch:1.6 offset:0.8
+
+
+Core cells will be gridded based on site information present
+in the riscv.con file.
+xgrid:1.6 xoffset:0
+
+Need timing graph...no
+[autodetect_port_layers]:didn't autodetect port layers.
+median:6.4
+
+[cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+
+
+
+total cell length: 39401.6
+total block length: 39402
+rowSep                  : 0.000
+
+
+[auto_wire_weight]:vertical_wire_weight has been set by user.
+Effective row separation has been set to 1.00
+Modified vertical wire weight has been set to 1000000.00
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (888,900).
+Adjusted padring: (-4,-4) (888,904).
+
+block x-span:875.6  block y-span:900
+
+
+TIMING FACTOR (COMPUTED) : 4.000000
+Original Average Cell Width:8.0
+average_cell_width is:8.03786
+standard deviation of cell length is:7.12225
+narrowest standard cell:3.2
+widest standard cell:35.2
+average row length:875.6
+Normal row control algorithm.
+ratio:11
+
+Row-based Cell Distribution: 
+[ 1- 10] (     3.2      6.4) :12.322  0.000  0.000  0.000  0.000 24.847  0.000  0.000  0.000  0.000 
+[11- 20] (     6.7      9.6) :41.024  0.000  0.000  0.000  0.000  2.632  0.000  0.000  0.000  0.000 
+[21- 30] (     9.9     12.8) : 4.712  0.000  0.000  0.000  0.000  4.386  0.000  0.000  0.000  0.000 
+[31- 40] (    13.1       16) : 1.958  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[41- 50] (    16.3     19.2) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[51- 60] (    19.5     22.4) : 2.734  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[61- 70] (    22.7     25.6) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[71- 80] (    25.9     28.8) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[81- 90] (    29.1       32) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[91-100] (    32.3     35.2) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  5.386 
+Bin width:12.80 smallest:128 => largest:1408
+
+Cluster input complete...
+
+[calc_stat]:Average cluster size = 22.1, dev = 20.1
+Range limiter = 22.1, starting TG=10.000000
+raw bin width :24.1
+adjusted bin width :12.8
+number of x bins    :84
+number of y bins    :0
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 708526.1
+
+[findcost]:the large and non-global ignored nets:
+WARNING[findcost]:Large net <rst> has 266 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 232 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <clk> has 399 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h1> has 264 pins exceeding threshold and is now IGNORED.
+
+[findcost]:The active global nets:	NONE
+
+[findcost]:The defined global nets but not present in netlist:	NONE
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 3016
+The number of nets with 3 pins is 1032
+The number of nets with 4 pins is 357
+The number of nets with 5 pins is 185
+The number of nets with 6 pins is 97
+The number of nets with 7 pins is 34
+The number of nets with 8 pins is 23
+The number of nets with 9 pins is 16
+The number of nets with 10 pins is 14
+The number of nets with 11 pins is 249
+The number of nets with 12 pins is 1
+The number of nets with 15 pins is 1
+The number of nets with 16 pins is 1
+The number of nets with 21 pins is 1
+The number of nets with 25 pins is 1
+The number of nets with 32 pins is 1
+The number of nets with 36 pins is 1
+The number of nets with 39 pins is 1
+The number of nets with 100 pins or more is 4
+Average number of pins per net = 3.119762
+The maximum number of pins on a single net is:399
+
+Pad information:
+Core: (0,0) (875.6,900).
+Padring: (-4,-21.3) (888,921.3).
+Die: (-21.3,-22) (896.9,922).
+
+
+Percentage of Nets Connecting to at least 2 cells:1.00
+Percentage of Nets Connecting to at least 3 cells:0.40
+Percentage of Nets Connecting to at least 4 cells:0.19
+Percentage of Nets Connecting to at least 5 cells:0.12
+Percentage of Nets Connecting to at least 6 cells:0.09
+
+mean row var width :4.0
+block:   1 (0,0) (875.6,20) desire:875.6 val:12.1
+block:   2 (0,20) (875.6,40) desire:875.6 val:12.1
+block:   3 (0,40) (875.6,60) desire:875.6 val:12.1
+block:   4 (0,60) (875.6,80) desire:875.6 val:12.1
+block:   5 (0,80) (875.6,100) desire:875.6 val:12.1
+block:   6 (0,100) (875.6,120) desire:875.6 val:12.1
+block:   7 (0,120) (875.6,140) desire:875.6 val:12.1
+block:   8 (0,140) (875.6,160) desire:875.6 val:12.1
+block:   9 (0,160) (875.6,180) desire:875.6 val:12.1
+block:  10 (0,180) (875.6,200) desire:875.6 val:12.1
+block:  11 (0,200) (875.6,220) desire:875.6 val:12.1
+block:  12 (0,220) (875.6,240) desire:875.6 val:12.1
+block:  13 (0,240) (875.6,260) desire:875.6 val:12.1
+block:  14 (0,260) (875.6,280) desire:875.6 val:12.1
+block:  15 (0,280) (875.6,300) desire:875.6 val:12.1
+block:  16 (0,300) (875.6,320) desire:875.6 val:12.1
+block:  17 (0,320) (875.6,340) desire:875.6 val:12.1
+block:  18 (0,340) (875.6,360) desire:875.6 val:12.1
+block:  19 (0,360) (875.6,380) desire:875.6 val:12.1
+block:  20 (0,380) (875.6,400) desire:875.6 val:12.1
+block:  21 (0,400) (875.6,420) desire:875.6 val:12.1
+block:  22 (0,420) (875.6,440) desire:875.6 val:12.1
+block:  23 (0,440) (875.6,460) desire:875.6 val:12.1
+block:  24 (0,460) (875.6,480) desire:875.6 val:12.1
+block:  25 (0,480) (875.6,500) desire:875.6 val:12.1
+block:  26 (0,500) (875.6,520) desire:875.6 val:12.1
+block:  27 (0,520) (875.6,540) desire:875.6 val:12.1
+block:  28 (0,540) (875.6,560) desire:875.6 val:12.1
+block:  29 (0,560) (875.6,580) desire:875.6 val:12.1
+block:  30 (0,580) (875.6,600) desire:875.6 val:12.1
+block:  31 (0,600) (875.6,620) desire:875.6 val:12.1
+block:  32 (0,620) (875.6,640) desire:875.6 val:12.1
+block:  33 (0,640) (875.6,660) desire:875.6 val:12.1
+block:  34 (0,660) (875.6,680) desire:875.6 val:12.1
+block:  35 (0,680) (875.6,700) desire:875.6 val:12.1
+block:  36 (0,700) (875.6,720) desire:875.6 val:12.1
+block:  37 (0,720) (875.6,740) desire:875.6 val:12.1
+block:  38 (0,740) (875.6,760) desire:875.6 val:12.1
+block:  39 (0,760) (875.6,780) desire:875.6 val:12.1
+block:  40 (0,780) (875.6,800) desire:875.6 val:12.1
+block:  41 (0,800) (875.6,820) desire:875.6 val:12.1
+block:  42 (0,820) (875.6,840) desire:875.6 val:12.1
+block:  43 (0,840) (875.6,860) desire:875.6 val:12.1
+block:  44 (0,860) (875.6,880) desire:875.6 val:12.1
+block:  45 (0,880) (875.6,900) desire:875.6 val:12.1
+Total Desired Length:39402
+
+101  0.001     694914          0      13%
+THIS IS THE ROUTE COST OF THE MODIFIED PLACEMENT: 694914.4
+bdxlen:875.6  bdylen:900
+l:0  t:900  r:875.6  b:0
+
+
+
+THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 694914.4
+Attempts per iteration:39216
+
+Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc
+100: 1.34e+02 6.24e+02     709531          0  4.00   0   3436    457   4873 0.088 0.095 0.115
+101: 1.18e+02 5.58e+02     699883          0  4.00   0   4195    526   4937 0.110 0.111 0.107
+102: 1.02e+02 4.97e+02     689827          0  4.00   0   3982    509   4880 0.103 0.104 0.100
+103: 9.82e+01 5.17e+02     679632          0  4.00   0   3587    453   5016 0.092 0.095 0.093
+104: 9.74e+01 4.69e+02     675822          0  4.00   0   3458    411   4798 0.090 0.087 0.087
+105: 9.16e+01 4.63e+02     670249          0  4.00   0   3287    371   4780 0.082 0.083 0.081
+106: 8.55e+01 4.34e+02     665065          0  4.00   0   3133    339   5270 0.077 0.078 0.076
+107: 7.72e+01 4.10e+02     660208          0  4.00   0   2921    329   4767 0.072 0.074 0.071
+108: 7.23e+01 3.92e+02     655765          0  4.00   0   2794    293   5169 0.067 0.068 0.066
+109: 7.41e+01 4.02e+02     651237          0  4.00   1   2600    241   5324 0.061 0.061 0.062
+110: 7.93e+01 3.99e+02     649714          0  4.00   0   2397    240   5289 0.058 0.056 0.058
+111: 7.19e+01 3.91e+02     648909          0  4.00   0   2359    226   5360 0.054 0.056 0.054
+112: 4.97e+01 3.49e+02     645180          0  4.00   0   2404    245   5190 0.053 0.061 0.050
+113: 5.00e+01 3.40e+02     641743          0  4.00   2   2130    175   5790 0.048 0.047 0.047
+114: 5.25e+01 3.47e+02     638757          0  4.00   0   1946    172   5619 0.043 0.043 0.044
+115: 5.52e+01 3.22e+02     637312          0  4.00   0   1928    137   5835 0.043 0.040 0.041
+116: 5.50e+01 3.18e+02     636136          0  4.00   0   1836    109   5743 0.038 0.038 0.038
+117: 5.56e+01 2.90e+02     634128          0  4.00   0   1759    124   6038 0.038 0.035 0.036
+118: 5.31e+01 2.85e+02     632334          0  4.00   0   1645     99   6165 0.034 0.034 0.033
+119: 5.51e+01 2.84e+02     631812          0  4.00   0   1500     97   6233 0.031 0.030 0.031
+120: 5.79e+01 2.73e+02     630424          0  4.00   0   1458     91   6290 0.030 0.028 0.029
+121: 5.11e+01 2.61e+02     629251          0  4.00   1   1458     78   6335 0.028 0.029 0.027
+122: 4.78e+01 2.35e+02     628124          0  4.00   0   1393     78   6345 0.028 0.026 0.024
+123: 4.49e+01 2.28e+02     627137          0  4.00   0   1256     55   6423 0.023 0.023 0.022
+124: 4.41e+01 2.35e+02     626500          0  4.00   0   1165     60   6475 0.019 0.020 0.020
+125: 4.08e+01 2.04e+02     626334          0  4.00   0   1145     53   6299 0.022 0.019 0.017
+126: 3.65e+01 1.91e+02     625523          0  4.00   0   1033     54   6286 0.017 0.017 0.015
+127: 3.11e+01 1.67e+02     624415          0  4.00   0   1008     44   6298 0.017 0.016 0.013
+128: 2.88e+01 1.46e+02     623613          0  4.00   0    874     34   6251 0.015 0.012 0.010
+129: 2.46e+01 1.31e+02     622726          0  4.00   0    784     40   6329 0.012 0.012 0.008
+130: 1.89e+01 1.15e+02     622341          0  4.00   0    769     37   6261 0.010 0.012 0.006
+131: 1.50e+01 1.02e+02     621767          0  4.00   0    668     35   6277 0.008 0.009 0.003
+132: 1.16e+01 8.20e+01     620972          0  4.00   0    598     29   6150 0.008 0.007 0.001
+133: 9.09e+00 6.56e+01     620372          0  4.00   0    586     23   6312 0.007 0.006 0.000
+Removed the cell overlaps --- Will do neighbor interchanges only now
+
+TOTAL INTERCONNECT LENGTH: 620372.2
+
+BLOCK   LENGTHS ORIG_DESIRE    OVER/UNDER       MIN       MAX    DESIRE DEVIATION DESIRE_DEV
+   1       859       876       -16  -1.9%       872       880       876       -16         0
+   2       864       876       -12  -1.3%       872       880       876       -12         0
+   3       866       876       -10  -1.1%       872       880       876       -10         0
+   4       866       876       -10  -1.1%       872       880       876       -10         0
+   5       867       876        -8  -1.0%       872       880       876        -8         0
+   6       870       876        -5  -0.6%       872       880       876        -5         0
+   7       870       876        -5  -0.6%       872       880       876        -5         0
+   8       872       876        -4  -0.4%       872       880       876        -4         0
+   9       872       876        -4  -0.4%       872       880       876        -4         0
+  10       874       876        -2  -0.2%       872       880       876        -2         0
+  11       878       876         3   0.3%       872       880       876         3         0
+  12       878       876         3   0.3%       872       880       876         3         0
+  13       878       876         3   0.3%       872       880       876         3         0
+  14       878       876         3   0.3%       872       880       876         3         0
+  15       878       876         3   0.3%       872       880       876         3         0
+  16       878       876         3   0.3%       872       880       876         3         0
+  17       878       876         3   0.3%       872       880       876         3         0
+  18       880       876         4   0.5%       872       880       876         4         0
+  19       880       876         4   0.5%       872       880       876         4         0
+  20       880       876         4   0.5%       872       880       876         4         0
+  21       880       876         4   0.5%       872       880       876         4         0
+  22       880       876         4   0.5%       872       880       876         4         0
+  23       882       876         6   0.7%       872       880       876         6         0
+  24       880       876         4   0.5%       872       880       876         4         0
+  25       882       876         6   0.7%       872       880       876         6         0
+  26       882       876         6   0.7%       872       880       876         6         0
+  27       882       876         6   0.7%       872       880       876         6         0
+  28       882       876         6   0.7%       872       880       876         6         0
+  29       882       876         6   0.7%       872       880       876         6         0
+  30       882       876         6   0.7%       872       880       876         6         0
+  31       882       876         6   0.7%       872       880       876         6         0
+  32       880       876         4   0.5%       872       880       876         4         0
+  33       880       876         4   0.5%       872       880       876         4         0
+  34       878       876         3   0.3%       872       880       876         3         0
+  35       874       876        -2  -0.2%       872       880       876        -2         0
+  36       878       876         3   0.3%       872       880       876         3         0
+  37       877       876         1   0.1%       872       880       876         1         0
+  38       874       876        -2  -0.2%       872       880       876        -2         0
+  39       875       876        -0  -0.0%       872       880       876        -0         0
+  40       872       876        -4  -0.4%       872       880       876        -4         0
+  41       872       876        -4  -0.4%       872       880       876        -4         0
+  42       874       876        -2  -0.2%       872       880       876        -2         0
+  43       870       876        -5  -0.6%       872       880       876        -5         0
+  44       869       876        -7  -0.8%       872       880       876        -7         0
+  45       867       876        -8  -1.0%       872       880       876        -8         0
+The longest row is:31, its length:881.6, deviation is:6
+The shortest row is:1, its length:859.2 Unevenness:22.4 2.61%
+
+iter     T      Wire      Time   accept
+135  0.001     620372          0       (no fixed constraint processing)
+135  0.001     618958          0       0%  after mopt
+135  0.001     618873          0       1%
+136  0.001     618610          0       2%
+137  0.001     618387          0       0%  after mopt
+137  0.001     618335          0       0%
+138  0.001     618272          0       2%
+139  0.001     618201          0       0%  after mopt
+139  0.001     618196          0       0%
+140  0.001     618143          0       2%
+
+
+Annealing information:
+Iteration        Temp       Temp2      Totalcost           Wire  Sparebin      Time     TimeC   row  flips  pairflips  reject    accept   accept2     ratio
+---------  ----------  ----------  -------------  -------------  --------  --------  --------  ----  -----  ---------  ------  --------  --------  --------
+      100  134.395656  624.191060  709530.800000  709530.800000  0.000000  0.000000  4.000000  3436    457        457    4873  0.094751  0.087776  0.114891
+      101  117.840256  557.900742  699883.400000  699883.400000  0.000000  0.000000  4.000000  4195    526        526    4937  0.110997  0.109787  0.107246
+      102  102.395910  497.348119  689826.900000  689826.900000  0.000000  0.000000  4.000000  3982    509        509    4880  0.103837  0.102794  0.100109
+      103   98.159948  517.289900  679632.200000  679632.200000  0.000000  0.000000  4.000000  3587    453        453    5016  0.094559  0.092355  0.093448
+      104   97.371556  468.509658  675821.900000  675821.900000  0.000000  0.000000  4.000000  3458    411        411    4798  0.087364  0.089511  0.087229
+      105   91.594308  462.559721  670249.100000  670249.100000  0.000000  0.000000  4.000000  3287    371        371    4780  0.083255  0.081966  0.081425
+      106   85.455027  433.971891  665065.100000  665065.100000  0.000000  0.000000  4.000000  3133    339        339    5270  0.077946  0.077341  0.076007
+      107   77.228735  410.256547  660208.500000  660208.500000  0.000000  0.000000  4.000000  2921    329        329    4767  0.073817  0.072492  0.070949
+      108   72.319732  392.407376  655764.900000  655764.900000  0.000000  0.000000  4.000000  2794    293        293    5169  0.068018  0.067338  0.066228
+      109   74.071985  402.188528  651237.300000  651237.300000  0.000000  0.000000  4.000000  2600    241        241    5324  0.061143  0.061051  0.061821
+      110   79.251644  398.805557  649713.700000  649713.700000  0.000000  0.000000  4.000000  2397    240        240    5289  0.055862  0.057856  0.057707
+      111   71.854744  391.318576  648909.300000  648909.300000  0.000000  0.000000  4.000000  2359    226        226    5360  0.056398  0.054314  0.053867
+      112   49.667822  349.002620  645180.200000  645180.200000  0.000000  0.000000  4.000000  2404    245        245    5190  0.060527  0.053198  0.050282
+      113   50.009410  340.156185  641743.400000  641743.400000  0.000000  0.000000  4.000000  2130    175        175    5790  0.046792  0.047678  0.046936
+      114   52.458357  347.453697  638756.800000  638756.800000  0.000000  0.000000  4.000000  1946    172        172    5619  0.042545  0.043195  0.043813
+      115   55.193580  321.852871  637311.900000  637311.900000  0.000000  0.000000  4.000000  1928    137        137    5835  0.039688  0.043187  0.040898
+      116   55.013705  318.346765  636136.500000  636136.500000  0.000000  0.000000  4.000000  1836    109        109    5743  0.038163  0.038498  0.038176
+      117   55.580414  289.967144  634127.800000  634127.800000  0.000000  0.000000  4.000000  1759    124        124    6038  0.035345  0.038432  0.035636
+      118   53.092820  285.364032  632333.700000  632333.700000  0.000000  0.000000  4.000000  1645     99         99    6165  0.034448  0.033818  0.033264
+      119   55.141082  284.213934  631812.400000  631812.400000  0.000000  0.000000  4.000000  1500     97         97    6233  0.030103  0.031200  0.031051
+      120   57.862688  273.151625  630423.600000  630423.600000  0.000000  0.000000  4.000000  1458     91         91    6290  0.027653  0.030178  0.028846
+      121   51.056426  260.674294  629250.700000  629250.700000  0.000000  0.000000  4.000000  1458     78         78    6335  0.029444  0.028045  0.026538
+      122   47.825588  234.580745  628124.500000  628124.500000  0.000000  0.000000  4.000000  1393     78         78    6345  0.025708  0.027635  0.024231
+      123   44.877331  228.006269  627136.800000  627136.800000  0.000000  0.000000  4.000000  1256     55         55    6423  0.023315  0.022772  0.021923
+      124   44.123496  234.721856  626499.600000  626499.600000  0.000000  0.000000  4.000000  1165     60         60    6475  0.020010  0.018668  0.019615
+      125   40.843961  203.750426  626334.400000  626334.400000  0.000000  0.000000  4.000000  1145     53         53    6299  0.019003  0.021784  0.017308
+      126   36.528371  191.015592  625523.100000  625523.100000  0.000000  0.000000  4.000000  1033     54         54    6286  0.017493  0.017013  0.015000
+      127   31.081656  166.873445  624414.900000  624414.900000  0.000000  0.000000  4.000000  1008     44         44    6298  0.016346  0.017136  0.012692
+      128   28.794235  146.476215  623613.200000  623613.200000  0.000000  0.000000  4.000000   874     34         34    6251  0.012125  0.014538  0.010385
+      129   24.573134  130.646547  622725.800000  622725.800000  0.000000  0.000000  4.000000   784     40         40    6329  0.011634  0.011763  0.008077
+      130   18.924585  115.421492  622341.000000  622341.000000  0.000000  0.000000  4.000000   769     37         37    6261  0.011617  0.009833  0.005769
+      131   15.043266  101.572821  621767.200000  621767.200000  0.000000  0.000000  4.000000   668     35         35    6277  0.008667  0.007568  0.003462
+      132   11.609981   82.010219  620971.800000  620971.800000  0.000000  0.000000  4.000000   598     29         29    6150  0.007005  0.008188  0.001154
+      133    9.090248   65.582605  620372.200000  620372.200000  0.000000  0.000000  4.000000   586     23         23    6312  0.005538  0.007350  0.000000
+
+
+[output]:output core with 0 errors and 0 warnings.
+
+
+[neighborhood_report]:No neighborhood constraints.
+
+FINAL TOTAL INTERCONNECT LENGTH (UNWEIGHTED):625165.2 X:301669.6 Y:323495.6
+
+
+FINAL TOTAL INTERCONNECT LENGTH:618142.6
+MAX NUMBER OF ATTEMPTED FLIPS PER T:24510
+
+Statistics:
+Number of Standard Cells: 4902
+Number of Macros: 0 
+Number of Pads: 319 
+Number of PadGroups: 0 
+Number of Instances: 5221 
+Number of Nets: 5039 
+Number of Pins: 26992 
+Number of Implicit Feed Thrus: 10123
+
+
+Runtime Statistics
+-------------------------
+Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+Machine type: Darwin
+Date        : Tue Oct 22 14:00:53 2019
+
+User    time:   4.0 seconds
+System  time:   0.2 seconds
+Elapsed time:  17.9 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =    8804352B (8598KB)
+Virtual memory size              =    4259840K (4160MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =     9302272 (9084KB)
+Current heap size                =     8970224 (8759KB)
+
+Major page faults = 0
+Minor page faults = 5764
+Swaps = 0
+
+Input blocks = 0
+Output blocks = 21
+
+Context switch (voluntary) = 4334
+Context switch (involuntary) = 611
+
+time 1571770853 Tue Oct 22 14:00:53 2019:iplacesc completed...
+
+iplacesc.v1 terminated normally with no errors and 8 warning[s] (status arg:1024 status:0 status given:1024) 
+
+time 1571770853 Tue Oct 22 14:00:53 2019:iplacesc.v1 exits 0 errors 8 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf/place HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80881
+
+####################################################
+time 1571770853 Tue Oct 22 14:00:53 2019:iplace.control ended...
+@ /Users/bill/version1/itools/bin/Darwin/iplacesc -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80798 PVERSION v2.0.0pre46
+
+iplacesc terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+
+iplacesc terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770853 Tue Oct 22 14:00:53 2019:iplacesc exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80798
+
+[twplace]:placement completed.
+
+itranslate terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1571770854 Tue Oct 22 14:00:54 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80912 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.tdo...
+Welcome to the TimberWolf SimCTS Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../place/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[cts]:reading LEF file:../../osu035.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../place/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[cts]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../place/output ...
+[::utdtools::search_input]:found... creating link to ../place/output/riscv.def...link:riscv.def
+    components:4902
+[convert_sites_to_rows]:45 rows found.
+    nets:5039
+WARNING[sites_available]:Did not find 4 pad sites.
+[icread_def]:../place/output/riscv.def read.
+[compact_rows]:Number of rows compacted from 45 to 45.
+[write_con]:riscv.con written.
+[write_ckt]:riscv.ckt written.
+[icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+[icwrite_lib]:riscv.lib written.
+[write_par]:riscv.par written.
+
+itranslate terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1571770854 Tue Oct 22 14:00:54 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80925 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.gdo...
+Welcome to the TimberWolf SimGrouter Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../cts/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[grouter]:reading LEF file:../../osu035.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../cts/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[grouter]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cts/output ...
+[::utdtools::search_input]:found... creating link to ../cts/output/riscv.def...link:riscv.def
+[grouter]:reading DEF file:../cts/output/riscv.def
+    components:4902
+[convert_sites_to_rows]:45 rows found.
+    nets:5039
+WARNING[sites_available]:Did not find 4 pad sites.
+[icread_def]:../cts/output/riscv.def read.
+[icabstract]:prerouting model:AND2X1...
+[icabstract]:prerouting model:AND2X2...
+[icabstract]:prerouting model:AOI21X1...
+[icabstract]:prerouting model:AOI22X1...
+[icabstract]:prerouting model:BUFX2...
+[icabstract]:prerouting model:DFFPOSX1...
+[icabstract]:prerouting model:DFFSR...
+[icabstract]:prerouting model:INVX1...
+[icabstract]:prerouting model:INVX2...
+[icabstract]:prerouting model:MUX2X1...
+[icabstract]:prerouting model:NAND2X1...
+[icabstract]:prerouting model:NAND3X1...
+[icabstract]:prerouting model:NOR2X1...
+[icabstract]:prerouting model:NOR3X1...
+[icabstract]:prerouting model:OAI21X1...
+[icabstract]:prerouting model:OAI22X1...
+[icabstract]:prerouting model:OR2X2...
+[icabstract]:prerouting model:XNOR2X1...
+WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+[icabstract]:prerouting model:XOR2X1...
+WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+[icabstract]:successfully prerouted 19 models.
+[compact_rows]:Number of rows compacted from 45 to 45.
+[write_con]:riscv.con written.
+[write_ckt]:riscv.ckt written.
+[icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+[icwrite_lib]:riscv.iclib written.
+[icwrite_lib]:riscv.lib written.
+[write_par]:riscv.par written.
+[icwrite_placement]:riscv.pl1 written.
+
+[twplace]:global routing completed.
+
+itranslate terminated normally with no errors and 1 warning[s] (2 suppressed warnings) (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1571770911 Tue Oct 22 14:01:51 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 81129 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.ddo...
+Welcome to the TimberWolf Detailer Router Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../groute/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[drouter]:reading LEF file:../../osu035.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../groute/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[drouter]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../groute/output ...
+[::utdtools::search_input]:found... creating link to ../groute/output/riscv.def...link:riscv.def
+[drouter]:reading DEF file:../groute/output/riscv.def
+    components:8941
+[convert_sites_to_rows]:45 rows found.
+    nets:5039
+WARNING[sites_available]:Did not find 4 pad sites.
+[icread_def]:../groute/output/riscv.def read.
+[::utdtools::search_input]:input file:riscv.guide does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.guide does not exist.  Looking in ../groute/output ...
+[::utdtools::search_input]:found... creating link to ../groute/output/riscv.guide...link:riscv.guide
+[drouter]:creating guide file link:../groute/output/riscv.guide
+[icabstract]:prerouting model:AND2X1...
+[icabstract]:prerouting model:AND2X2...
+[icabstract]:prerouting model:AOI21X1...
+[icabstract]:prerouting model:AOI22X1...
+[icabstract]:prerouting model:BUFX2...
+[icabstract]:prerouting model:DFFPOSX1...
+[icabstract]:prerouting model:DFFSR...
+[icabstract]:prerouting model:INVX1...
+[icabstract]:prerouting model:INVX2...
+[icabstract]:prerouting model:MUX2X1...
+[icabstract]:prerouting model:NAND2X1...
+[icabstract]:prerouting model:NAND3X1...
+[icabstract]:prerouting model:NOR2X1...
+[icabstract]:prerouting model:NOR3X1...
+[icabstract]:prerouting model:OAI21X1...
+[icabstract]:prerouting model:OAI22X1...
+[icabstract]:prerouting model:OR2X2...
+[icabstract]:prerouting model:XNOR2X1...
+WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+[icabstract]:prerouting model:XOR2X1...
+WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+[icabstract]:successfully prerouted 19 models.
+[compact_rows]:Number of rows compacted from 45 to 45.
+[write_con]:riscv.con written.
+[write_ckt]:riscv.ckt written.
+[icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+[icwrite_lib]:riscv.iclib written.
+[icwrite_lib]:riscv.lib written.
+[write_par]:riscv.par written.
+[icwrite_placement]:riscv.pl1 written.
+
+####################################################
+time 1571780273 Tue Oct 22 16:37:53 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST android_357814049342952.utdallas.edu PID 81754 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.ado...
+Welcome to the Sim Assembly Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../droute/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[assemble]:reading LEF file:../../osu035.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../droute/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[assemble]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../droute/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[assemble]:No input file named riscv.def found. Aborting
+####################################################
+time 1571780274 Tue Oct 22 16:37:54 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST android_357814049342952.utdallas.edu PID 81788 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.mdo...
+Welcome to the Sim MetalFill Program...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../assemble/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[metalfill]:reading LEF file:../../osu035.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../assemble/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[metalfill]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../assemble/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[metalfill]:No input file named riscv.def found. Aborting
+####################################################
+time 1571780275 Tue Oct 22 16:37:55 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools HOST android_357814049342952.utdallas.edu PID 81803 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.odo...
+Welcome to the Final Output Program...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../metalfill/output ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+[final]:reading LEF file:../../osu035.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale -merge_layers
+[icread_lef]:../../osu035.lef read.
+WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../metalfill/output ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+[final]:reading Synopsys Library file:../../osu035.lib
+[icread_synopsys]:reading ../../osu035.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../metalfill/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[final]:No input file named riscv.def found. Aborting
+
+itranslate terminated abnormally with 1 error[s] and 0 warning[s] (status arg:0 status:1 status given:0) 
+

@@ -1,0 +1,11 @@
+
+	 			
+        
+
+
+module iobdg_efuse_reg (
+      fuse_reg, 
+      arst_l, fuse_clk, data_in, shift_en
+   );
+
+   parameter REG_WIDTH = ;

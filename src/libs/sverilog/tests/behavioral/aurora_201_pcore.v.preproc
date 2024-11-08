@@ -1,0 +1,50 @@
+     
+module aurora_201_pcore #
+(
+
+     parameter   SIM_GTPRESET_SPEEDUP=   0,           parameter   C_EXT_RESET_HIGH = 0
+)
+(
+        RESET,
+    USER_CLK,
+    HARD_ERROR,
+    SOFT_ERROR,
+    LANE_UP,
+    CHANNEL_UP,
+    INIT_CLK,
+    PMA_INIT,
+        TX_D,
+    TX_SRC_RDY,
+    TX_DST_RDY,
+        RX_D,
+    RX_SRC_RDY,
+        GTPD4_P,
+    GTPD4_N,
+        RXP,
+    RXN,
+    TXP,
+    TXN
+);
+        input              RESET;
+    output             USER_CLK;
+    input              INIT_CLK;
+    input              PMA_INIT;
+    output             HARD_ERROR;
+    output             SOFT_ERROR;
+    output             LANE_UP;
+    output             CHANNEL_UP;
+
+        input   [0:15]     TX_D;
+    input              TX_SRC_RDY;
+    output             TX_DST_RDY;
+
+        output  [0:15]     RX_D;
+    output             RX_SRC_RDY;
+    
+        input              GTPD4_P;
+    input              GTPD4_N;
+        input              RXP;
+    input              RXN;
+    output             TXP;
+    output             TXN;
+    reg

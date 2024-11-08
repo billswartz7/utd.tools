@@ -1,0 +1,118 @@
+
+#include <stdio.h>
+
+int fib(int n)
+{
+  int f1 = 1, f2 = -1 ;
+
+
+  for( ; n > 0 ; n-- ){
+    f1 = f1 + f2 ;
+    f2 = f1 - f2 ;
+  }
+  return ( f1 ) ;
+}
+
+Results in the following MIPS assembly code:
+
+<fib>:
+0x00:  blez   a0,a00203b8 <fib+0x2c>
+0x04:  li     a1,-1
+0x08:  j      a00203a0 <fib+0x14>
+0x0C:  li     v1,1
+0x10:  move   v1,v0
+0x14:  addiu  a0,a0,-1
+0x18:  addu   v0,v1,a1
+0x1C:  bnez   a0,a002039c <fib+0x10>
+0x20:  move   a1,v1
+0x24:  jr     ra
+0x28:  nop
+0x2C:  jr     ra
+0x30:  li     v0,1
+
+Let's look at four machines and how this code would evaluate if n == 1, that is, argument 
+register a0 is 1.   First let us figure out what would the instruction stream be with
+this argument:
+
+0x00:  blez   a0,a00203b8 <fib+0x2c>   ; not taken n = 1
+0x04:  li     a1,-1                    ; f2 = -1
+0x08:  j      a00203a0 <fib+0x14>      ; goto addiu statement
+0x0C:  li     v1,1                     ; MIPS branch delay slot f1 = 1
+0x14:  addiu  a0,a0,-1		       ; n-- ; now n = 0
+0x18:  addu   v0,v1,a1                 ; f1 = f1 + f2 = 1 + -1 = 0
+0x1C:  bnez   a0,a002039c <fib+0x10>   ; a0 == 0 so branch not taken
+0x20:  move   a1,v1		       ; f2 = f1 - f2 = v1 before add
+0x24:  jr     ra		       ; return from subroutine by restore return address
+0x28:  nop                             ; branch delay slot
+
+Notice that v0 contains 0 which is the answer to fib(1)
+
+Now let's look at how this executes on various machines.
+
+Ideal:  s + n - 1 = 5 + 10 - 1 = 14
+
+Machine one: Pipelined machine, forwarding and early branch detection.
+
+blez   a0,<fib+0x2c>  IF  ID  E  M   WB
+li     a1,-1              IF  ID E   M   WB 
+j      <fib+0x14>             IF ID* E   M   WB  ;  BTA calculated in ID. * IF of addiu avail next cycle.  IF* of addiu lines up with E of jump
+li     v1,1                      IF  ID  E   M   WB ; branch delay slot. 
+addiu  a0,a0,-1		             IF* ID  E   M   WBx
+addu   v0,v1,a1                          IF  ID  E   M   WB  ; no hazards
+bnez   a0,<fib+0x10>                             IF  IDx E   M   WB ;   data hazard on a0; x WB of addiu lines up with ID of branch.  No forwarding line here
+move   a1,v1	                                     IF  ID  E   M   WB
+jr     ra                                                IF  ID  E   M   WB
+nop                                                          IF  ID  E   M   WB
+                      1   2   3  4   5   6   7   8   9   10  11  12  13  14  15
+
+One extra cycle due to missing forwarding wire from M to ID which is not shown in this design.
+
+Machine two: Pipelined machine, forwarding but no early branch detection.
+
+blez   a0,<fib+0x2c>  IF  ID  E  M  WB
+li     a1,-1              IF  ID E  M   WB 
+j      <fib+0x14>             IF ID E*  M   WB  ;  BTA calculated in E. PC can be changed in next cycle so addiu IF lines up with M.
+li     v1,1                      IF ID  E   M   WB ; branch delay slot. 
+addiu  a0,a0,-1		            bub IF* ID  E   M   WB
+addu   v0,v1,a1                             IF  ID  E   M   WBx  ; no hazards
+bnez   a0,<fib+0x10>                            IF  ID  E    M  WB ; data hazard on a0; x WB of addiu lines up with ID of branch.  No forwarding line here
+move   a1,v1	                                    IF  IDx  E  M   WB
+jr     ra                                               IF  ID  E   M   WB
+nop                                                         IF  ID  E   M   WB
+                      1   2   3  4  5   6   7   8   9   10  11  12  13  14  15
+
+Two extra cycle due to missing forwarding wire from M to ID which is not shown in this design and extra cycle to branch wait.
+
+
+Machine three: Pipelined machine, no forwarding but early branch detection.
+
+blez   a0,<fib+0x2c>  IF  ID  E  M   WB
+li     a1,-1              IF  ID E   M   WB 
+j      <fib+0x14>             IF ID* E   M   WB  ;  BTA calculated in ID. PC can be changed in next cycle so addiu IF* lines up with E of jump.
+li     v1,1                      IF  ID  E   M   WB ; branch delay slot. 
+addiu  a0,a0,-1		             IF* ID  E   M   WB
+addu   v0,v1,a1                          IF  ID  E   M   WB  ; no hazards
+bnez   a0,<fib+0x10>                        bub IF  ID  E   M   WB ; data hazard on a0; x WB of addiu lines up with ID of branch.  No forwarding line here
+move   a1,v1	                                    IF  ID  E   M   WB
+jr     ra                                               IF  ID  E   M   WB
+nop                                                         IF  ID  E   M   WB
+                      1   2   3  4   5   6   7   8   9  10  11  12  13  14  15 
+
+One extra cycle due to missing forwarding wire from M to ID which is not shown in this design.
+
+
+Machine four: Pipelined machine, no forwarding and no early branch detection.
+
+blez   a0,<fib+0x2c>  IF  ID  E  M  WB
+li     a1,-1              IF  ID E  M   WB 
+j      <fib+0x14>             IF ID E   M   WB  ;  BTA calculated in E. PC can be changed in next cycle so addiu IF lines up with M.
+li     v1,1                      IF ID  E   M   WB ; branch delay slot. 
+addiu  a0,a0,-1		            bub IF  ID  E   M   WB
+addu   v0,v1,a1                             IF  ID  E   M   WB  ; no hazards
+bnez   a0,<fib+0x10>                            bub IF  ID  E   M   WB ; data hazard on a0; WB of addiu lines up with ID of branch.  No forwarding line here
+move   a1,v1	                                        IF  ID  E   M   WB
+jr     ra                                                   IF  ID  E   M   WB
+nop                                                             IF  ID  E   M   WB
+                      1   2   3  4  5   6   7   8   9   10  11  12  13  14  15  16
+
+Two extra cycle due to missing forwarding wire from M to ID which is not shown in this design and extra cycle to branch wait.

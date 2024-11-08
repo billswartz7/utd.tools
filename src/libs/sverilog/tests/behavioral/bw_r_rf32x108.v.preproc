@@ -1,0 +1,17 @@
+
+module bw_r_rf32x108(
+      dout, so, 
+      din, rd_adr1, rd_adr2, sel_rdaddr1, wr_adr, read_en, wr_en, 
+   word_wen, rst_tri_en, rclk, se, si, reset_l, sehold
+   );
+
+   input [107:0]  din;    input [4:0]    rd_adr1;      input [4:0]    rd_adr2;      input	  sel_rdaddr1;    input [4:0]	  wr_adr;     input          read_en;  
+   input	  wr_en ;					   input [3:0]    word_wen; 			       input	  rst_tri_en ;    input          rclk;
+   input          se, si ;
+   input	  reset_l;
+   input	  sehold; 
+   output [107:0] dout;
+   output         so;
+   
+
+      reg

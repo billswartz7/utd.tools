@@ -1,0 +1,8128 @@
+ 
+
+module fpu_out_ctl (
+	d8stg_fdiv_in,
+	m6stg_fmul_in,
+	a6stg_fadd_in,
+	div_id_out_in,
+	m6stg_id_in,
+	add_id_out_in,
+	arst_l,
+	grst_l,
+	rclk,
+	
+	fp_cpx_req_cq,
+	req_thread,
+	dest_rdy,
+	add_dest_rdy,
+	mul_dest_rdy,
+	div_dest_rdy,
+
+	se,
+	si,
+	so
+);
+
+
+input		d8stg_fdiv_in;		input		m6stg_fmul_in;		input		a6stg_fadd_in;		input [9:0]	div_id_out_in;		input [9:0]	m6stg_id_in;		input [9:0]	add_id_out_in;		input		arst_l;			input		grst_l;			input		rclk;		
+output [7:0]	fp_cpx_req_cq;		output [1:0]	req_thread;		output [2:0]	dest_rdy;		output		add_dest_rdy;		output		mul_dest_rdy;		output		div_dest_rdy;		
+input           se;                     input           si;                     output          so;                     
+
+wire		;
+wire		add_req_in;
+wire		add_req_step;
+wire		add_req;
+wire		div_req_sel;
+wire		mul_req_sel;
+wire		add_req_sel;
+wire [9:0]	out_id;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire		add_req_step;
+wire		add_req;
+wire		div_req_sel;
+wire		mul_req_sel;
+wire		add_req_sel;
+wire [9:0]	out_id;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire		add_req;
+wire		div_req_sel;
+wire		mul_req_sel;
+wire		add_req_sel;
+wire [9:0]	out_id;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire		div_req_sel;
+wire		mul_req_sel;
+wire		add_req_sel;
+wire [9:0]	out_id;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire		mul_req_sel;
+wire		add_req_sel;
+wire [9:0]	out_id;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire		add_req_sel;
+wire [9:0]	out_id;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire [9:0]	out_id;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire [9:0]	;
+wire [7:0]	fp_cpx_req_cq;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire [7:0]	;
+wire [1:0]	req_thread;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire [1:0]	;
+wire [2:0]	dest_rdy_in;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire [2:0]	;
+wire [2:0]	dest_rdy;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire [2:0]	;
+wire		add_dest_rdy;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire		mul_dest_rdy;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+wire		div_dest_rdy;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+wire		;
+
+dffrl_async #(1)  dffrl_out_ctl (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+
+dffrl_async #(1)   (
+  .din  (grst_l),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+  .din  (),
+  .clk  (rclk),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+  .clk  (),
+  .rst_l(arst_l),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+  .rst_l(),
+  .q    (out_ctl_rst_l),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+  .q    (),
+	.se (se),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+	.se (),
+	.si (),
+	.so ()
+  );
+
+assign reset= (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+	.si (),
+	.so ()
+  );
+
+assign = (!out_ctl_rst_l);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+= (!);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Arbitrate for the output.
+//
+//	Top priority- divide.
+//	Low priority- round robin arbitration between the add and multiply
+//		pipes.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign add_req_in= (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+);
+
+
+
+assign = (!add_req);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+= (!);
+
+assign add_req_step= add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+);
+
+assign = add_req_sel || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+=  || mul_req_sel;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ || ;
+
+dffre_s #(1) i_add_req (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+
+dffre_s #(1)  (
+	.din	(add_req_in),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+	.din	(),
+	.en	(add_req_step),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+	.en	(),
+	.rst    (reset),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+	.rst    (),
+        .clk    (rclk),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .clk    (),
+
+        .q      (add_req),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+        .q      (),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+	.se     (),
+        .si     (),
+        .so     ()
+);
+
+assign div_req_sel= d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .si     (),
+        .so     ()
+);
+
+assign = d8stg_fdiv_in;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+= ;
+
+assign mul_req_sel= m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+;
+
+assign = m6stg_fmul_in
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+= 
+		&& ((!add_req) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+
+		&& ((!) || (!a6stg_fadd_in))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+) || (!))
+		&& (!div_req_sel);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+))
+		&& (!);
+
+assign add_req_sel= a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+);
+
+assign = a6stg_fadd_in
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+= 
+		&& (add_req || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+
+		&& ( || (!m6stg_fmul_in))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ || (!))
+		&& (!div_req_sel);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+))
+		&& (!);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Generate the request.
+//
+//	Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign out_id[9:0]= ({10{div_req_sel}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+);
+
+
+
+assign [9:0]= ({10{}}
+			    & div_id_out_in[9:0])
+		| ({10{mul_req_sel}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+}}
+			    & [9:0])
+		| ({10{}}
+			    & m6stg_id_in[9:0])
+		| ({10{add_req_sel}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+}}
+			    & [9:0])
+		| ({10{}}
+			    & add_id_out_in[9:0]);
+
+dff_s #(8) i_fp_cpx_req_cq (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+}}
+			    & [9:0]);
+
+dff_s #(8)  (
+	.din	(out_id[9:2]),
+	.clk    (rclk),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+	.din	([9:2]),
+	.clk    (),
+
+        .q      (fp_cpx_req_cq[7:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+        .q      ([7:0]),
+
+	.se     (),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the thread.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+dff_s #(2) i_req_thread (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .si     (),
+        .so     ()
+);
+
+
+
+dff_s #(2)  (
+	.din	(out_id[1:0]),
+	.clk    (rclk),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+	.din	([1:0]),
+	.clk    (),
+ 
+        .q      (req_thread[1:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+ 
+        .q      ([1:0]),
+
+	.se     (),
+        .si     (),
+        .so     ()
+);
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Capture the pipe that wins the output request.
+//
+//      Input to the output request (CQ) stage.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+assign dest_rdy_in[2:0]= {div_req_sel, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .si     (),
+        .so     ()
+);
+
+
+
+assign [2:0]= {, mul_req_sel, add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+, , add_req_sel};
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+, };
+
+dff_s #(3) i_dest_rdy (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+};
+
+dff_s #(3)  (
+	.din	(dest_rdy_in[2:0]),
+	.clk    (rclk),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+	.din	([2:0]),
+	.clk    (),
+
+        .q      (dest_rdy[2:0]),
+
+	.se     (se),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+        .q      ([2:0]),
+
+	.se     (),
+        .si     (),
+        .so     ()
+);
+
+dff_s i_add_dest_rdy (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .si     (),
+        .so     ()
+);
+
+dff_s  (
+	.din	(add_req_sel),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+	.din	(),
+	.clk	(rclk),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+	.clk	(),
+
+	.q	(add_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+	.q	(),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+	.se	(),
+        .si	(),
+        .so	()
+);
+
+dff_s i_mul_dest_rdy (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .si	(),
+        .so	()
+);
+
+dff_s  (
+	.din	(mul_req_sel),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+	.din	(),
+	.clk	(rclk),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+	.clk	(),
+
+	.q	(mul_dest_rdy),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+	.q	(),
+
+	.se	(se),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+	.se	(),
+        .si	(),
+        .so	()
+);
+
+dff_s i_div_dest_rdy (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .si	(),
+        .so	()
+);
+
+dff_s  (
+	.din	(div_req_sel),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+ (
+	.din	(),
+	.clk	(rclk),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+	.clk	(),
+
+	.q	(div_dest_rdy),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+	.q	(),
+
+        .se	(se),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+
+        .se	(),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+
+),
+        .si	(),
+        .so	()
+);
+
+
+endmodule
+
+

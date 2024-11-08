@@ -1,0 +1,423 @@
+module bw_io_jp_bs_baseblk(upd_q ,bsr_si ,update_dr ,clock_dr ,shift_dr
+      ,bsr_so ,in );
+output		upd_q ;
+output		bsr_so ;
+input		bsr_si ;
+input		update_dr ;
+input		clock_dr ;
+input		shift_dr ;
+input		in ;
+supply1		vdd ;
+ 
+wire		 ;
+wire		qn ;
+wire		net032 ;
+wire		net037 ;
+ 
+ 
+bw_u1_soff_2x bsff (
+     .q               (qn ),
+     .so              (net73 ),
+     .ck              (clock_dr ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net032 ;
+wire		net037 ;
+ 
+ 
+bw_u1_soff_2x bsff (
+     .q               (qn ),
+     .so              (net73 ),
+     .ck              (clock_dr ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net037 ;
+ 
+ 
+bw_u1_soff_2x bsff (
+     .q               (qn ),
+     .so              (net73 ),
+     .ck              (clock_dr ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ;
+wire		 ;
+ 
+ 
+bw_u1_soff_2x bsff (
+     .q               (qn ),
+     .so              (net73 ),
+     .ck              (clock_dr ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ;
+ 
+ 
+bw_u1_soff_2x  (
+     .q               (qn ),
+     .so              (net73 ),
+     .ck              (clock_dr ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ (
+     .q               ( ),
+     .so              (net73 ),
+     .ck              (clock_dr ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .so              ( ),
+     .ck              (clock_dr ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .ck              ( ),
+     .d               (in ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .d               ( ),
+     .se              (shift_dr ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .se              ( ),
+     .sd              (bsr_si ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .sd              ( ) );
+bw_u1_inv_1x ud_inv1x (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net032 ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (update_dr ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_inv_4x so_inv4x (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ) );
+bw_u1_inv_4x  (
+     .z               (bsr_so ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net037 ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_inv_1x so_inv2x (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net037 ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (qn ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_scanlg_2x latch_bsrc (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ) );
+bw_u1_scanlg_2x  (
+     .so              (upd_q ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ (
+     .so              ( ),
+     .sd              (qn ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .sd              ( ),
+     .ck              (net032 ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .ck              ( ),
+     .se              (vdd ) );
+endmodule
+
+ ),
+     .se              ( ) );
+endmodule
+
+ ) );
+endmodule
+

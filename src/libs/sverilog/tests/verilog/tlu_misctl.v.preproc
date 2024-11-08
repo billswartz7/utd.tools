@@ -1,0 +1,2796 @@
+
+                                 
+ 
+
+
+module	tlu_misctl (
+        tlu_exu_cwp_m, tlu_exu_ccr_m, tlu_lsu_asi_m, tlu_cwp_no_change_m, 
+    tlu_sscan_misctl_data, tlu_ifu_trappc_w2, tlu_ifu_trapnpc_w2, 
+    tlu_pc_new_w, tlu_npc_new_w, so, 
+        tlu_exu_pic_onebelow_m, tlu_exu_pic_twobelow_m, 
+        ctu_sscan_tid, ifu_tlu_pc_m, exu_tlu_cwp0, exu_tlu_cwp1, exu_tlu_cwp2, 
+    exu_tlu_cwp3, tlu_final_ttype_w2, tsa_wr_tid, tlu_true_pc_sel_w, 
+    tsa1_wr_vld, tsa_ttype_en, tsa_rd_vld_e, tsa0_rdata_cwp, tsa0_rdata_pstate,
+    tsa0_rdata_asi, tsa0_rdata_ccr, tsa0_rdata_gl, tsa0_rdata_pc, tsa1_rdata_ttype, 
+    tsa1_rdata_npc, tsa1_rdata_htstate, tlu_thrd_rsel_e, tlu_final_offset_w1, 
+    tlu_partial_trap_pc_w1,  tlu_restore_pc_w1, tlu_restore_npc_w1, 
+    ifu_npc_w, tlu_restore_pc_sel_w1, tlu_pic_cnt_en_m, tlu_pic_onebelow_e,
+    tlu_pic_twobelow_e, tlu_rst, si, se, rclk);
+    
+output [-1:0] tlu_exu_ccr_m; output [-1:0] tlu_exu_cwp_m; output [-1:0] tlu_lsu_asi_m; output tlu_cwp_no_change_m; output [-1:0] tlu_sscan_misctl_data;
+output [48:0] tlu_ifu_trappc_w2, tlu_ifu_trapnpc_w2; 
+output [48:0] tlu_pc_new_w, tlu_npc_new_w; 
+output so;
+output       tlu_exu_pic_onebelow_m; output       tlu_exu_pic_twobelow_m; 
+input [-1:0] ctu_sscan_tid;
+input [-1:0] tlu_final_ttype_w2;
+input [1:0] tsa_wr_tid;	
+input tsa1_wr_vld, tsa_rd_vld_e; 
+input tsa_ttype_en; 
+input [2:0]  exu_tlu_cwp0;  input [2:0]  exu_tlu_cwp1;  input [2:0]  exu_tlu_cwp2;  input [2:0]  exu_tlu_cwp3;  input [-1:0] tsa0_rdata_cwp;
+input [-1:0] tsa0_rdata_pstate;
+input [-1:0] tsa0_rdata_ccr;
+input [-1:0] tsa0_rdata_asi;
+input [-1:0] tsa0_rdata_gl;
+input [46:0] tsa0_rdata_pc;
+input [-1:0] tsa1_rdata_ttype;
+input [46:0] tsa1_rdata_npc;
+input [-1:0] tsa1_rdata_htstate;
+input [48:0] ifu_tlu_pc_m;	  input [-1:0] tlu_final_offset_w1;
+input [33:0] tlu_partial_trap_pc_w1;
+input [48:0] tlu_restore_pc_w1;
+input [48:0] tlu_restore_npc_w1;
+input [48:0] ifu_npc_w;
+input tlu_restore_pc_sel_w1; 
+input [2:0] tlu_true_pc_sel_w;
+input [-1:0] tlu_thrd_rsel_e;
+input si, se;
+input rclk;
+input tlu_pic_onebelow_e;
+input tlu_pic_twobelow_e;
+input tlu_pic_cnt_en_m;
+input tlu_rst;
+
+wire ;
+//
+// staged thread id
+wire [`TLU_THRD_NUM-1:0] thrd_sel_m;
+wire [`TLU_THRD_NUM-1:0] tsa_wsel_thrd_w2;
+// 
+// staged tsa_controls
+wire tsa_rd_vld_m; // tsa_rd_vld_e,  
+// 
+// components from tsas
+// tsa0
+wire [`TLU_ASI_STATE_WIDTH-1:0] tsa0_asi_m;
+wire [`TSA_CWP_WIDTH-1:0] tsa0_cwp_m;
+wire [`TSA_CCR_WIDTH-1:0] tsa0_ccr_m;
+wire [`TSA_PSTATE_WIDTH-1:0] tsa0_pstate_m;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TLU_THRD_NUM-1:0] tsa_wsel_thrd_w2;
+// 
+// staged tsa_controls
+wire tsa_rd_vld_m; // tsa_rd_vld_e,  
+// 
+// components from tsas
+// tsa0
+wire [`TLU_ASI_STATE_WIDTH-1:0] tsa0_asi_m;
+wire [`TSA_CWP_WIDTH-1:0] tsa0_cwp_m;
+wire [`TSA_CCR_WIDTH-1:0] tsa0_ccr_m;
+wire [`TSA_PSTATE_WIDTH-1:0] tsa0_pstate_m;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+// 
+// staged tsa_controls
+wire tsa_rd_vld_m; // tsa_rd_vld_e,  
+// 
+// components from tsas
+// tsa0
+wire [`TLU_ASI_STATE_WIDTH-1:0] tsa0_asi_m;
+wire [`TSA_CWP_WIDTH-1:0] tsa0_cwp_m;
+wire [`TSA_CCR_WIDTH-1:0] tsa0_ccr_m;
+wire [`TSA_PSTATE_WIDTH-1:0] tsa0_pstate_m;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire ; // tsa_rd_vld_e,  
+// 
+// components from tsas
+// tsa0
+wire [`TLU_ASI_STATE_WIDTH-1:0] tsa0_asi_m;
+wire [`TSA_CWP_WIDTH-1:0] tsa0_cwp_m;
+wire [`TSA_CCR_WIDTH-1:0] tsa0_ccr_m;
+wire [`TSA_PSTATE_WIDTH-1:0] tsa0_pstate_m;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; wire [-1:0] ;
+wire [`TSA_CWP_WIDTH-1:0] tsa0_cwp_m;
+wire [`TSA_CCR_WIDTH-1:0] tsa0_ccr_m;
+wire [`TSA_PSTATE_WIDTH-1:0] tsa0_pstate_m;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_CCR_WIDTH-1:0] tsa0_ccr_m;
+wire [`TSA_PSTATE_WIDTH-1:0] tsa0_pstate_m;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_PSTATE_WIDTH-1:0] tsa0_pstate_m;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_GLOBAL_WIDTH-1:0] tsa0_gl_m;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [46:0] tsa0_pc_m;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [46:0] ;
+// tsa1
+wire [`TSA_TTYPE_WIDTH-1:0]   tsa1_ttype_m;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0]   ;
+wire [`TSA_HTSTATE_WIDTH-1:0] tsa1_htstate_m;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [46:0] tsa1_npc_m;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [46:0] ;
+//
+// modified for timing
+// wire [48:0] pc_new_m, npc_new_m;
+wire [48:0] pc_new_w, npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [48:0] , npc_new_w, ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , , ifu_pc_w;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , ;
+wire [46:0] tsa0_pc_w, tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [46:0] , tsa1_npc_w;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , ;
+// 
+// sscan related signals 
+wire [`TLU_THRD_NUM-1:0] sscan_tid_sel; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ; 
+wire [`TLU_THRD_NUM-1:0] sscan_ttype_en;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; 
+wire [-1:0] ;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_rd_sel;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TLU_THRD_NUM-1:0] sscan_tt_wr_sel;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_data;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt0_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt1_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt2_din;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`TSA_TTYPE_WIDTH-1:0] sscan_tt3_din;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+wire [`MISCTL_SSCAN_WIDTH-1:0] misctl_sscan_test_data;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] ;
+//
+// cwp logic 
+wire cwp_no_change_m;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire ;
+wire [`TSA_CWP_WIDTH-1:0] cwp_xor_m, trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+wire [-1:0] , trap_old_cwp_m; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , ; 
+wire [48:0] normal_trap_pc_w1, normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; 
+wire [48:0] , normal_trap_npc_w1; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , ; 
+wire [48:0] trap_pc_w1, trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; 
+wire [48:0] , trap_npc_w1; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , ; 
+wire [48:0] trap_pc_w2, trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; 
+wire [48:0] , trap_npc_w2; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , ; 
+//
+// PIC experiment
+wire tlu_pic_onebelow_m, tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; 
+wire , tlu_pic_twobelow_m; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) , ; 
+// wire [`TLU_THRD_NUM-1:0] pic_onebelow_e, pic_twobelow_e; 
+wire local_rst;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; 
+wire ;
+// 
+//=========================================================================================
+// local clock
+//=========================================================================================
+
+assign clk = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ;
+
+assign  = rclk; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH)  = ; 
+
+//=========================================================================================
+//	TSA data capture
+//=========================================================================================
+
+dff_s #(`TSA_CCR_WIDTH) dff_tsa0_ccr_m (
+    .din (tsa0_rdata_ccr[`TSA_CCR_WIDTH-1:0]),
+    .q   (tsa0_ccr_m[`TSA_CCR_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TSA_CWP_WIDTH) dff_tsa0_cwp_m (
+    .din (tsa0_rdata_cwp[`TSA_CWP_WIDTH-1:0]),
+    .q   (tsa0_cwp_m[`TSA_CWP_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+);
+
+dff_s #(`TLU_ASI_STATE_WIDTH) dff_lsu_asi_m (
+    .din (tsa0_rdata_asi[`TLU_ASI_STATE_WIDTH-1:0]),
+    .q   (tsa0_asi_m[`TLU_ASI_STATE_WIDTH-1:0]),
+    .clk (clk),
+    .se  (se),
+    .si  (),
+    .so  ()
+    );
+
+dff_s #(`TSA_PSTATE_WIDTH) ; 
+
+
+dff_s #()

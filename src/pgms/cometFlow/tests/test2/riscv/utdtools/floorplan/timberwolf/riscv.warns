@@ -1,0 +1,5 @@
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+

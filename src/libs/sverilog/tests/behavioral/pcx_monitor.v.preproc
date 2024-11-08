@@ -1,0 +1,21 @@
+
+   
+
+module pcx_monitor (
+	rclk,
+	spc_pcx_req_pq, 
+	spc_pcx_data_pa 
+	);
+
+    input rclk;
+    input [4:0] spc_pcx_req_pq;
+    input [123:0] spc_pcx_data_pa;
+
+    parameter GOOD_TRAP_1 = 40hh;
+    parameter GOOD_TRAP_2 = 40hh;
+    parameter GOOD_TRAP_3 = 40hh;
+    parameter BAD_TRAP_1  = 40hh;
+    parameter BAD_TRAP_2  = 40hh;
+    parameter BAD_TRAP_3  = 40hh;
+
+    reg

@@ -1,0 +1,40 @@
+
+     
+
+module aurora_201_CHANNEL_ERROR_DETECT
+(
+        SOFT_ERROR,
+    HARD_ERROR,
+    LANE_UP,
+
+
+        USER_CLK,
+    POWER_DOWN,
+
+    CHANNEL_SOFT_ERROR,
+    CHANNEL_HARD_ERROR,
+
+
+        RESET_CHANNEL
+);
+
+ 
+
+
+        input              SOFT_ERROR;
+    input              HARD_ERROR;
+    input              LANE_UP;
+
+
+        input              USER_CLK;
+    input              POWER_DOWN;
+
+    output             CHANNEL_SOFT_ERROR;
+    output             CHANNEL_HARD_ERROR;
+
+
+        output             RESET_CHANNEL;
+
+
+
+    reg

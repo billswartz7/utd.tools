@@ -1,0 +1,2296 @@
+
+
+
+module bw_r_dcm(  
+      row_hit, rd_data0, rd_data1, rd_data2, rd_data3, so_0, so_1, 
+      cam_en, inv_mask0, inv_mask1, inv_mask2, inv_mask3, si_0, se_0, 
+   si_1, se_1, sehold_0, sehold_1, rclk,  rd_en, rw_addr0, 
+   rw_addr1, rw_addr2, rw_addr3, rst_l_0, rst_l_1, rst_warm_0, 
+   rst_warm_1, wr_en, rst_tri_en_0, rst_tri_en_1, wr_data0, wr_data1, 
+   wr_data2, wr_data3
+   );
+
+output	[31:0]	row_hit;
+
+output [31:0]         rd_data0;               output [31:0]         rd_data1;               output [31:0]         rd_data2;               output [31:0]         rd_data3;               
+input   [3:0]         cam_en;
+
+input [7:0]           inv_mask0;              input [7:0]           inv_mask1;              input [7:0]           inv_mask2;              input [7:0]           inv_mask3;              
+input		      si_0, se_0;
+output		      so_0;
+input		      si_1, se_1;
+output		      so_1;
+input		      sehold_0;
+input		      sehold_1;
+
+input                 rclk;                   
+input  [3:0]          rd_en ;           
+input [5:0]           rw_addr0;      input [5:0]           rw_addr1;      input [5:0]           rw_addr2;      input [5:0]           rw_addr3;      
+input                 rst_l_0;                  input                 rst_l_1;                  input		      rst_warm_0;
+input		      rst_warm_1;
+
+input   [3:0]         wr_en;            input		      rst_tri_en_0; input		      rst_tri_en_1; 
+input [32:0]          wr_data0;         input [32:0]          wr_data1;         input [32:0]          wr_data2;         input [32:0]          wr_data3;         
+
+wire	[31:0]	;
+wire	[31:0]	bank0_hit;
+
+/*	dcm_panel_pair	AUTO_TEMPLATE (
+
+		   		  .bank_hit(bank0_hit[31:0]),
+                                  .rd_data0(rd_data0[31:0]),
+                                  .rd_data1(rd_data1[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[1:0]),
+                                  .inv_mask0(inv_mask0[7:0]),
+                                  .inv_mask1(inv_mask1[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[1:0]),
+                                  .rst_l(rst_l_0),
+                                  .rst_tri_en(rst_tri_en_0),
+                                  .rst_warm(rst_warm_0),
+                                  .rw_addr0(rw_addr0[5:0]),
+                                  .rw_addr1(rw_addr1[5:0]),
+                                  .sehold(sehold_0),
+                                  .wr_data0(wr_data0[32:0]),
+                                  .wr_data1(wr_data1[32:0]),
+                                  .wr_en(wr_en[1:0]));
+
+*/
+
+      dcm_panel_pair	panel_pair0(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_0),
+					/*AUTOINST*/
+                                  // Outputs
+                                  .bank_hit(bank0_hit[31:0]),    // Templated
+                                  .rd_data0(rd_data0[31:0]),     // Templated
+                                  .rd_data1(rd_data1[31:0]),     // Templated
+                                  // Inputs
+                                  .cam_en(cam_en[1:0]),          // Templated
+                                  .inv_mask0(inv_mask0[7:0]),    // Templated
+                                  .inv_mask1(inv_mask1[7:0]),    // Templated
+                                  .rclk (rclk),                  // Templated
+                                  .rd_en(rd_en[1:0]),            // Templated
+                                  .rst_l(rst_l_0),               // Templated
+                                  .rst_tri_en(rst_tri_en_0),     // Templated
+                                  .rst_warm(rst_warm_0),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ;
+wire	[31:0]	;
+
+/*	dcm_panel_pair	AUTO_TEMPLATE (
+
+		   		  .bank_hit(bank0_hit[31:0]),
+                                  .rd_data0(rd_data0[31:0]),
+                                  .rd_data1(rd_data1[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[1:0]),
+                                  .inv_mask0(inv_mask0[7:0]),
+                                  .inv_mask1(inv_mask1[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[1:0]),
+                                  .rst_l(rst_l_0),
+                                  .rst_tri_en(rst_tri_en_0),
+                                  .rst_warm(rst_warm_0),
+                                  .rw_addr0(rw_addr0[5:0]),
+                                  .rw_addr1(rw_addr1[5:0]),
+                                  .sehold(sehold_0),
+                                  .wr_data0(wr_data0[32:0]),
+                                  .wr_data1(wr_data1[32:0]),
+                                  .wr_en(wr_en[1:0]));
+
+*/
+
+      dcm_panel_pair	panel_pair0(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_0),
+					/*AUTOINST*/
+                                  // Outputs
+                                  .bank_hit(bank0_hit[31:0]),    // Templated
+                                  .rd_data0(rd_data0[31:0]),     // Templated
+                                  .rd_data1(rd_data1[31:0]),     // Templated
+                                  // Inputs
+                                  .cam_en(cam_en[1:0]),          // Templated
+                                  .inv_mask0(inv_mask0[7:0]),    // Templated
+                                  .inv_mask1(inv_mask1[7:0]),    // Templated
+                                  .rclk (rclk),                  // Templated
+                                  .rd_en(rd_en[1:0]),            // Templated
+                                  .rst_l(rst_l_0),               // Templated
+                                  .rst_tri_en(rst_tri_en_0),     // Templated
+                                  .rst_warm(rst_warm_0),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ;
+
+
+
+      dcm_panel_pair	(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_0),
+					/*AUTOINST*/
+                                  // Outputs
+                                  .bank_hit(bank0_hit[31:0]),    // Templated
+                                  .rd_data0(rd_data0[31:0]),     // Templated
+                                  .rd_data1(rd_data1[31:0]),     // Templated
+                                  // Inputs
+                                  .cam_en(cam_en[1:0]),          // Templated
+                                  .inv_mask0(inv_mask0[7:0]),    // Templated
+                                  .inv_mask1(inv_mask1[7:0]),    // Templated
+                                  .rclk (rclk),                  // Templated
+                                  .rd_en(rd_en[1:0]),            // Templated
+                                  .rst_l(rst_l_0),               // Templated
+                                  .rst_tri_en(rst_tri_en_0),     // Templated
+                                  .rst_warm(rst_warm_0),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 (
+                                  .so   (),
+                                  .si   (),
+                                  .se   (),
+					/*AUTOINST*/
+                                  // Outputs
+                                  .bank_hit(bank0_hit[31:0]),    // Templated
+                                  .rd_data0(rd_data0[31:0]),     // Templated
+                                  .rd_data1(rd_data1[31:0]),     // Templated
+                                  // Inputs
+                                  .cam_en(cam_en[1:0]),          // Templated
+                                  .inv_mask0(inv_mask0[7:0]),    // Templated
+                                  .inv_mask1(inv_mask1[7:0]),    // Templated
+                                  .rclk (rclk),                  // Templated
+                                  .rd_en(rd_en[1:0]),            // Templated
+                                  .rst_l(rst_l_0),               // Templated
+                                  .rst_tri_en(rst_tri_en_0),     // Templated
+                                  .rst_warm(rst_warm_0),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ),
+					
+                                                                    .bank_hit([31:0]),                                      .rd_data0([31:0]),                                       .rd_data1([31:0]),                                                                         .cam_en([1:0]),                                            .inv_mask0([7:0]),                                      .inv_mask1([7:0]),                                      .rclk (),                  // Templated
+                                  .rd_en(rd_en[1:0]),            // Templated
+                                  .rst_l(rst_l_0),               // Templated
+                                  .rst_tri_en(rst_tri_en_0),     // Templated
+                                  .rst_warm(rst_warm_0),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ),                                                    .rd_en([1:0]),                                              .rst_l(),               // Templated
+                                  .rst_tri_en(rst_tri_en_0),     // Templated
+                                  .rst_warm(rst_warm_0),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ),                                                 .rst_tri_en(),     // Templated
+                                  .rst_warm(rst_warm_0),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ),                                       .rst_warm(),         // Templated
+                                  .rw_addr0(rw_addr0[5:0]),      // Templated
+                                  .rw_addr1(rw_addr1[5:0]),      // Templated
+                                  .sehold(sehold_0),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ),                                           .rw_addr0([5:0]),                                        .rw_addr1([5:0]),                                        .sehold(),             // Templated
+                                  .wr_data0(wr_data0[32:0]),     // Templated
+                                  .wr_data1(wr_data1[32:0]),     // Templated
+                                  .wr_en(wr_en[1:0]));            // Templated
+				
+	assign	 row_hit =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ),                                               .wr_data0([32:0]),                                       .wr_data1([32:0]),                                       .wr_en([1:0]));            				
+	assign	  =  bank1_hit | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                  =   | bank0_hit ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                  |  ;
+
+/*      dcm_panel_pair  AUTO_TEMPLATE (
+
+                                  .bank_hit(bank1_hit[31:0]),
+                                  .rd_data0(rd_data2[31:0]),
+                                  .rd_data1(rd_data3[31:0]),
+                                  // Inputs
+                                  .cam_en(cam_en[3:2]),
+                                  .inv_mask0(inv_mask2[7:0]),
+                                  .inv_mask1(inv_mask3[7:0]),
+                                  .rclk (rclk),
+                                  .rd_en(rd_en[3:2]),
+                                  .rst_l(rst_l_1),
+                                  .rst_tri_en(rst_tri_en_1),
+                                  .rst_warm(rst_warm_1),
+                                  .rw_addr0(rw_addr2[5:0]),
+                                  .rw_addr1(rw_addr3[5:0]),
+                                  .sehold(sehold_1),
+                                  .wr_data0(wr_data2[32:0]),
+                                  .wr_data1(wr_data3[32:0]),
+                                  .wr_en(wr_en[3:2]));
+
+*/
+
+      dcm_panel_pair    panel_pair1(
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                  ;
+
+
+
+      dcm_panel_pair    (
+                                  .so   (),
+                                  .si   (),
+                                  .se   (se_1),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 (
+                                  .so   (),
+                                  .si   (),
+                                  .se   (),
+                                        /*AUTOINST*/
+                                    // Outputs
+                                    .bank_hit(bank1_hit[31:0]),  // Templated
+                                    .rd_data0(rd_data2[31:0]),   // Templated
+                                    .rd_data1(rd_data3[31:0]),   // Templated
+                                    // Inputs
+                                    .cam_en(cam_en[3:2]),        // Templated
+                                    .inv_mask0(inv_mask2[7:0]),  // Templated
+                                    .inv_mask1(inv_mask3[7:0]),  // Templated
+                                 ),
+                                        
+                                                                        .bank_hit([31:0]),                                      .rd_data0([31:0]),                                       .rd_data1([31:0]),                                                                           .cam_en([3:2]),                                            .inv_mask0([7:0]),                                      .inv_mask1([7:0]),                                      .rclk(),                 // Templated
+                                    .rd_en(rd_en[3:2]),          // Templated
+                                    .rst_l(rst_l_1),             // Templated
+                                    .rst_tri_en(rst_tri_en_1),   // Templated
+                                    .rst_warm(rst_warm_1),       // Templated
+                                    .rw_addr0(rw_addr2[5:0]),    // Templated
+                                    .rw_addr1(rw_addr3[5:0]),    // Templated
+                                    .sehold(sehold_1),           // Templated
+                                    .wr_data0(wr_data2[32:0]),   // Templated
+                                    .wr_data1(wr_data3[32:0]),   // Templated
+                                    .wr_en(wr_en[3:2]));          // Templated
+
+
+endmodule
+
+
+
+module dcm_panel_pair(  /*AUTOARG*/
+   // Outputs
+   so, bank_hit, rd_data0, rd_data1, 
+   // Inputs
+   cam_en, inv_mask0, inv_mask1, rclk, rd_en, rst_l, rst_tri_en, 
+   rst_warm, rw_addr0, rw_addr1, sehold, wr_data0, wr_data1, wr_en, 
+   si, se
+   );
+
+input [1:0]             cam_en;                 
+input [7:0]             inv_mask0;              
+input [7:0]             inv_mask1;              
+input                   rclk;                   
+input [1:0]             rd_en;                  
+input                   rst_l;                
+input                   rst_tri_en;           
+input                   rst_warm;             
+input [5:0]             rw_addr0;               
+input [5:0]             rw_addr1;               
+input                   sehold;               
+input [32:0]            wr_data0;               
+input [32:0]            wr_data1;               
+input [1:0]             wr_en;                  
+input			si,se ;
+
+output			so;
+output [31:0]           bank_hit;              
+output [31:0]           rd_data0;               
+output [31:0]           rd_data1;               
+
+wire	[31:0]	lkup_hit0, lkup_hit1;
+reg	rst_warm_d;
+
+
+always  @(posedge rclk)
+begin
+	rst_warm_d <= ( sehold)? rst_warm_d : rst_warm;
+end
+
+/*      dcm_panel       AUTO_TEMPLATE (
+                   .lkup_hit            (lkup_hit@[31:0]),
+                   .rd_data            (rd_data@[31:0]),
+                   .rd_en          (rd_en[@]),
+                   .wr_en          (wr_en[@]),
+                   .cam_en              (cam_en[@]),
+                   .wr_data             (wr_data@[32:0]),
+                   .rw_addr             (rw_addr@[5:0]),
+                   .rst_l               (rst_l),
+                   .rst_warm               (rst_warm_d),
+                   .rst_tri_en               (rst_tri_en),
+                   .sehold               (sehold),
+                   .inv_mask            (inv_mask@[7:0]));
+*/
+
+        dcm_panel       panel0(.si(),
+			       .so(),
+			       .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit0[31:0]),       // Templated
+                               .rd_data (rd_data0[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[0]),              // Templated
+                               .wr_en   (wr_en[0]),              // Templated
+                               .cam_en  (cam_en[0]),             // Templated
+                               .wr_data (wr_data0[32:0]),        // Templated
+                               .rw_addr (rw_addr0[5:0]),         // Templated
+                               .inv_mask(inv_mask0[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+        assign   bank_hit      =    lkup_hit0 | lkup_hit1 ;
+
+        dcm_panel       panel1(.si(),
+                               .so(),
+                               .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit1[31:0]),       // Templated
+                               .rd_data (rd_data1[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[1]),              // Templated
+                               .wr_en   (wr_en[1]),              // Templated
+                               .cam_en  (cam_en[1]),             // Templated
+                               .wr_data (wr_data1[32:0]),        // Templated
+                               .rw_addr (rw_addr1[5:0]),         // Templated
+                               .inv_mask(inv_mask1[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+
+endmodule
+
+
+////////////////////////////////////////////////////////////////////////
+// Local header file includes / local defines
+// A directory panel is 32 bits wide and 64 entries deep.
+// The lkup_hit combines the match lines for an even and odd entry pair
+// and hence is only 32 bits wide.
+////////////////////////////////////////////////////////////////////////
+
+
+module dcm_panel(  /*AUTOARG*/
+   // Outputs
+   lkup_hit, rd_data, so, 
+   // Inputs
+   rd_en, wr_en, cam_en, wr_data, rw_addr, inv_mask, rst_l, rclk, 
+   rst_warm, si, se, rst_tri_en, sehold
+   );
+
+
+// Read inputs
+input		rd_en;
+input		wr_en;
+input		cam_en;
+input	[32:0]	wr_data; // { addr<39:10>, addr<8>, parity, valid  }
+
+
+// shared inputs 
+input	[5:0]	rw_addr; // even entries will have wr_data<0> == 0
+input	[7:0]	inv_mask;
+
+
+output	[31:0]	lkup_hit;
+output	[31:0]	rd_data; // { addr<39:10>, parity, valid } 
+
+input		rst_l;
+input		rclk;
+input		rst_warm;
+
+input		si, se;
+output		so;
+input		rst_tri_en;
+input		sehold;
+
+
+reg	[29:0]	addr_array[63:0]	;
+reg	[63:0]	valid	;
+reg	[63:0]	parity	;
+reg	[29:0]	temp_addr0 ;
+reg	[29:0]	temp_addr1 ;
+reg	[31:0]	rd_data;
+reg	[31:0]	lkup_hit;
+reg	[63:0]	cam_hit;
+
+
+reg	[63:0]	reset_valid;
+reg	[63:0]	valid_bit;
+
+reg             rd_en_d, wr_en_d;
+reg             cam_en_d ;
+reg     [7:0]   inval_mask_d;
+reg     [5:0]   rw_addr_d;
+//reg	wr_en_off_d1;
+reg	rst_tri_en_d1;
+
+
+wire	[7:0]	inval_mask;
+integer	i,j;
+
+always  @(posedge rclk)
+begin
+        rd_en_d <= (sehold)? rd_en_d: rd_en ;
+        wr_en_d <= (sehold)? wr_en_d: wr_en;
+        rw_addr_d <= (sehold)? rw_addr_d : rw_addr  ;
+        cam_en_d <= ( sehold)? cam_en_d: cam_en ;
+        inval_mask_d <= ( sehold)? inval_mask_d : inv_mask ;
+
+	rst_tri_en_d1 <= rst_tri_en ; // this is a dummy flop only used as a trigger
+end
+
+
+
+//--------\/-------------
+// VALID flop logic
+//--------\/-------------
+always  @(posedge rclk) begin
+		valid_bit <= valid;
+end
+	
+
+reg	cam_out;
+
+
+// CAM OPERATION and reset_valid generation
+// the following always block ensures that lkup_hit will be 
+// a ph1 signal.
+
+always	@( /*AUTOSENSE*/ /*memory or*/ cam_en_d or inval_mask_d or rst_tri_en or
+           rst_tri_en_d1 or valid_bit or wr_data or rst_warm or rst_l)
+
+ begin
+
+
+		cam_out = cam_en_d & ~(rst_tri_en | rst_tri_en_d1)  ;
+
+
+
+		cam_hit[0] = ( wr_data[32:3] == addr_array[0] )  &
+                                 cam_out &   ~wr_data[2] & valid_bit[0]  ;
+                reset_valid[0] = (cam_hit[0] & inval_mask_d[0]) ;
+                cam_hit[1] = ( wr_data[32:3] == addr_array[1] )  &
+                                  cam_out &  wr_data[2]  & valid_bit[1];
+                reset_valid[1] = (cam_hit[1] & inval_mask_d[0]) ;
+
+		lkup_hit[0] = ( cam_hit[0]  |  cam_hit[1] ) ;
+
+	
+
+		cam_hit[2] = ( wr_data[32:3] == addr_array[2] )  &
+                                   cam_out & ~wr_data[2] & valid_bit[2]  ;
+                reset_valid[2] = (cam_hit[2] & inval_mask_d[0]) ;
+                cam_hit[3] = ( wr_data[32:3] == addr_array[3] ),                                                     .rd_en([3:2]),                                              .rst_l(),             // Templated
+                                    .rst_tri_en(rst_tri_en_1),   // Templated
+                                    .rst_warm(rst_warm_1),       // Templated
+                                    .rw_addr0(rw_addr2[5:0]),    // Templated
+                                    .rw_addr1(rw_addr3[5:0]),    // Templated
+                                    .sehold(sehold_1),           // Templated
+                                    .wr_data0(wr_data2[32:0]),   // Templated
+                                    .wr_data1(wr_data3[32:0]),   // Templated
+                                    .wr_en(wr_en[3:2]));          // Templated
+
+
+endmodule
+
+
+
+module dcm_panel_pair(  /*AUTOARG*/
+   // Outputs
+   so, bank_hit, rd_data0, rd_data1, 
+   // Inputs
+   cam_en, inv_mask0, inv_mask1, rclk, rd_en, rst_l, rst_tri_en, 
+   rst_warm, rw_addr0, rw_addr1, sehold, wr_data0, wr_data1, wr_en, 
+   si, se
+   );
+
+input [1:0]             cam_en;                 
+input [7:0]             inv_mask0;              
+input [7:0]             inv_mask1;              
+input                   rclk;                   
+input [1:0]             rd_en;                  
+input                   rst_l;                
+input                   rst_tri_en;           
+input                   rst_warm;             
+input [5:0]             rw_addr0;               
+input [5:0]             rw_addr1;               
+input                   sehold;               
+input [32:0]            wr_data0;               
+input [32:0]            wr_data1;               
+input [1:0]             wr_en;                  
+input			si,se ;
+
+output			so;
+output [31:0]           bank_hit;              
+output [31:0]           rd_data0;               
+output [31:0]           rd_data1;               
+
+wire	[31:0]	lkup_hit0, lkup_hit1;
+reg	rst_warm_d;
+
+
+always  @(posedge rclk)
+begin
+	rst_warm_d <= ( sehold)? rst_warm_d : rst_warm;
+end
+
+/*      dcm_panel       AUTO_TEMPLATE (
+                   .lkup_hit            (lkup_hit@[31:0]),
+                   .rd_data            (rd_data@[31:0]),
+                   .rd_en          (rd_en[@]),
+                   .wr_en          (wr_en[@]),
+                   .cam_en              (cam_en[@]),
+                   .wr_data             (wr_data@[32:0]),
+                   .rw_addr             (rw_addr@[5:0]),
+                   .rst_l               (rst_l),
+                   .rst_warm               (rst_warm_d),
+                   .rst_tri_en               (rst_tri_en),
+                   .sehold               (sehold),
+                   .inv_mask            (inv_mask@[7:0]));
+*/
+
+        dcm_panel       panel0(.si(),
+			       .so(),
+			       .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit0[31:0]),       // Templated
+                               .rd_data (rd_data0[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[0]),              // Templated
+                               .wr_en   (wr_en[0]),              // Templated
+                               .cam_en  (cam_en[0]),             // Templated
+                               .wr_data (wr_data0[32:0]),        // Templated
+                               .rw_addr (rw_addr0[5:0]),         // Templated
+                               .inv_mask(inv_mask0[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+        assign   bank_hit      =    lkup_hit0 | lkup_hit1 ;
+
+        dcm_panel       panel1(.si(),
+                               .so(),
+                               .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit1[31:0]),       // Templated
+                               .rd_data (rd_data1[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[1]),              // Templated
+                               .wr_en   (wr_en[1]),              // Templated
+                               .cam_en  (cam_en[1]),             // Templated
+                               .wr_data (wr_data1[32:0]),        // Templated
+                               .rw_addr (rw_addr1[5:0]),         // Templated
+                               .inv_mask(inv_mask1[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+
+endmodule
+
+
+////////////////////////////////////////////////////////////////////////
+// Local header file includes / local defines
+// A directory panel is 32 bits wide and 64 entries deep.
+// The lkup_hit combines the match lines for an even and odd entry pair
+// and hence is only 32 bits wide.
+////////////////////////////////////////////////////////////////////////
+
+
+module dcm_panel(  /*AUTOARG*/
+   // Outputs
+   lkup_hit, rd_data, so, 
+   // Inputs
+   rd_en, wr_en, cam_en, wr_data, rw_addr, inv_mask, rst_l, rclk, 
+   rst_warm, si, se, rst_tri_en, sehold
+   );
+
+
+// Read inputs
+input		rd_en;
+input		wr_en;
+input		cam_en;
+input	[32:0]	wr_data; // { addr<39:10>, addr<8>, parity, valid  }
+
+
+// shared inputs 
+input	[5:0]	rw_addr; // even entries will have wr_data<0> == 0
+input	[7:0]	inv_mask;
+
+
+output	[31:0]	lkup_hit;
+output	[31:0]	rd_data; // { addr<39:10>, parity, valid } 
+
+input		rst_l;
+input		rclk;
+input		rst_warm;
+
+input		si, se;
+output		so;
+input		rst_tri_en;
+input		sehold;
+
+
+reg	[29:0]	addr_array[63:0]	;
+reg	[63:0]	valid	;
+reg	[63:0]	parity	;
+reg	[29:0]	temp_addr0 ;
+reg	[29:0]	temp_addr1 ;
+reg	[31:0]	rd_data;
+reg	[31:0]	lkup_hit;
+reg	[63:0]	cam_hit;
+
+
+reg	[63:0]	reset_valid;
+reg	[63:0]	valid_bit;
+
+reg             rd_en_d, wr_en_d;
+reg             cam_en_d ;
+reg     [7:0]   inval_mask_d;
+reg     [5:0]   rw_addr_d;
+//reg	wr_en_off_d1;
+reg	rst_tri_en_d1;
+
+
+wire	[7:0]	inval_mask;
+integer	i,j;
+
+always  @(posedge rclk)
+begin
+        rd_en_d <= (sehold)? rd_en_d: rd_en ;
+        wr_en_d <= (sehold)? wr_en_d: wr_en;
+        rw_addr_d <= (sehold)? rw_addr_d : rw_addr  ;
+        cam_en_d <= ( sehold)? cam_en_d: cam_en ;
+        inval_mask_d <= ( sehold)? inval_mask_d : inv_mask ;
+
+	rst_tri_en_d1 <= rst_tri_en ; // this is a dummy flop only used as a trigger
+end
+
+
+
+//--------\/-------------
+// VALID flop logic
+//--------\/-------------
+always  @(posedge rclk) begin
+		valid_bit <= valid;
+end
+	
+
+reg	cam_out;
+
+
+// CAM OPERATION and reset_valid generation
+// the following always block ensures that lkup_hit will be 
+// a ph1 signal.
+
+always	@( /*AUTOSENSE*/ /*memory or*/ cam_en_d or inval_mask_d or rst_tri_en or
+           rst_tri_en_d1 or valid_bit or wr_data or rst_warm or rst_l)
+
+ begin
+
+
+		cam_out = cam_en_d & ~(rst_tri_en | rst_tri_en_d1)  ;
+
+
+
+		cam_hit[0] = ( wr_data[32:3] == addr_array[0] )  &
+                                 cam_out &   ~wr_data[2] & valid_bit[0]  ;
+                reset_valid[0] = (cam_hit[0] & inval_mask_d[0]) ;
+                cam_hit[1] = ( wr_data[32:3] == addr_array[1] )  &
+                                  cam_out &  wr_data[2]  & valid_bit[1];
+                reset_valid[1] = (cam_hit[1] & inval_mask_d[0]) ;
+
+		lkup_hit[0] = ( cam_hit[0]  |  cam_hit[1] ) ;
+
+	
+
+		cam_hit[2] = ( wr_data[32:3] == addr_array[2] )  &
+                                   cam_out & ~wr_data[2] & valid_bit[2]  ;
+                reset_valid[2] = (cam_hit[2] & inval_mask_d[0]) ;
+                cam_hit[3] = ( wr_data[32:3] == addr_array[3] ),                                                 .rst_tri_en(),   // Templated
+                                    .rst_warm(rst_warm_1),       // Templated
+                                    .rw_addr0(rw_addr2[5:0]),    // Templated
+                                    .rw_addr1(rw_addr3[5:0]),    // Templated
+                                    .sehold(sehold_1),           // Templated
+                                    .wr_data0(wr_data2[32:0]),   // Templated
+                                    .wr_data1(wr_data3[32:0]),   // Templated
+                                    .wr_en(wr_en[3:2]));          // Templated
+
+
+endmodule
+
+
+
+module dcm_panel_pair(  /*AUTOARG*/
+   // Outputs
+   so, bank_hit, rd_data0, rd_data1, 
+   // Inputs
+   cam_en, inv_mask0, inv_mask1, rclk, rd_en, rst_l, rst_tri_en, 
+   rst_warm, rw_addr0, rw_addr1, sehold, wr_data0, wr_data1, wr_en, 
+   si, se
+   );
+
+input [1:0]             cam_en;                 
+input [7:0]             inv_mask0;              
+input [7:0]             inv_mask1;              
+input                   rclk;                   
+input [1:0]             rd_en;                  
+input                   rst_l;                
+input                   rst_tri_en;           
+input                   rst_warm;             
+input [5:0]             rw_addr0;               
+input [5:0]             rw_addr1;               
+input                   sehold;               
+input [32:0]            wr_data0;               
+input [32:0]            wr_data1;               
+input [1:0]             wr_en;                  
+input			si,se ;
+
+output			so;
+output [31:0]           bank_hit;              
+output [31:0]           rd_data0;               
+output [31:0]           rd_data1;               
+
+wire	[31:0]	lkup_hit0, lkup_hit1;
+reg	rst_warm_d;
+
+
+always  @(posedge rclk)
+begin
+	rst_warm_d <= ( sehold)? rst_warm_d : rst_warm;
+end
+
+/*      dcm_panel       AUTO_TEMPLATE (
+                   .lkup_hit            (lkup_hit@[31:0]),
+                   .rd_data            (rd_data@[31:0]),
+                   .rd_en          (rd_en[@]),
+                   .wr_en          (wr_en[@]),
+                   .cam_en              (cam_en[@]),
+                   .wr_data             (wr_data@[32:0]),
+                   .rw_addr             (rw_addr@[5:0]),
+                   .rst_l               (rst_l),
+                   .rst_warm               (rst_warm_d),
+                   .rst_tri_en               (rst_tri_en),
+                   .sehold               (sehold),
+                   .inv_mask            (inv_mask@[7:0]));
+*/
+
+        dcm_panel       panel0(.si(),
+			       .so(),
+			       .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit0[31:0]),       // Templated
+                               .rd_data (rd_data0[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[0]),              // Templated
+                               .wr_en   (wr_en[0]),              // Templated
+                               .cam_en  (cam_en[0]),             // Templated
+                               .wr_data (wr_data0[32:0]),        // Templated
+                               .rw_addr (rw_addr0[5:0]),         // Templated
+                               .inv_mask(inv_mask0[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+        assign   bank_hit      =    lkup_hit0 | lkup_hit1 ;
+
+        dcm_panel       panel1(.si(),
+                               .so(),
+                               .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit1[31:0]),       // Templated
+                               .rd_data (rd_data1[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[1]),              // Templated
+                               .wr_en   (wr_en[1]),              // Templated
+                               .cam_en  (cam_en[1]),             // Templated
+                               .wr_data (wr_data1[32:0]),        // Templated
+                               .rw_addr (rw_addr1[5:0]),         // Templated
+                               .inv_mask(inv_mask1[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+
+endmodule
+
+
+////////////////////////////////////////////////////////////////////////
+// Local header file includes / local defines
+// A directory panel is 32 bits wide and 64 entries deep.
+// The lkup_hit combines the match lines for an even and odd entry pair
+// and hence is only 32 bits wide.
+////////////////////////////////////////////////////////////////////////
+
+
+module dcm_panel(  /*AUTOARG*/
+   // Outputs
+   lkup_hit, rd_data, so, 
+   // Inputs
+   rd_en, wr_en, cam_en, wr_data, rw_addr, inv_mask, rst_l, rclk, 
+   rst_warm, si, se, rst_tri_en, sehold
+   );
+
+
+// Read inputs
+input		rd_en;
+input		wr_en;
+input		cam_en;
+input	[32:0]	wr_data; // { addr<39:10>, addr<8>, parity, valid  }
+
+
+// shared inputs 
+input	[5:0]	rw_addr; // even entries will have wr_data<0> == 0
+input	[7:0]	inv_mask;
+
+
+output	[31:0]	lkup_hit;
+output	[31:0]	rd_data; // { addr<39:10>, parity, valid } 
+
+input		rst_l;
+input		rclk;
+input		rst_warm;
+
+input		si, se;
+output		so;
+input		rst_tri_en;
+input		sehold;
+
+
+reg	[29:0]	addr_array[63:0]	;
+reg	[63:0]	valid	;
+reg	[63:0]	parity	;
+reg	[29:0]	temp_addr0 ;
+reg	[29:0]	temp_addr1 ;
+reg	[31:0]	rd_data;
+reg	[31:0]	lkup_hit;
+reg	[63:0]	cam_hit;
+
+
+reg	[63:0]	reset_valid;
+reg	[63:0]	valid_bit;
+
+reg             rd_en_d, wr_en_d;
+reg             cam_en_d ;
+reg     [7:0]   inval_mask_d;
+reg     [5:0]   rw_addr_d;
+//reg	wr_en_off_d1;
+reg	rst_tri_en_d1;
+
+
+wire	[7:0]	inval_mask;
+integer	i,j;
+
+always  @(posedge rclk)
+begin
+        rd_en_d <= (sehold)? rd_en_d: rd_en ;
+        wr_en_d <= (sehold)? wr_en_d: wr_en;
+        rw_addr_d <= (sehold)? rw_addr_d : rw_addr  ;
+        cam_en_d <= ( sehold)? cam_en_d: cam_en ;
+        inval_mask_d <= ( sehold)? inval_mask_d : inv_mask ;
+
+	rst_tri_en_d1 <= rst_tri_en ; // this is a dummy flop only used as a trigger
+end
+
+
+
+//--------\/-------------
+// VALID flop logic
+//--------\/-------------
+always  @(posedge rclk) begin
+		valid_bit <= valid;
+end
+	
+
+reg	cam_out;
+
+
+// CAM OPERATION and reset_valid generation
+// the following always block ensures that lkup_hit will be 
+// a ph1 signal.
+
+always	@( /*AUTOSENSE*/ /*memory or*/ cam_en_d or inval_mask_d or rst_tri_en or
+           rst_tri_en_d1 or valid_bit or wr_data or rst_warm or rst_l)
+
+ begin
+
+
+		cam_out = cam_en_d & ~(rst_tri_en | rst_tri_en_d1)  ;
+
+
+
+		cam_hit[0] = ( wr_data[32:3] == addr_array[0] )  &
+                                 cam_out &   ~wr_data[2] & valid_bit[0]  ;
+                reset_valid[0] = (cam_hit[0] & inval_mask_d[0]) ;
+                cam_hit[1] = ( wr_data[32:3] == addr_array[1] )  &
+                                  cam_out &  wr_data[2]  & valid_bit[1];
+                reset_valid[1] = (cam_hit[1] & inval_mask_d[0]) ;
+
+		lkup_hit[0] = ( cam_hit[0]  |  cam_hit[1] ) ;
+
+	
+
+		cam_hit[2] = ( wr_data[32:3] == addr_array[2] )  &
+                                   cam_out & ~wr_data[2] & valid_bit[2]  ;
+                reset_valid[2] = (cam_hit[2] & inval_mask_d[0]) ;
+                cam_hit[3] = ( wr_data[32:3] == addr_array[3] ),                                       .rst_warm(),       // Templated
+                                    .rw_addr0(rw_addr2[5:0]),    // Templated
+                                    .rw_addr1(rw_addr3[5:0]),    // Templated
+                                    .sehold(sehold_1),           // Templated
+                                    .wr_data0(wr_data2[32:0]),   // Templated
+                                    .wr_data1(wr_data3[32:0]),   // Templated
+                                    .wr_en(wr_en[3:2]));          // Templated
+
+
+endmodule
+
+
+
+module dcm_panel_pair(  /*AUTOARG*/
+   // Outputs
+   so, bank_hit, rd_data0, rd_data1, 
+   // Inputs
+   cam_en, inv_mask0, inv_mask1, rclk, rd_en, rst_l, rst_tri_en, 
+   rst_warm, rw_addr0, rw_addr1, sehold, wr_data0, wr_data1, wr_en, 
+   si, se
+   );
+
+input [1:0]             cam_en;                 
+input [7:0]             inv_mask0;              
+input [7:0]             inv_mask1;              
+input                   rclk;                   
+input [1:0]             rd_en;                  
+input                   rst_l;                
+input                   rst_tri_en;           
+input                   rst_warm;             
+input [5:0]             rw_addr0;               
+input [5:0]             rw_addr1;               
+input                   sehold;               
+input [32:0]            wr_data0;               
+input [32:0]            wr_data1;               
+input [1:0]             wr_en;                  
+input			si,se ;
+
+output			so;
+output [31:0]           bank_hit;              
+output [31:0]           rd_data0;               
+output [31:0]           rd_data1;               
+
+wire	[31:0]	lkup_hit0, lkup_hit1;
+reg	rst_warm_d;
+
+
+always  @(posedge rclk)
+begin
+	rst_warm_d <= ( sehold)? rst_warm_d : rst_warm;
+end
+
+/*      dcm_panel       AUTO_TEMPLATE (
+                   .lkup_hit            (lkup_hit@[31:0]),
+                   .rd_data            (rd_data@[31:0]),
+                   .rd_en          (rd_en[@]),
+                   .wr_en          (wr_en[@]),
+                   .cam_en              (cam_en[@]),
+                   .wr_data             (wr_data@[32:0]),
+                   .rw_addr             (rw_addr@[5:0]),
+                   .rst_l               (rst_l),
+                   .rst_warm               (rst_warm_d),
+                   .rst_tri_en               (rst_tri_en),
+                   .sehold               (sehold),
+                   .inv_mask            (inv_mask@[7:0]));
+*/
+
+        dcm_panel       panel0(.si(),
+			       .so(),
+			       .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit0[31:0]),       // Templated
+                               .rd_data (rd_data0[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[0]),              // Templated
+                               .wr_en   (wr_en[0]),              // Templated
+                               .cam_en  (cam_en[0]),             // Templated
+                               .wr_data (wr_data0[32:0]),        // Templated
+                               .rw_addr (rw_addr0[5:0]),         // Templated
+                               .inv_mask(inv_mask0[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+        assign   bank_hit      =    lkup_hit0 | lkup_hit1 ;
+
+        dcm_panel       panel1(.si(),
+                               .so(),
+                               .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit1[31:0]),       // Templated
+                               .rd_data (rd_data1[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[1]),              // Templated
+                               .wr_en   (wr_en[1]),              // Templated
+                               .cam_en  (cam_en[1]),             // Templated
+                               .wr_data (wr_data1[32:0]),        // Templated
+                               .rw_addr (rw_addr1[5:0]),         // Templated
+                               .inv_mask(inv_mask1[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+
+endmodule
+
+
+////////////////////////////////////////////////////////////////////////
+// Local header file includes / local defines
+// A directory panel is 32 bits wide and 64 entries deep.
+// The lkup_hit combines the match lines for an even and odd entry pair
+// and hence is only 32 bits wide.
+////////////////////////////////////////////////////////////////////////
+
+
+module dcm_panel(  /*AUTOARG*/
+   // Outputs
+   lkup_hit, rd_data, so, 
+   // Inputs
+   rd_en, wr_en, cam_en, wr_data, rw_addr, inv_mask, rst_l, rclk, 
+   rst_warm, si, se, rst_tri_en, sehold
+   );
+
+
+// Read inputs
+input		rd_en;
+input		wr_en;
+input		cam_en;
+input	[32:0]	wr_data; // { addr<39:10>, addr<8>, parity, valid  }
+
+
+// shared inputs 
+input	[5:0]	rw_addr; // even entries will have wr_data<0> == 0
+input	[7:0]	inv_mask;
+
+
+output	[31:0]	lkup_hit;
+output	[31:0]	rd_data; // { addr<39:10>, parity, valid } 
+
+input		rst_l;
+input		rclk;
+input		rst_warm;
+
+input		si, se;
+output		so;
+input		rst_tri_en;
+input		sehold;
+
+
+reg	[29:0]	addr_array[63:0]	;
+reg	[63:0]	valid	;
+reg	[63:0]	parity	;
+reg	[29:0]	temp_addr0 ;
+reg	[29:0]	temp_addr1 ;
+reg	[31:0]	rd_data;
+reg	[31:0]	lkup_hit;
+reg	[63:0]	cam_hit;
+
+
+reg	[63:0]	reset_valid;
+reg	[63:0]	valid_bit;
+
+reg             rd_en_d, wr_en_d;
+reg             cam_en_d ;
+reg     [7:0]   inval_mask_d;
+reg     [5:0]   rw_addr_d;
+//reg	wr_en_off_d1;
+reg	rst_tri_en_d1;
+
+
+wire	[7:0]	inval_mask;
+integer	i,j;
+
+always  @(posedge rclk)
+begin
+        rd_en_d <= (sehold)? rd_en_d: rd_en ;
+        wr_en_d <= (sehold)? wr_en_d: wr_en;
+        rw_addr_d <= (sehold)? rw_addr_d : rw_addr  ;
+        cam_en_d <= ( sehold)? cam_en_d: cam_en ;
+        inval_mask_d <= ( sehold)? inval_mask_d : inv_mask ;
+
+	rst_tri_en_d1 <= rst_tri_en ; // this is a dummy flop only used as a trigger
+end
+
+
+
+//--------\/-------------
+// VALID flop logic
+//--------\/-------------
+always  @(posedge rclk) begin
+		valid_bit <= valid;
+end
+	
+
+reg	cam_out;
+
+
+// CAM OPERATION and reset_valid generation
+// the following always block ensures that lkup_hit will be 
+// a ph1 signal.
+
+always	@( /*AUTOSENSE*/ /*memory or*/ cam_en_d or inval_mask_d or rst_tri_en or
+           rst_tri_en_d1 or valid_bit or wr_data or rst_warm or rst_l)
+
+ begin
+
+
+		cam_out = cam_en_d & ~(rst_tri_en | rst_tri_en_d1)  ;
+
+
+
+		cam_hit[0] = ( wr_data[32:3] == addr_array[0] )  &
+                                 cam_out &   ~wr_data[2] & valid_bit[0]  ;
+                reset_valid[0] = (cam_hit[0] & inval_mask_d[0]) ;
+                cam_hit[1] = ( wr_data[32:3] == addr_array[1] )  &
+                                  cam_out &  wr_data[2]  & valid_bit[1];
+                reset_valid[1] = (cam_hit[1] & inval_mask_d[0]) ;
+
+		lkup_hit[0] = ( cam_hit[0]  |  cam_hit[1] ) ;
+
+	
+
+		cam_hit[2] = ( wr_data[32:3] == addr_array[2] )  &
+                                   cam_out & ~wr_data[2] & valid_bit[2]  ;
+                reset_valid[2] = (cam_hit[2] & inval_mask_d[0]) ;
+                cam_hit[3] = ( wr_data[32:3] == addr_array[3] ),                                           .rw_addr0([5:0]),                                        .rw_addr1([5:0]),                                        .sehold(),           // Templated
+                                    .wr_data0(wr_data2[32:0]),   // Templated
+                                    .wr_data1(wr_data3[32:0]),   // Templated
+                                    .wr_en(wr_en[3:2]));          // Templated
+
+
+endmodule
+
+
+
+module dcm_panel_pair(  /*AUTOARG*/
+   // Outputs
+   so, bank_hit, rd_data0, rd_data1, 
+   // Inputs
+   cam_en, inv_mask0, inv_mask1, rclk, rd_en, rst_l, rst_tri_en, 
+   rst_warm, rw_addr0, rw_addr1, sehold, wr_data0, wr_data1, wr_en, 
+   si, se
+   );
+
+input [1:0]             cam_en;                 
+input [7:0]             inv_mask0;              
+input [7:0]             inv_mask1;              
+input                   rclk;                   
+input [1:0]             rd_en;                  
+input                   rst_l;                
+input                   rst_tri_en;           
+input                   rst_warm;             
+input [5:0]             rw_addr0;               
+input [5:0]             rw_addr1;               
+input                   sehold;               
+input [32:0]            wr_data0;               
+input [32:0]            wr_data1;               
+input [1:0]             wr_en;                  
+input			si,se ;
+
+output			so;
+output [31:0]           bank_hit;              
+output [31:0]           rd_data0;               
+output [31:0]           rd_data1;               
+
+wire	[31:0]	lkup_hit0, lkup_hit1;
+reg	rst_warm_d;
+
+
+always  @(posedge rclk)
+begin
+	rst_warm_d <= ( sehold)? rst_warm_d : rst_warm;
+end
+
+/*      dcm_panel       AUTO_TEMPLATE (
+                   .lkup_hit            (lkup_hit@[31:0]),
+                   .rd_data            (rd_data@[31:0]),
+                   .rd_en          (rd_en[@]),
+                   .wr_en          (wr_en[@]),
+                   .cam_en              (cam_en[@]),
+                   .wr_data             (wr_data@[32:0]),
+                   .rw_addr             (rw_addr@[5:0]),
+                   .rst_l               (rst_l),
+                   .rst_warm               (rst_warm_d),
+                   .rst_tri_en               (rst_tri_en),
+                   .sehold               (sehold),
+                   .inv_mask            (inv_mask@[7:0]));
+*/
+
+        dcm_panel       panel0(.si(),
+			       .so(),
+			       .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit0[31:0]),       // Templated
+                               .rd_data (rd_data0[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[0]),              // Templated
+                               .wr_en   (wr_en[0]),              // Templated
+                               .cam_en  (cam_en[0]),             // Templated
+                               .wr_data (wr_data0[32:0]),        // Templated
+                               .rw_addr (rw_addr0[5:0]),         // Templated
+                               .inv_mask(inv_mask0[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+        assign   bank_hit      =    lkup_hit0 | lkup_hit1 ;
+
+        dcm_panel       panel1(.si(),
+                               .so(),
+                               .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit1[31:0]),       // Templated
+                               .rd_data (rd_data1[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[1]),              // Templated
+                               .wr_en   (wr_en[1]),              // Templated
+                               .cam_en  (cam_en[1]),             // Templated
+                               .wr_data (wr_data1[32:0]),        // Templated
+                               .rw_addr (rw_addr1[5:0]),         // Templated
+                               .inv_mask(inv_mask1[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+
+endmodule
+
+
+////////////////////////////////////////////////////////////////////////
+// Local header file includes / local defines
+// A directory panel is 32 bits wide and 64 entries deep.
+// The lkup_hit combines the match lines for an even and odd entry pair
+// and hence is only 32 bits wide.
+////////////////////////////////////////////////////////////////////////
+
+
+module dcm_panel(  /*AUTOARG*/
+   // Outputs
+   lkup_hit, rd_data, so, 
+   // Inputs
+   rd_en, wr_en, cam_en, wr_data, rw_addr, inv_mask, rst_l, rclk, 
+   rst_warm, si, se, rst_tri_en, sehold
+   );
+
+
+// Read inputs
+input		rd_en;
+input		wr_en;
+input		cam_en;
+input	[32:0]	wr_data; // { addr<39:10>, addr<8>, parity, valid  }
+
+
+// shared inputs 
+input	[5:0]	rw_addr; // even entries will have wr_data<0> == 0
+input	[7:0]	inv_mask;
+
+
+output	[31:0]	lkup_hit;
+output	[31:0]	rd_data; // { addr<39:10>, parity, valid } 
+
+input		rst_l;
+input		rclk;
+input		rst_warm;
+
+input		si, se;
+output		so;
+input		rst_tri_en;
+input		sehold;
+
+
+reg	[29:0]	addr_array[63:0]	;
+reg	[63:0]	valid	;
+reg	[63:0]	parity	;
+reg	[29:0]	temp_addr0 ;
+reg	[29:0]	temp_addr1 ;
+reg	[31:0]	rd_data;
+reg	[31:0]	lkup_hit;
+reg	[63:0]	cam_hit;
+
+
+reg	[63:0]	reset_valid;
+reg	[63:0]	valid_bit;
+
+reg             rd_en_d, wr_en_d;
+reg             cam_en_d ;
+reg     [7:0]   inval_mask_d;
+reg     [5:0]   rw_addr_d;
+//reg	wr_en_off_d1;
+reg	rst_tri_en_d1;
+
+
+wire	[7:0]	inval_mask;
+integer	i,j;
+
+always  @(posedge rclk)
+begin
+        rd_en_d <= (sehold)? rd_en_d: rd_en ;
+        wr_en_d <= (sehold)? wr_en_d: wr_en;
+        rw_addr_d <= (sehold)? rw_addr_d : rw_addr  ;
+        cam_en_d <= ( sehold)? cam_en_d: cam_en ;
+        inval_mask_d <= ( sehold)? inval_mask_d : inv_mask ;
+
+	rst_tri_en_d1 <= rst_tri_en ; // this is a dummy flop only used as a trigger
+end
+
+
+
+//--------\/-------------
+// VALID flop logic
+//--------\/-------------
+always  @(posedge rclk) begin
+		valid_bit <= valid;
+end
+	
+
+reg	cam_out;
+
+
+// CAM OPERATION and reset_valid generation
+// the following always block ensures that lkup_hit will be 
+// a ph1 signal.
+
+always	@( /*AUTOSENSE*/ /*memory or*/ cam_en_d or inval_mask_d or rst_tri_en or
+           rst_tri_en_d1 or valid_bit or wr_data or rst_warm or rst_l)
+
+ begin
+
+
+		cam_out = cam_en_d & ~(rst_tri_en | rst_tri_en_d1)  ;
+
+
+
+		cam_hit[0] = ( wr_data[32:3] == addr_array[0] )  &
+                                 cam_out &   ~wr_data[2] & valid_bit[0]  ;
+                reset_valid[0] = (cam_hit[0] & inval_mask_d[0]) ;
+                cam_hit[1] = ( wr_data[32:3] == addr_array[1] )  &
+                                  cam_out &  wr_data[2]  & valid_bit[1];
+                reset_valid[1] = (cam_hit[1] & inval_mask_d[0]) ;
+
+		lkup_hit[0] = ( cam_hit[0]  |  cam_hit[1] ) ;
+
+	
+
+		cam_hit[2] = ( wr_data[32:3] == addr_array[2] )  &
+                                   cam_out & ~wr_data[2] & valid_bit[2]  ;
+                reset_valid[2] = (cam_hit[2] & inval_mask_d[0]) ;
+                cam_hit[3] = ( wr_data[32:3] == addr_array[3] ),                                               .wr_data0([32:0]),                                       .wr_data1([32:0]),                                       .wr_en([3:2]));          
+
+endmodule
+
+
+
+module dcm_panel_pair(  
+      so, bank_hit, rd_data0, rd_data1, 
+      cam_en, inv_mask0, inv_mask1, rclk, rd_en, rst_l, rst_tri_en, 
+   rst_warm, rw_addr0, rw_addr1, sehold, wr_data0, wr_data1, wr_en, 
+   si, se
+   );
+
+input [1:0]             cam_en;                 
+input [7:0]             inv_mask0;              
+input [7:0]             inv_mask1;              
+input                   rclk;                   
+input [1:0]             rd_en;                  
+input                   rst_l;                
+input                   rst_tri_en;           
+input                   rst_warm;             
+input [5:0]             rw_addr0;               
+input [5:0]             rw_addr1;               
+input                   sehold;               
+input [32:0]            wr_data0;               
+input [32:0]            wr_data1;               
+input [1:0]             wr_en;                  
+input			si,se ;
+
+output			so;
+output [31:0]           bank_hit;              
+output [31:0]           rd_data0;               
+output [31:0]           rd_data1;               
+
+wire	[31:0]	, lkup_hit1;
+reg	rst_warm_d;
+
+
+always  @(posedge rclk)
+begin
+	rst_warm_d <= ( sehold)? rst_warm_d : rst_warm;
+end
+
+/*      dcm_panel       AUTO_TEMPLATE (
+                   .lkup_hit            (lkup_hit@[31:0]),
+                   .rd_data            (rd_data@[31:0]),
+                   .rd_en          (rd_en[@]),
+                   .wr_en          (wr_en[@]),
+                   .cam_en              (cam_en[@]),
+                   .wr_data             (wr_data@[32:0]),
+                   .rw_addr             (rw_addr@[5:0]),
+                   .rst_l               (rst_l),
+                   .rst_warm               (rst_warm_d),
+                   .rst_tri_en               (rst_tri_en),
+                   .sehold               (sehold),
+                   .inv_mask            (inv_mask@[7:0]));
+*/
+
+        dcm_panel       panel0(.si(),
+			       .so(),
+			       .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit0[31:0]),       // Templated
+                               .rd_data (rd_data0[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[0]),              // Templated
+                               .wr_en   (wr_en[0]),              // Templated
+                               .cam_en  (cam_en[0]),             // Templated
+                               .wr_data (wr_data0[32:0]),        // Templated
+                               .rw_addr (rw_addr0[5:0]),         // Templated
+                               .inv_mask(inv_mask0[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+        assign   bank_hit      =    lkup_hit0 | lkup_hit1 ;
+
+        dcm_panel       panel1(.si(),
+                               .so(),
+                               .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit1[31:0]),       // Templated
+                               .rd_data (rd_data1[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[1]),              // Templated
+                               .wr_en   (wr_en[1]),              // Templated
+                               .cam_en  (cam_en[1]),             // Templated
+                               .wr_data (wr_data1[32:0]),        // Templated
+                               .rw_addr (rw_addr1[5:0]),         // Templated
+                               .inv_mask(inv_mask1[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+
+endmodule
+
+
+////////////////////////////////////////////////////////////////////////
+// Local header file includes / local defines
+// A directory panel is 32 bits wide and 64 entries deep.
+// The lkup_hit combines the match lines for an even and odd entry pair
+// and hence is only 32 bits wide.
+////////////////////////////////////////////////////////////////////////
+
+
+module dcm_panel(  /*AUTOARG*/
+   // Outputs
+   lkup_hit, rd_data, so, 
+   // Inputs
+   rd_en, wr_en, cam_en, wr_data, rw_addr, inv_mask, rst_l, rclk, 
+   rst_warm, si, se, rst_tri_en, sehold
+   );
+
+
+// Read inputs
+input		rd_en;
+input		wr_en;
+input		cam_en;
+input	[32:0]	wr_data; // { addr<39:10>, addr<8>, parity, valid  }
+
+
+// shared inputs 
+input	[5:0]	rw_addr; // even entries will have wr_data<0> == 0
+input	[7:0]	inv_mask;
+
+
+output	[31:0]	lkup_hit;
+output	[31:0]	rd_data; // { addr<39:10>, parity, valid } 
+
+input		rst_l;
+input		rclk;
+input		rst_warm;
+
+input		si, se;
+output		so;
+input		rst_tri_en;
+input		sehold;
+
+
+reg	[29:0]	addr_array[63:0]	;
+reg	[63:0]	valid	;
+reg	[63:0]	parity	;
+reg	[29:0]	temp_addr0 ;
+reg	[29:0]	temp_addr1 ;
+reg	[31:0]	rd_data;
+reg	[31:0]	lkup_hit;
+reg	[63:0]	cam_hit;
+
+
+reg	[63:0]	reset_valid;
+reg	[63:0]	valid_bit;
+
+reg             rd_en_d, wr_en_d;
+reg             cam_en_d ;
+reg     [7:0]   inval_mask_d;
+reg     [5:0]   rw_addr_d;
+//reg	wr_en_off_d1;
+reg	rst_tri_en_d1;
+
+
+wire	[7:0]	inval_mask;
+integer	i,j;
+
+always  @(posedge rclk)
+begin
+        rd_en_d <= (sehold)? rd_en_d: rd_en ;
+        wr_en_d <= (sehold)? wr_en_d: wr_en;
+        rw_addr_d <= (sehold)? rw_addr_d : rw_addr  ;
+        cam_en_d <= ( sehold)? cam_en_d: cam_en ;
+        inval_mask_d <= ( sehold)? inval_mask_d : inv_mask ;
+
+	rst_tri_en_d1 <= rst_tri_en ; // this is a dummy flop only used as a trigger
+end
+
+
+
+//--------\/-------------
+// VALID flop logic
+//--------\/-------------
+always  @(posedge rclk) begin
+		valid_bit <= valid;
+end
+	
+
+reg	cam_out;
+
+
+// CAM OPERATION and reset_valid generation
+// the following always block ensures that lkup_hit will be 
+// a ph1 signal.
+
+always	@( /*AUTOSENSE*/ /*memory or*/ cam_en_d or inval_mask_d or rst_tri_en or
+           rst_tri_en_d1 or valid_bit or wr_data or rst_warm or rst_l)
+
+ begin
+
+
+		cam_out = cam_en_d & ~(rst_tri_en | rst_tri_en_d1)  ;
+
+
+
+		cam_hit[0] = ( wr_data[32:3] == addr_array[0] )  &
+                                 cam_out &   ~wr_data[2] & valid_bit[0]  ;
+                reset_valid[0] = (cam_hit[0] & inval_mask_d[0]) ;
+                cam_hit[1] = ( wr_data[32:3] == addr_array[1] )  &
+                                  cam_out &  wr_data[2]  & valid_bit[1];
+                reset_valid[1] = (cam_hit[1] & inval_mask_d[0]) ;
+
+		lkup_hit[0] = ( cam_hit[0]  |  cam_hit[1] ) ;
+
+	
+
+		cam_hit[2] = ( wr_data[32:3] == addr_array[2] )  &
+                                   cam_out & ~wr_data[2] & valid_bit[2]  ;
+                reset_valid[2] = (cam_hit[2] & inval_mask_d[0]) ;
+                cam_hit[3] = ( wr_data[32:3] == addr_array[3] , ;
+reg	rst_warm_d;
+
+
+always  @(posedge rclk)
+begin
+	rst_warm_d <= ( sehold)? rst_warm_d : rst_warm;
+end
+
+/*      dcm_panel       AUTO_TEMPLATE (
+                   .lkup_hit            (lkup_hit@[31:0]),
+                   .rd_data            (rd_data@[31:0]),
+                   .rd_en          (rd_en[@]),
+                   .wr_en          (wr_en[@]),
+                   .cam_en              (cam_en[@]),
+                   .wr_data             (wr_data@[32:0]),
+                   .rw_addr             (rw_addr@[5:0]),
+                   .rst_l               (rst_l),
+                   .rst_warm               (rst_warm_d),
+                   .rst_tri_en               (rst_tri_en),
+                   .sehold               (sehold),
+                   .inv_mask            (inv_mask@[7:0]));
+*/
+
+        dcm_panel       panel0(.si(),
+			       .so(),
+			       .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit0[31:0]),       // Templated
+                               .rd_data (rd_data0[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[0]),              // Templated
+                               .wr_en   (wr_en[0]),              // Templated
+                               .cam_en  (cam_en[0]),             // Templated
+                               .wr_data (wr_data0[32:0]),        // Templated
+                               .rw_addr (rw_addr0[5:0]),         // Templated
+                               .inv_mask(inv_mask0[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+        assign   bank_hit      =    lkup_hit0 | lkup_hit1 ;
+
+        dcm_panel       panel1(.si(),
+                               .so(),
+                               .se(se),
+				/*AUTOINST*/
+                               // Outputs
+                               .lkup_hit(lkup_hit1[31:0]),       // Templated
+                               .rd_data (rd_data1[31:0]),        // Templated
+                               // Inputs
+                               .rd_en   (rd_en[1]),              // Templated
+                               .wr_en   (wr_en[1]),              // Templated
+                               .cam_en  (cam_en[1]),             // Templated
+                               .wr_data (wr_data1[32:0]),        // Templated
+                               .rw_addr (rw_addr1[5:0]),         // Templated
+                               .inv_mask(inv_mask1[7:0]),        // Templated
+                               .rst_l   (rst_l),                 // Templated
+                               .rclk    (rclk),
+                               .rst_warm(rst_warm_d),            // Templated
+                               .rst_tri_en(rst_tri_en),          // Templated
+                               .sehold  (sehold));                // Templated
+
+
+endmodule
+
+
+////////////////////////////////////////////////////////////////////////
+// Local header file includes / local defines
+// A directory panel is 32 bits wide and 64 entries deep.
+// The lkup_hit combines the match lines for an even and odd entry pair
+// and hence is only 32 bits wide.
+////////////////////////////////////////////////////////////////////////
+
+
+module dcm_panel(  /*AUTOARG*/
+   // Outputs
+   lkup_hit, rd_data, so, 
+   // Inputs
+   rd_en, wr_en, cam_en, wr_data, rw_addr, inv_mask, rst_l, rclk, 
+   rst_warm, si, se, rst_tri_en, sehold
+   );
+
+
+// Read inputs
+input		rd_en;
+input		wr_en;
+input		cam_en;
+input	[32:0]	wr_data; // { addr<39:10>, addr<8>, parity, valid  }
+
+
+// shared inputs 
+input	[5:0]	rw_addr; // even entries will have wr_data<0> == 0
+input	[7:0]	inv_mask;
+
+
+output	[31:0]	lkup_hit;
+output	[31:0]	rd_data; // { addr<39:10>, parity, valid } 
+
+input		rst_l;
+input		rclk;
+input		rst_warm;
+
+input		si, se;
+output		so;
+input		rst_tri_en;
+input		sehold;
+
+
+reg	[29:0]	addr_array[63:0]	;
+reg	[63:0]	valid	;
+reg	[63:0]	parity	;
+reg	[29:0]	temp_addr0 ;
+reg	[29:0]	temp_addr1 ;
+reg	[31:0]	rd_data;
+reg	[31:0]	lkup_hit;
+reg	[63:0]	cam_hit;
+
+
+reg	[63:0]	reset_valid;
+reg	[63:0]	valid_bit;
+
+reg             rd_en_d, wr_en_d;
+reg             cam_en_d ;
+reg     [7:0]   inval_mask_d;
+reg     [5:0]   rw_addr_d;
+//reg	wr_en_off_d1;
+reg	rst_tri_en_d1;
+
+
+wire	[7:0]	inval_mask;
+integer	i,j;
+
+always  @(posedge rclk)
+begin
+        rd_en_d <= (sehold)? rd_en_d: rd_en ;
+        wr_en_d <= (sehold)? wr_en_d: wr_en;
+        rw_addr_d <= (sehold)? rw_addr_d : rw_addr  ;
+        cam_en_d <= ( sehold)? cam_en_d: cam_en ;
+        inval_mask_d <= ( sehold)? inval_mask_d : inv_mask ;
+
+	rst_tri_en_d1 <= rst_tri_en ; // this is a dummy flop only used as a trigger
+end
+
+
+
+//--------\/-------------
+// VALID flop logic
+//--------\/-------------
+always  @(posedge rclk) begin
+		valid_bit <= valid;
+end
+	
+
+reg	cam_out;
+
+
+// CAM OPERATION and reset_valid generation
+// the following always block ensures that lkup_hit will be 
+// a ph1 signal.
+
+always	@( /*AUTOSENSE*/ /*memory or*/ cam_en_d or inval_mask_d or rst_tri_en or
+           rst_tri_en_d1 or valid_bit or wr_data or rst_warm or rst_l)
+
+ begin
+
+
+		cam_out = cam_en_d & ~(rst_tri_en | rst_tri_en_d1)  ;
+
+
+
+		cam_hit[0] = ( wr_data[32:3] == addr_array[0] )  &
+                                 cam_out &   ~wr_data[2] & valid_bit[0]  ;
+                reset_valid[0] = (cam_hit[0] & inval_mask_d[0]) ;
+                cam_hit[1] = ( wr_data[32:3] == addr_array[1] )  &
+                                  cam_out &  wr_data[2]  & valid_bit[1];
+                reset_valid[1] = (cam_hit[1] & inval_mask_d[0]) ;
+
+		lkup_hit[0] = ( cam_hit[0]  |  cam_hit[1] ) ;
+
+	
+
+		cam_hit[2] = ( wr_data[32:3] == addr_array[2] )  &
+                                   cam_out & ~wr_data[2] & valid_bit[2]  ;
+                reset_valid[2] = (cam_hit[2] & inval_mask_d[0]) ;
+                cam_hit[3] = ( wr_data[32:3] == addr_array[3] ;
+reg

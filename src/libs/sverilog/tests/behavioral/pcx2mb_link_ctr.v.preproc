@@ -1,0 +1,33 @@
+
+
+
+
+
+ 
+
+module pcx2mb_link_ctr (
+		request_mask_pa,
+
+		rclk,
+	reset_l,
+
+	pcx_req_pa,
+	pcx_req_px,
+	pcx_atom_px,
+
+	pcx_grant_px
+	);
+
+    output request_mask_pa;
+
+    input rclk;
+    input reset_l;
+
+    input pcx_req_pa;
+    input pcx_req_px;
+    input pcx_atom_px;
+
+    input pcx_grant_px;
+
+
+    reg

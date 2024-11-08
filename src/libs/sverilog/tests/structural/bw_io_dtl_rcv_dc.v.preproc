@@ -1,0 +1,37 @@
+
+
+module bw_io_dtl_rcv_dc (
+    so, 
+    pad, refref, vddo
+  );
+
+  output	so;
+  input		pad;
+  input		refref;
+  input		vddo;
+
+
+  assign  = pad ;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ =  ;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-auto-sense-defines-constant:t
+// End:
+ ;
+
+
+  endmodule
+
+

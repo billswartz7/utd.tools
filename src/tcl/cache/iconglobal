@@ -1,0 +1,75 @@
+# icon bar configuration
+# Here is where we add the default icons.
+# $Id: iconglobal,v 1.2 2016/12/11 06:01:37 bill Exp bill $
+# $Log: iconglobal,v $
+# Revision 1.2  2016/12/11 06:01:37  bill
+# Added low_res option.
+#
+# Revision 1.1  2016/12/10 20:18:37  bill
+# Initial revision
+#
+# Revision 1.2  2005/02/08 17:47:51  bills
+# Updated for new capture mechanism.
+#
+# Revision 1.1  2005/01/30  19:24:08  bills
+# Initial revision
+#
+# Revision 1.9  2002/09/24  16:53:57  bills
+# Added hotkeys editor and rewrote the transcript height editor.
+#
+# Revision 1.8  2002/09/05  01:56:54  bills
+# Added the hotkey editor.
+#
+# Revision 1.7  2000/02/08  07:53:36  bills
+# Updated iconglobal for the new .xpm pixmaps and new zoom macros.
+#
+# Revision 1.6  1999/08/06  18:39:59  bills
+# Updated for itools name change.
+#
+# Revision 1.5  1996/03/29  23:55:57  bills
+# Updated for new balloon help.
+#
+# Revision 1.4  1995/09/02  14:37:14  bills
+# We added the bubble help field to the icons.
+#
+# Revision 1.3  1995/09/01  20:54:01  bills
+# Added the dump icon.
+#
+
+global iconBar
+# icon bar: default
+if {$::utdcache::optionS(low_res)} {
+  set iconBar(bar,default) { \
+    {zoom_in.xpm {::utdcache::zoom_in} \
+	  {Zoom in the display by 2x.} \
+	  {Zoom in}}  \
+    {zoom_out.xpm {::utdcache::zoom_out} \
+	  {Zoom out the display by 2x.} \
+	  {Zoom out}}  \
+    {zoom_fit.xpm {::utdcache::config_ways 0} \
+	  {Return the view to normal view.} \
+	  {Zoom to fit}}  \
+  }
+} else {
+  set iconBar(bar,default) { \
+    {conf.xpm {IconBarConf default} \
+	  {Configure the icons and their meaning.} \
+	  {Configure icons}} \
+    {zoom_in.xpm {::utdcache::zoom_in} \
+	  {Zoom in the display by 2x.} \
+	  {Zoom in}}  \
+    {zoom_out.xpm {::utdcache::zoom_out} \
+	  {Zoom out the display by 2x.} \
+	  {Zoom out}}  \
+    {zoom_fit.xpm {::utdcache::config_ways 0} \
+	  {Return the view to normal view.} \
+	  {Zoom to fit}}  \
+    {fonts.xpm {::utdfonts::display} \
+	  {Change the font sizes} \
+	  {Fonts}} \
+    {hotkeys.xpm {::utdhotkeys::editor} \
+	  {Edit the defined hotkeys for the drawing area} \
+	  {Hotkeys Editor}}  \
+  }
+}
+# eof

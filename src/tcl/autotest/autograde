@@ -1,0 +1,26 @@
+#!/bin/sh
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+if [ $# -lt 1 ]
+then
+echo " "
+echo "        Autograder for programming problems"
+echo "Syntax: autograde <problem #> : grade a given problem"
+echo "        autograde <problem #> [<SQLdatabase>]: specify an optional database"
+echo " "
+exit 1  ;
+fi
+
+libpath=${utdtools}/${UTDTOOLSVERSION}/tcl/autotest
+
+cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/autotest/autograde.tcl -- libpath $libpath ${1+"$@"}

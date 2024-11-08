@@ -1,0 +1,37 @@
+ 
+
+module bw_r_efa (
+	vpp,
+	pi_efa_prog_en, 
+	sbc_efa_read_en,
+	sbc_efa_word_addr,	
+	sbc_efa_bit_addr,
+	sbc_efa_margin0_rd,
+	sbc_efa_margin1_rd,
+	efa_sbc_data,
+ 	pwr_ok,
+	por_n,
+        sbc_efa_sup_det_rd,
+	sbc_efa_power_down,
+	so,
+	si,
+	se,
+	vddo,
+	clk
+);
+
+
+input            vpp;			
+output  [31:0]   efa_sbc_data;		input            pi_efa_prog_en; 	input            sbc_efa_read_en; 	input	[5:0]    sbc_efa_word_addr;	input   [4:0]    sbc_efa_bit_addr;	input            sbc_efa_margin0_rd; 	input            sbc_efa_margin1_rd;	
+input		 pwr_ok;		input		 por_n;			input		 sbc_efa_sup_det_rd;	input		 sbc_efa_power_down;	
+output           so;		input            si;
+input		 se;
+input 		 vddo;
+input            clk; 			
+
+
+parameter MAXFILENAME=200;
+				     parameter 	EFA_READ_LAT = 45000 ; 
+
+
+reg

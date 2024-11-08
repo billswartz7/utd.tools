@@ -1,0 +1,38 @@
+
+	 			        
+
+
+
+module c2i_sctrl (
+      iob_tap_busy, cpu_buf_rd, tap_sel, cpu_packet_is_req, 
+   cpu_packet_type, cpu_buf_head_s, srvc_wr_ack, cpu_buf_head_ptr, 
+   cpu_buf_rd_l, c2i_packet_vld, c2i_packet_is_rd_req, 
+   c2i_packet_is_wr_req, jbi_ucb_sel, clk_ucb_sel, dram0_ucb_sel, 
+   dram1_ucb_sel, iob_man_ucb_sel, iob_int_ucb_sel, spi_ucb_sel, 
+   bounce_ucb_sel, rd_nack_ucb_sel, ucb_buf_acpt, 
+      rst_l, clk, tap_iob_packet_vld, pcx_packet, tap_packet, 
+   c2i_packet_addr, cpu_buf_tail_f, io_buf_avail, jbi_ucb_buf_acpt, 
+   clk_ucb_buf_acpt, dram0_ucb_buf_acpt, dram1_ucb_buf_acpt, 
+   iob_man_ucb_buf_acpt, iob_int_ucb_buf_acpt, spi_ucb_buf_acpt, 
+   bounce_ucb_buf_acpt, rd_nack_ucb_buf_acpt
+   );
+   
+      input                              rst_l;
+   input 			      clk;
+
+
+      input 			      tap_iob_packet_vld;
+   output 			      iob_tap_busy;
+   
+
+      input [-1:0] 	      pcx_packet;
+   input [-1:0]   tap_packet;
+   output 			      cpu_buf_rd;
+   output 			      tap_sel;
+   output 			      cpu_packet_is_req;
+   output [-1:0] 	      cpu_packet_type;
+   
+   input [-1:0] 	      c2i_packet_addr;
+   
+   
+      input [:

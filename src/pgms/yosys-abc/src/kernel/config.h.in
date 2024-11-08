@@ -1,0 +1,94 @@
+/* src/kernel/config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Defined when compiler supports casting to union type. */
+#undef HAVE_CAST_TO_UNION
+
+/* Do we have access to Darwin CoreFoundation.framework? */
+#undef HAVE_COREFOUNDATION
+
+/* Compiler support for module scope symbols */
+#undef HAVE_HIDDEN
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the `mkstemps' function. */
+#undef HAVE_MKSTEMPS
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Is there an installed zlib? */
+#undef HAVE_ZLIB
+
+/* Is this a Mac I see before me? */
+#undef MAC_OSX_TCL
+
+/* No Compiler support for module scope symbols */
+#undef MODULE_SCOPE
+
+/* Is Darwin CoreFoundation unavailable for 64-bit? */
+#undef NO_COREFOUNDATION_64
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Is this a 64-bit build? */
+#undef TCL_CFG_DO64BIT
+
+/* What is the default extension for shared libraries? */
+#undef TCL_SHLIB_EXT
+
+/* # needed in sys/socket.h Should OS/390 do the right thing with sockets? */
+#undef _OE_SOCKETS
+
+/* Do we really want to follow the standard? Yes we do! */
+#undef _POSIX_PTHREAD_SEMANTICS
+
+/* Do we want the reentrant OS API? */
+#undef _REENTRANT
+
+/* Do we want to use the XOPEN network library? */
+#undef _XOPEN_SOURCE
+
+/* Do we want to use the XOPEN network library? */
+#undef _XOPEN_SOURCE_EXTENDED

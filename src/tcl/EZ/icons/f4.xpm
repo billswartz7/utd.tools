@@ -1,0 +1,35 @@
+/* XPM */
+static char *f4[] = {
+/* width height num_colors chars_per_pixel */
+"    24    24        4            1",
+/* colors */
+". c #003399",
+"# c #333399",
+"a c #336699",
+"b c #ffffff",
+/* pixels */
+"bbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbb",
+"........................",
+"........................",
+"........................",
+"........................",
+"........................",
+"........................",
+".....bbb.....bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+".....bbb....#bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+".....bbb.....bbbbbbbbbbb",
+"....abbb.....bbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbb",
+"bbbbbbbbbbbbbbbbbbbbbbbb"
+};

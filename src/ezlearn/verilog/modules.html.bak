@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"> 
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE>Verilog Modules</TITLE>
+</HEAD>
+ 
+<BODY TEXT="#000010" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B"
+ ALINK="#FF0000" ONLOAD="parent.loadframe2()">
+<SCRIPT SRC="utdinclude.js"></SCRIPT>
+<SCRIPT>UTDsection("Problems") ;</SCRIPT>
+<H1><I>Verilog Modules</I></H1>
+
+<H3>Verilog Modules</H3>
+
+<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="<P>Now let's get started using the EZlearn 
+systems by creating a simple Verilog module. </P>") ; 
+</SCRIPT>
+
+<HR>
+<SCRIPT>
+JS_COND(expr="1", HTML="<BR> Now test itranslate.", procedure="::twez::test_verilog", tkwindow=".utdtest", width="680", height="500") ;
+</SCRIPT>
+
+<SCRIPT>
+JS_COND(expr="1", HTML="<BR> Now we can ex generated.", procedure="::twez::exec_verilog", tkwindow=".utdverilog", altwidth="210", altheight="35") ;
+</SCRIPT>
+
+<HR>
+<P><SCRIPT>JS_TK(procedure="ez_nextpage", tkwindow=".eznextpage", args="solutions", altwidth="220", altheight="50") ; </SCRIPT>
+</P>
+</BODY>
+</HTML>
+ 

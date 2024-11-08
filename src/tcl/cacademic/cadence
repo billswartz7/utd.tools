@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ $# -lt 2 ]
+then
+echo " "
+echo "Syntax: cadence <html> <SQLdatabase>"
+echo "For example:"
+echo "            cadence cadence.html students.db [debug] [password] [port <integer>] [maxtries <integer>]\n"
+echo " "
+exit 1  ;
+fi
+
+utdtools=${UTDTOOLS}
+
+if [ ! "${utdtools}" ] ; then
+  echo " "
+  echo "ERROR[cadence]:UTDTOOLS is not set."
+  echo "Please set UTDTOOLS to the UTD Tools root directory."
+  echo " "
+  exit 1
+fi
+
+
+
+cometTix -n -v -do cadence.tcl -- ${1+"$@"}
+

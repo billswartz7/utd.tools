@@ -1,0 +1,192 @@
+
+
+module sparc_ifu_ctr5(
+      limit, so, 
+      clk, se, si, rst_ctr_l
+   );
+
+   input     clk;
+   input     se, si;
+
+   input     rst_ctr_l;
+
+   output    limit;
+   output    so;
+   
+   wire [4:0] ,
+	      count_nxt,
+	      sum;
+   
+   assign   sum[0] = ~count[0];
+   assign   sum[1] = count[1] ^ count[0];
+   assign   sum[2] = count[2] ^ (count[1] & count[0]);
+   assign   sum[3] = count[3] ^ (count[2] & count[1] & count[0]);
+   assign   sum[4] = count[4] ^ (count[3] & count[2] & count[1] & count[0]);
+   assign   count_nxt = sum & {5{rst_ctr_l}};
+
+   dff_s #(5) cnt_reg(.din (count_nxt),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+,
+	      ,
+	      sum;
+   
+   assign   sum[0] = ~count[0];
+   assign   sum[1] = count[1] ^ count[0];
+   assign   sum[2] = count[2] ^ (count[1] & count[0]);
+   assign   sum[3] = count[3] ^ (count[2] & count[1] & count[0]);
+   assign   sum[4] = count[4] ^ (count[3] & count[2] & count[1] & count[0]);
+   assign   count_nxt = sum & {5{rst_ctr_l}};
+
+   dff_s #(5) cnt_reg(.din (count_nxt),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+,
+	      ;
+   
+   assign   sum[0] = ~count[0];
+   assign   sum[1] = count[1] ^ count[0];
+   assign   sum[2] = count[2] ^ (count[1] & count[0]);
+   assign   sum[3] = count[3] ^ (count[2] & count[1] & count[0]);
+   assign   sum[4] = count[4] ^ (count[3] & count[2] & count[1] & count[0]);
+   assign   count_nxt = sum & {5{rst_ctr_l}};
+
+   dff_s #(5) cnt_reg(.din (count_nxt),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+;
+   
+   assign   [0] = ~[0];
+   assign   [1] = [1] ^ [0];
+   assign   [2] = [2] ^ ([1] & [0]);
+   assign   [3] = [3] ^ ([2] & [1] & [0]);
+   assign   [4] = [4] ^ ([3] & [2] & [1] & [0]);
+   assign    = sum & {5{rst_ctr_l}};
+
+   dff_s #(5) cnt_reg(.din (count_nxt),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+ =  & {5{rst_ctr_l}};
+
+   dff_s #(5) cnt_reg(.din (count_nxt),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+ & {5{}};
+
+   dff_s #(5) cnt_reg(.din (count_nxt),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+}};
+
+   dff_s #(5) (.din (count_nxt),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+(.din (),
+		                .q   (count),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+),
+		                .q   (),
+		                .clk (clk),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+),
+		                .clk (),
+		                .se  (se), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+),
+		                .se  (), .si(), .so());
+
+   // limit set to 24 for now
+   assign   limit = count[4] & count[3];
+   
+   
+endmodule
+   
+), .si(), .so());
+
+      assign    = count[4] & count[3];
+   
+   
+endmodule
+   
+ = [4] & [3];
+   
+   
+endmodule
+   

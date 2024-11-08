@@ -1,0 +1,466 @@
+module synchronizer_asr (
+      sync_out, so, 
+      async_in, gclk, rclk, arst_l, si, se
+   );
+
+   output sync_out;
+   output so;
+   
+   input  async_in;
+   input  gclk;
+   input  rclk;
+   input  arst_l;
+   input  si;
+   input  se;
+
+   wire   ;
+   wire   so_rptr;
+   wire   so_lockup;
+   
+   bw_u1_soffasr_2x repeater (
+                              .q (pre_sync_out),
+                              .so (so_rptr),
+                              .ck (gclk),
+                              .d (async_in),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+;
+   wire   ;
+   wire   so_lockup;
+   
+   bw_u1_soffasr_2x repeater (
+                              .q (pre_sync_out),
+                              .so (so_rptr),
+                              .ck (gclk),
+                              .d (async_in),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+;
+   wire   ;
+   
+   bw_u1_soffasr_2x repeater (
+                              .q (pre_sync_out),
+                              .so (so_rptr),
+                              .ck (gclk),
+                              .d (async_in),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+;
+   
+   bw_u1_soffasr_2x  (
+                              .q (pre_sync_out),
+                              .so (so_rptr),
+                              .ck (gclk),
+                              .d (async_in),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+ (
+                              .q (),
+                              .so (so_rptr),
+                              .ck (gclk),
+                              .d (async_in),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                              .so (),
+                              .ck (gclk),
+                              .d (async_in),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                              .ck (),
+                              .d (async_in),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                              .d (),	
+                              .r_l (arst_l),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),	
+                              .r_l (),	
+                              .s_l (1'b1),	
+                              .se (se),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),	
+                              .s_l (1bb),	
+                              .se (),
+                              .sd (si)
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                              .sd ()
+			      );
+   bw_u1_scanl_2x lockup (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+)
+			      );
+   bw_u1_scanl_2x  (
+			   .so (so_lockup),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+ (
+			   .so (),
+			   .sd (so_rptr),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+			   .sd (),
+			   .ck (gclk)
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+			   .ck ()
+			   );
+
+   bw_u1_soffasr_2x syncff (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+)
+			   );
+
+   bw_u1_soffasr_2x  (
+                            .q (sync_out),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+ (
+                            .q (),
+                            .so (so),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                            .so (),
+                            .ck (rclk),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                            .ck (),
+                            .d (pre_sync_out),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                            .d (),
+                            .r_l (arst_l),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                            .r_l (),	
+                            .s_l (1'b1),	
+                            .se (se),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),	
+                            .s_l (1bb),	
+                            .se (),
+                            .sd (so_lockup)
+			    );
+
+endmodule // synchronizer_asr
+),
+                            .sd ()
+			    );
+
+endmodule // synchronizer_asr
+)
+			    );
+
+endmodule 

@@ -1,0 +1,251 @@
+
+module cluster_header_sync (
+      dram_rx_sync_local, dram_tx_sync_local, jbus_rx_sync_local, 
+   jbus_tx_sync_local, so, 
+      dram_rx_sync_global, dram_tx_sync_global, jbus_rx_sync_global, 
+   jbus_tx_sync_global, cmp_gclk, cmp_rclk, si, se
+   );
+
+   output dram_rx_sync_local;
+   output dram_tx_sync_local;
+   output jbus_rx_sync_local;
+   output jbus_tx_sync_local;
+   output so;
+
+   input  dram_rx_sync_global;
+   input  dram_tx_sync_global;
+   input  jbus_rx_sync_global;
+   input  jbus_tx_sync_global;
+   input  cmp_gclk;
+   input  cmp_rclk;
+   input  si;
+   input  se;
+
+   wire   ;
+   wire   dram_tx_so;
+   wire   jbus_rx_so;
+
+   bw_clk_cclk_sync sync_wrapper (
+				  .dram_rx_sync_local(dram_rx_sync_local),
+				  .dram_tx_sync_local(dram_tx_sync_local),
+				  .jbus_rx_sync_local(jbus_rx_sync_local),
+				  .jbus_tx_sync_local(jbus_tx_sync_local),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+;
+   wire   ;
+   wire   jbus_rx_so;
+
+   bw_clk_cclk_sync sync_wrapper (
+				  .dram_rx_sync_local(dram_rx_sync_local),
+				  .dram_tx_sync_local(dram_tx_sync_local),
+				  .jbus_rx_sync_local(jbus_rx_sync_local),
+				  .jbus_tx_sync_local(jbus_tx_sync_local),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+;
+   wire   ;
+
+   bw_clk_cclk_sync sync_wrapper (
+				  .dram_rx_sync_local(dram_rx_sync_local),
+				  .dram_tx_sync_local(dram_tx_sync_local),
+				  .jbus_rx_sync_local(jbus_rx_sync_local),
+				  .jbus_tx_sync_local(jbus_tx_sync_local),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+;
+
+   bw_clk_cclk_sync  (
+				  .dram_rx_sync_local(dram_rx_sync_local),
+				  .dram_tx_sync_local(dram_tx_sync_local),
+				  .jbus_rx_sync_local(jbus_rx_sync_local),
+				  .jbus_tx_sync_local(jbus_tx_sync_local),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+ (
+				  .dram_rx_sync_local(),
+				  .dram_tx_sync_local(dram_tx_sync_local),
+				  .jbus_rx_sync_local(jbus_rx_sync_local),
+				  .jbus_tx_sync_local(jbus_tx_sync_local),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .dram_tx_sync_local(),
+				  .jbus_rx_sync_local(jbus_rx_sync_local),
+				  .jbus_tx_sync_local(jbus_tx_sync_local),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .jbus_rx_sync_local(),
+				  .jbus_tx_sync_local(jbus_tx_sync_local),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .jbus_tx_sync_local(),
+				  .so(so),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .so(),
+				  .dram_rx_sync_global(dram_rx_sync_global),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .dram_rx_sync_global(),
+				  .dram_tx_sync_global(dram_tx_sync_global),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .dram_tx_sync_global(),
+				  .jbus_rx_sync_global(jbus_rx_sync_global),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .jbus_rx_sync_global(),
+				  .jbus_tx_sync_global(jbus_tx_sync_global),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .jbus_tx_sync_global(),
+				  .cmp_gclk(cmp_gclk),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .cmp_gclk(),
+				  .cmp_rclk(cmp_rclk),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .cmp_rclk(),
+				  .si(si),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .si(),
+				  .se(se)
+				  );			       
+
+endmodule // cluster_header_sync
+),
+				  .se()
+				  );			       
+
+endmodule // cluster_header_sync
+)
+				  );			       
+
+endmodule 

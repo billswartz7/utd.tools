@@ -1,0 +1,14 @@
+
+
+module lsu_dcache_lfsr (
+      out, 
+      advance, clk, se, si, so, reset
+   );
+
+   input 	advance;
+   
+   input 	clk, se, si, so, reset;
+
+   output [1:0] out;
+
+   reg

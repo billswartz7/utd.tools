@@ -1,0 +1,4431 @@
+module dram_pt(
+      pt_ch0_blk_new_openbank, pt_ch1_blk_new_openbank, 
+   pt_max_banks_open, pt_max_time, dram_pt_max_banks_open_valid, 
+   dram_pt_max_time_valid, dram_pt_ucb_data, 
+      clk, rst_l, dram_local_pt0_opened_bank, 
+   dram_local_pt1_opened_bank, dram_other_pt0_opened_bank, 
+   dram_other_pt1_opened_bank, que_max_banks_open_valid0, 
+   que_max_banks_open_valid1, que_max_banks_open0, 
+   que_max_banks_open1, que_max_time_valid0, que_max_time_valid1, 
+   arst_l, 
+   dram_other_pt_max_banks_open_valid, dram_other_pt_max_time_valid, 
+   dram_other_pt_ucb_data
+   );
+
+output		pt_ch0_blk_new_openbank;
+output		pt_ch1_blk_new_openbank;
+
+output [16:0]	pt_max_banks_open;
+output [15:0]	pt_max_time;
+
+output 		dram_pt_max_banks_open_valid;
+output 		dram_pt_max_time_valid;
+output [16:0]	dram_pt_ucb_data;
+
+input		clk;
+input		rst_l;
+input		dram_local_pt0_opened_bank;
+input		dram_local_pt1_opened_bank;
+input		dram_other_pt0_opened_bank;
+input		dram_other_pt1_opened_bank;
+
+input          	que_max_banks_open_valid0;
+input          	que_max_banks_open_valid1;
+input [16:0]	que_max_banks_open0;
+input [16:0]	que_max_banks_open1;
+
+input          	que_max_time_valid0;
+input          	que_max_time_valid1;
+
+input		arst_l;
+
+input 		dram_other_pt_max_banks_open_valid;
+input 		dram_other_pt_max_time_valid;
+input [16:0]	dram_other_pt_ucb_data;
+
+wire [15:0]	;
+wire [15:0]	pt_time_cntr;
+
+////////////////////////////////////////////////////////////////
+// CODE
+////////////////////////////////////////////////////////////////
+
+// DONOT NEED TO FLOP AS THEY ARE COMMING FROM A FLOP
+// opened bank bits comming from other dram control
+
+wire pt_other_pt0_opened_bank = dram_other_pt0_opened_bank;
+wire pt_other_pt1_opened_bank = dram_other_pt1_opened_bank;
+
+// Prepare data for other power controller - COMMING FROM FLOP
+
+assign dram_pt_max_banks_open_valid = que_max_banks_open_valid0 | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+wire [15:0]	;
+
+////////////////////////////////////////////////////////////////
+// CODE
+////////////////////////////////////////////////////////////////
+
+// DONOT NEED TO FLOP AS THEY ARE COMMING FROM A FLOP
+// opened bank bits comming from other dram control
+
+wire pt_other_pt0_opened_bank = dram_other_pt0_opened_bank;
+wire pt_other_pt1_opened_bank = dram_other_pt1_opened_bank;
+
+// Prepare data for other power controller - COMMING FROM FLOP
+
+assign dram_pt_max_banks_open_valid = que_max_banks_open_valid0 | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+
+
+
+wire  = dram_other_pt0_opened_bank;
+wire pt_other_pt1_opened_bank = dram_other_pt1_opened_bank;
+
+// Prepare data for other power controller - COMMING FROM FLOP
+
+assign dram_pt_max_banks_open_valid = que_max_banks_open_valid0 | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ = ;
+wire pt_other_pt1_opened_bank = dram_other_pt1_opened_bank;
+
+// Prepare data for other power controller - COMMING FROM FLOP
+
+assign dram_pt_max_banks_open_valid = que_max_banks_open_valid0 | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+wire  = dram_other_pt1_opened_bank;
+
+// Prepare data for other power controller - COMMING FROM FLOP
+
+assign dram_pt_max_banks_open_valid = que_max_banks_open_valid0 | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ = ;
+
+// Prepare data for other power controller - COMMING FROM FLOP
+
+assign dram_pt_max_banks_open_valid = que_max_banks_open_valid0 | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+
+
+assign  = que_max_banks_open_valid0 | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  | que_max_banks_open_valid1;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ | ;
+assign dram_pt_max_time_valid = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+assign  = que_max_time_valid0 | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  | que_max_time_valid1;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ | ;
+assign dram_pt_ucb_data = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+assign  = que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [16:0] : 
+				 ? que_max_banks_open1[16:0] :
+		que_max_time_valid0 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [16:0] :
+		 ? {1'b0, que_max_banks_open0[15:0]} : {1'b0, que_max_banks_open1[15:0]};
+
+//////////////////////////////////////
+// Max programmable banks open at in a given programmable time 
+// Programmed by software.
+//////////////////////////////////////
+
+wire [16:0]     pt_max_banks_open_in;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? {1bb, [15:0]} : {1bb, [15:0]};
+
+
+wire [16:0]     ;
+
+assign pt_max_banks_open_in =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+
+assign  =  ~rst_l ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  ~ ? pt_max_banks_open[16:0] : 
+				dram_other_pt_max_banks_open_valid ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [16:0] : 
+				 ? dram_other_pt_ucb_data :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ?  :
+				que_max_banks_open_valid0 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ :
+				 ? que_max_banks_open0[16:0] : 
+				que_max_banks_open_valid1 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [16:0] : 
+				 ? que_max_banks_open1[16:0] :
+				pt_max_banks_open[16:0];
+
+dffsl_async_ns #(17)   ff_max_banks_open(
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [16:0] :
+				[16:0];
+
+dffsl_async_ns #(17)   (
+                .din(pt_max_banks_open_in[16:0]),
+                .q(pt_max_banks_open[16:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+(
+                .din([16:0]),
+                .q([16:0]),
+                .set_l(),
+                .clk(clk));
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+),
+                .clk());
+
+//////////////////////////////////////
+// Max programmable programmable time
+// Max @200MHz is 327.68uS = 64*1024 ticks 
+// Programmed by software.
+//////////////////////////////////////
+
+wire            pt_max_time_en;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+));
+
+
+wire            ;
+wire [15:0]     pt_max_time_in;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+wire [15:0]     ;
+
+assign pt_max_time_en = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+
+assign  = ~rst_l | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ = ~ | que_max_time_valid0 | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ |  | que_max_time_valid1 | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ |  | dram_other_pt_max_time_valid;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ | ;
+assign pt_max_time_in =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+assign  =  ~rst_l ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  ~ ? pt_max_time[15:0] : 
+				dram_other_pt_max_time_valid ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [15:0] : 
+				 ? dram_other_pt_ucb_data[15:0] :
+				que_max_time_valid0 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [15:0] :
+				 ? que_max_banks_open0[15:0] : 
+				que_max_time_valid1 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [15:0] : 
+				 ? que_max_banks_open1[15:0] :
+				pt_max_time[15:0];
+
+dffsl_async_ns #(16)   ff_max_time(
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ ? [15:0] :
+				[15:0];
+
+dffsl_async_ns #(16)   (
+                .din(pt_max_time_in[15:0]),
+                .q(pt_max_time[15:0]),
+                .set_l(arst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+(
+                .din([15:0]),
+                .q([15:0]),
+                .set_l(),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+),
+                .clk());
+
+//////////////////////////////////////
+// counter to keep track of the number of 
+// banks open at any given time
+//////////////////////////////////////
+
+wire            pt_banks_open_en;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+));
+
+
+wire            ;
+wire [16:0]     pt_banks_open_in;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+wire [16:0]     ;
+wire [16:0]     pt_banks_open;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+wire [16:0]     ;
+
+assign pt_banks_open_en = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+
+assign  = dram_local_pt0_opened_bank | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  | dram_local_pt1_opened_bank |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ |  |
+				pt_other_pt0_opened_bank | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ |
+				 | pt_other_pt1_opened_bank;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ | ;
+assign pt_banks_open_in = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+assign  = pt_banks_open[16:0] + {16'h0,dram_local_pt0_opened_bank} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ = [16:0] + {16hh,} + 
+				{16'h0, dram_local_pt1_opened_bank} +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+} + 
+				{16hh, } +
+				{16'h0, pt_other_pt0_opened_bank} + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+} +
+				{16hh, } + 
+				{16'h0, pt_other_pt1_opened_bank}; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+} + 
+				{16hh, }; 
+wire pt_banks_open_rst_l = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+}; 
+wire  = rst_l & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  & ~(pt_max_time[15:0] == pt_time_cntr[15:0]);
+
+dffrle_ns #(17) ff_banks_open(
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ & ~([15:0] == [15:0]);
+
+dffrle_ns #(17) (
+                .din(pt_banks_open_in[16:0]),
+                .q(pt_banks_open[16:0]),
+		.rst_l(pt_banks_open_rst_l),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+(
+                .din([16:0]),
+                .q([16:0]),
+		.rst_l(),
+                .en(pt_banks_open_en),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+),
+                .en(),
+                .clk(clk));
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+),
+                .clk());
+
+//////////////////////////////////////
+// counter to keep track of the time (327.68uS) = 64*1024 ticks @200MHz
+//////////////////////////////////////
+
+assign pt_time_cntr_in[15:0] = pt_time_cntr[15:0] + 16'b1;
+wire pt_time_cntr_rst_l = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+));
+
+
+assign [15:0] = [15:0] + 16bb;
+wire  = rst_l & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ =  & ~(pt_time_cntr[15:0] >= pt_max_time[15:0]);
+
+dffrl_ns #(16) ff_time_cntr(
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ & ~([15:0] >= [15:0]);
+
+dffrl_ns #(16) (
+                .din(pt_time_cntr_in[15:0]),
+                .q(pt_time_cntr[15:0]),
+		.rst_l(pt_time_cntr_rst_l),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+(
+                .din([15:0]),
+                .q([15:0]),
+		.rst_l(),
+                .clk(clk));
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+),
+                .clk());
+
+//////////////////////////////////////
+// Block openbanks in the next cycle
+//////////////////////////////////////
+
+wire pt_blk_new_openbank = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+));
+
+
+wire  = (pt_banks_open_in[16:0] >= pt_max_banks_open[16:0]);
+
+dff_ns #(1)       ff_blk_openbank(
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ = ([16:0] >= [16:0]);
+
+dff_ns #(1)       (
+                .din(pt_blk_new_openbank),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+(
+                .din(),
+                .q(pt_blk_new_openbank_d1),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+),
+                .q(),
+                .clk(clk));
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+),
+                .clk());
+
+assign pt_ch0_blk_new_openbank = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+));
+
+assign  = pt_blk_new_openbank_d1;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+ = ;
+assign pt_ch1_blk_new_openbank = pt_blk_new_openbank_d1;
+
+endmodule
+;
+assign  = pt_blk_new_openbank_d1;
+
+endmodule
+ = ;
+
+endmodule
+;
+
+endmodule

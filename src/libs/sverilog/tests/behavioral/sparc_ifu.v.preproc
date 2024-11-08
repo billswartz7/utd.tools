@@ -1,0 +1,139 @@
+
+
+ 
+ 
+ 
+ 
+
+
+module sparc_ifu (
+      spc_efc_ifuse_data, sparc_sscan_so, mbist_icache_fail, mbist_done, 
+   mbist_dcache_write, mbist_dcache_word, mbist_dcache_way, 
+   mbist_dcache_read, mbist_dcache_index, mbist_dcache_fail, 
+   ifu_tlu_ttype_m, ifu_tlu_trap_m, ifu_tlu_thrid_e, ifu_tlu_thrid_d, 
+   ifu_tlu_sraddr_d_v2, ifu_tlu_sraddr_d, ifu_tlu_sir_inst_m, 
+   ifu_tlu_sftint_m, ifu_tlu_rstint_m, ifu_tlu_rsr_inst_d, 
+   ifu_tlu_retry_inst_d, ifu_tlu_priv_violtn_m, ifu_tlu_pc_oor_e, 
+   ifu_tlu_pc_m, ifu_tlu_npc_m, ifu_tlu_mb_inst_e, ifu_tlu_l2imiss, 
+   ifu_tlu_itlb_done, ifu_tlu_inst_vld_m, ifu_tlu_immu_miss_m, 
+   ifu_tlu_imm_asi_d, ifu_tlu_icmiss_e, ifu_tlu_hwint_m, 
+   ifu_tlu_flush_m, ifu_tlu_flsh_inst_e, ifu_tlu_done_inst_d, 
+   ifu_tlu_alt_space_d, ifu_spu_trap_ack, ifu_spu_nceen, 
+   ifu_spu_inst_vld_w, ifu_mmu_trap_m, ifu_lsu_wsr_inst_d, 
+   ifu_lsu_swap_e, ifu_lsu_st_inst_e, ifu_lsu_sign_ext_e, 
+   ifu_lsu_rd_e, ifu_lsu_pref_inst_e, ifu_lsu_pcxreq_d, 
+   ifu_lsu_pcxpkt_e, ifu_lsu_nceen, ifu_lsu_memref_d, 
+   ifu_lsu_ldxa_tid_w2, ifu_lsu_ldxa_illgl_va_w2, 
+   ifu_lsu_ldxa_data_w2, ifu_lsu_ldxa_data_vld_w2, ifu_lsu_ldstub_e, 
+   ifu_lsu_ldst_size_e, ifu_lsu_ldst_fp_e, ifu_lsu_ldst_dbl_e, 
+   ifu_lsu_ld_inst_e, ifu_lsu_inv_clear, ifu_lsu_imm_asi_vld_d, 
+   ifu_lsu_imm_asi_d, ifu_lsu_ibuf_busy, ifu_lsu_fwd_wr_ack, 
+   ifu_lsu_fwd_data_vld, ifu_lsu_error_inj, ifu_lsu_destid_s, 
+   ifu_lsu_casa_e, ifu_lsu_asi_rd_unc, ifu_lsu_asi_ack, 
+   ifu_lsu_alt_space_d, ifu_ffu_visop_d, ifu_ffu_stfsr_d, 
+   ifu_ffu_quad_op_e, ifu_ffu_mvcnd_m, ifu_ffu_ldxfsr_d, 
+   ifu_ffu_ldst_size_d, ifu_ffu_ldfsr_d, ifu_ffu_inj_frferr, 
+   ifu_ffu_fst_d, ifu_ffu_frs2_d, ifu_ffu_frs1_d, ifu_ffu_frd_d, 
+   ifu_ffu_fpopcode_d, ifu_ffu_fpop2_d, ifu_ffu_fpop1_d, 
+   ifu_ffu_fld_d, ifu_ffu_fcc_num_d, ifu_exu_wsr_inst_d, 
+   ifu_exu_wen_d, ifu_exu_useimm_d, ifu_exu_usecin_d, 
+   ifu_exu_use_rsr_e_l, ifu_exu_tv_d, ifu_exu_ttype_vld_m, 
+   ifu_exu_tid_s2, ifu_exu_tcc_e, ifu_exu_tagop_d, ifu_exu_shiftop_d, 
+   ifu_exu_sethi_inst_d, ifu_exu_setcc_d, ifu_exu_saved_e, 
+   ifu_exu_save_d, ifu_exu_rs3o_vld_d, ifu_exu_rs3e_vld_d, 
+   ifu_exu_rs3_s, ifu_exu_rs2_vld_d, ifu_exu_rs2_s, 
+   ifu_exu_rs1_vld_d, ifu_exu_rs1_s, ifu_exu_return_d, 
+   ifu_exu_restored_e, ifu_exu_restore_d, ifu_exu_ren3_s, 
+   ifu_exu_ren2_s, ifu_exu_ren1_s, ifu_exu_rd_ifusr_e, 
+   ifu_exu_rd_ffusr_e, ifu_exu_rd_exusr_e, ifu_exu_rd_d, 
+   ifu_exu_range_check_other_d, ifu_exu_range_check_jlret_d, 
+   ifu_exu_pcver_e, ifu_exu_pc_d, ifu_exu_nceen_e, ifu_exu_muls_d, 
+   ifu_exu_kill_e, ifu_exu_invert_d, ifu_exu_inst_vld_w, 
+   ifu_exu_inst_vld_e, ifu_exu_inj_irferr, ifu_exu_imm_data_d, 
+   ifu_exu_ialign_d, ifu_exu_flushw_e, ifu_exu_enshift_d, 
+   ifu_exu_ecc_mask, ifu_exu_dontmv_regz1_e, ifu_exu_dontmv_regz0_e, 
+   ifu_exu_disable_ce_e, ifu_exu_dbrinst_d, ifu_exu_casa_d, 
+   ifu_exu_aluop_d, ifu_exu_addr_mask_d, so0, short_so0, short_so1, 
+   ifu_tlu_inst_vld_w, ifu_tlu_flush_w, ifu_lsu_alt_space_e, 
+   ifu_tlu_ttype_vld_m, ifu_exu_muldivop_d, ifu_lsu_thrid_s, 
+   mbist_write_data, 
+      tlu_lsu_redmode, tlu_lsu_pstate_priv, tlu_lsu_pstate_am, 
+   tlu_itlb_wr_vld_g, tlu_itlb_tag_rd_g, tlu_itlb_invalidate_all_g, 
+   tlu_itlb_dmp_vld_g, tlu_itlb_dmp_nctxt_g, tlu_itlb_dmp_actxt_g, 
+   tlu_itlb_data_rd_g, tlu_ifu_trappc_w2, tlu_ifu_trappc_vld_w1, 
+   tlu_ifu_trapnpc_w2, tlu_ifu_trapnpc_vld_w1, tlu_ifu_trap_tid_w1, 
+   tlu_ifu_sftint_vld, tlu_ifu_rstthr_i2, tlu_ifu_rstint_i2, 
+   tlu_ifu_resumint_i2, tlu_ifu_rerr_vld, tlu_ifu_pstate_pef, 
+   tlu_ifu_pstate_ie, tlu_ifu_nukeint_i2, tlu_ifu_hwint_i3, 
+   tlu_ifu_hintp_vld, tlu_ifu_flush_pipe_w, tlu_idtlb_dmp_thrid_g, 
+   tlu_hpstate_priv, tlu_hpstate_ibe, tlu_hpstate_enb, testmode_l, 
+   spu_ifu_unc_err_w1, spu_ifu_ttype_w2, spu_ifu_ttype_vld_w2, 
+   spu_ifu_ttype_tid_w2, spu_ifu_mamem_err_w1, spu_ifu_int_w2, 
+   spu_ifu_err_addr_w2, spu_ifu_corr_err_w2, sehold, se, rclk, 
+   mbist_userdata_mode, mbist_stop_on_next_fail, mbist_stop_on_fail, 
+   mbist_start, mbist_loop_on_address, mbist_loop_mode, 
+   mbist_dcache_data_in, mbist_bisi_mode, lsu_t3_pctxt_state, 
+   lsu_t2_pctxt_state, lsu_t1_pctxt_state, lsu_t0_pctxt_state, 
+   lsu_pid_state3, lsu_pid_state2, lsu_pid_state1, lsu_pid_state0, 
+   lsu_ifu_t3_tlz, lsu_ifu_t2_tlz, lsu_ifu_t1_tlz, lsu_ifu_t0_tlz, 
+   lsu_ifu_stxa_data, lsu_ifu_stbcnt3, lsu_ifu_stbcnt2, 
+   lsu_ifu_stbcnt1, lsu_ifu_stbcnt0, lsu_ifu_stallreq, 
+   lsu_ifu_quad_asi_e, lsu_ifu_pcxpkt_ack_d, 
+   lsu_ifu_ldsta_internal_e, lsu_ifu_ldst_miss_g, lsu_ifu_ldst_cmplt, 
+   lsu_ifu_ld_pcxpkt_vld, lsu_ifu_ld_pcxpkt_tid, 
+   lsu_ifu_ld_icache_index, lsu_ifu_l2_unc_error, 
+   lsu_ifu_l2_corr_error, lsu_ifu_io_error, lsu_ifu_inj_ack, 
+   lsu_ifu_icache_en, lsu_ifu_error_tid, lsu_ifu_err_addr, 
+   lsu_ifu_dtlb_tag_ue, lsu_ifu_dtlb_data_ue, lsu_ifu_dtlb_data_su, 
+   lsu_ifu_direct_map_l1, lsu_ifu_dcache_tag_perror, 
+   lsu_ifu_dcache_data_perror, lsu_ifu_dc_parity_error_w2, 
+   lsu_ifu_cpxpkt_i1, lsu_ifu_asi_vld, lsu_ifu_asi_thrid, 
+   lsu_ifu_asi_state, lsu_ifu_asi_load, lsu_ifu_asi_addr, 
+   lsu_ifu_addr_real_l, grst_l, gdbginit_l, ffu_ifu_tid_w2, 
+   ffu_ifu_stallreq, ffu_ifu_inj_ack, ffu_ifu_fst_ce_w, 
+   ffu_ifu_fpop_done_w2, ffu_ifu_err_synd_w2, ffu_ifu_err_reg_w2, 
+   ffu_ifu_ecc_ue_w2, ffu_ifu_ecc_ce_w2, ffu_ifu_cc_w2, 
+   ffu_ifu_cc_vld_w2, exu_ifu_va_oor_m, exu_ifu_spill_e, 
+   exu_ifu_regz_e, exu_ifu_regn_e, exu_ifu_oddwin_s, 
+   exu_ifu_longop_done_g, exu_ifu_inj_ack, exu_ifu_err_synd_m, 
+   exu_ifu_err_reg_m, exu_ifu_ecc_ue_m, exu_ifu_ecc_ce_m, 
+   exu_ifu_cc_d, exu_ifu_brpc_e, efc_spc_ifuse_dshift, 
+   efc_spc_ifuse_data, efc_spc_ifuse_ashift, efc_spc_fuse_clk2, 
+   efc_spc_fuse_clk1, ctu_tck, ctu_sscan_tid, ctu_sscan_snap, 
+   ctu_sscan_se, const_maskid, const_cpuid, arst_l, 
+   mem_write_disable, mux_drive_disable, exu_tlu_wsr_data_m, 
+   lsu_ictag_mrgn, lsu_idtlb_mrgn, si0, short_si0, short_si1, 
+   tlu_itlb_tte_tag_w2, tlu_itlb_tte_data_w2, 
+   tlu_itlb_rw_index_vld_g, tlu_itlb_rw_index_g, tlu_idtlb_dmp_key_g, 
+   tlu_itlb_dmp_all_g, lsu_sscan_data, tlu_sscan_data
+   );
+
+
+   input          mem_write_disable;
+   input          mux_drive_disable;
+   
+   input [2:0] 	  exu_tlu_wsr_data_m;
+   input [3:0]    lsu_ictag_mrgn;
+   input [7:0]    lsu_idtlb_mrgn;
+
+      output         ifu_exu_addr_mask_d;
+   
+
+      input                si0, short_si0,short_si1;      
+   output               so0,short_so0,short_so1;
+   output         ifu_tlu_inst_vld_w;	   output         ifu_tlu_flush_w;	     output         ifu_lsu_alt_space_e;       output         ifu_tlu_ttype_vld_m;   output [4:0]   ifu_exu_muldivop_d;
+   output [1:0]   ifu_lsu_thrid_s;
+
+      input [58:0]   tlu_itlb_tte_tag_w2;
+   input [42:0]   tlu_itlb_tte_data_w2;
+   input          tlu_itlb_rw_index_vld_g;
+   input [5:0]    tlu_itlb_rw_index_g;
+   input [40:0]   tlu_idtlb_dmp_key_g;
+   input          tlu_itlb_dmp_all_g;
+
+      input [15:0]   lsu_sscan_data;
+   input [62:0]   tlu_sscan_data;
+
+   output [7:0]   mbist_write_data;        
+   
+      input                arst_l;                    input [3:0]          const_cpuid;               input [7:0]          const_maskid;              input                ctu_sscan_se;              input                ctu_sscan_snap;            input [3:0]          ctu_sscan_tid;             input                ctu_tck;                   input                efc_spc_fuse_clk1;         input                efc_spc_fuse_clk2;         input                efc_spc_ifuse_ashift;      input                efc_spc_ifuse_data;        input                efc_spc_ifuse_dshift;      input [47:0]         exu_ifu_brpc_e;            input [7:0]          exu_ifu_cc_d;              input                exu_ifu_ecc_ce_m;          input                exu_ifu_ecc_ue_m;          input [7:0]          exu_ifu_err_reg_m;         input [7:0]          exu_ifu_err_synd_m;        input                exu_ifu_inj_ack;           input [3:0]          exu_ifu_longop_done_g;     input [3:0]          exu_ifu_oddwin_s;          input                exu_ifu_regn_e;            input                exu_ifu_regz_e;            input                exu_ifu_spill_e;           input                exu_ifu_va_oor_m;          input [3:0]          ffu_ifu_cc_vld_w2;         input [7:0]          ffu_ifu_cc_w2;             input                ffu_ifu_ecc_ce_w2;         input                ffu_ifu_ecc_ue_w2;         input [5:0]          ffu_ifu_err_reg_w2;        input [13:0]         ffu_ifu_err_synd_w2;       input                ffu_ifu_fpop_done_w2;      input                ffu_ifu_fst_ce_w;          input                ffu_ifu_inj_ack;           input                ffu_ifu_stallreq;          input [1:0]          ffu_ifu_tid_w2;            input                gdbginit_l;                input                grst_l;                    input [3:0]          lsu_ifu_addr_real_l;       input [17:0]         lsu_ifu_asi_addr;          input                lsu_ifu_asi_load;          input [7:0]          lsu_ifu_asi_state;         input [1:0]          lsu_ifu_asi_thrid;         input                lsu_ifu_asi_vld;           input [-1:0]lsu_ifu_cpxpkt_i1;        input                lsu_ifu_dc_parity_error_w2;   input                lsu_ifu_dcache_data_perror;   input                lsu_ifu_dcache_tag_perror;   input                lsu_ifu_direct_map_l1;     input                lsu_ifu_dtlb_data_su;      input                lsu_ifu_dtlb_data_ue;      input                lsu_ifu_dtlb_tag_ue;       input [47:4]         lsu_ifu_err_addr;          input [1:0]          lsu_ifu_error_tid;         input [3:0]          lsu_ifu_icache_en;         input [3:0]          lsu_ifu_inj_ack;           input                lsu_ifu_io_error;          input                lsu_ifu_l2_corr_error;     input                lsu_ifu_l2_unc_error;      input [:

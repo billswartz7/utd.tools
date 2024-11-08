@@ -1,0 +1,44 @@
+module sctag_scbufrep(
+      sctag_scbuf_stdecc_c3, so, 
+      rep_store_data_c2, rclk, si, se
+   );
+
+
+output  [77:0]  sctag_scbuf_stdecc_c3;
+output		so;
+
+input   [77:0] 	rep_store_data_c2;
+input		rclk;
+input		si, se;
+
+
+
+dff_s   #(78) 
+              (.q   (sctag_scbuf_stdecc_c3[77:0]),
+               .din (rep_store_data_c2[77:0]),
+               .clk (rclk),
+               .se  (se), .si  (), .so  ()
+              ) ;
+
+
+endmodule
+
+              (.q   ([77:0]),
+               .din ([77:0]),
+               .clk (),
+               .se  (se), .si  (), .so  ()
+              ) ;
+
+
+endmodule
+),
+               .se  (), .si  (), .so  ()
+              ) ;
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+
+endmodule

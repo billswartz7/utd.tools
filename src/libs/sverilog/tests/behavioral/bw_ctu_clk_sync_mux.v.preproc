@@ -1,0 +1,3200 @@
+
+
+
+
+
+module bw_ctu_clk_sync_mux_1path(pll_clk_out_l ,muxin0 ,mux_out_l ,in1 ,
+     selg ,in0 ,pll_clk_out ,clk_out );
+output		mux_out_l ;
+output		clk_out ;
+input		pll_clk_out_l ;
+input		muxin0 ;
+input		in1 ;
+input		selg ;
+input		in0 ;
+input		pll_clk_out ;
+ 
+wire		 ;
+wire		fout1_l ;
+wire		gclk_mux_l ;
+wire		net22 ;
+wire		net28 ;
+wire		clk_out_l ;
+wire		gclk_mux ;
+wire		gclk ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+wire		 ;
+wire		gclk_mux_l ;
+wire		net22 ;
+wire		net28 ;
+wire		clk_out_l ;
+wire		gclk_mux ;
+wire		gclk ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+wire		 ;
+wire		net22 ;
+wire		net28 ;
+wire		clk_out_l ;
+wire		gclk_mux ;
+wire		gclk ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+wire		 ;
+wire		net28 ;
+wire		clk_out_l ;
+wire		gclk_mux ;
+wire		gclk ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+wire		 ;
+wire		clk_out_l ;
+wire		gclk_mux ;
+wire		gclk ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+wire		 ;
+wire		gclk_mux ;
+wire		gclk ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+wire		 ;
+wire		gclk ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+wire		 ;
+
+// synopsys translate_off
+assign gclk_mux = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ;
+
+assign  = ~(fout1_l & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g = ~( & fout0_l);
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g & );
+assign gclk_mux_l = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g);
+assign  = ~gclk_mux;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g = ~;
+assign mux_out_l = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g;
+assign  = ~gclk_mux;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g = ~;
+assign clk_out = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g;
+assign  = ~clk_out_l;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g = ~;
+assign clk_out_l = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g;
+assign  = ~gclk;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g = ~;
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g;
+
+bw_u1_soffi_4x  (
+     .q_l             (fout0_l ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g (
+     .q_l             ( ),
+     .so              (),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .so              (),
+     .ck              ( ),
+     .d               (in0 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .d               ( ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .se              (1bb),
+     .sd              () );
+
+bw_u1_soffi_4x  (
+     .q_l             (fout1_l ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g (
+     .q_l             ( ),
+     .so              (),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .so              (),
+     .ck              ( ),
+     .d               (in1 ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .d               ( ),
+     .se              (1'b0),
+     .sd              () );
+
+bw_u1_muxi21_4x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .se              (1bb),
+     .sd              () );
+
+bw_u1_muxi21_4x  (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g (
+     .s               ( ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .d1              ( ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .d0              ( ),
+     .z               (gclk ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ),
+     .z               ( ) );
+
+// synopsys translate_on
+ 
+/*
+ 
+snand2 xnd2 (
+     .Y               (gclk_mux ),
+     .B               (fout1_l ),
+     .A               (fout0_l ) );
+
+sinv xi1 (
+     .Y               (gclk_mux_l ),
+     .A               (gclk_mux ) );
+sinv ximo (
+     .Y               (mux_out_l ),
+     .A               (gclk_mux ) );
+
+
+bw_ctu_muxi21_16x xmux (
+     .s               (selg ),
+     .d1              (gclk_mux_l ),
+     .d0              (muxin0 ),
+     .z               (gclk ) );
+bw_clk_gclk_inv_256x xcb256 (
+     .clkout          (clk_out ),
+     .clkin           (clk_out_l ) );
+
+bw_u1_soffi_4x xf0 (
+     .q_l             (fout0_l ),
+     .so              (net22 ),
+     .ck              (pll_clk_out ),
+     .d               (in0 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_soffi_4x xf1 (
+     .q_l             (fout1_l ),
+     .so              (net28 ),
+     .ck              (pll_clk_out_l ),
+     .d               (in1 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_clk_cclk_inv_64x xcb64 (
+     .clkout          (clk_out_l ),
+     .clkin           (gclk ) );
+
+*/
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_g ) );
+
+ 
+
+endmodule
+
+module bw_ctu_clk_sync_mux(jbus_div0 ,jbus_clk_mux_0 ,tcu_sel_jbus ,
+     jbus_div1 ,dram_clk_mux_0 ,dram_div0 ,dram_div1 ,tcu_sel_dram ,
+     tcu_sel_cpu ,pll_clk_out ,cmp_div1 ,cmp_div0 ,cmp_clk_mux_0 ,
+     cmp_gclk_byp ,dram_gclk_byp ,jbus_gclk_byp ,pll_clk_out_l ,
+     cmp_gclk_out ,dram_gclk_out ,jbus_gclk_out ,jbus_gclk_dup_byp ,
+     jbus_gclk_dup_out ,jbus_gclk_dupl_mux_0 ,jbus_dup_div0 ,
+     jbus_dup_div1 ,tcu_sel_jbus_dup );
+input [0:0]	tcu_sel_jbus ;
+input [0:0]	tcu_sel_dram ;
+input [0:0]	tcu_sel_cpu ;
+input [0:0]	tcu_sel_jbus_dup ;
+output		cmp_gclk_byp ;
+output		dram_gclk_byp ;
+output		jbus_gclk_byp ;
+output		cmp_gclk_out ;
+output		dram_gclk_out ;
+output		jbus_gclk_out ;
+output		jbus_gclk_dup_byp ;
+output		jbus_gclk_dup_out ;
+input		jbus_div0 ;
+input		jbus_clk_mux_0 ;
+input		jbus_div1 ;
+input		dram_clk_mux_0 ;
+input		dram_div0 ;
+input		dram_div1 ;
+input		pll_clk_out ;
+input		cmp_div1 ;
+input		cmp_div0 ;
+input		cmp_clk_mux_0 ;
+input		pll_clk_out_l ;
+input		jbus_gclk_dupl_mux_0 ;
+input		jbus_dup_div0 ;
+input		jbus_dup_div1 ;
+ 
+ 
+ 
+bw_ctu_clk_sync_mux_1path  (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_gclk_dupl_mux_0 ),
+     .mux_out_l       (jbus_gclk_dup_byp ),
+     .in1             (jbus_dup_div1 ),
+     .selg            (tcu_sel_jbus_dup[0] ),
+     .in0             (jbus_dup_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_dup_out ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ (
+     .pll_clk_out_l   ( ),
+     .muxin0          (jbus_gclk_dupl_mux_0 ),
+     .mux_out_l       (jbus_gclk_dup_byp ),
+     .in1             (jbus_dup_div1 ),
+     .selg            (tcu_sel_jbus_dup[0] ),
+     .in0             (jbus_dup_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_dup_out ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .muxin0          ( ),
+     .mux_out_l       (jbus_gclk_dup_byp ),
+     .in1             (jbus_dup_div1 ),
+     .selg            (tcu_sel_jbus_dup[0] ),
+     .in0             (jbus_dup_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_dup_out ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .mux_out_l       ( ),
+     .in1             (jbus_dup_div1 ),
+     .selg            (tcu_sel_jbus_dup[0] ),
+     .in0             (jbus_dup_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_dup_out ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .in1             ( ),
+     .selg            (tcu_sel_jbus_dup[0] ),
+     .in0             (jbus_dup_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_dup_out ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .selg            ([0] ),
+     .in0             ( ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_dup_out ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .pll_clk_out     ( ),
+     .clk_out         (jbus_gclk_dup_out ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .clk_out         ( ) );
+bw_ctu_clk_sync_mux_1path xcsm1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ) );
+bw_ctu_clk_sync_mux_1path  (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ (
+     .pll_clk_out_l   ( ),
+     .muxin0          (cmp_clk_mux_0 ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .muxin0          ( ),
+     .mux_out_l       (cmp_gclk_byp ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .mux_out_l       ( ),
+     .in1             (cmp_div1 ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .in1             ( ),
+     .selg            (tcu_sel_cpu[0] ),
+     .in0             (cmp_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .selg            ([0] ),
+     .in0             ( ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .pll_clk_out     ( ),
+     .clk_out         (cmp_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .clk_out         ( ) );
+bw_ctu_clk_sync_mux_1path x0 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ) );
+bw_ctu_clk_sync_mux_1path  (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ (
+     .pll_clk_out_l   ( ),
+     .muxin0          (dram_clk_mux_0 ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .muxin0          ( ),
+     .mux_out_l       (dram_gclk_byp ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .mux_out_l       ( ),
+     .in1             (dram_div1 ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .in1             ( ),
+     .selg            (tcu_sel_dram[0] ),
+     .in0             (dram_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .selg            ([0] ),
+     .in0             ( ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .pll_clk_out     ( ),
+     .clk_out         (dram_gclk_out ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .clk_out         ( ) );
+bw_ctu_clk_sync_mux_1path x1 (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ) );
+bw_ctu_clk_sync_mux_1path  (
+     .pll_clk_out_l   (pll_clk_out_l ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ (
+     .pll_clk_out_l   ( ),
+     .muxin0          (jbus_clk_mux_0 ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .muxin0          ( ),
+     .mux_out_l       (jbus_gclk_byp ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .mux_out_l       ( ),
+     .in1             (jbus_div1 ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .in1             ( ),
+     .selg            (tcu_sel_jbus[0] ),
+     .in0             (jbus_div0 ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .selg            ([0] ),
+     .in0             ( ),
+     .pll_clk_out     (pll_clk_out ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .pll_clk_out     ( ),
+     .clk_out         (jbus_gclk_out ) );
+
+// synopsys translate_on
+endmodule
+
+ ),
+     .clk_out         ( ) );
+
+// synopsys translate_on
+endmodule
+
+ ) );
+
+endmodule
+

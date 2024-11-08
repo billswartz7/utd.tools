@@ -1,0 +1,4245 @@
+
+
+      
+module sparc_exu_ecl_divcntl (
+      ecl_div_xinmask, ecl_div_keep_d, ecl_div_ld_inputs, 
+   ecl_div_sel_adder, ecl_div_last_cycle, ecl_div_almostlast_cycle, 
+   ecl_div_sel_div, divcntl_wb_req_g, divcntl_ccr_cc_w2, 
+   ecl_div_sel_64b, ecl_div_sel_u32, ecl_div_sel_pos32, 
+   ecl_div_sel_neg32, ecl_div_upper32_zero, ecl_div_upper33_one, 
+   ecl_div_upper33_zero, ecl_div_dividend_sign, ecl_div_newq, 
+   ecl_div_subtract_l, ecl_div_keepx, ecl_div_cin, 
+      clk, se, reset, mdqctl_divcntl_input_vld, wb_divcntl_ack_g, 
+   mdqctl_divcntl_reset_div, div_ecl_gencc_in_msb_l, 
+   div_ecl_gencc_in_31, div_ecl_upper32_equal, div_ecl_low32_nonzero, 
+   ecl_div_signed_div, div_ecl_dividend_msb, div_ecl_xin_msb_l, 
+   div_ecl_x_msb, div_ecl_d_msb, div_ecl_cout64, 
+   div_ecl_divisorin_31, ecl_div_div64, mdqctl_divcntl_muldone, 
+   ecl_div_muls, div_ecl_adder_out_31, muls_rs1_31_m_l, 
+   div_ecl_cout32, rs2_data_31_m, div_ecl_detect_zero_high, 
+   div_ecl_detect_zero_low, div_ecl_d_62
+   ) ;
+   input     clk;
+   input     se;
+   input     reset;
+   input     mdqctl_divcntl_input_vld;
+   input     wb_divcntl_ack_g;
+   input     mdqctl_divcntl_reset_div;
+   input     div_ecl_gencc_in_msb_l;
+   input     div_ecl_gencc_in_31;
+   input     div_ecl_upper32_equal;
+   input     div_ecl_low32_nonzero;
+   input     ecl_div_signed_div;
+   input     div_ecl_dividend_msb;
+   input     div_ecl_xin_msb_l;
+   input     div_ecl_x_msb;
+   input     div_ecl_d_msb;
+   input     div_ecl_cout64;
+   input     div_ecl_divisorin_31;
+   input     ecl_div_div64;
+   input     mdqctl_divcntl_muldone;
+   input     ecl_div_muls;
+   input  div_ecl_adder_out_31;
+   input  muls_rs1_31_m_l;
+   input  div_ecl_cout32;
+   input  rs2_data_31_m;
+   input         div_ecl_detect_zero_high;
+   input         div_ecl_detect_zero_low;
+   input         div_ecl_d_62;
+   
+   output    ecl_div_xinmask;
+   output    ecl_div_keep_d;
+   output    ecl_div_ld_inputs;
+   output    ecl_div_sel_adder;
+   output    ecl_div_last_cycle;      output    ecl_div_almostlast_cycle;   output    ecl_div_sel_div;
+   output    divcntl_wb_req_g;
+   output [7:0] divcntl_ccr_cc_w2;
+   output       ecl_div_sel_64b;
+   output       ecl_div_sel_u32;
+   output       ecl_div_sel_pos32;
+   output       ecl_div_sel_neg32;
+   output       ecl_div_upper32_zero;
+   output       ecl_div_upper33_one;
+   output       ecl_div_upper33_zero;
+   output       ecl_div_dividend_sign;
+   output       ecl_div_newq;
+   output       ecl_div_subtract_l;
+   output       ecl_div_keepx;
+   output        ecl_div_cin;
+   
+   wire         ;
+   wire         q_next;        // next q bit
+   wire         adderin1_64;   // msbs for adder
+   wire         adderin2_64;
+   wire         firstlast_sub; // subtract for first and last cycle
+   wire         sub_next;      // next cycle will subtract
+   wire         subtract;
+   wire         bit64_halfadd; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;        // next q bit
+   wire         adderin1_64;   // msbs for adder
+   wire         adderin2_64;
+   wire         firstlast_sub; // subtract for first and last cycle
+   wire         sub_next;      // next cycle will subtract
+   wire         subtract;
+   wire         bit64_halfadd; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;           wire         ;   // msbs for adder
+   wire         adderin2_64;
+   wire         firstlast_sub; // subtract for first and last cycle
+   wire         sub_next;      // next cycle will subtract
+   wire         subtract;
+   wire         bit64_halfadd; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;      wire         ;
+   wire         firstlast_sub; // subtract for first and last cycle
+   wire         sub_next;      // next cycle will subtract
+   wire         subtract;
+   wire         bit64_halfadd; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ; // subtract for first and last cycle
+   wire         sub_next;      // next cycle will subtract
+   wire         subtract;
+   wire         bit64_halfadd; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;    wire         ;      // next cycle will subtract
+   wire         subtract;
+   wire         bit64_halfadd; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;         wire         ;
+   wire         bit64_halfadd; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ; // partial result for qpredict
+   wire         partial_qpredict;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;    wire         ;
+   wire [1:0]   q_next_nocout;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire [1:0]   ;
+   wire [1:0]   sub_next_nocout;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire [1:0]   ;
+   wire         partial_qpredict_l;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire          divisor_sign;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          detect_zero;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          new_zero_rem_with_zero;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          new_zero_rem_no_zero;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          zero_rem_d;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          zero_rem_q;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          last_cin_with_zero;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          last_cin_no_zero;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          last_cin;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          last_cin_next;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   
+   // overflow correction wires
+   wire          upper32_equal_d1;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   
+      wire          ;
+   wire          gencc_in_msb_l_d1;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          gencc_in_31_d1;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          sel_div_d1;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   wire          low32_nonzero_d1;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire          ;
+   
+   // Condition code generation wires
+   wire [3:0]   xcc;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   
+      wire [3:0]   ;
+   wire [3:0]   icc;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire [3:0]   ;
+   wire         unsign_ovfl;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         pos_ovfl;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         neg_ovfl;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         muls_c;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         next_muls_c;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         muls_v;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         next_muls_v;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         muls_rs1_data_31_m;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         div_adder_out_31_w;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         rs2_data_31_w;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         muls_rs1_data_31_w;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         ovfl_32;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   wire         div_v;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+   
+   wire [5:0]   div_state;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   
+   wire [5:0]   ;
+   wire [5:0]   next_state;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire [5:0]   ;
+   wire         go_idle,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ,
+                stay_idle,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ,
+                go_run,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ,
+                stay_run,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ,
+                go_last_calc,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ,
+                go_chk_ovfl,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ,
+                go_fix_ovfl,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ,
+                go_done,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ,
+                stay_done;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc,
+                ;
+
+
+   wire         reset_cnt;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+
+
+   wire         ;
+   wire [5:0]   cntr;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire [5:0]   ;
+   wire         cntris63;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+   wire         ;
+
+   /////////////////////////////////
+   // G arbitration between MUL/DIV
+   /////////////////////////////////
+   assign        divcntl_wb_req_g = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc;
+
+            assign         = div_state[`DONE] | 
+                      (~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) &mdqctl_divcntl_muldone);
+   assign        ecl_div_sel_div = ~(~(div_state[`DONE] | div_state[`CHK_OVFL] | div_state[`FIX_OVFL]) & 
+                                    mdqctl_divcntl_muldone);
+   
+   // state flop
+   dff_s #(6) divstate_dff(.din(next_state[5:0]), .clk(clk), .q(div_state[5:0]), .se(se), .si(),
+                    .so());
+
+   // output logic and state decode
+   assign        ecl_div_almostlast_cycle = go_last_calc & ~ecl_div_ld_inputs;
+   assign        ecl_div_sel_adder = (div_state[`RUN] | div_state[`LAST_CALC]) & ~ecl_div_ld_inputs;
+   assign        ecl_div_last_cycle = div_state[`LAST_CALC];
+   assign        ecl_div_ld_inputs = mdqctl_divcntl_input_vld;
+   assign        ecl_div_keep_d = ~(ecl_div_sel_adder | ecl_div_ld_inputs);
+   assign        reset_cnt = ~div_state[`RUN];
+   
+   // next state logic
+   assign        stay_idle = div_state[`IDLE] & ~mdqctl_divcntl_input_vld;
+   assign        go_idle = div_state[`DONE] & wb_divcntl_ack_g;
+   assign        next_state[`IDLE] = go_idle | stay_idle | mdqctl_divcntl_reset_div | reset;
+
+   assign        stay_run = div_state[`RUN] & ~cntris63 & ~ecl_div_muls;
+   assign        go_run = (div_state[`IDLE] & mdqctl_divcntl_input_vld);
+   assign        next_state[`RUN] = (go_run | stay_run) & 
+                                      ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_last_calc = div_state[`RUN] & (cntris63);
+   assign        next_state[`LAST_CALC] = go_last_calc & ~mdqctl_divcntl_reset_div & ~reset;
+
+   // chk_ovfl and fix_ovfl are place holders to guarantee that the overflow checking
+   // takes place on the result.  No special logic occurs in them compared to the done state.
+   assign        go_chk_ovfl = div_state[`LAST_CALC];
+   assign        next_state[`CHK_OVFL] = go_chk_ovfl & ~mdqctl_divcntl_reset_div & ~reset;
+
+   assign        go_fix_ovfl = div_state[`CHK_OVFL] | (div_state[`RUN] & ecl_div_muls);
+   assign        next_state[`FIX_OVFL] = go_fix_ovfl & ~mdqc = 

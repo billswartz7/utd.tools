@@ -1,0 +1,61 @@
+
+     
+
+module aurora_201_CHANNEL_INIT_SM
+(
+        CH_BOND_DONE,
+
+    EN_CHAN_SYNC,
+
+
+        CHANNEL_BOND_LOAD,
+    GOT_A,
+    GOT_V,
+
+    RESET_LANES,
+
+
+        USER_CLK,
+    RESET,
+
+    CHANNEL_UP,
+    START_RX,
+
+
+        DID_VER,
+
+    GEN_VER,
+
+
+        RESET_CHANNEL
+
+);
+
+ 
+
+        input              CH_BOND_DONE;
+
+    output             EN_CHAN_SYNC;
+
+        input              CHANNEL_BOND_LOAD;
+    input   [0:1]      GOT_A;
+    input              GOT_V;
+    output             RESET_LANES;
+
+        input              USER_CLK;
+    input              RESET;
+
+    output             CHANNEL_UP;
+    output             START_RX;
+
+        input              DID_VER;
+
+    output             GEN_VER;
+
+
+        input              RESET_CHANNEL;
+
+
+
+
+    reg

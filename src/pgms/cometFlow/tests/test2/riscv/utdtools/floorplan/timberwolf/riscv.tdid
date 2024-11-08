@@ -1,0 +1,38 @@
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Fri Oct 25 09:45:25 2019
+icread_itools::state floorplan
+# WARNING[init_parasitics]:Capacitance values cannot be normalized.
+#    Timing driven placement cannot be performed only wire length minimization.
+#    If you intent to run timing driven placement, please check the .par
+#    file for layer capacitances equal to 0.0.
+# 
+# [readpar]:riscv.par read.
+# 
+# [look_for_hints]:Found hints in <riscv.stat> file
+# [look_for_hints]:Number of insts:5107
+# [look_for_hints]:Number of nets :4925
+# [look_for_hints]:Number of gpins:16085
+# 
+# no syntax errors in library:riscv.lib
+# Library file:riscv.lib read successfully.
+# 
+# 
+# [look_for_hints]:Found hints in <riscv.stat> file
+# [look_for_hints]:Number of insts:5107
+# [look_for_hints]:Number of nets :4925
+# [look_for_hints]:Number of gpins:16085
+# 
+# no syntax problem in circuit file.
+# Circuit file:riscv.ckt read successfully.
+# 
+# Constraint file:floorplan/output/itools.con read successfully.
+# 
+# [icread_con]:floorplan/output/itools.con read.
+icwrite_def [file join ../ output riscv.def] -unplaced
+# [write_def]:../output/riscv.def written.
+exit
+
+# itranslate terminated normally at Fri Oct 25 09:45:25 2019
+# with no errors and 1 warning[s]
+

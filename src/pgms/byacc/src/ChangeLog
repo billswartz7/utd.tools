@@ -1,0 +1,4 @@
+Added verbose error messages so use can understand syntax error
+much more easily.                      Bill Swartz  8/21/1994
+Added automake and autoconf support.   Bill Swartz  8/1/2006
+Added parse-param and lex-param support Bill Swartz 4/26/2019

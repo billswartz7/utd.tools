@@ -1,0 +1,6 @@
+
+problem2 : problem2.o
+	gcc -o problem2 problem2.o
+
+problem2.o : problem2.c
+	gcc -g -c problem2.c

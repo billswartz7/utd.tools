@@ -1,0 +1,3137 @@
+module bw_r_l2d (
+      wr_en_buf, word_en_buf, way_sel_buf, so, set_buf, 
+   scdata_scbuf_decc_top_buf, scdata_scbuf_decc_bot_buf, 
+   scbuf_scdata_fbdecc_top_buf, scbuf_scdata_fbdecc_bot_buf, 
+   l2d_fuse_data_out, decc_out, decc_in_buf, col_offset_buf, 
+   fuse_l2d_rid_buf, fuse_l2d_data_in_buf, arst_l_buf, se_buf, 
+   sehold_buf, fuse_l2d_rden_buf, fuse_l2d_wren_buf, fuse_clk1_buf, 
+   fuse_clk2_buf, mem_write_disable_buf, 
+      wr_en, word_en, way_sel, si, set, sehold, se, 
+   scdata_scbuf_decc_top, scdata_scbuf_decc_bot, 
+   scbuf_scdata_fbdecc_top, scbuf_scdata_fbdecc_bot, rclk, 
+   mem_write_disable, fuse_read_data_in, fuse_l2d_wren, fuse_l2d_rid, 
+   fuse_l2d_rden, fuse_l2d_data_in, efc_scdata_fuse_clk2, 
+   efc_scdata_fuse_clk1, decc_read_in, decc_in, col_offset, arst_l
+   );
+
+   
+      input		arst_l;			   input		col_offset;		   input [155:0]	decc_in;		   input [155:0]	decc_read_in;		   input		efc_scdata_fuse_clk1;	   input		efc_scdata_fuse_clk2;	   input		fuse_l2d_data_in;	   input		fuse_l2d_rden;		   input [2:0]		fuse_l2d_rid;		   input [5:0]		fuse_l2d_wren;		   input		fuse_read_data_in;	   input		mem_write_disable;	   input		rclk;			   input [155:0]	scbuf_scdata_fbdecc_bot;   input [155:0]	scbuf_scdata_fbdecc_top;   input [155:0]	scdata_scbuf_decc_bot;	   input [155:0]	scdata_scbuf_decc_top;	   input		se;			   input		sehold;			   input [9:0]		set;			   input		si;			   input [11:0]		way_sel;		   input [3:0]		word_en;		   input		wr_en;			   
+   output [2:0]		fuse_l2d_rid_buf;	   output 		fuse_l2d_data_in_buf;	   output 		arst_l_buf;		   output 		se_buf;			   output		sehold_buf;		   output 		fuse_l2d_rden_buf;	   output [5:0]		fuse_l2d_wren_buf;	   output 		fuse_clk1_buf;
+   output 		fuse_clk2_buf;
+   output 		mem_write_disable_buf;
+   
+   
+      output		col_offset_buf;		   output [155:0]	decc_in_buf;		   output [155:0]	decc_out;		   output		l2d_fuse_data_out;	   output [155:0]	scbuf_scdata_fbdecc_bot_buf;   output [155:0]	scbuf_scdata_fbdecc_top_buf;   output [155:0]	scdata_scbuf_decc_bot_buf;   output [155:0]	scdata_scbuf_decc_top_buf;   output [9:0]		set_buf;		   output		so;			   output [11:0]	way_sel_buf;		   output [3:0]		word_en_buf;		   output		wr_en_buf;		   
+   wire [155:0] 	;
+   wire 		l2d_fuse_data_out_0;
+   
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   wire			col_offset_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		decc_in_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		fbdb_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire [155:0]		fbdt_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire			fuse_read_data_in_buf;	// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdb_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;
+   wire 		;
+   
+   /*AUTOWIRE*/
+   // Beginning of automatic wires (for undeclared instantiated-module outputs)
+   wire			col_offset_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		decc_in_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		fbdb_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire [155:0]		fbdt_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire			fuse_read_data_in_buf;	// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdb_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;
+   
+   
+      wire			;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		decc_in_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		fbdb_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire [155:0]		fbdt_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire			fuse_read_data_in_buf;	// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdb_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;		   wire [155:0]		;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		fbdb_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire [155:0]		fbdt_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire			fuse_read_data_in_buf;	// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdb_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;		   wire [155:0]		;			// From top_rep of bw_r_l2d_rep_top.v
+   wire [155:0]		fbdt_l;			// From top_rep of bw_r_l2d_rep_top.v
+   wire			fuse_read_data_in_buf;	// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdb_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;			   wire [155:0]		;			// From top_rep of bw_r_l2d_rep_top.v
+   wire			fuse_read_data_in_buf;	// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdb_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;			   wire			;	// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdb_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;	   wire [155:0]		;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [155:0]		sbdt_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;			   wire [155:0]		;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [9:0]		set_l;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;			   wire [9:0]		;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			si_buf;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;			   wire			;			// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [11:0]		way_sel_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;			   wire [11:0]		;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire [3:0]		word_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;		   wire [3:0]		;		// From bot_rep of bw_r_l2d_rep_bot.v
+   wire			wr_en_l;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;		   wire			;		// From bot_rep of bw_r_l2d_rep_bot.v
+   // End of automatics
+
+
+
+   bw_r_l2d_rep_bot  bot_rep (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ;		   
+
+
+   bw_r_l2d_rep_bot   (/*AUTOINST*/
+			      // Outputs
+			      .fuse_l2d_rden_buf(fuse_l2d_rden_buf),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			  (
+			      			      .fuse_l2d_rden_buf(),
+			      .fuse_l2d_wren_buf(fuse_l2d_wren_buf[5:0]),
+			      .si_buf	(si_buf),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .fuse_l2d_wren_buf([5:0]),
+			      .si_buf	(),
+			      .arst_l_buf(arst_l_buf),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .arst_l_buf(),
+			      .se_buf	(se_buf),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .se_buf	(),
+			      .sehold_buf(sehold_buf),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .sehold_buf(),
+			      .fuse_l2d_rid_buf(fuse_l2d_rid_buf[2:0]),
+			      .fuse_read_data_in_buf(fuse_read_data_in_buf),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .fuse_l2d_rid_buf([2:0]),
+			      .fuse_read_data_in_buf(),
+			      .fuse_l2d_data_in_buf(fuse_l2d_data_in_buf),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .fuse_l2d_data_in_buf(),
+			      .word_en_l(word_en_l[3:0]),
+			      .col_offset_l(col_offset_l),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .word_en_l([3:0]),
+			      .col_offset_l(),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .set_l	([9:0]),
+			      .wr_en_l	(),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top_buf(scbuf_scdata_fbdecc_top_buf[155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf(scbuf_scdata_fbdecc_bot_buf[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]),
+			      .fuse_clk1_buf(fuse_clk1_buf),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .way_sel_l([11:0]),
+			      .decc_in_l([155:0]),
+			      .scbuf_scdata_fbdecc_top_buf([155:0]),
+			      .scbuf_scdata_fbdecc_bot_buf([155:0]),
+			      .sbdt_l	([155:0]),
+			      .sbdb_l	([155:0]),
+			      .fuse_clk1_buf(),
+			      .fuse_clk2_buf(fuse_clk2_buf),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .fuse_clk2_buf(),
+			      .mem_write_disable_buf(mem_write_disable_buf),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .mem_write_disable_buf(),
+			      // Inputs
+			      .fuse_l2d_rden(fuse_l2d_rden),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      			      .fuse_l2d_rden(),
+			      .fuse_l2d_wren(fuse_l2d_wren[5:0]),
+			      .si	(si),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .fuse_l2d_wren([5:0]),
+			      .si	(),
+			      .arst_l	(arst_l),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .arst_l	(),
+			      .se	(se),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .se	(),
+			      .sehold	(sehold),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .sehold	(),
+			      .fuse_l2d_rid(fuse_l2d_rid[2:0]),
+			      .fuse_read_data_in(fuse_read_data_in),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .fuse_l2d_rid([2:0]),
+			      .fuse_read_data_in(),
+			      .fuse_l2d_data_in(fuse_l2d_data_in),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .fuse_l2d_data_in(),
+			      .word_en	(word_en[3:0]),
+			      .col_offset(col_offset),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .word_en	([3:0]),
+			      .col_offset(),
+			      .set	(set[9:0]),
+			      .wr_en	(wr_en),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .set	([9:0]),
+			      .wr_en	(),
+			      .way_sel	(way_sel[11:0]),
+			      .decc_in	(decc_in[155:0]),
+			      .fbdt_l	(fbdt_l[155:0]),
+			      .fbdb_l	(fbdb_l[155:0]),
+			      .scdata_scbuf_decc_top(scdata_scbuf_decc_top[155:0]),
+			      .scdata_scbuf_decc_bot(scdata_scbuf_decc_bot[155:0]),
+			      .efc_scdata_fuse_clk1(efc_scdata_fuse_clk1),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .way_sel	([11:0]),
+			      .decc_in	([155:0]),
+			      .fbdt_l	([155:0]),
+			      .fbdb_l	([155:0]),
+			      .scdata_scbuf_decc_top([155:0]),
+			      .scdata_scbuf_decc_bot([155:0]),
+			      .efc_scdata_fuse_clk1(),
+			      .efc_scdata_fuse_clk2(efc_scdata_fuse_clk2),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .efc_scdata_fuse_clk2(),
+			      .mem_write_disable(mem_write_disable));
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .mem_write_disable());
+   
+
+   bw_r_l2d_rep_top  top_rep (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ));
+   
+
+   bw_r_l2d_rep_top   (/*AUTOINST*/
+			      // Outputs
+			      .word_en_buf(word_en_buf[3:0]),
+			      .col_offset_buf(col_offset_buf),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			  (
+			      			      .word_en_buf([3:0]),
+			      .col_offset_buf(),
+			      .set_buf	(set_buf[9:0]),
+			      .wr_en_buf(wr_en_buf),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .set_buf	([9:0]),
+			      .wr_en_buf(),
+			      .way_sel_buf(way_sel_buf[11:0]),
+			      .decc_in_buf(decc_in_buf[155:0]),
+			 ),
+			      .way_sel_buf([11:0]),
+			      .decc_in_buf([155:0]),
+			      .fbdt_l	([155:0]),
+			      .fbdb_l	([155:0]),
+			      .scdata_scbuf_decc_top_buf([155:0]),
+			      .scdata_scbuf_decc_bot_buf([155:0]),
+			      			      .word_en_l([3:0]),
+			      .col_offset_l(),
+			      .set_l	(set_l[9:0]),
+			      .wr_en_l	(wr_en_l),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top(scbuf_scdata_fbdecc_top[155:0]),
+			      .scbuf_scdata_fbdecc_bot(scbuf_scdata_fbdecc_bot[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]));
+   
+
+			      
+   /*
+    bw_r_l2d_32k	AUTO_TEMPLATE(
+    .way_sel_l(way_sel_l[@"(+ 9 (* @ 2))":@"(+ 8 (* @ 2))"]),
+    .fuse_l2d_wren(fuse_l2d_wren_buf[@"(+ 4 @)"]),
+    .fuse_l2d_rden(fuse_l2d_rden_buf),
+    .si(si_buf),
+    .se(se_buf),
+    .arst_l(arst_l_buf),
+    .sehold(sehold_buf),
+    .mem_write_disable(mem_write_disable_buf),
+    .fuse_l2d_rid(fuse_l2d_rid_buf[2:0]),
+    .fuse_clk1(fuse_clk1_buf),
+    .fuse_clk2(fuse_clk2_buf),
+    .fuse_l2d_data_in(fuse_l2d_data_in_buf),
+    .fuse_read_data_in(fuse_read_data_in_buf));
+    */
+
+   
+   bw_r_l2d_32k mem_0(
+		      //Inputs
+           	      .si		(scan_out_0),
+		      .fuse_read_data_in(l2d_fuse_data_out_0),
+		      //Outputs
+		      .decc_out(decc_out_0[155:0]),
+		      /*AUTOINST*/
+		      // Outputs
+		      .so		(so),
+		      .l2d_fuse_data_out(l2d_fuse_data_out),
+		      // Inputs
+		      .decc_in_l	(decc_in_l[155:0]),
+		      .decc_read_in	(decc_read_in[155:0]),
+		      .word_en_l	(word_en_l[3:0]),
+		      .way_sel_l	(way_sel_l[9:8]),	 // Templated
+		      .set_l		(set_l[9:0]),
+		      .col_offset_l	(col_offset_l),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+			      .set_l	([9:0]),
+			      .wr_en_l	(),
+			      .way_sel_l(way_sel_l[11:0]),
+			      .decc_in_l(decc_in_l[155:0]),
+			      .scbuf_scdata_fbdecc_top(scbuf_scdata_fbdecc_top[155:0]),
+			      .scbuf_scdata_fbdecc_bot(scbuf_scdata_fbdecc_bot[155:0]),
+			      .sbdt_l	(sbdt_l[155:0]),
+			      .sbdb_l	(sbdb_l[155:0]));
+   
+
+			      
+   /*
+    bw_r_l2d_32k	AUTO_TEMPLATE(
+    .way_sel_l(way_sel_l[@"(+ 9 (* @ 2))":@"(+ 8 (* @ 2))"]),
+    .fuse_l2d_wren(fuse_l2d_wren_buf[@"(+ 4 @)"]),
+    .fuse_l2d_rden(fuse_l2d_rden_buf),
+    .si(si_buf),
+    .se(se_buf),
+    .arst_l(arst_l_buf),
+    .sehold(sehold_buf),
+    .mem_write_disable(mem_write_disable_buf),
+    .fuse_l2d_rid(fuse_l2d_rid_buf[2:0]),
+    .fuse_clk1(fuse_clk1_buf),
+    .fuse_clk2(fuse_clk2_buf),
+    .fuse_l2d_data_in(fuse_l2d_data_in_buf),
+    .fuse_read_data_in(fuse_read_data_in_buf));
+    */
+
+   
+   bw_r_l2d_32k mem_0(
+		      //Inputs
+           	      .si		(scan_out_0),
+		      .fuse_read_data_in(l2d_fuse_data_out_0),
+		      //Outputs
+		      .decc_out(decc_out_0[155:0]),
+		      /*AUTOINST*/
+		      // Outputs
+		      .so		(so),
+		      .l2d_fuse_data_out(l2d_fuse_data_out),
+		      // Inputs
+		      .decc_in_l	(decc_in_l[155:0]),
+		      .decc_read_in	(decc_read_in[155:0]),
+		      .word_en_l	(word_en_l[3:0]),
+		      .way_sel_l	(way_sel_l[9:8]),	 // Templated
+		      .set_l		(set_l[9:0]),
+		      .col_offset_l	(col_offset_l),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+			      .way_sel_l([11:0]),
+			      .decc_in_l([155:0]),
+			      .scbuf_scdata_fbdecc_top([155:0]),
+			      .scbuf_scdata_fbdecc_bot([155:0]),
+			      .sbdt_l	([155:0]),
+			      .sbdb_l	([155:0]));
+   
+
+			      
+   
+
+   
+   bw_r_l2d_32k (
+		      //Inputs
+           	      .si		(scan_out_0),
+		      .fuse_read_data_in(l2d_fuse_data_out_0),
+		      //Outputs
+		      .decc_out(decc_out_0[155:0]),
+		      /*AUTOINST*/
+		      // Outputs
+		      .so		(so),
+		      .l2d_fuse_data_out(l2d_fuse_data_out),
+		      // Inputs
+		      .decc_in_l	(decc_in_l[155:0]),
+		      .decc_read_in	(decc_read_in[155:0]),
+		      .word_en_l	(word_en_l[3:0]),
+		      .way_sel_l	(way_sel_l[9:8]),	 // Templated
+		      .set_l		(set_l[9:0]),
+		      .col_offset_l	(col_offset_l),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+(
+		                 	      .si		(),
+		      .fuse_read_data_in(l2d_fuse_data_out_0),
+		      //Outputs
+		      .decc_out(decc_out_0[155:0]),
+		      /*AUTOINST*/
+		      // Outputs
+		      .so		(so),
+		      .l2d_fuse_data_out(l2d_fuse_data_out),
+		      // Inputs
+		      .decc_in_l	(decc_in_l[155:0]),
+		      .decc_read_in	(decc_read_in[155:0]),
+		      .word_en_l	(word_en_l[3:0]),
+		      .way_sel_l	(way_sel_l[9:8]),	 // Templated
+		      .set_l		(set_l[9:0]),
+		      .col_offset_l	(col_offset_l),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		      .fuse_read_data_in(),
+		      //Outputs
+		      .decc_out(decc_out_0[155:0]),
+		      /*AUTOINST*/
+		      // Outputs
+		      .so		(so),
+		      .l2d_fuse_data_out(l2d_fuse_data_out),
+		      // Inputs
+		      .decc_in_l	(decc_in_l[155:0]),
+		      .decc_read_in	(decc_read_in[155:0]),
+		      .word_en_l	(word_en_l[3:0]),
+		      .way_sel_l	(way_sel_l[9:8]),	 // Templated
+		      .set_l		(set_l[9:0]),
+		      .col_offset_l	(col_offset_l),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		      		      .decc_out([155:0]),
+		      
+		      		      .so		(),
+		      .l2d_fuse_data_out(l2d_fuse_data_out),
+		      // Inputs
+		      .decc_in_l	(decc_in_l[155:0]),
+		      .decc_read_in	(decc_read_in[155:0]),
+		      .word_en_l	(word_en_l[3:0]),
+		      .way_sel_l	(way_sel_l[9:8]),	 // Templated
+		      .set_l		(set_l[9:0]),
+		      .col_offset_l	(col_offset_l),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		      .l2d_fuse_data_out(),
+		      // Inputs
+		      .decc_in_l	(decc_in_l[155:0]),
+		      .decc_read_in	(decc_read_in[155:0]),
+		      .word_en_l	(word_en_l[3:0]),
+		      .way_sel_l	(way_sel_l[9:8]),	 // Templated
+		      .set_l		(set_l[9:0]),
+		      .col_offset_l	(col_offset_l),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		      		      .decc_in_l	([155:0]),
+		      .decc_read_in	([155:0]),
+		      .word_en_l	([3:0]),
+		      .way_sel_l	([9:8]),	 		      .set_l		([9:0]),
+		      .col_offset_l	(),
+		      .wr_en_l		(wr_en_l),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		      .wr_en_l		(),
+		      .rclk		(rclk),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		      .rclk		(),
+		      .arst_l		(arst_l_buf),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		      .arst_l		(),		 // Templated
+		      .mem_write_disable(mem_write_disable_buf), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),		 		      .mem_write_disable(), // Templated
+		      .sehold		(sehold_buf),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+), 		      .sehold		(),		 // Templated
+		      .se		(se_buf),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),		 		      .se		(),		 // Templated
+		      .fuse_l2d_wren	(fuse_l2d_wren_buf[4]),	 // Templated
+		      .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),		 		      .fuse_l2d_wren	([4]),	 		      .fuse_l2d_rden	(),	 // Templated
+		      .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		      .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),	 		      .fuse_l2d_rid	([2:0]), 		      .fuse_clk1	(),	 // Templated
+		      .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),	 		      .fuse_clk2	(),	 // Templated
+		      .fuse_l2d_data_in	(fuse_l2d_data_in_buf));	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),	 		      .fuse_l2d_data_in	());	 // Templated
+   
+   bw_r_l2d_32k  mem_1(
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+));	    
+   bw_r_l2d_32k  (
+		       //Inputs
+		       .decc_read_in(decc_out_0),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+(
+		       		       .decc_read_in(),
+		       //Outputs
+		       .l2d_fuse_data_out(l2d_fuse_data_out_0),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		       		       .l2d_fuse_data_out(),
+		       .so		(scan_out_0),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		       .so		(),
+		       /*AUTOINST*/
+		       // Outputs
+		       .decc_out	(decc_out[155:0]),
+		       // Inputs
+		       .decc_in_l	(decc_in_l[155:0]),
+		       .word_en_l	(word_en_l[3:0]),
+		       .way_sel_l	(way_sel_l[11:10]),	 // Templated
+		       .set_l		(set_l[9:0]),
+		       .col_offset_l	(col_offset_l),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		       
+		       		       .decc_out	([155:0]),
+		       		       .decc_in_l	([155:0]),
+		       .word_en_l	([3:0]),
+		       .way_sel_l	([11:10]),	 		       .set_l		([9:0]),
+		       .col_offset_l	(),
+		       .wr_en_l		(wr_en_l),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		       .wr_en_l		(),
+		       .rclk		(rclk),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		       .rclk		(),
+		       .arst_l		(arst_l_buf),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),
+		       .arst_l		(),		 // Templated
+		       .mem_write_disable(mem_write_disable_buf), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),		 		       .mem_write_disable(), // Templated
+		       .sehold		(sehold_buf),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+), 		       .sehold		(),		 // Templated
+		       .se		(se_buf),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),		 		       .se		(),		 // Templated
+		       .si		(si_buf),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),		 		       .si		(),		 // Templated
+		       .fuse_l2d_wren	(fuse_l2d_wren_buf[5]),	 // Templated
+		       .fuse_l2d_rden	(fuse_l2d_rden_buf),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),		 		       .fuse_l2d_wren	([5]),	 		       .fuse_l2d_rden	(),	 // Templated
+		       .fuse_l2d_rid	(fuse_l2d_rid_buf[2:0]), // Templated
+		       .fuse_clk1	(fuse_clk1_buf),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),	 		       .fuse_l2d_rid	([2:0]), 		       .fuse_clk1	(),	 // Templated
+		       .fuse_clk2	(fuse_clk2_buf),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),	 		       .fuse_clk2	(),	 // Templated
+		       .fuse_l2d_data_in(fuse_l2d_data_in_buf),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),	 		       .fuse_l2d_data_in(),	 // Templated
+		       .fuse_read_data_in(fuse_read_data_in_buf)); // Templated
+
+endmodule // bw_r_l2d
+),	 		       .fuse_read_data_in()); // Templated
+
+endmodule // bw_r_l2d
+)); 
+endmodule 

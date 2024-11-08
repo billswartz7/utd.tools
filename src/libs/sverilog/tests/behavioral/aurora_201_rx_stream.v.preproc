@@ -1,0 +1,49 @@
+
+     
+
+module aurora_201_RX_STREAM
+(
+        RX_D,
+    RX_SRC_RDY_N,
+
+
+        START_RX,
+
+
+        RX_PAD,
+    RX_PE_DATA,
+    RX_PE_DATA_V,
+    RX_SCP,
+    RX_ECP,
+
+
+        USER_CLK
+
+
+);
+
+ 
+
+
+
+        output  [0:15]     RX_D;
+    output             RX_SRC_RDY_N;
+
+
+        input              START_RX;
+
+
+        input              RX_PAD;
+    input   [0:15]     RX_PE_DATA;
+    input              RX_PE_DATA_V;
+    input              RX_SCP;
+    input              RX_ECP;
+
+
+        input              USER_CLK;
+
+
+
+
+    
+    reg

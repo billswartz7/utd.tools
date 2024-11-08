@@ -1,0 +1,8 @@
+
+
+module sparc_ifu_incr46(a, a_inc, ofl);
+   input  [45:0]  a;
+   output [45:0]  a_inc;
+   output 	  ofl;
+   
+   reg

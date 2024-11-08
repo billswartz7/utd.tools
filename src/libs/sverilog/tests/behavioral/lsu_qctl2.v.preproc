@@ -1,0 +1,88 @@
+
+                        
+
+   
+
+
+module lsu_qctl2 ( 
+      so, lsu_fwd_rply_sz1_unc, lsu_dcache_iob_rd_w, ldd_in_dfq_out, 
+   lsu_dfq_rd_vld_d1, dfq_byp_ff_en, lsu_dfill_data_sel_hi, 
+   lsu_ifill_pkt_vld, cpx_fwd_pkt_en_cx, lsu_cpxpkt_type_dcd_cx, 
+   lsu_cpu_dcd_sel, lsu_cpu_uhlf_sel, lsu_iobrdge_rply_data_sel, 
+   lsu_iobrdge_fwd_pkt_vld, lsu_tlu_cpx_vld, lsu_tlu_cpx_req, 
+   lsu_tlu_intpkt, ld_sec_active, dfq_byp_sel, 
+   lsu_cpx_ld_dtag_perror_e, lsu_cpx_ld_dcache_perror_e, 
+   lsu_exu_rd_m, lsu_spu_strm_ack_cmplt, lsu_atm_st_cmplt_e, 
+   dva_svld_e, dfq_wptr_vld, dfq_wptr, lsu_dfq_flsh_cmplt, 
+   dfq_rptr_vld, dfq_rptr, lsu_ifu_stallreq, dva_snp_addr_e, 
+   lsu_st_ack_dq_stb, lsu_cpx_rmo_st_ack, lsu_st_wr_dcache, 
+   cpx_st_ack_tid0, cpx_st_ack_tid1, cpx_st_ack_tid2, 
+   cpx_st_ack_tid3, lsu_tlu_l2_dmiss, lsu_l2fill_vld, 
+   lsu_byp_ldd_oddrd_m, lsu_pcx_fwd_reply, lsu_fwdpkt_vld, 
+   lsu_dcfill_active_e, lsu_dfq_ld_vld, lsu_fldd_vld_en, 
+   lsu_dfill_dcd_thrd, lsu_fwdpkt_dest, dva_snp_bit_wr_en_e, 
+   lsu_cpx_spc_inv_vld, lsu_cpx_thrdid, lsu_cpx_stack_dcfill_vld, 
+   lsu_dfq_vld_entry_w, lsu_cpx_stack_icfill_vld, lsu_dfq_st_vld, 
+   lsu_dfq_ldst_vld, lsu_qdp2_dfq_ld_vld, lsu_qdp2_dfq_st_vld, 
+   lsu_cpx_stack_dcfill_vld_b130, lsu_dfq_vld, lsu_dfq_byp_ff_en, 
+      rclk, grst_l, arst_l, si, se, rst_tri_en, ld_inst_vld_e, 
+   ifu_pcx_pkt_b51, ifu_pcx_pkt_b41t40, ifu_pcx_pkt_b10t5, 
+   lsu_dfq_rdata_flush_bit, lsu_dfq_rdata_b17_b0, 
+   cpx_spc_data_cx_b144to140, cpx_spc_data_cx_b138, 
+   cpx_spc_data_cx_b135to134, 
+   cpx_spc_data_cx_b133, cpx_spc_data_cx_b130, cpx_spc_data_cx_b129, 
+   cpx_spc_data_cx_b128, cpx_spc_data_cx_b125, 
+   cpx_spc_data_cx_b124to123, cpx_spc_data_cx_b120to118, 
+   cpx_spc_data_cx_b71to70, cpx_spc_data_cx_b0, cpx_spc_data_cx_b4, 
+   cpx_spc_data_cx_b8, cpx_spc_data_cx_b12, cpx_spc_data_cx_b16, 
+   cpx_spc_data_cx_b20, cpx_spc_data_cx_b24, cpx_spc_data_cx_b28, 
+   cpx_spc_data_cx_b32, cpx_spc_data_cx_b35, cpx_spc_data_cx_b38, 
+   cpx_spc_data_cx_b41, cpx_spc_data_cx_b44, cpx_spc_data_cx_b47, 
+   cpx_spc_data_cx_b50, cpx_spc_data_cx_b53, cpx_spc_data_cx_b56, 
+   cpx_spc_data_cx_b60, cpx_spc_data_cx_b64, cpx_spc_data_cx_b68, 
+   cpx_spc_data_cx_b72, cpx_spc_data_cx_b76, cpx_spc_data_cx_b80, 
+   cpx_spc_data_cx_b84, cpx_spc_data_cx_b88, cpx_spc_data_cx_b91, 
+   cpx_spc_data_cx_b94, cpx_spc_data_cx_b97, cpx_spc_data_cx_b100, 
+   cpx_spc_data_cx_b103, cpx_spc_data_cx_b106, cpx_spc_data_cx_b109, 
+   cpx_spc_data_cx_b1, cpx_spc_data_cx_b5, cpx_spc_data_cx_b9, 
+   cpx_spc_data_cx_b13, cpx_spc_data_cx_b17, cpx_spc_data_cx_b21, 
+   cpx_spc_data_cx_b25, cpx_spc_data_cx_b29, cpx_spc_data_cx_b57, 
+   cpx_spc_data_cx_b61, cpx_spc_data_cx_b65, cpx_spc_data_cx_b69, 
+   cpx_spc_data_cx_b73, cpx_spc_data_cx_b77, cpx_spc_data_cx_b81, 
+   cpx_spc_data_cx_b85, ifu_lsu_rd_e, lmq_ld_rd1, lmq_ldd_vld, 
+   dfq_tid, const_cpuid, lmq_ld_addr_b3, ifu_lsu_ibuf_busy, 
+   ifu_lsu_inv_clear, lsu_byp_misc_sz_e, lsu_dfq_byp_tid, 
+   lsu_cpx_pkt_atm_st_cmplt, lsu_cpx_pkt_l2miss, lsu_cpx_pkt_tid, 
+   lsu_cpx_pkt_invwy, lsu_dfq_byp_flush, lsu_dfq_byp_type, 
+   lsu_dfq_byp_invwy_vld, lsu_cpu_inv_data_b13to9, 
+   lsu_cpu_inv_data_b7to2, lsu_cpu_inv_data_b0, lsu_cpx_pkt_inv_pa, 
+   lsu_cpx_pkt_ifill_type, lsu_cpx_pkt_atomic, lsu_cpx_pkt_binit_st, 
+   lsu_cpx_pkt_prefetch, lsu_dfq_byp_binit_st, lsu_tlbop_force_swo, 
+   lsu_iobrdge_tap_rq_type, lsu_dcache_tag_perror_g, 
+   lsu_dcache_data_perror_g, lsu_cpx_pkt_perror_iinv, 
+   lsu_cpx_pkt_perror_dinv, lsu_cpx_pkt_perror_set, 
+   lsu_l2fill_fpld_e, lsu_cpx_pkt_strm_ack, ifu_lsu_memref_d, 
+   lsu_fwdpkt_pcx_rq_sel, lsu_imiss_pcx_rq_sel_d1, 
+   lsu_dfq_byp_cpx_inv, lsu_dfq_byp_stack_adr_b54, 
+   lsu_dfq_byp_stack_wrway, lsu_dfq_rdata_st_ack_type, 
+   lsu_dfq_rdata_stack_dcfill_vld, lsu_dfq_rdata_stack_iinv_vld, 
+   lsu_dfq_rdata_cpuid, lsu_dfq_byp_atm, lsu_ld_inst_vld_g, 
+   lsu_dfq_rdata_type, lsu_dfq_rdata_invwy_vld, ifu_lsu_fwd_data_vld, 
+   ifu_lsu_fwd_wr_ack, lsu_dfq_rdata_rq_type, lsu_dfq_rdata_b103, 
+   sehold
+   ) ;  
+
+
+input     rclk ;
+input     grst_l;
+input     arst_l;
+input     si;
+input     se;
+input     rst_tri_en;
+output    so;
+
+input                   ld_inst_vld_e;        input                   ifu_pcx_pkt_b51;        input [1:0]             ifu_pcx_pkt_b41t40;     input [5:0]             ifu_pcx_pkt_b10t5;         input                lsu_dfq_rdata_flush_bit;
+   input [17:0]         lsu_dfq_rdata_b17_b0;
+   
+input [-1:140] cpx_spc_data_cx_b144to140 ;       input                   cpx_spc_data_cx_b138 ;  
+input [:

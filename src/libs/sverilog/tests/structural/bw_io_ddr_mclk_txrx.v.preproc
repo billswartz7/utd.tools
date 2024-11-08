@@ -1,0 +1,57 @@
+module bw_io_ddr_mclk_txrx(
+      out, 
+      pad, 
+      vrefcode, vdd_h, cbu, cbd, data, oe, odt_enable
+   );
+
+input [7:0]     vrefcode;       input           odt_enable;    	input           vdd_h;         	input [8:1]     cbu;            input [8:1]     cbd;            input           data;        	input           oe;          	inout           pad;            
+output          out;            
+
+assign  = oe ? data : 1'bz;
+assign out = pad;
+
+// FIX FOR MAKING INPUT DQS WEAK 0/1 WHEN BUS IS IN "Z" STATE.
+//wire pad_in;
+//pulldown p1(pad_in); // pulldown by default if no driver
+//assign out = (pad === 1'bz) ? pad_in : pad;
+
+endmodule
+ =  ? data : 1'bz;
+assign out = pad;
+
+// FIX FOR MAKING INPUT DQS WEAK 0/1 WHEN BUS IS IN "Z" STATE.
+//wire pad_in;
+//pulldown p1(pad_in); // pulldown by default if no driver
+//assign out = (pad === 1'bz) ? pad_in : pad;
+
+endmodule
+ ?  : 1'bz;
+assign out = pad;
+
+// FIX FOR MAKING INPUT DQS WEAK 0/1 WHEN BUS IS IN "Z" STATE.
+//wire pad_in;
+//pulldown p1(pad_in); // pulldown by default if no driver
+//assign out = (pad === 1'bz) ? pad_in : pad;
+
+endmodule
+ : 1bb;
+assign  = pad;
+
+// FIX FOR MAKING INPUT DQS WEAK 0/1 WHEN BUS IS IN "Z" STATE.
+//wire pad_in;
+//pulldown p1(pad_in); // pulldown by default if no driver
+//assign out = (pad === 1'bz) ? pad_in : pad;
+
+endmodule
+ = ;
+
+// FIX FOR MAKING INPUT DQS WEAK 0/1 WHEN BUS IS IN "Z" STATE.
+//wire pad_in;
+//pulldown p1(pad_in); // pulldown by default if no driver
+//assign out = (pad === 1'bz) ? pad_in : pad;
+
+endmodule
+;
+
+
+endmodule

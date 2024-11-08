@@ -1,0 +1,202 @@
+ 
+ 
+
+module efc_tck (
+      tck_shft_data_ff, efc_ctu_data_out, 
+      read_data_ff, ctu_efc_data_in, ctu_efc_shiftdr, ctu_efc_capturedr, 
+   tck
+   );
+output [31:0]   tck_shft_data_ff;        input  [31:0]   read_data_ff;		input           ctu_efc_data_in;        output          efc_ctu_data_out;       input           ctu_efc_shiftdr;        input           ctu_efc_capturedr;      input           tck;                    
+
+
+wire [31:0]	;
+wire [31:0]	tck_shft_data_ff;
+//-----------------------------------------------------------------------------
+// Module Body
+//-----------------------------------------------------------------------------
+assign tck_shft_data_nxt 
+	      = ctu_efc_capturedr ? read_data_ff
+	       : ctu_efc_shiftdr ? {tck_shft_data_ff[30:0], ctu_efc_data_in}
+	       : tck_shft_data_ff;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire [31:0]	;
+//-----------------------------------------------------------------------------
+// Module Body
+//-----------------------------------------------------------------------------
+assign tck_shft_data_nxt 
+	      = ctu_efc_capturedr ? read_data_ff
+	       : ctu_efc_shiftdr ? {tck_shft_data_ff[30:0], ctu_efc_data_in}
+	       : tck_shft_data_ff;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+assign  
+	      = ctu_efc_capturedr ? read_data_ff
+	       : ctu_efc_shiftdr ? {tck_shft_data_ff[30:0], ctu_efc_data_in}
+	       : tck_shft_data_ff;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ 
+	      =  ? read_data_ff
+	       : ctu_efc_shiftdr ? {tck_shft_data_ff[30:0], ctu_efc_data_in}
+	       : tck_shft_data_ff;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ ? 
+	       : ctu_efc_shiftdr ? {tck_shft_data_ff[30:0], ctu_efc_data_in}
+	       : tck_shft_data_ff;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+
+	       :  ? {tck_shft_data_ff[30:0], ctu_efc_data_in}
+	       : tck_shft_data_ff;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ ? {[30:0], }
+	       : tck_shft_data_ff;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+}
+	       : ;
+
+dff_ns #(32) tck_shft_data_reg (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+
+dff_ns #(32)  (.din(tck_shft_data_nxt ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (.din( ),
+		   .q(tck_shft_data_ff ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ ),
+		   .q( ), .clk(tck));
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ ), .clk());
+
+assign       efc_ctu_data_out = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+assign        = tck_shft_data_ff[31];
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ = [31];
+
+endmodule

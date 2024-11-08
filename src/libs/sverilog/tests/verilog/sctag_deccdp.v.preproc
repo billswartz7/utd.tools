@@ -1,0 +1,4787 @@
+
+
+
+module sctag_deccdp(
+      retdp_data_c8, deccdp_arbdp_data_c8, retdp_diag_data_c7, 
+   lda_syndrome_c9, check0_c7, check1_c7, check2_c7, check3_c7, 
+   parity0_c7, parity1_c7, parity2_c7, parity3_c7, so, 
+      sel_higher_word_c7, sel_higher_dword_c7, dword_sel_c7, 
+   retdp_data_c7, retdp_ecc_c7, rclk, si, se
+   );
+
+output	[127:0]	retdp_data_c8;     output	[63:0]	deccdp_arbdp_data_c8; output	[38:0]	retdp_diag_data_c7 ; output	[27:0]	lda_syndrome_c9;     
+
+input	sel_higher_word_c7;
+input	sel_higher_dword_c7;
+input	dword_sel_c7;
+output	[5:0]	check0_c7 ;
+output	[5:0]	check1_c7 ;
+output	[5:0]	check2_c7 ;
+output	[5:0]	check3_c7 ;
+output		parity0_c7;
+output		parity1_c7;
+output		parity2_c7;
+output		parity3_c7;
+
+input	[127:0]	retdp_data_c7;
+input	[27:0]	retdp_ecc_c7;
+
+input		rclk;
+input		si, se;
+output		so;
+
+
+wire	[127:0]	;
+wire	[38:0]	data_word0_c7;
+wire	[38:0]	data_word1_c7;
+wire	[38:0]	data_word2_c7;
+wire	[38:0]	data_word3_c7;
+
+wire	[38:0]	left_diag_out_c7;
+wire	[38:0]	rgt_diag_out_c7;
+
+
+wire	[127:0]	retdp_data_c8; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+wire	[38:0]	;
+wire	[38:0]	data_word1_c7;
+wire	[38:0]	data_word2_c7;
+wire	[38:0]	data_word3_c7;
+
+wire	[38:0]	left_diag_out_c7;
+wire	[38:0]	rgt_diag_out_c7;
+
+
+wire	[127:0]	retdp_data_c8; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+wire	[38:0]	;
+wire	[38:0]	data_word2_c7;
+wire	[38:0]	data_word3_c7;
+
+wire	[38:0]	left_diag_out_c7;
+wire	[38:0]	rgt_diag_out_c7;
+
+
+wire	[127:0]	retdp_data_c8; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+wire	[38:0]	;
+wire	[38:0]	data_word3_c7;
+
+wire	[38:0]	left_diag_out_c7;
+wire	[38:0]	rgt_diag_out_c7;
+
+
+wire	[127:0]	retdp_data_c8; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+wire	[38:0]	;
+
+wire	[38:0]	left_diag_out_c7;
+wire	[38:0]	rgt_diag_out_c7;
+
+
+wire	[127:0]	retdp_data_c8; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+
+wire	[38:0]	;
+wire	[38:0]	rgt_diag_out_c7;
+
+
+wire	[127:0]	retdp_data_c8; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+wire	[38:0]	;
+
+
+wire	[127:0]	retdp_data_c8; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+
+
+wire	[127:0]	; // data to oqdp
+
+wire	[27:0]	error_synd_c7;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+; 
+wire	[27:0]	;
+wire	[27:0]	error_synd_c8;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+wire	[27:0]	;
+
+wire	dword_sel_c8;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+
+wire	;
+
+zzecc_sctag_ecc39  bit117_155
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+;
+
+zzecc_sctag_ecc39  
+ (.dout(corr_data_c7[127:96]),
+  .cflag(check3_c7[5:0]),
+  .pflag(parity3_c7),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+ (.dout([127:96]),
+  .cflag([5:0]),
+  .pflag(),
+  .parity(retdp_ecc_c7[27:21]),
+  .din(retdp_data_c7[127:96])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_127_96		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+  .parity([27:21]),
+  .din([127:96])
+  ) ;
+
+dff_s   #(32) 		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[127:96]),	// interleave the bits
+               .din (corr_data_c7[127:96]),	// For example, 96,100,104 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+		              (.q   ([127:96]),	               .din ([127:96]),	               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit78_116
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  
+ (.dout(corr_data_c7[95:64]),
+  .cflag(check2_c7[5:0]),
+  .pflag(parity2_c7),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+ (.dout([95:64]),
+  .cflag([5:0]),
+  .pflag(),
+  .parity(retdp_ecc_c7[20:14]),
+  .din(retdp_data_c7[95:64])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_95_64		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+  .parity([20:14]),
+  .din([95:64])
+  ) ;
+
+dff_s   #(32) 		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[95:64]),	// interleave the bits
+               .din (corr_data_c7[95:64]),	// For example, 64,68,8 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+		              (.q   ([95:64]),	               .din ([95:64]),	               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit39_77
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  
+ (.dout(corr_data_c7[63:32]),
+  .cflag(check1_c7[5:0]),
+  .pflag(parity1_c7),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+ (.dout([63:32]),
+  .cflag([5:0]),
+  .pflag(),
+  .parity(retdp_ecc_c7[13:7]),
+  .din(retdp_data_c7[63:32])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_63_32		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+  .parity([13:7]),
+  .din([63:32])
+  ) ;
+
+dff_s   #(32) 		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[63:32]),	// interleave the bits
+               .din (corr_data_c7[63:32]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+		              (.q   ([63:32]),	               .din ([63:32]),	               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  bit0_38
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+zzecc_sctag_ecc39  
+ (.dout   (corr_data_c7[31:0]),
+  .cflag  (check0_c7[5:0]),
+  .pflag  (parity0_c7),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+ (.dout   ([31:0]),
+  .cflag  ([5:0]),
+  .pflag  (),
+  .parity (retdp_ecc_c7[6:0]),
+  .din    (retdp_data_c7[31:0])
+  ) ;
+
+// msb to the left
+dff_s   #(32) ff_data_rtn_c8_31_0		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+  .parity ([6:0]),
+  .din    ([31:0])
+  ) ;
+
+dff_s   #(32) 		// arrange this flop in 4 rows.
+              (.q   (retdp_data_c8[31:0]),	// interleave the bits
+               .din (corr_data_c7[31:0]),	// For example, 32,36,40 .. belong to the same row
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+		              (.q   ([31:0]),	               .din ([31:0]),	               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+
+
+//////////////////////////
+// SYNDROME to csr_ctl.
+//////////////////////////
+assign  error_synd_c7 = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+
+
+assign   = {parity3_c7,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+ = {,check3_c7[5:0],
+                         parity2_c7,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+,[5:0],
+                         ,check2_c7[5:0],		
+                         parity1_c7,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+,[5:0],		
+                         ,check1_c7[5:0],
+                         parity0_c7,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+,[5:0],
+                         ,check0_c7[5:0]} ;
+
+dff_s   #(28)   ff_error_synd_c8
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+,[5:0]} ;
+
+dff_s   #(28)   
+              (.q   (error_synd_c8[27:0]),
+               .din (error_synd_c7[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+              (.q   ([27:0]),
+               .din ([27:0]),
+               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   ff_lda_syndrome_c9
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+dff_s   #(28)   
+              (.q   (lda_syndrome_c9[27:0]),
+               .din (error_synd_c8[27:0]),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+              (.q   ([27:0]),
+               .din ([27:0]),
+               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   ff_dword_sel_c8
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+
+dff_s   #(1)   
+              (.q   (dword_sel_c8),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+              (.q   (),
+               .din (dword_sel_c7),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .din (),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  ret_mux
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+mux2ds #(64)  
+              (.dout (deccdp_arbdp_data_c8[63:0]),
+               .in0  (retdp_data_c8[127:64]),  .sel0 (~dword_sel_c8),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+              (.dout ([63:0]),
+               .in0  ([127:64]),  .sel0 (~),
+               .in1  (retdp_data_c8[63:0]),    .sel1 (dword_sel_c8)
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .in1  ([63:0]),    .sel1 ()
+              ) ;
+
+assign data_word1_c7 = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+)
+              ) ;
+
+assign  = {retdp_data_c7[95:64], retdp_ecc_c7[20:14]} ;
+assign data_word0_c7 = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+ = {[95:64], [20:14]} ;
+assign  = {retdp_data_c7[127:96],retdp_ecc_c7[27:21]} ;
+
+
+mux2ds #(39)  mux_left_diag_out
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+ = {[127:96],[27:21]} ;
+
+
+mux2ds #(39)  
+              (.dout (left_diag_out_c7[38:0]),
+               .in0  (data_word0_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+              (.dout ([38:0]),
+               .in0  ([38:0]),  .sel0 (~),
+               .in1  (data_word1_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .in1  ([38:0]),  .sel1 ()
+              ) ;
+
+assign data_word3_c7 = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+)
+              ) ;
+
+assign  = {retdp_data_c7[31:0],  retdp_ecc_c7[6:0]} ;
+assign data_word2_c7 = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+ = {[31:0],  [6:0]} ;
+assign  = {retdp_data_c7[63:32], retdp_ecc_c7[13:7]} ;
+
+mux2ds #(39)  mux_rgt_diag_out
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+ = {[63:32], [13:7]} ;
+
+mux2ds #(39)  
+              (.dout (rgt_diag_out_c7[38:0]),
+               .in0  (data_word2_c7[38:0]),  .sel0 (~sel_higher_word_c7),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+              (.dout ([38:0]),
+               .in0  ([38:0]),  .sel0 (~),
+               .in1  (data_word3_c7[38:0]),  .sel1 (sel_higher_word_c7)
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .in1  ([38:0]),  .sel1 ()
+              ) ;
+
+mux2ds #(39)  mux_diag_out
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+)
+              ) ;
+
+mux2ds #(39)  
+              (.dout (retdp_diag_data_c7[38:0]),
+               .in0  (left_diag_out_c7[38:0]),  .sel0 (~sel_higher_dword_c7),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+
+              (.dout ([38:0]),
+               .in0  ([38:0]),  .sel0 (~),
+               .in1  (rgt_diag_out_c7[38:0]),   .sel1 (sel_higher_dword_c7)
+              ) ;
+
+
+
+endmodule
+),
+               .in1  ([38:0]),   .sel1 ()
+              ) ;
+
+
+
+endmodule
+)
+              ) ;
+
+
+
+endmodule

@@ -1,0 +1,41 @@
+
+module jp_sjm (j_id,
+	       j_req_in_l,
+	       j_req_out_l,
+	       j_ad,
+	       j_adp,
+	       j_adtype,
+	       j_pack0,
+	       j_pack1,   
+	       j_pack2,
+	       j_pack3,
+	       j_pack4,
+	       j_pack5,
+	       j_pack6,
+	       j_change_l,
+	       j_rst_l,
+	       j_por_l,
+	       j_clk,
+	       pwr_ok
+	       );
+
+      input [2:0] j_id;
+      input [5:0] j_req_in_l;
+      output [5:0] j_req_out_l;
+      inout [127:0] j_ad;
+      inout [3:0]   j_adp;
+      inout [7:0]   j_adtype;
+      inout [2:0]   j_pack0; 
+   inout [2:0]   j_pack1;
+   inout [2:0]   j_pack2;
+   inout [2:0]   j_pack3;
+   inout [2:0]   j_pack4;
+   inout [2:0]   j_pack5;
+   inout [2:0]   j_pack6;
+      inout         j_change_l;     
+      inout         j_rst_l;
+      inout         j_por_l;
+      input         j_clk;
+      input         pwr_ok;
+
+      reg

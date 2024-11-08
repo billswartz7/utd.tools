@@ -1,0 +1,543 @@
+
+	 			
+
+
+module iobdg_1r1w_rf16x160 (
+      so_w, so_r, dout, 
+      wr_en, wr_clk, wr_adr, word_wen, si_w, si_r, sehold, se, 
+   rst_tri_en, reset_l, read_en, rd_clk, rd_adr, din, byte_wen, 
+   testmux_sel
+   );
+
+   
+   
+      input [19:0]		byte_wen;		   input [159:0]	din;			   input [3:0]		rd_adr;			   input		rd_clk;			   input		read_en;		   input		reset_l;		   input		rst_tri_en;		   input		se;			   input		sehold;			   input		si_r;			   input		si_w;			   input [3:0]		word_wen;		   input [3:0]		wr_adr;			   input		wr_clk;			   input		wr_en;			      
+   
+      output		so_r;			   output		so_w;			      
+   
+      
+   input 		testmux_sel;
+   output [159:0] 	dout;
+   wire [159:0] 	;
+   wire [159:0] 	dout_scan;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   bw_r_rf16x160 bw_r_rf16x160 (.dout	(dout_array[159:0]),
+				/*AUTOINST*/
+				// Outputs
+				.so_w	(so_w),
+				.so_r	(so_r),
+				// Inputs
+				.din	(din[159:0]),
+				.rd_adr	(rd_adr[3:0]),
+				.wr_adr	(wr_adr[3:0]),
+				.read_en(read_en),
+				.wr_en	(wr_en),
+				.rst_tri_en(rst_tri_en),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+;
+   wire [159:0] 	;
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   bw_r_rf16x160 bw_r_rf16x160 (.dout	(dout_array[159:0]),
+				/*AUTOINST*/
+				// Outputs
+				.so_w	(so_w),
+				.so_r	(so_r),
+				// Inputs
+				.din	(din[159:0]),
+				.rd_adr	(rd_adr[3:0]),
+				.wr_adr	(wr_adr[3:0]),
+				.read_en(read_en),
+				.wr_en	(wr_en),
+				.rst_tri_en(rst_tri_en),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+;
+   
+   
+   bw_r_rf16x160  (.dout	(dout_array[159:0]),
+				/*AUTOINST*/
+				// Outputs
+				.so_w	(so_w),
+				.so_r	(so_r),
+				// Inputs
+				.din	(din[159:0]),
+				.rd_adr	(rd_adr[3:0]),
+				.wr_adr	(wr_adr[3:0]),
+				.read_en(read_en),
+				.wr_en	(wr_en),
+				.rst_tri_en(rst_tri_en),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+ (.dout	([159:0]),
+				
+								.so_w	(),
+				.so_r	(so_r),
+				// Inputs
+				.din	(din[159:0]),
+				.rd_adr	(rd_adr[3:0]),
+				.wr_adr	(wr_adr[3:0]),
+				.read_en(read_en),
+				.wr_en	(wr_en),
+				.rst_tri_en(rst_tri_en),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.so_r	(),
+				// Inputs
+				.din	(din[159:0]),
+				.rd_adr	(rd_adr[3:0]),
+				.wr_adr	(wr_adr[3:0]),
+				.read_en(read_en),
+				.wr_en	(wr_en),
+				.rst_tri_en(rst_tri_en),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+								.din	([159:0]),
+				.rd_adr	([3:0]),
+				.wr_adr	([3:0]),
+				.read_en(),
+				.wr_en	(wr_en),
+				.rst_tri_en(rst_tri_en),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.wr_en	(),
+				.rst_tri_en(rst_tri_en),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.rst_tri_en(),
+				.word_wen(word_wen[3:0]),
+				.byte_wen(byte_wen[19:0]),
+				.rd_clk	(rd_clk),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.word_wen([3:0]),
+				.byte_wen([19:0]),
+				.rd_clk	(),
+				.wr_clk	(wr_clk),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.wr_clk	(),
+				.se	(se),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.se	(),
+				.si_r	(si_r),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.si_r	(),
+				.si_w	(si_w),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.si_w	(),
+				.reset_l(reset_l),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.reset_l(),
+				.sehold	(sehold));
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+				.sehold	());
+
+   // testmux for DFT
+   assign 		dout = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+));
+
+      assign 		 = testmux_sel ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+ =  ? dout_scan : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+ ?  : dout_array;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+ : ;
+
+   dff_ns #(160) dout_scan_ff (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+;
+
+   dff_ns #(160)  (.din(dout_array),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+ (.din(),
+			       .clk(rd_clk),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+			       .clk(),
+			       .q(dout_scan));
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+),
+			       .q());
+   
+endmodule // iobdg_1r1w_rf16x160
+
+
+
+// Local Variables:
+// verilog-library-directories:("." "../../../srams/rtl")
+// End:
+));
+   
+endmodule 
+
+

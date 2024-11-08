@@ -1,0 +1,12 @@
+
+
+module sparc_tlu_zcmp64(
+      zero, 
+      in
+   );
+
+   input [63:0] in;
+
+   output      zero;
+
+   reg

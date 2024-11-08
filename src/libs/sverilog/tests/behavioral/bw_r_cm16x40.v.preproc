@@ -1,0 +1,15 @@
+module bw_r_cm16x40( 
+      dout, match, match_idx, so, 
+      adr_w, din, write_en, rst_tri_en, adr_r, read_en, lookup_en, key, 
+   rclk, sehold, se, si, rst_l
+   );
+
+input   [15:0]  adr_w ; input   [39:0]  din;    input           write_en;       input		rst_tri_en; input   [15:0]  adr_r;  input           read_en;
+output  [39:0]  dout;
+input           lookup_en;      input   [39:8]  key;    output  [15:0]  match ;
+output  [15:0]  match_idx ;
+input   rclk ;
+input   sehold, se, si, rst_l;
+output  so ;
+
+reg

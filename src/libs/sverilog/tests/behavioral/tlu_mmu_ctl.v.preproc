@@ -1,0 +1,173 @@
+
+	 					
+
+module tlu_mmu_ctl ( 
+      dmmu_any_sfsr_wr, dmmu_sfsr_wr_en_l, dmmu_sfar_wr_en_l, 
+   immu_any_sfsr_wr, immu_sfsr_wr_en_l, immu_tsb_rd_en, tlu_tte_tag_g, 
+   tlu_dtlb_rw_index_vld_g,  tlu_dtlb_rw_index_g, 
+   tlu_dtlb_data_rd_g, tlu_dtlb_tag_rd_g, tlu_itlb_rw_index_vld_g, 
+   tlu_itlb_wr_vld_g, itlb_wr_vld_g, tlu_itlb_rw_index_g, 
+   tlu_itlb_data_rd_g, tlu_itlb_tag_rd_g, tlu_idtsb_8k_ptr, 
+   tlu_dtlb_invalidate_all_g, tlu_itlb_invalidate_all_g, tlu_slxa_thrd_sel, 
+   tlu_lsu_ldxa_tid_w2, tlu_itlb_dmp_vld_g, 
+   tlu_itlb_dmp_all_g, tlu_itlb_dmp_pctxt_g, tlu_itlb_dmp_actxt_g, 
+   tlu_itlb_dmp_nctxt_g, tlu_dtlb_dmp_vld_g, tlu_dtlb_dmp_all_g, 
+   tlu_dtlb_dmp_pctxt_g, tlu_dtlb_dmp_sctxt_g, tlu_dtlb_dmp_nctxt_g, 
+   tlu_dtlb_dmp_actxt_g, tlu_idtlb_dmp_thrid_g, tlu_dmp_key_vld_g, 
+   tlu_int_asi_load, tlu_int_asi_store, tlu_int_asi_thrid, 
+   tlu_int_asi_vld, tlb_access_rst_l, 
+   tlu_lsu_stxa_ack, tlu_lsu_stxa_ack_tid, mra_wr_ptr, mra_rd_ptr, 
+   mra_wr_vld, mra_rd_vld, tag_access_wdata_sel, 
+   tlu_admp_key_sel, mra_byte_wen,
+   tlu_tte_wr_pid_g, tlu_lsu_ldxa_async_data_vld, tlu_tte_real_g, 
+   tlu_ldxa_l1mx1_sel, tlu_ldxa_l1mx2_sel, tlu_ldxa_l2mx1_sel, 
+   lsu_ifu_inj_ack, tlu_tlb_tag_invrt_parity,  tlu_tlb_data_invrt_parity, 
+   tlu_sun4r_tte_g, so, lsu_exu_ldxa_m, tlu_lng_ltncy_en_l, 
+   tlu_tag_access_ctxt_sel_m, tlu_tsb_rd_ps0_sel, tlu_tlb_access_en_l_d1,
+      ifu_lsu_ld_inst_e, ifu_lsu_st_inst_e, spu_tlu_rsrv_illgl_m,
+   lsu_tlu_dmmu_miss_g, 
+   tlu_dtsb_split_w2, tlu_dtsb_size_w2, tlu_dtag_access_w2, tlu_itsb_split_w2, 
+   tlu_itsb_size_w2, tlu_ctxt_cfg_w2, lsu_tlu_st_rs3_data_g, 
+   lsu_tlu_st_rs3_data_b48_g, lsu_tlu_st_rs3_data_b12t0_g, 
+   ifu_tlu_immu_miss_m, ifu_lsu_thrid_s, 
+   ifu_lsu_alt_space_e, lsu_tlu_dtlb_done, 
+   ifu_tlu_itlb_done, lsu_tlu_tlb_asi_state_m, lsu_tlu_tlb_ldst_va_m, 
+   lsu_tlu_tlb_ld_inst_m, lsu_tlu_tlb_st_inst_m, 
+   lsu_tlu_tlb_access_tid_m, dmmu_sfsr_trp_wr, 
+   immu_sfsr_trp_wr, lsu_tlu_daccess_excptn_g, 
+   lsu_tlu_daccess_prot_g, 
+   lsu_pid_state0, lsu_pid_state1, lsu_pid_state2, lsu_pid_state3, 
+   lsu_tlu_nucleus_ctxt_m, lsu_tlu_tte_pg_sz_g, ifu_lsu_error_inj, 
+   ifu_tlu_alt_space_d, ifu_lsu_imm_asi_d, 
+   ifu_lsu_memref_d, lsu_asi_reg0, lsu_asi_reg1, lsu_asi_reg2, 
+   lsu_asi_reg3, exu_mmu_early_va_e, rclk, arst_l, grst_l,
+   si,se,ifu_tlu_flush_m,tlu_mmu_early_flush_pipe_w,lsu_mmu_early_flush_w,
+   tlu_tag_access_ctxt_g, tlu_lsu_tl_zero, 
+   exu_tlu_va_oor_jl_ret_m, exu_tlu_va_oor_m, tlu_lsu_pstate_am, tlu_tsb_base_w2_d1,
+   lsu_mmu_flush_pipe_w, ifu_tlu_inst_vld_m, ifu_mmu_trap_m, ffu_tlu_ill_inst_m,
+   exu_lsu_priority_trap_m, sehold, rst_tri_en, tlu_itag_acc_sel_g, lsu_mmu_defr_trp_taken_g,
+   ifu_tlu_priv_violtn_m 
+   ) ;	
+
+
+
+
+input                   ifu_lsu_ld_inst_e;      input                   ifu_lsu_st_inst_e;      input                   lsu_tlu_dmmu_miss_g ;   input			spu_tlu_rsrv_illgl_m ; 
+
+input			tlu_itag_acc_sel_g ;
+input			lsu_mmu_defr_trp_taken_g ;
+
+input  [47:13]         	tlu_tsb_base_w2_d1 ;
+input                  	tlu_dtsb_split_w2 ;
+input  [3:0]           	tlu_dtsb_size_w2 ;       
+input  [47:13]         	tlu_dtag_access_w2 ;  	input                  	tlu_itsb_split_w2 ;
+input  [3:0]           	tlu_itsb_size_w2 ;       
+
+input  [5:0] 		tlu_ctxt_cfg_w2 ;	
+input   [62:61]         lsu_tlu_st_rs3_data_g ;	    input            	lsu_tlu_st_rs3_data_b48_g ; input   [12:0]          lsu_tlu_st_rs3_data_b12t0_g ; 
+input			ifu_tlu_immu_miss_m ;
+input   [1:0]           ifu_lsu_thrid_s ;   	input			ifu_lsu_alt_space_e ;	input                   lsu_tlu_dtlb_done ; input            	ifu_tlu_itlb_done ; input  [7:0]           	lsu_tlu_tlb_asi_state_m ;
+input  [10:0]           lsu_tlu_tlb_ldst_va_m ;
+input                  	lsu_tlu_tlb_ld_inst_m ;
+input                  	lsu_tlu_tlb_st_inst_m ;
+input  [1:0]           	lsu_tlu_tlb_access_tid_m ;
+input		   	ifu_tlu_flush_m ;
+input		   	tlu_mmu_early_flush_pipe_w ;
+input		   	lsu_mmu_early_flush_w ;
+input  	[3:0]   	dmmu_sfsr_trp_wr ;
+input  	[3:0]   	immu_sfsr_trp_wr ;  
+input			lsu_tlu_daccess_excptn_g ; input			lsu_tlu_daccess_prot_g ;						input  	[2:0]   	lsu_pid_state0 ;        input  	[2:0]   	lsu_pid_state1 ;        input  	[2:0]   	lsu_pid_state2 ;        input  	[2:0]   	lsu_pid_state3 ;        
+input			lsu_tlu_nucleus_ctxt_m ;input 	[2:0] 		lsu_tlu_tte_pg_sz_g ;	
+input   [3:0]           ifu_lsu_error_inj ;     
+input			ifu_tlu_alt_space_d ;	input	[8:0]		ifu_lsu_imm_asi_d ;	input                   ifu_lsu_memref_d;	input   [7:0]   	lsu_asi_reg0 ;          input   [7:0]   	lsu_asi_reg1 ;          input   [7:0]   	lsu_asi_reg2 ;          input   [7:0]   	lsu_asi_reg3 ;          input 	[7:0]  		exu_mmu_early_va_e;	
+input [12:0]          tlu_tag_access_ctxt_g ;
+
+input [3:0] tlu_lsu_tl_zero;   input           exu_tlu_va_oor_jl_ret_m;
+input           exu_tlu_va_oor_m;
+input [3:0] tlu_lsu_pstate_am; 
+
+input		lsu_mmu_flush_pipe_w ;
+input		ifu_tlu_inst_vld_m ;
+input		ifu_mmu_trap_m ; 
+input		ffu_tlu_ill_inst_m ;
+input		exu_lsu_priority_trap_m ; input		ifu_tlu_priv_violtn_m ;
+
+input		rclk ;
+input		arst_l, grst_l;
+input		si,se;
+input		sehold ;
+input		rst_tri_en ;
+
+
+
+output			dmmu_any_sfsr_wr ;
+output	[3:0]		dmmu_sfsr_wr_en_l ; 
+output	[3:0]		dmmu_sfar_wr_en_l ;
+
+output			immu_any_sfsr_wr ; 
+output	[3:0]		immu_sfsr_wr_en_l ; 
+output	[3:0]		immu_tsb_rd_en ;
+
+output  [2:0]          	tlu_tte_tag_g ;
+output			tlu_dtlb_rw_index_vld_g ;
+output	[5:0]		tlu_dtlb_rw_index_g ;
+output			tlu_dtlb_data_rd_g ;
+output			tlu_dtlb_tag_rd_g ;
+output			tlu_itlb_rw_index_vld_g ;
+output			tlu_itlb_wr_vld_g ;
+output			itlb_wr_vld_g ;
+output	[5:0]		tlu_itlb_rw_index_g ;
+output			tlu_itlb_data_rd_g ;
+output			tlu_itlb_tag_rd_g ;
+output	[47:0]		tlu_idtsb_8k_ptr ;	
+output			tlu_dtlb_invalidate_all_g ;
+output			tlu_itlb_invalidate_all_g ;
+
+output  [3:0]           tlu_slxa_thrd_sel ;
+
+output	[1:0]		tlu_lsu_ldxa_tid_w2 ;
+
+output			tlu_itlb_dmp_vld_g ;
+output			tlu_itlb_dmp_all_g ;
+output			tlu_itlb_dmp_pctxt_g ;
+output			tlu_itlb_dmp_actxt_g ;
+output			tlu_itlb_dmp_nctxt_g ;
+output			tlu_dtlb_dmp_vld_g ;
+output			tlu_dtlb_dmp_all_g ;
+output			tlu_dtlb_dmp_pctxt_g ;
+output			tlu_dtlb_dmp_sctxt_g ;
+output			tlu_dtlb_dmp_nctxt_g ;
+output			tlu_dtlb_dmp_actxt_g ;
+output	[1:0]		tlu_idtlb_dmp_thrid_g ;
+output  [4:0]           tlu_dmp_key_vld_g ;
+output                	tlu_int_asi_load; 
+output                	tlu_int_asi_store; 
+output 	[1:0]          	tlu_int_asi_thrid;
+output                	tlu_int_asi_vld; 
+output			tlb_access_rst_l ;
+output			tlu_lsu_stxa_ack ;	   output	 [1:0]		tlu_lsu_stxa_ack_tid ;
+output   [3:0]          mra_wr_ptr ;    output   [3:0]          mra_rd_ptr ;    output                  mra_wr_vld ;    output                  mra_rd_vld ;    output	 [19:0]		mra_byte_wen ;
+output	 [2:0]		tag_access_wdata_sel ;
+output			tlu_admp_key_sel ;
+
+
+output	 [2:0]		tlu_tte_wr_pid_g ;	output                  tlu_lsu_ldxa_async_data_vld ;   
+output   		tlu_tte_real_g ;                
+output  [3:0]   	tlu_ldxa_l1mx1_sel ;    output  [3:0]   	tlu_ldxa_l1mx2_sel ;    output  [2:0]   	tlu_ldxa_l2mx1_sel ;    
+output  [3:0]           lsu_ifu_inj_ack ;       output			tlu_tlb_tag_invrt_parity ;	output			tlu_tlb_data_invrt_parity ;	
+output			tlu_sun4r_tte_g ;	
+output			lsu_exu_ldxa_m ;
+
+output			tlu_lng_ltncy_en_l ;
+
+output	[2:0]		tlu_tag_access_ctxt_sel_m ;
+
+output			tlu_tsb_rd_ps0_sel ;
+
+output			tlu_tlb_access_en_l_d1 ;
+
+output			so ;
+
+
+
+reg

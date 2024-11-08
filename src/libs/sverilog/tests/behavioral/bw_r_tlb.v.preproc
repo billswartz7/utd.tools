@@ -1,0 +1,1969 @@
+
+	 					
+	
+
+ 
+
+
+ 
+
+module bw_r_tlb ( 
+      tlb_rd_tte_tag, tlb_rd_tte_data, tlb_pgnum, tlb_pgnum_crit, 
+   tlb_cam_hit, cache_way_hit, cache_hit, so, 
+      tlb_cam_vld, tlb_cam_key, tlb_cam_pid,  
+   tlb_demap_key, tlb_addr_mask_l, tlb_ctxt, 
+   tlb_wr_vld, tlb_wr_tte_tag, tlb_wr_tte_data, tlb_rd_tag_vld, 
+   tlb_rd_data_vld, tlb_rw_index, tlb_rw_index_vld, tlb_demap, 
+   tlb_demap_auto, tlb_demap_all, cache_ptag_w0, cache_ptag_w1, 
+   cache_ptag_w2, cache_ptag_w3, cache_set_vld, tlb_bypass_va, 
+   tlb_bypass, se, si, hold, adj, arst_l, rst_soft_l, rclk,
+   rst_tri_en
+   ) ;	
+
+
+input			tlb_cam_vld ;		input	[40:0]		tlb_cam_key ;								input	[2:0]		tlb_cam_pid ;		input	[40:0]		tlb_demap_key ;								input			tlb_addr_mask_l ;	input	[12:0]		tlb_ctxt ;		input			tlb_wr_vld;		input	[58:0]		tlb_wr_tte_tag;								input	[42:0]		tlb_wr_tte_data;							input			tlb_rd_tag_vld ;	input			tlb_rd_data_vld ;	input	[5:0]		tlb_rw_index ;		input			tlb_rw_index_vld ;	input			tlb_demap ;		input			tlb_demap_auto ;	input			tlb_demap_all;		input  	[29:0]    	cache_ptag_w0;       	input  	[29:0]    	cache_ptag_w1;       	input  	[29:0]     	cache_ptag_w2;       	input  	[29:0]     	cache_ptag_w3;       	input	[3:0]		cache_set_vld;       	input	[12:10]		tlb_bypass_va;	   	input			tlb_bypass;		
+input			se ;			input			si ;			input			hold ;			input	[7:0]		adj ;			input			arst_l ;		input			rst_soft_l ;		input			rclk;
+input			rst_tri_en ;
+
+output	[58:0]		tlb_rd_tte_tag;		output	[42:0]		tlb_rd_tte_data;	output	[39:10]		tlb_pgnum ;		output	[39:10]		tlb_pgnum_crit ;	output			tlb_cam_hit ;		output	[3:0]		cache_way_hit;		output			cache_hit;		
+
+output			so ;		
+wire	[53:0]		 ;
+wire	[58:0]		wr_tte_tag ;	// CHANGE
+wire	[42:0]		wr_tte_data ;
+wire	[29:3]		phy_pgnum_m;
+wire	[29:0]		pgnum_m;
+wire 	[63:0]		used ;
+wire			tlb_not_writeable ;
+wire	[40:25] 	tlb_cam_key_masked ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire	[58:0]		 ;	// CHANGE
+wire	[42:0]		wr_tte_data ;
+wire	[29:3]		phy_pgnum_m;
+wire	[29:0]		pgnum_m;
+wire 	[63:0]		used ;
+wire			tlb_not_writeable ;
+wire	[40:25] 	tlb_cam_key_masked ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;	wire	[42:0]		 ;
+wire	[29:3]		phy_pgnum_m;
+wire	[29:0]		pgnum_m;
+wire 	[63:0]		used ;
+wire			tlb_not_writeable ;
+wire	[40:25] 	tlb_cam_key_masked ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire	[29:3]		;
+wire	[29:0]		pgnum_m;
+wire 	[63:0]		used ;
+wire			tlb_not_writeable ;
+wire	[40:25] 	tlb_cam_key_masked ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap, ;
+wire	[29:0]		;
+wire 	[63:0]		used ;
+wire			tlb_not_writeable ;
+wire	[40:25] 	tlb_cam_key_masked ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap, ;
+wire 	[63:0]		 ;
+wire			tlb_not_writeable ;
+wire	[40:25] 	tlb_cam_key_masked ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire			 ;
+wire	[40:25] 	tlb_cam_key_masked ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire	[40:25] 	 ;
+wire	[26:0]		tlb_cam_comp_key ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire	[26:0]		 ;
+wire			cam_vld ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire			 ;
+wire			demap_other ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire			 ;
+wire	[3:0]   	cache_way_hit ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+wire	[3:0]   	 ;
+
+reg			tlb_not_writeable_d1 ;
+reg			tlb_writeable ;
+reg	[58:0]		tte_tag_ram  [63:0] ;	// CHANGE
+reg	[42:0]		tte_data_ram [63:0] ;
+reg	[63:0]		tlb_entry_vld ;
+reg	[63:0]		tlb_entry_locked ;
+reg	[63:0]		ademap_hit ;
+reg	[58:0]		rd_tte_tag ;	// CHANGE
+reg	[42:0]		rd_tte_data ;	
+reg	[58:0]		tlb_rd_tte_tag ; // CHANGE	
+reg	[42:0]		tlb_rd_tte_data ;	
+reg			cam_vld_tmp ;
+reg	[2:0]		cam_pid ;
+reg	[53:0]		cam_data ;
+reg			demap_auto, demap_other_tmp, demap_all ;
+reg	[63:0]		mismatch ;
+reg	[63:0]		cam_hit ;
+reg	[63:0]		demap_hit ;
+reg	[63:0]		demap_all_but_locked_hit ;
+reg	[63:0]		mismatch_va_b47_28 ;
+reg	[63:0]		mismatch_va_b27_22 ;
+reg	[63:0]		mismatch_va_b21_16 ;
+reg	[63:0]		mismatch_va_b15_13 ;
+reg	[63:0]		mismatch_ctxt ;
+reg	[63:0]		mismatch_pid ;
+reg	[58:0]		tag ;	// CHANGE
+reg	[63:0]		rw_wdline ;
+reg	[63:0]		tlb_entry_used ;
+reg	[63:0]		tlb_entry_replace ;
+reg	[63:0]		tlb_entry_replace_d2 ;
+reg	[29:0]		pgnum_g ;
+reg     [3:0]		cache_set_vld_g;
+reg	[29:0]		cache_ptag_w0_g,cache_ptag_w1_g;
+reg	[29:0]		cache_ptag_w2_g,cache_ptag_w3_g;
+reg			wr_vld_tmp;
+reg			rd_tag; 
+reg			rd_data;
+reg			rw_index_vld;
+reg	[5:0]		rw_index;
+reg	[63:0]		sat ;
+
+wire	[29:0] 		vrtl_pgnum_m;
+wire			bypass ;
+
+wire			wr_vld ;
+
+integer	i,j,k,l,m,n,p,r,s,t,u,w;
+
+/*AUTOWIRE*/
+// Beginning of automatic wires (for undeclared instantiated-module outputs)
+// End of automatics
+
+// Some bits are removed from the tag and data. 
+// 'U' must be defined as a '1' on a write.
+// 'L' required for demap all function.
+// Do not need an internal valid bit for va range 47:22.
+// These bits are always valid for a page. 
+// 
+// TTE STLB_TAG
+//
+//`define	STLB_TAG_PID_HI		58	: NEW PID - bit2
+//`define	STLB_TAG_PID_LO		56	: NEW PID - bit0
+//`define	STLB_TAG_R		55	: NEW Real bit
+//`define 	STLB_TAG_PARITY		54	// Parity kept in same posn to avoid having
+//`define	STLB_TAG_VA_47_28_HI 	53	// to redo interface
+//`define	STLB_TAG_VA_47_28_LO 	34
+//`define	STLB_TAG_VA_27_22_HI 	33	
+//`define	STLB_TAG_VA_27_22_LO 	28
+//`define	STLB_TAG_27_22_V	27	
+//`define	STLB_TAG_V		26	: valid for entry. Write of 0 resets it.
+//`define	STLB_TAG_L		25
+//`define	STLB_TAG_U		24	
+//`define	STLB_TAG_VA_21_16_HI 	23
+//`define	STLB_TAG_VA_21_16_LO  	18
+//`define	STLB_TAG_VA_21_16_V  	17	  	
+//`define	STLB_TAG_VA_15_13_HI 	16
+//`define	STLB_TAG_VA_15_13_LO  	14
+//`define	STLB_TAG_VA_15_13_V  	13
+//`define	STLB_TAG_CTXT_12_0_HI  	12	// removed Global bit
+//`define	STLB_TAG_CTXT_12_0_LO  	0
+//// 				Total - 59b
+////
+//// TTE STLB_DATA
+////
+//// Soft[12:7] & Soft2[58:50] are removed.
+//// Diag[49:41] are removed. Used bit used for Diag[0] on read.
+//// CV is included for software correctness.
+//// PA<40> is removed as it is not used.
+//// G/L present in data even though present in tag : can't read out simultaneously.
+//   (Unfortunately this is no longer correct. For data read, tag is also read
+//   simultaneously to get valid bit, used bits).
+//`define 	STLB_DATA_PARITY  	42 
+//`define 	STLB_DATA_PA_39_28_HI 	41	// CHANGE
+//`define 	STLB_DATA_PA_39_28_LO 	30
+//`define 	STLB_DATA_PA_27_22_HI 	29	// CHANGE
+//`define 	STLB_DATA_PA_27_22_LO 	24
+//`define 	STLB_DATA_27_22_SEL	23
+//`define 	STLB_DATA_PA_21_16_HI 	22	// CHANGE
+//`define 	STLB_DATA_PA_21_16_LO 	17
+//`define 	STLB_DATA_21_16_SEL	16
+//`define 	STLB_DATA_PA_15_13_HI 	15	
+//`define 	STLB_DATA_PA_15_13_LO 	13
+//`define 	STLB_DATA_15_13_SEL	12
+//`define 	STLB_DATA_V  		11	: static, does not get modified.
+//`define 	STLB_DATA_NFO  		10
+//`define 	STLB_DATA_IE   		9
+//`define 	STLB_DATA_L 		8 	: added for read.
+//`define 	STLB_DATA_CP 		7 
+//`define 	STLB_DATA_CV 		6 
+//`define 	STLB_DATA_E  		5 
+//`define 	STLB_DATA_P  		4 
+//`define 	STLB_DATA_W  		3 
+//`define 	STLB_DATA_SPARE_HI  	2	: Global bit has been removed
+//`define 	STLB_DATA_SPARE_LO	0  	 
+// 				Total - 43b
+
+// Valid bits for key(tlb_cam_key/tlb_demap_key).
+// Total - 41b
+//`define	CAM_VA_47_28_HI  	40
+//`define	CAM_VA_47_28_LO  	21
+//`define	CAM_VA_47_28_V  	20	// b47-28 participate in match
+//`define	CAM_VA_27_22_HI  	19
+//`define	CAM_VA_27_22_LO  	14
+//`define	CAM_VA_27_22_V  	13	// b27-22 participate in match
+//`define	CAM_VA_21_16_HI  	12
+//`define	CAM_VA_21_16_LO  	7
+//`define	CAM_VA_21_16_V  	6	// b21-16 participate in match
+//`define	CAM_VA_15_13_HI 	5	
+//`define	CAM_VA_15_13_LO 	3	
+//`define	CAM_VA_15_13_V 	 	2	// b15-13 participate in match
+//`define	CAM_CTXT_GK 		1	// Context participates in match
+//`define	CAM_REAL_V 		0	// cam/demap applies to real mapping
+					
+
+// ctxt port is different from cam key port even though both are
+// required for cam. (tlb_ctxt)
+// If Gk is set then ctxt will not participate in match.
+// Total - 14b
+`define	CAM_CTXT_12_0_HI 	12 	// 13b ctxt
+`define	CAM_CTXT_12_0_LO 	0 		
+
+
+//=========================================================================================
+//	What's Left :
+//=========================================================================================
+
+// Scan Insertion - scan to be ignored in formal verification for now.
+
+//=========================================================================================
+//	Design Notes.
+//=========================================================================================
+
+// - Supported Demap Operations - By Page, By Context, All But
+// Locked, Autodemap,  ;
+
+reg

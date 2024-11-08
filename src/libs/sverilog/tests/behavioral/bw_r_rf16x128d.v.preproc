@@ -1,0 +1,19 @@
+
+module bw_r_rf16x128d(
+      dout, so, 
+      din, rd_wl, wr_wl, read_en, wr_en, rst_tri_en, rclk, se, si, 
+   reset_l, sehold
+   );
+
+   input [127:0]  din;    input [15:0]    rd_wl;      input [15:0]	  wr_wl;     input          read_en;  
+   input	  wr_en;					   input	  rst_tri_en ;    input          rclk;
+   input          se, si ;
+   input	  reset_l;
+   input	  sehold; 
+   output [127:0] dout;
+   output         so;
+   
+
+
+
+   reg

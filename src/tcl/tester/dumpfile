@@ -1,0 +1,29 @@
+numobjects 28
+id 1 : drawn : -13 -23 254 163 coords :  tags : 
+id 2 : drawn : 8 168 38 207 coords :  tags : 
+id 3 : drawn : 8 296 38 335 coords :  tags : 
+id 4 : drawn : -22 208 69 294 coords :  tags : 
+id 6 : drawn : 183 168 213 207 coords :  tags : 
+id 7 : drawn : 183 296 213 335 coords :  tags : 
+id 8 : drawn : 153 208 244 294 coords :  tags : 
+id 10 : drawn : 435 168 465 207 coords : 120.4875 69.741 tags : box_1 n_1 rect_1 obj_1 notsel boxlike rect name_processor.gif figscale_0.19845
+id 11 : drawn : 435 296 465 335 coords : 22.68 186.543 tags : box_2 n_2 rect_2 obj_2 notsel boxlike rect name_down.gif figscale_0.0496125
+id 12 : drawn : 405 208 496 294 coords : 22.68 315.252 tags : box_3 n_3 rect_3 obj_3 notsel boxlike rect name_down.gif figscale_0.0496125
+id 14 : drawn : 687 168 717 207 coords : 22.68 251.181 tags : n_5 obj_5 notsel icache_0 figscale_0.070875 name_i_0
+id 15 : drawn : 687 296 717 335 coords : 198.45 186.543 tags : box_6 n_6 rect_6 obj_6 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 16 : drawn : 657 208 748 294 coords : 198.45 315.252 tags : box_7 n_7 rect_7 obj_7 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 18 : drawn : 939 168 969 207 coords : 198.45 251.181 tags : n_9 obj_9 notsel dcache_0 figscale_0.070875 name_d_0
+id 19 : drawn : 939 296 969 335 coords : 450.45 186.543 tags : box_10 n_10 rect_10 obj_10 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 20 : drawn : 909 208 1000 294 coords : 450.45 315.252 tags : box_11 n_11 rect_11 obj_11 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 22 : drawn : 1191 168 1221 207 coords : 450.45 251.181 tags : n_13 obj_13 notsel dcache_1 figscale_0.070875 name_d_1
+id 23 : drawn : 1191 296 1221 335 coords : 702.45 186.543 tags : box_14 n_14 rect_14 obj_14 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 24 : drawn : 1161 208 1252 294 coords : 702.45 315.252 tags : box_15 n_15 rect_15 obj_15 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 26 : drawn : 1443 168 1473 207 coords : 702.45 251.181 tags : n_17 obj_17 notsel dcache_2 figscale_0.070875 name_d_2
+id 27 : drawn : 1443 296 1473 335 coords : 954.45 186.543 tags : box_18 n_18 rect_18 obj_18 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 28 : drawn : 1413 208 1504 294 coords : 954.45 315.252 tags : box_19 n_19 rect_19 obj_19 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 30 : drawn : 1695 168 1725 207 coords : 954.45 251.181 tags : n_21 obj_21 notsel dcache_3 figscale_0.070875 name_d_3
+id 31 : drawn : 1695 296 1725 335 coords : 1206.45 186.543 tags : box_22 n_22 rect_22 obj_22 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 32 : drawn : 1665 208 1756 294 coords : 1206.45 315.252 tags : box_23 n_23 rect_23 obj_23 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 34 : drawn : 1947 168 1977 207 coords : 1206.45 251.181 tags : n_25 obj_25 notsel dcache_4 figscale_0.070875 name_d_4
+id 35 : drawn : 1947 296 1977 335 coords : 1458.45 186.543 tags : box_26 n_26 rect_26 obj_26 notsel boxlike rect name_downA.gif figscale_0.0496125
+id 36 : drawn : 1917 208 2008 294 coords : 1458.45 315.252 tags : box_27 n_27 rect_27 obj_27 notsel boxlike rect name_downA.gif figscale_0.0496125

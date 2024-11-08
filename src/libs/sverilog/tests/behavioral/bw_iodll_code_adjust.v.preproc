@@ -1,0 +1,20 @@
+
+
+module bw_iodll_code_adjust (
+                 s_percent_ctrl_out, so,
+                bypass_data, ddr_clk_in, delay_ctrl, io_dll_bypass_l, iodll_reset_l, s_controller_out, se, si
+        );
+
+	input [4:0]	bypass_data;
+        input           ddr_clk_in;
+        input [2:0]     delay_ctrl;
+        input		io_dll_bypass_l;
+        input           iodll_reset_l;
+        input [4:0]     s_controller_out;
+        input           se;
+        input           si;
+
+        output [4:0]    s_percent_ctrl_out;
+        output          so;
+
+        reg

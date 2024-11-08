@@ -1,0 +1,21 @@
+ 
+ 
+
+module bw_r_rf16x160(
+      dout, so_w, so_r, 
+      din, rd_adr, wr_adr, read_en, wr_en, rst_tri_en, word_wen, 
+   byte_wen, rd_clk, wr_clk, se, si_r, si_w, reset_l, sehold
+   );
+
+   input [159:0]  din;    input [3:0]    rd_adr;      input [3:0]	  wr_adr;     input          read_en;  
+   input	  wr_en;					   input	  rst_tri_en ;    input [3:0]    word_wen; 			       input [19:0]	  byte_wen;	                               input          rd_clk;
+   input          wr_clk;
+   input          se, si_r, si_w ;
+   input	  reset_l;
+   input	  sehold; 
+   output [159:0] dout;
+   output         so_w;
+   output         so_r;
+   
+
+      reg

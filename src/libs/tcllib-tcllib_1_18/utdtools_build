@@ -1,0 +1,32 @@
+#!/bin/sh
+
+if [ $# -lt 1 ] 
+then 
+  echo " "
+  echo "Syntax: utdtools_build <prefix_name>"
+  echo " "
+  exit 1
+fi 
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo " "
+  echo "ERROR[utdtools_build]:UTDTOOLS is not set."
+  echo "Please set UTDTOOLSDIR to the UTDTOOLS root directory."
+  exit ;
+fi
+
+dest_prefix=$1
+
+
+./configure --prefix=${utdtools}/tcl/tcllib --with-tclsh=${dest_prefix}/bin/`utduname`/tclsh8.6
+tcllib_root=`pwd`
+make install
+version=`grep version tcllib.spec | grep define | cut -d " " -f 3`
+echo "creating link.."
+cd ${utdtools}/tcl/tcllib/lib
+ln -s tcllib${version} tcllib
+cd tcllib
+echo "patching.."
+patch < ${tcllib_root}/utdtools.patch
+

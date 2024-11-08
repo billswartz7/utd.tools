@@ -1,0 +1,500 @@
+module ff_jbi_sc3_2(
+      jbi_sctag_req_d1, scbuf_jbi_data_d1, jbi_scbuf_ecc_d1, 
+   jbi_sctag_req_vld_d1, scbuf_jbi_ctag_vld_d1, scbuf_jbi_ue_err_d1, 
+   sctag_jbi_iq_dequeue_d1, sctag_jbi_wib_dequeue_d1, 
+   sctag_jbi_por_req_d1, so, 
+      jbi_sctag_req, scbuf_jbi_data, jbi_scbuf_ecc, jbi_sctag_req_vld, 
+   scbuf_jbi_ctag_vld, scbuf_jbi_ue_err, sctag_jbi_iq_dequeue, 
+   sctag_jbi_wib_dequeue, sctag_jbi_por_req, rclk, si, se
+   );
+
+   output [31:0]        jbi_sctag_req_d1;         
+   output [31:0]        scbuf_jbi_data_d1;        
+   output [6:0]         jbi_scbuf_ecc_d1;         
+   output               jbi_sctag_req_vld_d1;     
+   output               scbuf_jbi_ctag_vld_d1;
+   output               scbuf_jbi_ue_err_d1;      
+   output		sctag_jbi_iq_dequeue_d1;
+   output		sctag_jbi_wib_dequeue_d1;
+   output		sctag_jbi_por_req_d1;
+
+   input [31:0]        jbi_sctag_req;         
+   input [31:0]        scbuf_jbi_data;        
+   input [6:0]         jbi_scbuf_ecc;         
+   input               jbi_sctag_req_vld;     
+   input               scbuf_jbi_ctag_vld;
+   input               scbuf_jbi_ue_err;      
+   input	       sctag_jbi_iq_dequeue;
+   input	       sctag_jbi_wib_dequeue;
+   input	       sctag_jbi_por_req;
+
+   input		rclk;
+   input		si, se;
+
+   output		so;
+
+   wire	;
+
+   // connect scanout of the last flop to int_scanout.
+   // The output of the lockup latch is
+   // the scanout of this dbb (so)
+
+   bw_u1_scanlg_2x so_lockup(.so(so), .sd(int_scanout), .ck(rclk), .se(se));
+
+
+
+   dff_s	#(32)	ff_flop_row0	(.q(jbi_sctag_req_d1[31:0]),
+				 .din(jbi_sctag_req[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+;
+
+         
+   bw_u1_scanlg_2x (.so(so), .sd(int_scanout), .ck(rclk), .se(se));
+
+
+
+   dff_s	#(32)	ff_flop_row0	(.q(jbi_sctag_req_d1[31:0]),
+				 .din(jbi_sctag_req[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+(.so(), .sd(int_scanout), .ck(rclk), .se(se));
+
+
+
+   dff_s	#(32)	ff_flop_row0	(.q(jbi_sctag_req_d1[31:0]),
+				 .din(jbi_sctag_req[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+), .sd(), .ck(rclk), .se(se));
+
+
+
+   dff_s	#(32)	ff_flop_row0	(.q(jbi_sctag_req_d1[31:0]),
+				 .din(jbi_sctag_req[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+), .ck(), .se(se));
+
+
+
+   dff_s	#(32)	ff_flop_row0	(.q(jbi_sctag_req_d1[31:0]),
+				 .din(jbi_sctag_req[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+), .se());
+
+
+
+   dff_s	#(32)	ff_flop_row0	(.q(jbi_sctag_req_d1[31:0]),
+				 .din(jbi_sctag_req[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+));
+
+
+
+   dff_s	#(32)		(.q(jbi_sctag_req_d1[31:0]),
+				 .din(jbi_sctag_req[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+	(.q([31:0]),
+				 .din([31:0]),
+				 .clk(), .se(1'b0), .si(), .so() );
+
+   dff_s	#(32)	ff_flop_row1	(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+), .se(1bb), .si(), .so() );
+
+   dff_s	#(32)		(.q(scbuf_jbi_data_d1[31:0]),
+				 .din(scbuf_jbi_data[31:0]),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+	(.q([31:0]),
+				 .din([31:0]),
+				 .clk(), .se(1'b0), .si(), .so() );
+
+   dff_s	#(13)	ff_flop_row2	(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+), .se(1bb), .si(), .so() );
+
+   dff_s	#(13)		(.q({  	jbi_scbuf_ecc_d1[6:0],
+					jbi_sctag_req_vld_d1, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+	(.q({  	[6:0],
+					, 
+					scbuf_jbi_ctag_vld_d1,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+, 
+					,
+					scbuf_jbi_ue_err_d1,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					,
+					sctag_jbi_iq_dequeue_d1,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					,
+					sctag_jbi_wib_dequeue_d1,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					,
+					sctag_jbi_por_req_d1}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					}),
+				 .din({ jbi_scbuf_ecc[6:0],
+					jbi_sctag_req_vld, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+}),
+				 .din({ [6:0],
+					, 
+					scbuf_jbi_ctag_vld,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+, 
+					,
+					scbuf_jbi_ue_err,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					,
+					sctag_jbi_iq_dequeue,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					,
+					sctag_jbi_wib_dequeue,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					,
+					sctag_jbi_por_req}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+,
+					}),
+				 .clk(rclk), .se(1'b0), .si(), .so() );
+
+
+endmodule
+}),
+				 .clk(), .se(1'b0), .si(), .so() );
+
+
+endmodule
+), .se(1bb), .si(), .so() );
+
+
+endmodule

@@ -1,0 +1,85 @@
+
+
+ 
+
+
+ 
+ 
+
+
+module sparc_ifu_ifqdp(
+      so, ifu_lsu_pcxpkt_e, ifq_fdp_fill_inst, ifq_erb_asidata_i2, 
+   ifd_inv_ifqop_i2, ifq_icd_index_bf, ifq_icd_wrdata_i2, 
+   ifq_ict_wrtag_f, ifq_erb_wrindex_f, ifq_icd_wrway_bf, 
+   ifd_ifc_milhit_s, ifd_ifc_instoffset0, ifd_ifc_instoffset1, 
+   ifd_ifc_instoffset2, ifd_ifc_instoffset3, ifd_ifc_cpxthr_nxt, 
+   ifd_ifc_cpxreq_nxt, ifd_ifc_cpxreq_i1, ifd_ifc_destid0, 
+   ifd_ifc_destid1, ifd_ifc_destid2, ifd_ifc_destid3, 
+   ifd_ifc_newdestid_s, ifd_ifc_pcxline_d, ifd_ifc_asi_vachklo_i2, 
+   ifd_ifc_cpxvld_i2, ifd_ifc_asiaddr_i2, ifd_ifc_iobpkt_i2, 
+   ifd_ifc_fwd2ic_i2, ifd_ifc_4bpkt_i2, ifd_ifc_cpxnc_i2, 
+   ifd_ifc_cpxce_i2, ifd_ifc_cpxue_i2, ifd_ifc_cpxms_i2, 
+   ifd_ifc_miladdr4_i2, ifd_inv_wrway_i2, 
+      rclk, se, si, lsu_ifu_cpxpkt_i1, lsu_ifu_asi_addr, 
+   lsu_ifu_stxa_data, itlb_ifq_paddr_s, fdp_ifq_paddr_f, 
+   ifc_ifd_reqvalid_e, ifc_ifd_filladdr4_i2, ifc_ifd_repway_s, 
+   ifc_ifd_uncached_e, ifc_ifd_thrid_e, ifc_ifd_pcxline_adj_d, 
+   ifc_ifd_errinv_e, ifc_ifd_ldmil_sel_new, ifc_ifd_ld_inq_i1, 
+   ifc_ifd_idx_sel_fwd_i2, ifc_ifd_milreq_sel_d_l, 
+   ifc_ifd_milfill_sel_i2_l, ifc_ifd_finst_sel_l, 
+   ifc_ifd_ifqbyp_sel_fwd_l, ifc_ifd_ifqbyp_sel_inq_l, 
+   ifc_ifd_ifqbyp_sel_asi_l, ifc_ifd_ifqbyp_sel_lsu_l, 
+   ifc_ifd_ifqbyp_en_l, ifc_ifd_addr_sel_bist_i2_l, 
+   ifc_ifd_addr_sel_asi_i2_l, ifc_ifd_addr_sel_old_i2_l, 
+   ifc_ifd_addr_sel_fill_i2_l, mbist_icache_way, mbist_icache_word, 
+   mbist_icache_index
+   );
+
+   input 	 rclk, 
+           se, 
+           si;
+   
+   input [-1:0] lsu_ifu_cpxpkt_i1;
+   input [17:0]   lsu_ifu_asi_addr;
+   input [47:0]   lsu_ifu_stxa_data;
+   
+   input [39:10]  itlb_ifq_paddr_s;
+   input [9:2]    fdp_ifq_paddr_f;
+   
+      input         ifc_ifd_reqvalid_e;
+   input         ifc_ifd_filladdr4_i2;
+   input [1:0]   ifc_ifd_repway_s;
+   input         ifc_ifd_uncached_e;
+   input [1:0]   ifc_ifd_thrid_e;
+   input [4:2]   ifc_ifd_pcxline_adj_d;
+   
+   input         ifc_ifd_errinv_e;
+   
+      input [3:0]   ifc_ifd_ldmil_sel_new;     
+   input        ifc_ifd_ld_inq_i1;           input        ifc_ifd_idx_sel_fwd_i2;
+   
+      input [3:0]  ifc_ifd_milreq_sel_d_l,   		            ifc_ifd_milfill_sel_i2_l; 	 	    input [3:0]  ifc_ifd_finst_sel_l;    
+   input        ifc_ifd_ifqbyp_sel_fwd_l, 		            ifc_ifd_ifqbyp_sel_inq_l,
+		            ifc_ifd_ifqbyp_sel_asi_l,
+		            ifc_ifd_ifqbyp_sel_lsu_l;
+	 input        ifc_ifd_ifqbyp_en_l;   
+
+   input        ifc_ifd_addr_sel_bist_i2_l,
+		            ifc_ifd_addr_sel_asi_i2_l,
+                ifc_ifd_addr_sel_old_i2_l,
+		            ifc_ifd_addr_sel_fill_i2_l;
+   
+   input [1:0]  mbist_icache_way;
+   input        mbist_icache_word;
+   input [7:0]  mbist_icache_index;
+   
+   output       so;
+   
+   output [51:0] ifu_lsu_pcxpkt_e;
+
+   output [32:0] ifq_fdp_fill_inst;
+   output [47:0] ifq_erb_asidata_i2;
+
+   output [-1:0] ifd_inv_ifqop_i2;
+
+   output [:

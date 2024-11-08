@@ -1,0 +1,1058 @@
+ 
+
+module cluster_header_dup (
+      dbginit_l, cluster_grst_l, rclk, so, 
+      gclk, cluster_cken, arst_l, grst_l, adbginit_l, gdbginit_l, si, 
+   se
+   );
+
+   input       gclk;
+   input       cluster_cken;
+   input       arst_l;
+   input       grst_l;
+   input       adbginit_l;
+   input       gdbginit_l; 
+   output      dbginit_l; 
+   output      cluster_grst_l;
+   output      rclk;
+
+   input       si;    input       se;
+   output      so;
+   
+   wire        ;
+   wire        sync_enable;
+   wire        cluster_grst_l;
+   wire        dbginit_l;
+   wire        rst_sync_so;
+
+   bw_u1_soffasr_2x sync_cluster_master ( // no scan hook-up
+                                        .so(),
+                                        .q (pre_sync_enable),
+                                        .ck (gclk),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+;
+   wire        ;
+   wire        cluster_grst_l;
+   wire        dbginit_l;
+   wire        rst_sync_so;
+
+   bw_u1_soffasr_2x sync_cluster_master ( // no scan hook-up
+                                        .so(),
+                                        .q (pre_sync_enable),
+                                        .ck (gclk),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+;
+   wire        ;
+   wire        dbginit_l;
+   wire        rst_sync_so;
+
+   bw_u1_soffasr_2x sync_cluster_master ( // no scan hook-up
+                                        .so(),
+                                        .q (pre_sync_enable),
+                                        .ck (gclk),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+;
+   wire        ;
+   wire        rst_sync_so;
+
+   bw_u1_soffasr_2x sync_cluster_master ( // no scan hook-up
+                                        .so(),
+                                        .q (pre_sync_enable),
+                                        .ck (gclk),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+;
+   wire        ;
+
+   bw_u1_soffasr_2x sync_cluster_master ( // no scan hook-up
+                                        .so(),
+                                        .q (pre_sync_enable),
+                                        .ck (gclk),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+;
+
+   bw_u1_soffasr_2x  ( // no scan hook-up
+                                        .so(),
+                                        .q (pre_sync_enable),
+                                        .ck (gclk),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+ (                                         .so(),
+                                        .q (),
+                                        .ck (gclk),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+                                        .ck (),
+                                        .d (cluster_cken),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+                                        .d (),
+					.r_l (arst_l),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+					.r_l (),	
+					.s_l (1'b1),	
+                                        .sd(1'b0),
+                                        .se(1'b0)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x sync_cluster_slave ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),	
+					.s_l (1bb),	
+                                        .sd(1bb),
+                                        .se(1bb)
+				        );
+   
+
+   bw_clk_cclk_scanlasr_2x  ( // use scan lock-up latch
+                                      .r_l (arst_l),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+ (                                       .r_l (),
+                                      .so (sync_enable),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+                                      .so (),
+                                      .ck (gclk),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+                                      .ck (),
+                                      .sd (pre_sync_enable)
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+                                      .sd ()
+        			      );
+   
+// NOTE! Pound delay in the below statement is meant to provide 10 ps
+// delay between gclk and rclk to allow the synchronizer for rst, dbginit,
+// and sync pulses to be modelled accurately.  gclk and rclk need to have 
+// at least one simulator timestep separation to allow the flop->flop 
+// synchronizer to work correctly.
+   assign #10 rclk = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+)
+        			      );
+   
+   assign #10  = gclk & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+ =  & sync_enable;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+ & ;
+
+   synchronizer_asr rst_repeater (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+;
+
+   synchronizer_asr  (
+				 .sync_out(cluster_grst_l),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+ (
+				 .sync_out(),
+				 .so(rst_sync_so),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				 .so(),
+				 .async_in(grst_l),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				 .async_in(),
+				 .gclk(gclk),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				 .gclk(),
+				 .rclk(rclk),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				 .rclk(),
+				 .arst_l(arst_l),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				 .arst_l(),
+				 .si(si),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				 .si(),
+				 .se(se)
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				 .se()
+				 );
+   
+   synchronizer_asr_dup dbginit_repeater (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+)
+				 );
+   
+   synchronizer_asr_dup  (
+				     .sync_out(dbginit_l),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+ (
+				     .sync_out(),
+				     .so(so),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				     .so(),
+				     .async_in(gdbginit_l),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				     .async_in(),
+				     .gclk(gclk),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				     .gclk(),
+				     .rclk(rclk),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				     .rclk(),
+				     .arst_l(adbginit_l),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				     .arst_l(),
+				     .si(rst_sync_so),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				     .si(),
+				     .se(se)
+				     );
+
+endmodule // cluster_header
+),
+				     .se()
+				     );
+
+endmodule // cluster_header
+)
+				     );
+
+endmodule 

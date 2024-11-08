@@ -1,0 +1,452 @@
+module bw_io_jp_sstl_bscan(in ,update_dr ,mode_ctl ,shift_dr ,clock_dr ,
+     bsr_so ,out ,bsr_si );
+output		bsr_so ;
+output		out ;
+input		in ;
+input		update_dr ;
+input		mode_ctl ;
+input		shift_dr ;
+input		clock_dr ;
+input		bsr_si ;
+ 
+wire		 ;
+wire		net035 ;
+wire		net042 ;
+wire		update_q ;
+ 
+ 
+bw_u1_muxi21_2x bs_mux (
+     .z               (net033 ),
+     .d0              (in ),
+     .d1              (update_q ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net042 ;
+wire		update_q ;
+ 
+ 
+bw_u1_muxi21_2x bs_mux (
+     .z               (net033 ),
+     .d0              (in ),
+     .d1              (update_q ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		update_q ;
+ 
+ 
+bw_u1_muxi21_2x bs_mux (
+     .z               (net033 ),
+     .d0              (in ),
+     .d1              (update_q ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ;
+wire		 ;
+ 
+ 
+bw_u1_muxi21_2x bs_mux (
+     .z               (net033 ),
+     .d0              (in ),
+     .d1              (update_q ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ;
+ 
+ 
+bw_u1_muxi21_2x  (
+     .z               (net033 ),
+     .d0              (in ),
+     .d1              (update_q ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .d0              (in ),
+     .d1              (update_q ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .d0              ( ),
+     .d1              (update_q ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .d1              ( ),
+     .s               (net042 ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .s               ( ) );
+bw_u1_inv_2x ctl_inv2x (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ) );
+bw_u1_inv_2x  (
+     .z               (net042 ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net035 ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_io_jp_bs_baseblk bs_baseblk (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ) );
+bw_io_jp_bs_baseblk  (
+     .upd_q           (update_q ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ (
+     .upd_q           ( ),
+     .bsr_si          (bsr_si ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .bsr_si          ( ),
+     .update_dr       (update_dr ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .update_dr       ( ),
+     .clock_dr        (clock_dr ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .clock_dr        ( ),
+     .shift_dr        (shift_dr ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .shift_dr        ( ),
+     .bsr_so          (bsr_so ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .bsr_so          ( ),
+     .in              (in ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .in              ( ) );
+bw_u1_inv_1x ctl_inv1x (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net035 ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (mode_ctl ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_inv_5x out_inv5x (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ ) );
+bw_u1_inv_5x  (
+     .z               (out ),
+     .a               (net033 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net033 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+endmodule
+
+ ) );
+endmodule
+

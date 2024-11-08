@@ -1,0 +1,2 @@
+#!/bin/sh
+cometTix -n -v rename_table.tcl -- students.db

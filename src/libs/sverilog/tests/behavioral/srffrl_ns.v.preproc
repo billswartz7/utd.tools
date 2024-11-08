@@ -1,0 +1,198 @@
+
+
+module srffrl_ns (
+    q, 
+    set, clr, rst_l, clk
+  );
+
+  input  set;		  input  clr;		  input  rst_l;		  input  clk;		  output q;		
+
+                
+  wire  = set;
+  wire dff_en = ( set | clr );
+
+  dffrle_ns dff_reg (.din(next_dff), .en(dff_en), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+ = ;
+  wire dff_en = ( set | clr );
+
+  dffrle_ns dff_reg (.din(next_dff), .en(dff_en), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+;
+  wire  = ( set | clr );
+
+  dffrle_ns dff_reg (.din(next_dff), .en(dff_en), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+ = (  | clr );
+
+  dffrle_ns dff_reg (.din(next_dff), .en(dff_en), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+ |  );
+
+  dffrle_ns dff_reg (.din(next_dff), .en(dff_en), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+ );
+
+  dffrle_ns  (.din(next_dff), .en(dff_en), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+ (.din(), .en(dff_en), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+), .en(), .q(dff), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+), .q(), .rst_l(rst_l), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+), .rst_l(), .clk(clk));
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+), .clk());
+
+  assign q = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+));
+
+  assign  = dff;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+ = ;
+
+
+  endmodule
+
+
+// Local Variables:
+// verilog-library-directories:()
+// verilog-library-files:("../../../common/rtl/swrvr_clib.v")
+// verilog-module-parents:("jbi_aok_dok_tracking")
+// End:
+;
+
+
+  endmodule
+
+

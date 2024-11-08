@@ -1,0 +1,2050 @@
+module bw_io_dq_pscan(serial_in ,serial_out ,bypass_in ,out_type ,clk ,
+     bypass ,ps_select ,rcv_in );
+output		serial_out ;
+input		serial_in ;
+input		bypass_in ;
+input		out_type ;
+input		clk ;
+input		bypass ;
+input		ps_select ;
+input		rcv_in ;
+supply0		vss ;
+ 
+wire		 ;
+wire		net73 ;
+wire		net80 ;
+wire		net44 ;
+wire		net46 ;
+wire		net48 ;
+wire		net50 ;
+wire		net52 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net80 ;
+wire		net44 ;
+wire		net46 ;
+wire		net48 ;
+wire		net50 ;
+wire		net52 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net44 ;
+wire		net46 ;
+wire		net48 ;
+wire		net50 ;
+wire		net52 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net46 ;
+wire		net48 ;
+wire		net50 ;
+wire		net52 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net48 ;
+wire		net50 ;
+wire		net52 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net50 ;
+wire		net52 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net52 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net54 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net58 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net62 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+wire		net66 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+wire		 ;
+ 
+ 
+bw_u1_inv_1x ps_inv1 (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ;
+ 
+ 
+bw_u1_inv_1x  (
+     .z               (net48 ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net73 ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_inv_1x ps_inv2 (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net44 ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net58 ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_soff_1x psff (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_soff_1x  (
+     .q               (net73 ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .q               ( ),
+     .so              (net80 ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .so              ( ),
+     .ck              (net54 ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .ck              ( ),
+     .d               (net62 ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d               ( ),
+     .se              (vss ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .se              ( ),
+     .sd              (vss ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .sd              ( ) );
+bw_u1_inv_1x clk_inv (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net54 ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (clk ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_buf_20x out_buf (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_buf_20x  (
+     .z               (serial_out ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net44 ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_muxi21_1x I48 (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_muxi21_1x  (
+     .z               (net70 ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .d0              (rcv_in ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d0              ( ),
+     .d1              (serial_in ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d1              ( ),
+     .s               (out_type ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .s               ( ) );
+bw_u1_muxi21_1x I52 (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_muxi21_1x  (
+     .z               (net66 ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .d0              (net52 ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d0              ( ),
+     .d1              (bypass ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d1              ( ),
+     .s               (out_type ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .s               ( ) );
+bw_u1_inv_1x I53 (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net46 ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net66 ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_muxi21_1x ps_mux1 (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_muxi21_1x  (
+     .z               (net62 ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .d0              (serial_in ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d0              ( ),
+     .d1              (bypass_in ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d1              ( ),
+     .s               (out_type ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .s               ( ) );
+bw_u1_inv_1x I54 (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net52 ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (ps_select ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+bw_u1_muxi21_1x ps_mux2 (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_muxi21_1x  (
+     .z               (net58 ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .d0              (net50 ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d0              ( ),
+     .d1              (net48 ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .d1              ( ),
+     .s               (net46 ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .s               ( ) );
+bw_u1_inv_1x I55 (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ ) );
+bw_u1_inv_1x  (
+     .z               (net50 ),
+     .a               (net70 ) );
+endmodule
+
+ (
+     .z               ( ),
+     .a               (net70 ) );
+endmodule
+
+ ),
+     .a               ( ) );
+endmodule
+
+ ) );
+endmodule
+

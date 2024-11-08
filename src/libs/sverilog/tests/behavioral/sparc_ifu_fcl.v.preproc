@@ -1,0 +1,370 @@
+
+
+ 
+
+
+module sparc_ifu_fcl(
+      fcl_icd_rdreq_bf, fcl_icv_rdreq_bf, fcl_icd_wrreq_bf, 
+   fcl_ict_wrreq_bf, fcl_icv_wrreq_bf, fcl_icd_index_sel_ifq_bf, 
+   fcl_ifq_grant_bf, fcl_ifq_icmiss_s1, fcl_ifq_rdreq_s1, 
+   fcl_ifq_icache_en_s_l, fcl_ifq_thr_s1, fcl_ifq_canthr, 
+   fcl_itlb_cam_vld_bf, fcl_itlb_cam_bypass_bf, fcl_itlb_addr_mask_l, 
+   fcl_itlb_cam_real_bf, fcl_itlb_cam_pid_bf, fcl_itlb_wr_vld_bf, 
+   fcl_itlb_dmp_vld_bf, fcl_itlb_dmp_all_bf, fcl_itlb_tag_rd_vld_bf, 
+   fcl_itlb_invall_f_l, fcl_itlb_data_rd_vld_bf, fcl_erb_ievld_s1, 
+   fcl_erb_tevld_s1, fcl_erb_immuevld_s1, ifu_lsu_thrid_s, 
+   fcl_erb_asi_tid_f, fcl_erb_clear_iferr, fcl_erb_itlbrd_vld_s, 
+   fcl_erb_itlbrd_data_s, fcl_dec_dslot_s, fcl_dtu_inst_vld_e, 
+   fcl_dtu_intr_vld_e, fcl_dtu_inst_vld_d, fcl_dtu_ely_inst_vld_d, 
+   fcl_dec_intr_vld_d, fcl_erb_inst_issue_d, fcl_erb_inst_vld_d1, 
+   ifu_tlu_inst_vld_m, ifu_exu_inst_vld_e, ifu_exu_inst_vld_w, 
+   ifu_spu_inst_vld_w, ifu_tlu_inst_vld_w, ifu_tlu_flush_w, 
+   ifu_tlu_flush_m, fcl_swl_int_activate_i3, fcl_swl_flush_wake_w, 
+   fcl_swl_flush_w, fcl_dcl_regz_e, ifu_tlu_thrid_e, ifu_tlu_thrid_d, 
+   ifu_tlu_immu_miss_m, ifu_tlu_priv_violtn_m, ifu_tlu_icmiss_e, 
+   ifu_tlu_ttype_vld_m, ifu_exu_ttype_vld_m, ifu_mmu_trap_m, 
+   ifu_tlu_trap_m, ifu_tlu_ttype_m, ifu_tlu_hwint_m, 
+   ifu_tlu_sftint_m, ifu_tlu_rstint_m, fcl_dtu_rst_thr_w, 
+   fcl_dtu_resum_thr_w, ifu_tlu_itlb_done, ifu_spu_trap_ack, 
+   ifu_exu_tid_s2, ifu_exu_ren1_s, ifu_exu_ren2_s, ifu_exu_ren3_s, 
+   ifu_exu_disable_ce_e, fcl_dtu_sync_intr_d, fcl_dtu_tlzero_d, 
+   fcl_dtu_privmode_d, fcl_dtu_hprivmode_d, fcl_dtu_hprivmode_w2, 
+   fcl_dtu_nuke_thr_w, fcl_swl_swout_f, fcl_dtu_stall_bf, 
+   fcl_swl_swcvld_s, fcl_dtu_thr_f, fcl_imd_oddwin_d, 
+   fcl_fdp_oddwin_s, fcl_fdp_pcoor_vec_f, fcl_fdp_pcoor_f, 
+   fcl_fdp_mask32b_f, fcl_fdp_addr_mask_d, fcl_fdp_tctxt_sel_prim, 
+   fcl_fdp_usenir_sel_nir_s1, fcl_fdp_rbinst_sel_inste_s, 
+   fcl_fdp_thrtnpc_sel_tnpc_l, fcl_fdp_thrtnpc_sel_npcw_l, 
+   fcl_fdp_thrtnpc_sel_pcf_l, fcl_fdp_thrtnpc_sel_old_l, 
+   fcl_fdp_thr_s1_l, fcl_fdp_next_thr_bf_l, fcl_fdp_next_ctxt_bf_l, 
+   fcl_fdp_nirthr_s1_l, fcl_fdp_thr_s2_l, 
+   fcl_fdp_tpcbf_sel_pcp4_bf_l, fcl_fdp_tpcbf_sel_brpc_bf_l, 
+   fcl_fdp_tpcbf_sel_trap_bf_l, fcl_fdp_tpcbf_sel_old_bf_l, 
+   fcl_fdp_pcbf_sel_nosw_bf_l, fcl_fdp_pcbf_sel_swpc_bf_l, 
+   fcl_fdp_pcbf_sel_br_bf_l, fcl_fdp_trrbpc_sel_trap_bf_l, 
+   fcl_fdp_trrbpc_sel_rb_bf_l, fcl_fdp_trrbpc_sel_err_bf_l, 
+   fcl_fdp_trrbpc_sel_pcs_bf_l, fcl_fdp_noswpc_sel_tnpc_l_bf, 
+   fcl_fdp_noswpc_sel_old_l_bf, fcl_fdp_noswpc_sel_inc_l_bf, 
+   fcl_fdp_nextpcs_sel_pce_f_l, fcl_fdp_nextpcs_sel_pcd_f_l, 
+   fcl_fdp_nextpcs_sel_pcs_f_l, fcl_fdp_nextpcs_sel_pcf_f_l, 
+   fcl_fdp_inst_sel_curr_s_l, fcl_fdp_inst_sel_switch_s_l, 
+   fcl_fdp_inst_sel_nir_s_l, fcl_fdp_inst_sel_nop_s_l, 
+   fcl_fdp_tinst_sel_curr_s_l, fcl_fdp_tinst_sel_rb_s_l, 
+   fcl_fdp_tinst_sel_old_s_l, fcl_fdp_tinst_sel_ifq_s_l, 
+   fcl_fdp_dmpthr_l, fcl_fdp_ctxt_sel_dmp_bf_l, 
+   fcl_fdp_ctxt_sel_sw_bf_l, fcl_fdp_ctxt_sel_curr_bf_l, 
+   fcl_fdp_rdsr_sel_pc_e_l, fcl_fdp_rdsr_sel_thr_e_l, 
+   fcl_fdp_rdsr_sel_ver_e_l, so, ifu_reset_l, 
+      rclk, grst_l, arst_l, se, sehold, si, rst_tri_en, 
+   tlu_ifu_flush_pipe_w, exu_ifu_va_oor_m, exu_ifu_oddwin_s, 
+   spu_ifu_ttype_tid_w2, spu_ifu_ttype_vld_w2, spu_ifu_ttype_w2, 
+   erb_fcl_spu_uetrap, exu_ifu_regz_e, dcl_fcl_bcregz0_e, 
+   dcl_fcl_bcregz1_e, dtu_fcl_rollback_g, dtu_fcl_retract_d, 
+   dtu_fcl_br_inst_d, dtu_fcl_sir_inst_e, dtu_fcl_privop_e, 
+   dtu_fcl_fpdis_e, dtu_fcl_imask_hit_e, dtu_fcl_illinst_e, 
+   dtu_fcl_thr_active, dec_fcl_rdsr_sel_pc_d, dec_fcl_rdsr_sel_thr_d, 
+   ifq_fcl_wrreq_bf, ifq_fcl_icd_wrreq_bf, ifq_fcl_ictv_wrreq_bf, 
+   ifq_fcl_rdreq_bf, ifq_fcl_asi_tid_bf, ifq_fcl_asird_bf, 
+   ifq_fcl_invreq_bf, erb_fcl_itlb_ce_d1, erb_dtu_ifeterr_d1, 
+   erb_fcl_ifet_uevec_d1, erb_fcl_ue_trapvec, erb_fcl_ce_trapvec, 
+   dtu_fcl_nextthr_bf, dtu_fcl_ntr_s, dtu_fcl_running_s, 
+   dtu_fcl_flush_sonly_e, fdp_fcl_swc_s2, fdp_fcl_va2_bf, 
+   itlb_fcl_tlbmiss_f_l, itlb_fcl_priv_s1, itlb_fcl_cp_s1, 
+   itlb_fcl_imiss_s_l, fdp_fcl_pc_oor_vec_f, fdp_fcl_pc_oor_e, 
+   fdp_fcl_op_s, fdp_fcl_op3_s, fdp_fcl_ibit_s, lsu_ifu_stallreq, 
+   ffu_ifu_stallreq, ifq_fcl_stallreq, dtu_inst_anull_e, 
+   ifq_fcl_fill_thr, ifq_fcl_flush_sonly_e, tlu_ifu_trap_tid_w1, 
+   tlu_ifu_trappc_vld_w1, tlu_ifu_trapnpc_vld_w1, 
+   tlu_lsu_pstate_priv, tlu_lsu_pstate_am, tlu_hpstate_priv, 
+   tlu_lsu_redmode, tlu_hpstate_enb, lsu_ifu_addr_real_l, 
+   lsu_pid_state0, lsu_pid_state1, lsu_pid_state2, lsu_pid_state3, 
+   lsu_ifu_icache_en, lsu_ifu_dc_parity_error_w2, lsu_ifu_t0_tlz, 
+   lsu_ifu_t1_tlz, lsu_ifu_t2_tlz, lsu_ifu_t3_tlz, tlu_ifu_hwint_i3, 
+   tlu_ifu_pstate_ie, tlu_ifu_sftint_vld, tlu_ifu_hintp_vld, 
+   tlu_ifu_rerr_vld, tlu_ifu_rstthr_i2, tlu_ifu_rstint_i2, 
+   tlu_ifu_resumint_i2, tlu_ifu_nukeint_i2, tlu_itlb_wr_vld_g, 
+   tlu_itlb_dmp_vld_g, tlu_itlb_dmp_all_g, tlu_itlb_data_rd_g, 
+   tlu_itlb_tag_rd_g, tlu_itlb_invalidate_all_g, tlu_fcl_dmp_pid_bf, 
+   tlu_fcl_dmp_real_bf, tlu_idtlb_dmp_thrid_g, exu_ifu_ecc_ce_m, 
+   ffu_ifu_fst_ce_w
+   );
+
+   input  rclk,
+	        grst_l,
+          arst_l,
+	        se,
+          sehold,
+	        si;
+
+   input  rst_tri_en;
+
+
+   input  tlu_ifu_flush_pipe_w;	   input  exu_ifu_va_oor_m;
+   input [3:0] exu_ifu_oddwin_s;
+
+   input [1:0] spu_ifu_ttype_tid_w2;
+   input       spu_ifu_ttype_vld_w2;
+   input       spu_ifu_ttype_w2;
+
+   input [3:0] erb_fcl_spu_uetrap;     
+   input       exu_ifu_regz_e;
+   input       dcl_fcl_bcregz0_e,
+               dcl_fcl_bcregz1_e;
+   
+   input       dtu_fcl_rollback_g;
+   input       dtu_fcl_retract_d;
+   input       dtu_fcl_br_inst_d;
+   input       dtu_fcl_sir_inst_e;
+   input       dtu_fcl_privop_e,
+		           dtu_fcl_fpdis_e,
+               dtu_fcl_imask_hit_e,
+		           dtu_fcl_illinst_e;
+   input [3:0] dtu_fcl_thr_active;
+
+   input       dec_fcl_rdsr_sel_pc_d,
+		           dec_fcl_rdsr_sel_thr_d;
+   
+   input       ifq_fcl_wrreq_bf;
+   input       ifq_fcl_icd_wrreq_bf,
+		           ifq_fcl_ictv_wrreq_bf,
+		           ifq_fcl_rdreq_bf;
+
+   input [1:0] ifq_fcl_asi_tid_bf;
+   input       ifq_fcl_asird_bf;
+   
+   input       ifq_fcl_invreq_bf;
+
+   input       erb_fcl_itlb_ce_d1;
+   input       erb_dtu_ifeterr_d1;
+   input [3:0] erb_fcl_ifet_uevec_d1,
+		           erb_fcl_ue_trapvec,
+		           erb_fcl_ce_trapvec;   
+   
+   input [3:0] dtu_fcl_nextthr_bf;      input       dtu_fcl_ntr_s,                       dtu_fcl_running_s;
+
+   input       dtu_fcl_flush_sonly_e;
+
+   input       fdp_fcl_swc_s2,       		           fdp_fcl_va2_bf,       		           itlb_fcl_tlbmiss_f_l,  		           itlb_fcl_priv_s1,     		           itlb_fcl_cp_s1,       		           itlb_fcl_imiss_s_l;     
+   input [3:0] fdp_fcl_pc_oor_vec_f;
+   input       fdp_fcl_pc_oor_e;
+
+   input [1:0] fdp_fcl_op_s;
+   input [5:2] fdp_fcl_op3_s;
+   input       fdp_fcl_ibit_s;
+
+   input       lsu_ifu_stallreq,
+	             ffu_ifu_stallreq,
+               ifq_fcl_stallreq;
+   
+   input       dtu_inst_anull_e;
+
+   input [3:0] ifq_fcl_fill_thr;                                        	    input       ifq_fcl_flush_sonly_e;
+
+   input [1:0] tlu_ifu_trap_tid_w1;        input       tlu_ifu_trappc_vld_w1,   		           tlu_ifu_trapnpc_vld_w1;  
+   input [3:0] tlu_lsu_pstate_priv;        input [3:0] tlu_lsu_pstate_am;
+   input [3:0] tlu_hpstate_priv;
+   input [3:0] tlu_lsu_redmode;
+   input [3:0] tlu_hpstate_enb;
+
+   input [3:0] lsu_ifu_addr_real_l;
+   input [2:0] lsu_pid_state0,
+               lsu_pid_state1,
+               lsu_pid_state2,
+               lsu_pid_state3;
+   input [3:0] lsu_ifu_icache_en;
+
+   input       lsu_ifu_dc_parity_error_w2;
+   
+
+   input       lsu_ifu_t0_tlz,
+ 		           lsu_ifu_t1_tlz,
+ 		           lsu_ifu_t2_tlz,
+ 		           lsu_ifu_t3_tlz;
+
+   input [3:0] tlu_ifu_hwint_i3,        		           tlu_ifu_pstate_ie,
+		           tlu_ifu_sftint_vld,
+		           tlu_ifu_hintp_vld,
+		           tlu_ifu_rerr_vld,
+		           tlu_ifu_rstthr_i2;       
+   input       tlu_ifu_rstint_i2,       		           tlu_ifu_resumint_i2,
+		           tlu_ifu_nukeint_i2;
+
+   input       tlu_itlb_wr_vld_g,
+		           tlu_itlb_dmp_vld_g,
+               tlu_itlb_dmp_all_g,
+		           tlu_itlb_data_rd_g,
+		           tlu_itlb_tag_rd_g;
+   input       tlu_itlb_invalidate_all_g;
+
+   input [2:0] tlu_fcl_dmp_pid_bf;
+   input       tlu_fcl_dmp_real_bf;
+   input [1:0] tlu_idtlb_dmp_thrid_g;
+
+   input       exu_ifu_ecc_ce_m;
+   input       ffu_ifu_fst_ce_w;
+   
+      output      fcl_icd_rdreq_bf,
+               fcl_icv_rdreq_bf,
+		           fcl_icd_wrreq_bf,
+		           fcl_ict_wrreq_bf,
+		           fcl_icv_wrreq_bf;
+
+   output      fcl_icd_index_sel_ifq_bf;
+   output      fcl_ifq_grant_bf;
+   
+      output      fcl_ifq_icmiss_s1;     output      fcl_ifq_rdreq_s1;
+   output      fcl_ifq_icache_en_s_l;
+   
+   output [1:0] fcl_ifq_thr_s1;
+   output [3:0] fcl_ifq_canthr;     
+      output       fcl_itlb_cam_vld_bf,
+                fcl_itlb_cam_bypass_bf,
+		            fcl_itlb_addr_mask_l,
+                fcl_itlb_cam_real_bf;
+
+   output [2:0] fcl_itlb_cam_pid_bf;
+   
+   output       fcl_itlb_wr_vld_bf,
+		            fcl_itlb_dmp_vld_bf,
+                fcl_itlb_dmp_all_bf,
+		            fcl_itlb_tag_rd_vld_bf,
+		            fcl_itlb_invall_f_l,
+		            fcl_itlb_data_rd_vld_bf;
+   
+      output       fcl_erb_ievld_s1,
+		            fcl_erb_tevld_s1,
+		            fcl_erb_immuevld_s1;
+
+   output [1:0] ifu_lsu_thrid_s,
+		            fcl_erb_asi_tid_f;
+
+   output [3:0] fcl_erb_clear_iferr;
+   
+
+   output       fcl_erb_itlbrd_vld_s,
+		            fcl_erb_itlbrd_data_s;
+
+   output       fcl_dec_dslot_s;
+   output       fcl_dtu_inst_vld_e,
+                fcl_dtu_intr_vld_e,
+		            fcl_dtu_inst_vld_d,
+                fcl_dtu_ely_inst_vld_d,
+                fcl_dec_intr_vld_d,
+		            fcl_erb_inst_issue_d,
+		            fcl_erb_inst_vld_d1,
+		            ifu_tlu_inst_vld_m,
+		            ifu_exu_inst_vld_e,
+		            ifu_exu_inst_vld_w,
+		            ifu_spu_inst_vld_w,
+		            ifu_tlu_inst_vld_w;
+   
+   output       ifu_tlu_flush_w;
+   output       ifu_tlu_flush_m;
+
+   output [3:0] fcl_swl_int_activate_i3;
+   output       fcl_swl_flush_wake_w;
+   output       fcl_swl_flush_w;
+
+   output       fcl_dcl_regz_e;
+   
+      output [1:0] ifu_tlu_thrid_e;
+   output [1:0] ifu_tlu_thrid_d;
+
+   output       ifu_tlu_immu_miss_m,
+		            ifu_tlu_priv_violtn_m;
+	 
+   output       ifu_tlu_icmiss_e;
+   output       ifu_tlu_ttype_vld_m;
+   output       ifu_exu_ttype_vld_m;
+   output       ifu_mmu_trap_m;
+   output       ifu_tlu_trap_m;
+   output [8:0] ifu_tlu_ttype_m;
+   
+   output       ifu_tlu_hwint_m;
+   output       ifu_tlu_sftint_m;
+   output       ifu_tlu_rstint_m;
+   output       fcl_dtu_rst_thr_w;
+   output       fcl_dtu_resum_thr_w;
+
+   output       ifu_tlu_itlb_done;
+
+   output       ifu_spu_trap_ack;
+   
+      output [1:0] ifu_exu_tid_s2;
+   output       ifu_exu_ren1_s,
+		            ifu_exu_ren2_s,
+		            ifu_exu_ren3_s;
+
+   output       ifu_exu_disable_ce_e;     
+   
+      output       fcl_dtu_sync_intr_d;
+   output       fcl_dtu_tlzero_d;
+   output       fcl_dtu_privmode_d;
+   output       fcl_dtu_hprivmode_d;
+   output       fcl_dtu_hprivmode_w2;
+   output       fcl_dtu_nuke_thr_w;
+   output       fcl_swl_swout_f;
+   output       fcl_dtu_stall_bf;
+                                         output       fcl_swl_swcvld_s;
+   output [3:0] fcl_dtu_thr_f;
+   output       fcl_imd_oddwin_d;
+   
+      output       fcl_fdp_oddwin_s;
+   output [3:0] fcl_fdp_pcoor_vec_f;
+   output       fcl_fdp_pcoor_f;
+   output       fcl_fdp_mask32b_f;
+   output       fcl_fdp_addr_mask_d;
+
+   output [3:0] fcl_fdp_tctxt_sel_prim;
+
+   
+      output       fcl_fdp_usenir_sel_nir_s1;      output [3:0] fcl_fdp_rbinst_sel_inste_s;
+
+   output [3:0] fcl_fdp_thrtnpc_sel_tnpc_l,  		            fcl_fdp_thrtnpc_sel_npcw_l,
+		            fcl_fdp_thrtnpc_sel_pcf_l,
+		            fcl_fdp_thrtnpc_sel_old_l;
+   
+   output [3:0] fcl_fdp_thr_s1_l;               
+      output [3:0] fcl_fdp_next_thr_bf_l,                  fcl_fdp_next_ctxt_bf_l, 		            fcl_fdp_nirthr_s1_l,    		            fcl_fdp_thr_s2_l;       
+   output [3:0] fcl_fdp_tpcbf_sel_pcp4_bf_l, 		            fcl_fdp_tpcbf_sel_brpc_bf_l,
+		            fcl_fdp_tpcbf_sel_trap_bf_l,
+		            fcl_fdp_tpcbf_sel_old_bf_l;
+
+   output       fcl_fdp_pcbf_sel_nosw_bf_l,      		            fcl_fdp_pcbf_sel_swpc_bf_l,
+		            fcl_fdp_pcbf_sel_br_bf_l;
+
+   output [3:0] fcl_fdp_trrbpc_sel_trap_bf_l, 
+		            fcl_fdp_trrbpc_sel_rb_bf_l,
+		            fcl_fdp_trrbpc_sel_err_bf_l,
+		            fcl_fdp_trrbpc_sel_pcs_bf_l;
+
+   output       fcl_fdp_noswpc_sel_tnpc_l_bf,    		            fcl_fdp_noswpc_sel_old_l_bf,		 		            fcl_fdp_noswpc_sel_inc_l_bf;
+
+   output [3:0] fcl_fdp_nextpcs_sel_pce_f_l,  
+		            fcl_fdp_nextpcs_sel_pcd_f_l,
+		            fcl_fdp_nextpcs_sel_pcs_f_l,  
+		            fcl_fdp_nextpcs_sel_pcf_f_l;
+
+   output       fcl_fdp_inst_sel_curr_s_l,   		            fcl_fdp_inst_sel_switch_s_l,
+		            fcl_fdp_inst_sel_nir_s_l,
+		            fcl_fdp_inst_sel_nop_s_l;
+
+   output [3:0] fcl_fdp_tinst_sel_curr_s_l,  		            fcl_fdp_tinst_sel_rb_s_l,		
+		            fcl_fdp_tinst_sel_old_s_l,
+		            fcl_fdp_tinst_sel_ifq_s_l;
+
+   output [3:0] fcl_fdp_dmpthr_l;
+
+   output       fcl_fdp_ctxt_sel_dmp_bf_l,
+		            fcl_fdp_ctxt_sel_sw_bf_l,
+		            fcl_fdp_ctxt_sel_curr_bf_l;
+
+   output       fcl_fdp_rdsr_sel_pc_e_l,
+                fcl_fdp_rdsr_sel_thr_e_l,
+                fcl_fdp_rdsr_sel_ver_e_l;
+   
+   output       so,
+                ifu_reset_l;
+
+
+            reg

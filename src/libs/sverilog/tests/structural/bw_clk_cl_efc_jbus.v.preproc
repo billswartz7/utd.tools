@@ -1,0 +1,202 @@
+
+                              
+
+
+module bw_clk_cl_efc_jbus (
+        dbginit_l, cluster_grst_l, rclk, so, 
+        gclk, cluster_cken, arst_l, grst_l, adbginit_l, gdbginit_l, si, 
+    se
+    );
+    
+                
+                    output                                       dbginit_l;
+    output                                       cluster_grst_l;    
+    output                                       rclk;    
+    output                                       so;    
+        
+        input                                        gclk;    
+    input                                        cluster_cken;    
+    input                                        arst_l;    
+    input                                        grst_l;    
+    input                                        adbginit_l;    
+    input                                        gdbginit_l;    
+    input                                        si;
+    input                                        se;
+    
+                cluster_header  (/*AUTOINST*/
+                                   // Outputs
+                                   .dbginit_l(dbginit_l),
+                                   .cluster_grst_l(cluster_grst_l),
+                                   .rclk(rclk),
+                                   .so  (so),
+                                   // Inputs
+                                   .gclk(gclk),
+                                   .cluster_cken(cluster_cken),
+                                   .arst_l(arst_l),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+ (
+                                                                      .dbginit_l(),
+                                   .cluster_grst_l(cluster_grst_l),
+                                   .rclk(rclk),
+                                   .so  (so),
+                                   // Inputs
+                                   .gclk(gclk),
+                                   .cluster_cken(cluster_cken),
+                                   .arst_l(arst_l),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .cluster_grst_l(),
+                                   .rclk(rclk),
+                                   .so  (so),
+                                   // Inputs
+                                   .gclk(gclk),
+                                   .cluster_cken(cluster_cken),
+                                   .arst_l(arst_l),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .rclk(),
+                                   .so  (so),
+                                   // Inputs
+                                   .gclk(gclk),
+                                   .cluster_cken(cluster_cken),
+                                   .arst_l(arst_l),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .so  (),
+                                   // Inputs
+                                   .gclk(gclk),
+                                   .cluster_cken(cluster_cken),
+                                   .arst_l(arst_l),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                                                      .gclk(),
+                                   .cluster_cken(cluster_cken),
+                                   .arst_l(arst_l),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .cluster_cken(),
+                                   .arst_l(arst_l),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .arst_l(),
+                                   .grst_l(grst_l),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .grst_l(),
+                                   .adbginit_l(adbginit_l),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .adbginit_l(),
+                                   .gdbginit_l(gdbginit_l),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .gdbginit_l(),
+                                   .si  (si),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .si  (),
+                                   .se  (se));
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+),
+                                   .se  ());
+    
+endmodule // bw_clk_cl_efc_jbus
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl/")
+// End:
+));
+    
+endmodule 

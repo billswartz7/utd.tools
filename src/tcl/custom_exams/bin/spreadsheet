@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+echo "Syntax: spreadsheet <CSVfilename>"
+echo "        creates new csv files which the grades have been updated."
+exit 1  ;
+fi
+
+exec ${ICDIR}/bin/icos ICtclsh -i -v -A -do ./spreadsheet.tcl -a ${1+"$@"}
+

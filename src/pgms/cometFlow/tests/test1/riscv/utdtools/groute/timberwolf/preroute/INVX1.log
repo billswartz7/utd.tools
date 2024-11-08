@@ -1,0 +1,139 @@
+####################################################
+time 1571770855 Tue Oct 22 14:00:55 2019:TimberWolfDR started...
+@ /Users/bill/version1/itools/bin/Darwin/TimberWolfDR -n INVX1 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute/timberwolf/preroute HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80986 PVERSION v2.0.0pre46
+
+Row-Based Detail Router
+
+TimberWolfDR version:v2.0.0pre46
+iTools/TimberWolf compilation:Tue Oct 22 13:58:30 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+TimberWolfDR switches:
+	Graphics mode off
+
+
+
+Options specified:
+allow_multiple_ports        : off
+allow_pad_overlap           : off
+autodetect_script           : on
+background                  : white
+beautify_after_preroute     : off
+check_ports                 : off
+contiguous_pad_groups       : on
+contract_feeds              : off
+core_to_padspace            : 0 0 0 0
+corner_pads                 : on
+density                     : unspecified
+dominator_threshold         : 3t
+expansion_limit             : 20000
+fast                        : on
+fix_undersize_pins          : off
+graphics                    : off
+graph_compact_dir           : max_space
+xgrid                       : 1 (no grid)
+ygrid                       : 1 (no grid)
+ignore_nonrouting           : off
+license_max_tries           : 0
+max_compaction_depth        : 1
+max_unconnected_depth       : 5
+maze_route                  : on
+minimum_pad_space           : calculated
+pad_new_algorithm           : off
+pad_prune                   : 0
+paranoid_samenet_rules      : off
+preroute_timeout            : 600
+prerouting_unconnected      : off
+quiet_level                 : 0
+random_seed                 : 58922510
+region_type                 : entire
+report_errors               : off
+report_pin_errors           : off
+route_script                : INVX1.do
+route_undersize_pins        : on
+row_separation              : unspecified (calculated)
+scale                       : 10.00 (1000.00 effective)
+script                      : INVX1.do
+spacing_check               : euclidean
+target_density              : default (minimum_area)
+traditional                 : off
+undersized_via_fix          : on
+vertical_region             : off
+via_cost                    : (default)
+wait_marker                 : none
+
+DIFFNET SPACING RULES:
+----------------------
+SPACING cc cc 0.9
+SPACING via1 via1 0.6
+SPACING via2 via2 0.6
+SPACING via3 via3 0.8
+
+VIA_OBS_ARE_WIRES has been disabled.
+Obstacles on via cut layers will be interpreted as keepouts.
+
+no syntax errors in library:INVX1.lib
+no syntax errors in physical description.
+no syntax problem in circuit file.
+no syntax errors in netlist description.
+[icpreroute_lib]:Grid set to 1.6 offset:0.8
+
+Free area on layer:metal2
+ * (0.7 0) (2.5 20)
+[determine_pin_order]:Proposed slot assignment:
+ A Y
+
+Pin port locations:
+pin:A net:1 loc:0.8
+pin:Y net:2 loc:2.4
+
+Pin port locations:
+pin:Y net:2 loc:2.4
+pin:A net:1 loc:0.8
+Net routing constrained to be within bounding of the net's pins expanded by 15
+track pitches.  Use the iccost bbox command to change the bounding box or use
+iccost bbox inf to remove the bounding box constraint.
+
+[icpreroute_status]:Finished prerouting with 0 design rule errors and 0 unconnected nets.
+[icoutput]:Outputting routing to INVX1.rte...
+
+
+Runtime Statistics
+-------------------------
+Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+Machine type: Darwin
+Date        : Tue Oct 22 14:00:55 2019
+
+User    time:   0.0 seconds
+System  time:   0.0 seconds
+Elapsed time:   0.0 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =    2617344B (2556KB)
+Virtual memory size              =    4243456K (4144MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =     1939632 (1894KB)
+Current heap size                =     1822656 (1779KB)
+
+Major page faults = 0
+Minor page faults = 2080
+Swaps = 0
+
+Input blocks = 0
+Output blocks = 0
+
+Context switch (voluntary) = 8
+Context switch (involuntary) = 93
+
+
+TimberWolfDR terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770855 Tue Oct 22 14:00:55 2019:TimberWolfDR exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute/timberwolf/preroute HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 80986
+

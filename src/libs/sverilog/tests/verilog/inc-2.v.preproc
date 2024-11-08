@@ -1,0 +1,9 @@
+
+ 
+
+
+module a_module(
+    input [] bus
+);
+
+endmodule

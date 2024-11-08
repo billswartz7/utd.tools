@@ -1,0 +1,75 @@
+
+	 			
+ 
+
+
+
+
+module cpx_io_grant_ff(
+      cpx_io_grant_cx2, so, 
+      cpx_io_grant_cx, rclk, si, se
+   );
+   
+ 
+   output [7:0]		cpx_io_grant_cx2;	
+   output 		so;
+   
+
+   input [7:0]		cpx_io_grant_cx;	
+   input 		rclk;
+   input 		si;
+   input 		se;
+   
+   dff_s #(8) (
+            .din           (cpx_io_grant_cx[7:0]),
+	    .q             (cpx_io_grant_cx2[7:0]),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (8'd0),
+	    .so            ());
+
+
+endmodule // cpx_io_grant_ff
+
+
+ 
+
+
+
+
+
+
+(
+            .din           ([7:0]),
+	    .q             ([7:0]),
+	    .clk           (),
+	    .se            (1'b0),
+	    .si            (8'd0),
+	    .so            ());
+
+
+endmodule // cpx_io_grant_ff
+
+
+ 
+
+
+
+
+
+
+),
+	    .se            (1bb),
+	    .si            (8d0),
+	    .so            ());
+
+
+endmodule 
+
+ 
+
+
+
+
+
+

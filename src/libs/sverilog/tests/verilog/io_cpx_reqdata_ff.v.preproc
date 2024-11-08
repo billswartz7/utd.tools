@@ -1,0 +1,27 @@
+
+	 			
+ 
+
+
+
+
+module io_cpx_reqdata_ff(
+      io_cpx_data_ca2, io_cpx_req_cq2, scan_out, 
+      io_cpx_data_ca, io_cpx_req_cq, rclk, scan_in, se
+   );
+   
+
+   output [-1:0]		io_cpx_data_ca2;	
+   output [7:0]		io_cpx_req_cq2;	
+   output 		scan_out;
+   
+   input [-1:0]		io_cpx_data_ca;	
+   input [7:0]		io_cpx_req_cq;	
+
+   input 		rclk;
+   input 		scan_in;
+   input 		se;
+   
+
+   
+   dff_s #()

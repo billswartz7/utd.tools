@@ -1,0 +1,332 @@
+
+Row-Based Placement Program
+
+iplacesc.v1 version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:49:06 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+Options specified:
+adaptive_row_spacing     : 0
+add_feeds                : off
+add_rigid_spacers        : on
+adjust_cell_offset       : on
+adjust_gate_array_rows   : on
+alignment_tolerance      : 0
+allow_long_rows          : off
+allow_uneven_rows        : off
+allow_pad_overlap        : off
+autodetect_script        : off
+auto_row_lengths         : default (on but off for complex rows)
+auto_wire_weight         : on
+background               : white
+bendcost_threshold       : 0.000 (default) 
+buffer_timing            : on
+calc_row_index           : off
+check_overlap            : on
+check_pin_access         : on
+check_ports              : off
+cluster                  : off
+cluster_priority         : off
+cluster_split_param      : default (calculated)
+cluster_split_weight     : 1000.00
+compact_ports            : autodetect
+compact_port_algorithm   : 3
+compress_files           : off
+contiguous_pad_groups    : on
+convert_paths_to_pinpairs: off
+core_to_padspace         : 0.06463 0.06463 0.06463 0.06463
+corner_pads              : on
+cost_obstacles           : on
+cost_only                : off
+cover_cell_transparent   : off
+create_pl1in_instances   : off
+default_pin_capacitance  : (20.00 fF)
+design_style             : stdcell
+eco_autodetect           : off
+eco_buffer_tree          : off
+eco_constraint_factor    : -1
+eco_constraint_xfactor   : -1.00 relative
+eco_driver_weight        : 1
+eco_ignore_version       : off
+eco_placement_improve    : off
+eco_preview              : off
+eco_start_iteration      : 100
+eco_use_pl1_in_data      : on
+equalize_rows            : off
+even_placement           : off
+except_threshold         : default
+exit_on_error            : off
+fast                     : 10
+fix_orientation_problems : on
+fix_side_pin_access      : off
+gate_array_exit          : off
+gate_array_spacer        : ~TWSPACER
+graphics                 : on
+grid                     : none
+horizontal_path_weight   : 0.000 (calculated)
+horizontal_weight        : 1.000
+ignore_feeds             : off
+ignore_keepouts          : on
+iterate                  : off
+iterate_debug            : off
+iterate_script           : default
+large_net_threshold      : 100
+load balancing           : off
+merge_port_layers        : autodetected
+minimum_pad_space        : calculated
+net_reporting            : on
+orientation_optimization : off
+overlap_algorithm        : ordered
+overlap_mode             : left_justify
+padspacing               : uniform
+over_the_cell_feed_layer : default
+parallel_daemons         : on
+parallel_debug           : off
+parallel execution       : off
+parallel_row_update      : default
+parallel_slave_graphics  : off
+parallel timeout         : 0
+parallel_remote_start    : on
+path_detail_limit        : 10
+pdef_factor              : 10.000
+pdef_filename            : default
+pin_layers               : default
+power_domain_attempts    : 4
+power_domain_height      : 0
+power_domain_isolation   : on
+power_domain_spacing     : 0
+power_domain_width       : 0
+power_domain_exec        : off
+power_domain_start       : default
+power_domain_weight      : 1
+pre_equalize_rows        : off
+precision_row_control    : default
+preload_rows             : off
+probe_offset             : 0
+processor limit          : unlimited
+process_model_pins       : on
+prune_amount             : default
+quench                   : off
+random_seed              : 579004042
+relax_pin_access         : off
+require_vias             : on
+restart                  : off
+restrict_ports_to_channel: off
+row_blockage_percent     : 50.000
+row_definitions          : fixed
+row_var_percent          : 0.000
+save_file                : on
+scale                    : 4000.00
+schematic_ordering       : off
+script                   : none
+shared_boundary_opt      : on
+slow                     : 0
+soft_fold_weight         : 1.00
+spare_columns            : 5 (default)
+spare_extent             : 1.000000 1.000000 (default)
+spare_place_gravity      : on
+spare_place_globals      : 2
+spare_global_weight      : 1.00
+stage termination        : 85
+steiner_wire_length      : off
+strict_row_constraints   : off
+taper_percentage         : 0.100
+time_factor              : 3.000
+time_update              : 5 (default)
+timeout                  : none
+track.pitch              : 0.06463
+uniform_spacer_algorithm : FIXED
+unlap_max_checking       : off
+update_overlap           : 0
+use_initial_placement    : off
+vertical_path_weight     : 1.000 (user supplied)
+vertical_wire_weight     : 1.000
+zsa_read_pth             : off
+% Reading .slib, .sckt, and .scon files...
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:685
+[look_for_hints]:Number of nets :1514
+[look_for_hints]:Number of gpins:5961
+
+no syntax errors in library:riscv.slib
+no syntax errors in physical description.
+no syntax problem in circuit file.
+no syntax errors in netlist description.
+Reading constraint file riscv.scon...
+done reading constraint file. No syntax errors.
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:M1 pitch:0.03600 offset:0.01800
+Pin layers:
+layer:M1 pitch:0.03600 offset:0.01800
+
+Need timing graph...no
+[autodetect_port_layers]:didn't autodetect port layers.
+median:2.61900
+
+[cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+
+
+
+total cell length: 1296.02700
+total block length: 1296.02700
+rowSep                  : 0.000
+
+
+[auto_wire_weight]:vertical_wire_weight has been set by user.
+Effective row separation has been set to 1.00
+Modified vertical wire weight has been set to 1000000.00
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (27.18000,27.36000).
+Adjusted padring: (-0.12925,-0.12925) (27.18000,27.48925).
+
+block x-span:27  block y-span:27.36000
+
+
+TIMING FACTOR (COMPUTED) : 4.000000
+Original Average Cell Width:3.54106
+average_cell_width is:3.54106
+standard deviation of cell length is:2.49011
+narrowest standard cell:0.27000
+widest standard cell:13.98600
+average row length:27
+Normal row control algorithm.
+ratio:51.8
+
+Row-based Cell Distribution: 
+[ 1- 10] ( 0.27000  1.64175) : 8.470  2.459  0.546  1.639  0.273  2.732  0.273  0.273 20.765  1.913 
+[11- 20] ( 1.77875  3.01325) : 1.913  4.098  3.005  0.000  0.546  0.546  0.273  0.273  0.273  1.093 
+[21- 30] ( 3.15025  4.38500) : 0.273  0.273  0.273  0.273  0.820  0.546  1.639  0.820  1.093  1.093 
+[31- 40] ( 4.52175  5.75650) : 1.639  0.820  0.546  1.093  1.093  0.273  1.093  1.913  1.093  0.820 
+[41- 50] ( 5.89350  7.12800) : 1.366  1.913  2.732  1.913  2.186  3.279  4.645  6.011  6.284  0.273 
+[51- 60] ( 7.26500  8.49975) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[61- 70] ( 8.63675  9.87125) : 0.000  0.000  0.000  0.000  0.000  0.273  0.000  0.000  0.000  0.000 
+[71- 80] (10.00825 11.24300) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[81- 90] (11.37975 12.61450) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[91-100] (12.75150 13.98600) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.273 
+Bin width:2194.56 smallest:4320 => largest:223776
+
+iplacesc starting from the beginning
+raw bin width :10.62312
+adjusted bin width :8.19200
+number of x bins    :4
+number of y bins    :0
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 46989.90750
+
+[findcost]:the large and non-global ignored nets:
+WARNING[findcost]:Large net <clk> has 256 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <rst> has 177 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 132 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h0> has 100 pins exceeding threshold and is now IGNORED.
+
+[findcost]:The active global nets:	NONE
+
+[findcost]:The defined global nets but not present in netlist:	NONE
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 787
+The number of nets with 3 pins is 279
+The number of nets with 4 pins is 141
+The number of nets with 5 pins is 70
+The number of nets with 6 pins is 40
+The number of nets with 7 pins is 42
+The number of nets with 8 pins is 41
+The number of nets with 9 pins is 36
+The number of nets with 10 pins is 36
+The number of nets with 11 pins is 30
+The number of nets with 16 pins is 1
+The number of nets with 17 pins is 1
+The number of nets with 27 pins is 1
+The number of nets with 31 pins is 1
+The number of nets with 100 pins or more is 4
+Average number of pins per net = 3.507285
+The maximum number of pins on a single net is:256
+
+Pad information:
+Core: (0,0) (27,27.36000).
+Padring: (-0.12925,-20.02800) (27.18000,47.38800).
+Die: (-20.02800,-20.03800) (47.02800,47.39800).
+
+
+Percentage of Nets Connecting to at least 2 cells:1.00
+Percentage of Nets Connecting to at least 3 cells:0.50
+Percentage of Nets Connecting to at least 4 cells:0.30
+Percentage of Nets Connecting to at least 5 cells:0.21
+Percentage of Nets Connecting to at least 6 cells:0.17
+
+mean row var width :1.77053
+block:   1 (0,0) (27,0.57600) desire:27 val:1.77056
+block:   2 (0,0.57600) (27,1.15200) desire:27 val:1.77056
+block:   3 (0,1.15200) (27,1.72800) desire:27 val:1.77056
+block:   4 (0,1.72800) (27,2.30400) desire:27 val:1.77056
+block:   5 (0,2.30400) (27,2.88000) desire:27 val:1.77056
+block:   6 (0,2.88000) (27,3.45600) desire:27 val:1.77056
+block:   7 (0,3.45600) (27,4.03200) desire:27 val:1.77056
+block:   8 (0,4.03200) (27,4.60800) desire:27 val:1.77056
+block:   9 (0,4.60800) (27,5.18400) desire:27 val:1.77056
+block:  10 (0,5.18400) (27,5.76000) desire:27 val:1.77056
+block:  11 (0,5.76000) (27,6.33600) desire:27 val:1.77056
+block:  12 (0,6.33600) (27,6.91200) desire:27 val:1.77056
+block:  13 (0,6.91200) (27,7.48800) desire:27 val:1.77056
+block:  14 (0,7.48800) (27,8.06400) desire:27 val:1.77056
+block:  15 (0,8.06400) (27,8.64000) desire:27 val:1.77056
+block:  16 (0,8.64000) (27,9.21600) desire:27 val:1.77056
+block:  17 (0,9.21600) (27,9.79200) desire:27 val:1.77056
+block:  18 (0,9.79200) (27,10.36800) desire:27 val:1.77056
+block:  19 (0,10.36800) (27,10.94400) desire:27 val:1.77056
+block:  20 (0,10.94400) (27,11.52000) desire:27 val:1.77056
+block:  21 (0,11.52000) (27,12.09600) desire:27 val:1.77056
+block:  22 (0,12.09600) (27,12.67200) desire:27 val:1.77056
+block:  23 (0,12.67200) (27,13.24800) desire:27 val:1.77056
+block:  24 (0,13.24800) (27,13.82400) desire:27 val:1.77056
+block:  25 (0,13.82400) (27,14.40000) desire:27 val:1.77056
+block:  26 (0,14.40000) (27,14.97600) desire:27 val:1.77056
+block:  27 (0,14.97600) (27,15.55200) desire:27 val:1.77056
+block:  28 (0,15.55200) (27,16.12800) desire:27 val:1.77056
+block:  29 (0,16.12800) (27,16.70400) desire:27 val:1.77056
+block:  30 (0,16.70400) (27,17.28000) desire:27 val:1.77056
+block:  31 (0,17.28000) (27,17.85600) desire:27 val:1.77056
+block:  32 (0,17.85600) (27,18.43200) desire:27 val:1.77056
+block:  33 (0,18.43200) (27,19.00800) desire:27 val:1.77056
+block:  34 (0,19.00800) (27,19.58400) desire:27 val:1.77056
+block:  35 (0,19.58400) (27,20.16000) desire:27 val:1.77056
+block:  36 (0,20.16000) (27,20.73600) desire:27 val:1.77056
+block:  37 (0,20.73600) (27,21.31200) desire:27 val:1.77056
+block:  38 (0,21.31200) (27,21.88800) desire:27 val:1.77056
+block:  39 (0,21.88800) (27,22.46400) desire:27 val:1.77056
+block:  40 (0,22.46400) (27,23.04000) desire:27 val:1.77056
+block:  41 (0,23.04000) (27,23.61600) desire:27 val:1.77056
+block:  42 (0,23.61600) (27,24.19200) desire:27 val:1.77056
+block:  43 (0,24.19200) (27,24.76800) desire:27 val:1.77056
+block:  44 (0,24.76800) (27,25.34400) desire:27 val:1.77056
+block:  45 (0,25.34400) (27,25.92000) desire:27 val:1.77056
+block:  46 (0,25.92000) (27,26.49600) desire:27 val:1.77056
+block:  47 (0,26.49600) (27,27.07200) desire:27 val:1.77056
+block:  48 (0,27.07200) (27,27.36000) desire:27 val:1.77056
+Total Desired Length:1296.02700
+
+bdxlen:27  bdylen:27.36000
+l:0  t:27.36000  r:27  b:0
+
+
+
+THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 46729.49050
+Attempts per iteration:1830
+
+Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc

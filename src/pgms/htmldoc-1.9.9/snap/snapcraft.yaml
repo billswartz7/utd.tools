@@ -1,0 +1,29 @@
+name: htmldoc
+version: 1.9.9
+summary: HTML and Markdown conversion utility
+description: |
+  HTMLDOC is a program that reads HTML and Markdown source files or web pages
+  and generates corresponding EPUB, HTML, PostScript, or PDF files with an
+  optional table of contents.
+
+#confinement: devmode
+confinement: strict
+
+#grade: devel
+grade: stable
+
+icon: desktop/htmldoc-128.png
+
+apps:
+    htmldoc:
+        command: desktop-launch $SNAP/bin/htmldoc
+        desktop: share/applications/htmldoc.desktop
+        plugs: [home, network, x11]
+
+parts:
+    main:
+        plugin: autotools
+        source: .
+        after: [desktop-gtk3]
+
+build-packages: [libfltk1.3-dev]

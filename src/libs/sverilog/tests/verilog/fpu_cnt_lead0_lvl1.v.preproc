@@ -1,0 +1,105 @@
+
+module fpu_cnt_lead0_lvl1 (
+	din,
+
+	din_3_0_eq_0,
+	din_3_2_eq_0,
+	lead0_4b_0
+);
+
+
+input [3:0]	din;			
+output		din_3_0_eq_0;		output		din_3_2_eq_0;		output		lead0_4b_0;		
+
+wire		;
+wire		din_3_2_eq_0;
+wire		lead0_4b_0;
+
+
+assign din_3_0_eq_0= (!(|din[3:0]));
+
+assign din_3_2_eq_0= (!(|din[3:2]));
+
+assign lead0_4b_0= ((!din_3_2_eq_0) && (!din[3]))
+		|| (din_3_2_eq_0 && (!din[1]));
+
+endmodule
+
+
+;
+wire		;
+wire		lead0_4b_0;
+
+
+assign din_3_0_eq_0= (!(|din[3:0]));
+
+assign din_3_2_eq_0= (!(|din[3:2]));
+
+assign lead0_4b_0= ((!din_3_2_eq_0) && (!din[3]))
+		|| (din_3_2_eq_0 && (!din[1]));
+
+endmodule
+
+
+;
+wire		;
+
+
+assign din_3_0_eq_0= (!(|din[3:0]));
+
+assign din_3_2_eq_0= (!(|din[3:2]));
+
+assign lead0_4b_0= ((!din_3_2_eq_0) && (!din[3]))
+		|| (din_3_2_eq_0 && (!din[1]));
+
+endmodule
+
+
+;
+
+
+assign = (!(|din[3:0]));
+
+assign din_3_2_eq_0= (!(|din[3:2]));
+
+assign lead0_4b_0= ((!din_3_2_eq_0) && (!din[3]))
+		|| (din_3_2_eq_0 && (!din[1]));
+
+endmodule
+
+
+= (!(|[3:0]));
+
+assign = (!(|din[3:2]));
+
+assign lead0_4b_0= ((!din_3_2_eq_0) && (!din[3]))
+		|| (din_3_2_eq_0 && (!din[1]));
+
+endmodule
+
+
+= (!(|[3:2]));
+
+assign = ((!din_3_2_eq_0) && (!din[3]))
+		|| (din_3_2_eq_0 && (!din[1]));
+
+endmodule
+
+
+= ((!) && (!din[3]))
+		|| (din_3_2_eq_0 && (!din[1]));
+
+endmodule
+
+
+) && (![3]))
+		|| ( && (!din[1]));
+
+endmodule
+
+
+ && (![1]));
+
+endmodule
+
+

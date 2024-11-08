@@ -1,0 +1,24 @@
+
+
+
+ 
+ 
+
+module sparc_ifu_invctl(
+      so, inv_ifc_inv_pending, ifq_icv_wrindex_bf, ifq_icv_wren_bf, 
+   ifq_ict_dec_wrway_bf, ifq_fcl_invreq_bf, ifq_erb_asiway_f, 
+      rclk, se, si, const_cpuid, mbist_icache_write, 
+   lsu_ifu_ld_icache_index, lsu_ifu_ld_pcxpkt_vld, 
+   lsu_ifu_ld_pcxpkt_tid, ifc_inv_ifqadv_i2, ifc_inv_asireq_i2, 
+   ifq_icd_index_bf, ifd_inv_ifqop_i2, ifd_inv_wrway_i2
+   );
+
+   input        rclk, 
+                se, 
+                si;
+   
+   
+   input [2:0]  const_cpuid;
+   input        mbist_icache_write;
+
+   input [:

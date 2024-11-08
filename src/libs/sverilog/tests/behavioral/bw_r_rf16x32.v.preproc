@@ -1,0 +1,583 @@
+
+
+
+
+
+ 
+
+
+
+module bw_r_rf16x32 (
+      dout, so, 
+      rclk, se, si, reset_l, sehold, rst_tri_en, rd_adr1, rd_adr2, 
+   rd_adr1_sel, rd_en, wr_adr, wr_en, bit_wen, din
+   );
+
+	
+   input        rclk;
+   input        se;
+   input        si;
+   input        reset_l;
+   input        sehold;	         input        rst_tri_en;
+   
+      input [6:0] 	rd_adr1 ;        input [6:0] 	rd_adr2 ;     
+   input        rd_adr1_sel ;	   input        rd_en ;		    
+      input [6:2] 	wr_adr ;  
+   input        wr_en ;		   input [15:0] bit_wen ;	   input        din ;		  
+   output [3:0]	dout ;    
+   output       so;
+
+   wire         ;
+   assign       clk = rclk;
+
+   //----------------------------------------------------------------------
+   // Declarations
+   //----------------------------------------------------------------------
+   // local signals
+   wire [6:0]  	rd_index ;
+  
+   // 512 bit array  
+`ifdef FPGA_SYN_IDCT
+   reg [31:0]	idcv_ary_0000;
+   reg [31:0]	idcv_ary_0001;
+   reg [31:0]	idcv_ary_0010;
+   reg [31:0]	idcv_ary_0011;
+   reg [31:0]	idcv_ary_0100;
+   reg [31:0]	idcv_ary_0101;
+   reg [31:0]	idcv_ary_0110;
+   reg [31:0]	idcv_ary_0111;
+   reg [31:0]	idcv_ary_1000;
+   reg [31:0]	idcv_ary_1001;
+   reg [31:0]	idcv_ary_1010;
+   reg [31:0]	idcv_ary_1011;
+   reg [31:0]	idcv_ary_1100;
+   reg [31:0]	idcv_ary_1101;
+   reg [31:0]	idcv_ary_1110;
+   reg [31:0]	idcv_ary_1111;
+`else
+   reg [511:0] 	idcv_ary;
+`endif
+   
+   reg [3:0]   	vbit,
+               	vbit_sa;
+
+   reg [6:2]   	wr_index_d1;
+   reg [6:0]   	rd_index_d1;
+
+   reg         	rdreq_d1,
+		            wrreq_d1;
+
+   reg [15:0]   bit_wen_d1;
+   reg          din_d1;
+   reg [4:0] index;
+   
+   wire         rst_all;
+
+   //----------------------------------------------------------------------
+   // Code Begins Here
+   //----------------------------------------------------------------------
+   assign       rst_all = rst_tri_en | ~reset_l;
+   
+   // mux merged with flop on index
+   assign rd_index = rd_adr1_sel ? rd_adr1:rd_adr2 ;
+
+   // input flops
+   always @ (posedge clk)
+     begin
+        if (~sehold)
+          begin
+	           rdreq_d1 <= rd_en ;
+	           wrreq_d1 <= wr_en ;
+	           rd_index_d1 <= rd_index;
+	           wr_index_d1 <= wr_adr;
+             bit_wen_d1 <= bit_wen;
+             din_d1 <= din;
+          end
+     end
+   
+
+   //----------------------------------------------------------------------
+   // Read Operation
+   //----------------------------------------------------------------------
+`ifdef FPGA_SYN_IDCT
+   always @(/*AUTOSENSE*/
+	    idcv_ary_0000 or idcv_ary_0001 or idcv_ary_0010 or idcv_ary_0011 or
+	    idcv_ary_0100 or idcv_ary_1001 or idcv_ary_1010 or idcv_ary_0111 or
+	    idcv_ary_1000 or idcv_ary_0101 or idcv_ary_0110 or idcv_ary_1011 or
+	    idcv_ary_1100 or idcv_ary_1101 or idcv_ary_1110 or idcv_ary_1111 or rd_index_d1 or rdreq_d1) 
+`else
+   always @(/*AUTOSENSE*/idcv_ary or rd_index_d1 or rdreq_d1) 
+`endif
+     begin
+	      if (rdreq_d1)  // should work even if there is read
+		                   // write conflict.  Data can be latest
+	                     // or previous but should not be x
+	        begin
+`ifdef FPGA_SYN_IDCT
+ 	    case(rd_index_d1[1:0])
+              2'b00: begin
+              vbit[0] = idcv_ary_0000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0011[{rd_index_d1[6:2]}];
+              end
+              2'b01: begin
+              vbit[0] = idcv_ary_0100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0111[{rd_index_d1[6:2]}];
+              end
+              2'b10: begin
+              vbit[0] = idcv_ary_1000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1011[{rd_index_d1[6:2]}];
+              end
+              2'b11: begin
+              vbit[0] = idcv_ary_1100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1111[{rd_index_d1[6:2]}];
+              end
+            endcase
+`else
+	           vbit[0] = idcv_ary[{rd_index_d1, 2'b00}]; // way 0
+	           vbit[1] = idcv_ary[{rd_index_d1, 2'b01}]; // way 1
+	           vbit[2] = idcv_ary[{rd_index_d1, 2'b10}]; // way 2
+	           vbit[3] = idcv_ary[{rd_index_d1, 2'b11}]; // way 3
+`endif
+	        end     // if (rdreq_d1)
+
+        else      // i/dcache disabled or rd disabled
+          begin
+             vbit[3:0] = 4'bx;
+          end // else: !if(rdreq_d1)
+     end // always @ (...
+
+   // r-w conflict case, returns old_data & new_data
+   // 12/06 modified to be
+   // 0  0  0
+   // 0  1  X
+   // 1  0  0
+   // 1  1  1
+`ifdef FPGA_SYN_IDCT
+    initial
+    begin
+        for(index = 5'h0; index < 5'h1f; index = index+1)
+        begin
+            idcv_ary_0000[index] = 1'b0;
+        ;
+   assign        = rclk;
+
+   //----------------------------------------------------------------------
+   // Declarations
+   //----------------------------------------------------------------------
+   // local signals
+   wire [6:0]  	rd_index ;
+  
+   // 512 bit array  
+`ifdef FPGA_SYN_IDCT
+   reg [31:0]	idcv_ary_0000;
+   reg [31:0]	idcv_ary_0001;
+   reg [31:0]	idcv_ary_0010;
+   reg [31:0]	idcv_ary_0011;
+   reg [31:0]	idcv_ary_0100;
+   reg [31:0]	idcv_ary_0101;
+   reg [31:0]	idcv_ary_0110;
+   reg [31:0]	idcv_ary_0111;
+   reg [31:0]	idcv_ary_1000;
+   reg [31:0]	idcv_ary_1001;
+   reg [31:0]	idcv_ary_1010;
+   reg [31:0]	idcv_ary_1011;
+   reg [31:0]	idcv_ary_1100;
+   reg [31:0]	idcv_ary_1101;
+   reg [31:0]	idcv_ary_1110;
+   reg [31:0]	idcv_ary_1111;
+`else
+   reg [511:0] 	idcv_ary;
+`endif
+   
+   reg [3:0]   	vbit,
+               	vbit_sa;
+
+   reg [6:2]   	wr_index_d1;
+   reg [6:0]   	rd_index_d1;
+
+   reg         	rdreq_d1,
+		            wrreq_d1;
+
+   reg [15:0]   bit_wen_d1;
+   reg          din_d1;
+   reg [4:0] index;
+   
+   wire         rst_all;
+
+   //----------------------------------------------------------------------
+   // Code Begins Here
+   //----------------------------------------------------------------------
+   assign       rst_all = rst_tri_en | ~reset_l;
+   
+   // mux merged with flop on index
+   assign rd_index = rd_adr1_sel ? rd_adr1:rd_adr2 ;
+
+   // input flops
+   always @ (posedge clk)
+     begin
+        if (~sehold)
+          begin
+	           rdreq_d1 <= rd_en ;
+	           wrreq_d1 <= wr_en ;
+	           rd_index_d1 <= rd_index;
+	           wr_index_d1 <= wr_adr;
+             bit_wen_d1 <= bit_wen;
+             din_d1 <= din;
+          end
+     end
+   
+
+   //----------------------------------------------------------------------
+   // Read Operation
+   //----------------------------------------------------------------------
+`ifdef FPGA_SYN_IDCT
+   always @(/*AUTOSENSE*/
+	    idcv_ary_0000 or idcv_ary_0001 or idcv_ary_0010 or idcv_ary_0011 or
+	    idcv_ary_0100 or idcv_ary_1001 or idcv_ary_1010 or idcv_ary_0111 or
+	    idcv_ary_1000 or idcv_ary_0101 or idcv_ary_0110 or idcv_ary_1011 or
+	    idcv_ary_1100 or idcv_ary_1101 or idcv_ary_1110 or idcv_ary_1111 or rd_index_d1 or rdreq_d1) 
+`else
+   always @(/*AUTOSENSE*/idcv_ary or rd_index_d1 or rdreq_d1) 
+`endif
+     begin
+	      if (rdreq_d1)  // should work even if there is read
+		                   // write conflict.  Data can be latest
+	                     // or previous but should not be x
+	        begin
+`ifdef FPGA_SYN_IDCT
+ 	    case(rd_index_d1[1:0])
+              2'b00: begin
+              vbit[0] = idcv_ary_0000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0011[{rd_index_d1[6:2]}];
+              end
+              2'b01: begin
+              vbit[0] = idcv_ary_0100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0111[{rd_index_d1[6:2]}];
+              end
+              2'b10: begin
+              vbit[0] = idcv_ary_1000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1011[{rd_index_d1[6:2]}];
+              end
+              2'b11: begin
+              vbit[0] = idcv_ary_1100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1111[{rd_index_d1[6:2]}];
+              end
+            endcase
+`else
+	           vbit[0] = idcv_ary[{rd_index_d1, 2'b00}]; // way 0
+	           vbit[1] = idcv_ary[{rd_index_d1, 2'b01}]; // way 1
+	           vbit[2] = idcv_ary[{rd_index_d1, 2'b10}]; // way 2
+	           vbit[3] = idcv_ary[{rd_index_d1, 2'b11}]; // way 3
+`endif
+	        end     // if (rdreq_d1)
+
+        else      // i/dcache disabled or rd disabled
+          begin
+             vbit[3:0] = 4'bx;
+          end // else: !if(rdreq_d1)
+     end // always @ (...
+
+   // r-w conflict case, returns old_data & new_data
+   // 12/06 modified to be
+   // 0  0  0
+   // 0  1  X
+   // 1  0  0
+   // 1  1  1
+`ifdef FPGA_SYN_IDCT
+    initial
+    begin
+        for(index = 5'h0; index < 5'h1f; index = index+1)
+        begin
+            idcv_ary_0000[index] = 1'b0;
+         = ;
+
+   //----------------------------------------------------------------------
+   // Declarations
+   //----------------------------------------------------------------------
+   // local signals
+   wire [6:0]  	rd_index ;
+  
+   // 512 bit array  
+`ifdef FPGA_SYN_IDCT
+   reg [31:0]	idcv_ary_0000;
+   reg [31:0]	idcv_ary_0001;
+   reg [31:0]	idcv_ary_0010;
+   reg [31:0]	idcv_ary_0011;
+   reg [31:0]	idcv_ary_0100;
+   reg [31:0]	idcv_ary_0101;
+   reg [31:0]	idcv_ary_0110;
+   reg [31:0]	idcv_ary_0111;
+   reg [31:0]	idcv_ary_1000;
+   reg [31:0]	idcv_ary_1001;
+   reg [31:0]	idcv_ary_1010;
+   reg [31:0]	idcv_ary_1011;
+   reg [31:0]	idcv_ary_1100;
+   reg [31:0]	idcv_ary_1101;
+   reg [31:0]	idcv_ary_1110;
+   reg [31:0]	idcv_ary_1111;
+`else
+   reg [511:0] 	idcv_ary;
+`endif
+   
+   reg [3:0]   	vbit,
+               	vbit_sa;
+
+   reg [6:2]   	wr_index_d1;
+   reg [6:0]   	rd_index_d1;
+
+   reg         	rdreq_d1,
+		            wrreq_d1;
+
+   reg [15:0]   bit_wen_d1;
+   reg          din_d1;
+   reg [4:0] index;
+   
+   wire         rst_all;
+
+   //----------------------------------------------------------------------
+   // Code Begins Here
+   //----------------------------------------------------------------------
+   assign       rst_all = rst_tri_en | ~reset_l;
+   
+   // mux merged with flop on index
+   assign rd_index = rd_adr1_sel ? rd_adr1:rd_adr2 ;
+
+   // input flops
+   always @ (posedge clk)
+     begin
+        if (~sehold)
+          begin
+	           rdreq_d1 <= rd_en ;
+	           wrreq_d1 <= wr_en ;
+	           rd_index_d1 <= rd_index;
+	           wr_index_d1 <= wr_adr;
+             bit_wen_d1 <= bit_wen;
+             din_d1 <= din;
+          end
+     end
+   
+
+   //----------------------------------------------------------------------
+   // Read Operation
+   //----------------------------------------------------------------------
+`ifdef FPGA_SYN_IDCT
+   always @(/*AUTOSENSE*/
+	    idcv_ary_0000 or idcv_ary_0001 or idcv_ary_0010 or idcv_ary_0011 or
+	    idcv_ary_0100 or idcv_ary_1001 or idcv_ary_1010 or idcv_ary_0111 or
+	    idcv_ary_1000 or idcv_ary_0101 or idcv_ary_0110 or idcv_ary_1011 or
+	    idcv_ary_1100 or idcv_ary_1101 or idcv_ary_1110 or idcv_ary_1111 or rd_index_d1 or rdreq_d1) 
+`else
+   always @(/*AUTOSENSE*/idcv_ary or rd_index_d1 or rdreq_d1) 
+`endif
+     begin
+	      if (rdreq_d1)  // should work even if there is read
+		                   // write conflict.  Data can be latest
+	                     // or previous but should not be x
+	        begin
+`ifdef FPGA_SYN_IDCT
+ 	    case(rd_index_d1[1:0])
+              2'b00: begin
+              vbit[0] = idcv_ary_0000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0011[{rd_index_d1[6:2]}];
+              end
+              2'b01: begin
+              vbit[0] = idcv_ary_0100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0111[{rd_index_d1[6:2]}];
+              end
+              2'b10: begin
+              vbit[0] = idcv_ary_1000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1011[{rd_index_d1[6:2]}];
+              end
+              2'b11: begin
+              vbit[0] = idcv_ary_1100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1111[{rd_index_d1[6:2]}];
+              end
+            endcase
+`else
+	           vbit[0] = idcv_ary[{rd_index_d1, 2'b00}]; // way 0
+	           vbit[1] = idcv_ary[{rd_index_d1, 2'b01}]; // way 1
+	           vbit[2] = idcv_ary[{rd_index_d1, 2'b10}]; // way 2
+	           vbit[3] = idcv_ary[{rd_index_d1, 2'b11}]; // way 3
+`endif
+	        end     // if (rdreq_d1)
+
+        else      // i/dcache disabled or rd disabled
+          begin
+             vbit[3:0] = 4'bx;
+          end // else: !if(rdreq_d1)
+     end // always @ (...
+
+   // r-w conflict case, returns old_data & new_data
+   // 12/06 modified to be
+   // 0  0  0
+   // 0  1  X
+   // 1  0  0
+   // 1  1  1
+`ifdef FPGA_SYN_IDCT
+    initial
+    begin
+        for(index = 5'h0; index < 5'h1f; index = index+1)
+        begin
+            idcv_ary_0000[index] = 1'b0;
+        ;
+
+               wire [6:0]  	 ;
+  
+   // 512 bit array  
+`ifdef FPGA_SYN_IDCT
+   reg [31:0]	idcv_ary_0000;
+   reg [31:0]	idcv_ary_0001;
+   reg [31:0]	idcv_ary_0010;
+   reg [31:0]	idcv_ary_0011;
+   reg [31:0]	idcv_ary_0100;
+   reg [31:0]	idcv_ary_0101;
+   reg [31:0]	idcv_ary_0110;
+   reg [31:0]	idcv_ary_0111;
+   reg [31:0]	idcv_ary_1000;
+   reg [31:0]	idcv_ary_1001;
+   reg [31:0]	idcv_ary_1010;
+   reg [31:0]	idcv_ary_1011;
+   reg [31:0]	idcv_ary_1100;
+   reg [31:0]	idcv_ary_1101;
+   reg [31:0]	idcv_ary_1110;
+   reg [31:0]	idcv_ary_1111;
+`else
+   reg [511:0] 	idcv_ary;
+`endif
+   
+   reg [3:0]   	vbit,
+               	vbit_sa;
+
+   reg [6:2]   	wr_index_d1;
+   reg [6:0]   	rd_index_d1;
+
+   reg         	rdreq_d1,
+		            wrreq_d1;
+
+   reg [15:0]   bit_wen_d1;
+   reg          din_d1;
+   reg [4:0] index;
+   
+   wire         rst_all;
+
+   //----------------------------------------------------------------------
+   // Code Begins Here
+   //----------------------------------------------------------------------
+   assign       rst_all = rst_tri_en | ~reset_l;
+   
+   // mux merged with flop on index
+   assign rd_index = rd_adr1_sel ? rd_adr1:rd_adr2 ;
+
+   // input flops
+   always @ (posedge clk)
+     begin
+        if (~sehold)
+          begin
+	           rdreq_d1 <= rd_en ;
+	           wrreq_d1 <= wr_en ;
+	           rd_index_d1 <= rd_index;
+	           wr_index_d1 <= wr_adr;
+             bit_wen_d1 <= bit_wen;
+             din_d1 <= din;
+          end
+     end
+   
+
+   //----------------------------------------------------------------------
+   // Read Operation
+   //----------------------------------------------------------------------
+`ifdef FPGA_SYN_IDCT
+   always @(/*AUTOSENSE*/
+	    idcv_ary_0000 or idcv_ary_0001 or idcv_ary_0010 or idcv_ary_0011 or
+	    idcv_ary_0100 or idcv_ary_1001 or idcv_ary_1010 or idcv_ary_0111 or
+	    idcv_ary_1000 or idcv_ary_0101 or idcv_ary_0110 or idcv_ary_1011 or
+	    idcv_ary_1100 or idcv_ary_1101 or idcv_ary_1110 or idcv_ary_1111 or rd_index_d1 or rdreq_d1) 
+`else
+   always @(/*AUTOSENSE*/idcv_ary or rd_index_d1 or rdreq_d1) 
+`endif
+     begin
+	      if (rdreq_d1)  // should work even if there is read
+		                   // write conflict.  Data can be latest
+	                     // or previous but should not be x
+	        begin
+`ifdef FPGA_SYN_IDCT
+ 	    case(rd_index_d1[1:0])
+              2'b00: begin
+              vbit[0] = idcv_ary_0000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0011[{rd_index_d1[6:2]}];
+              end
+              2'b01: begin
+              vbit[0] = idcv_ary_0100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_0101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_0110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_0111[{rd_index_d1[6:2]}];
+              end
+              2'b10: begin
+              vbit[0] = idcv_ary_1000[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1001[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1010[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1011[{rd_index_d1[6:2]}];
+              end
+              2'b11: begin
+              vbit[0] = idcv_ary_1100[{rd_index_d1[6:2]}];
+              vbit[1] = idcv_ary_1101[{rd_index_d1[6:2]}];
+              vbit[2] = idcv_ary_1110[{rd_index_d1[6:2]}];
+              vbit[3] = idcv_ary_1111[{rd_index_d1[6:2]}];
+              end
+            endcase
+`else
+	           vbit[0] = idcv_ary[{rd_index_d1, 2'b00}]; // way 0
+	           vbit[1] = idcv_ary[{rd_index_d1, 2'b01}]; // way 1
+	           vbit[2] = idcv_ary[{rd_index_d1, 2'b10}]; // way 2
+	           vbit[3] = idcv_ary[{rd_index_d1, 2'b11}]; // way 3
+`endif
+	        end     // if (rdreq_d1)
+
+        else      // i/dcache disabled or rd disabled
+          begin
+             vbit[3:0] = 4'bx;
+          end // else: !if(rdreq_d1)
+     end // always @ (...
+
+   // r-w conflict case, returns old_data & new_data
+   // 12/06 modified to be
+   // 0  0  0
+   // 0  1  X
+   // 1  0  0
+   // 1  1  1
+`ifdef FPGA_SYN_IDCT
+    initial
+    begin
+        for(index = 5'h0; index < 5'h1f; index = index+1)
+        begin
+            idcv_ary_0000[index] = 1'b0;
+         ;
+  
+    
+   reg

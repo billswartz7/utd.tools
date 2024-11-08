@@ -1,0 +1,4110 @@
+
+module fpu_in (
+	pcx_fpio_data_rdy_px2,
+	pcx_fpio_data_px2,
+	a1stg_step,
+	m1stg_step,
+	d1stg_step,
+	add_pipe_active,
+	mul_pipe_active,
+	div_pipe_active,
+	inq_dout,
+	sehold,
+	arst_l,
+	grst_l,
+	rclk,
+
+	fadd_clken_l,
+	fmul_clken_l,
+	fdiv_clken_l,
+	
+	inq_add,
+	inq_mul,
+	inq_div,
+	inq_id,
+	inq_rnd_mode,
+	inq_fcc,
+	inq_op,
+	inq_in1_exp_neq_ffs,
+	inq_in1_exp_eq_0,
+	inq_in1_53_0_neq_0,
+	inq_in1_50_0_neq_0,
+	inq_in1_53_32_neq_0,
+	inq_in1,
+	inq_in2_exp_neq_ffs,
+	inq_in2_exp_eq_0,
+	inq_in2_53_0_neq_0,
+	inq_in2_50_0_neq_0,
+	inq_in2_53_32_neq_0,
+	inq_in2,
+
+	fp_id_in,
+	fp_rnd_mode_in,
+	fp_fcc_in,
+	fp_op_in,
+	fp_src1_in,
+	fp_src2_in,
+	inq_rdaddr,
+	inq_wraddr,
+	inq_read_en,
+	inq_we,
+
+	se,
+	si,
+	so
+);
+
+
+input		pcx_fpio_data_rdy_px2;	input [123:0]	pcx_fpio_data_px2;	input		a1stg_step;		input		m1stg_step;		input		d1stg_step;		input 		add_pipe_active;        input 		mul_pipe_active;        input 		div_pipe_active;        input [154:0] inq_dout; input sehold; input		arst_l;			input		grst_l;			input		rclk;			
+output		fadd_clken_l;		output		fmul_clken_l;		output		fdiv_clken_l;		
+output		inq_add;		output		inq_mul;		output		inq_div;		output [4:0]	inq_id;			output [1:0]	inq_rnd_mode;		output [1:0]	inq_fcc;		output [7:0]	inq_op;			output		inq_in1_exp_neq_ffs;	output		inq_in1_exp_eq_0;	output		inq_in1_53_0_neq_0;	output		inq_in1_50_0_neq_0;	output		inq_in1_53_32_neq_0;	output [63:0]	inq_in1;		output		inq_in2_exp_neq_ffs;	output		inq_in2_exp_eq_0;	output		inq_in2_53_0_neq_0;	output		inq_in2_50_0_neq_0;	output		inq_in2_53_32_neq_0;	output [63:0]	inq_in2;		
+output [4:0] fp_id_in; output [1:0] fp_rnd_mode_in; output [1:0] fp_fcc_in; output [7:0] fp_op_in; output [68:0] fp_src1_in; output [68:0] fp_src2_in; output [3:0] inq_rdaddr; output [3:0] inq_wraddr; output inq_read_en; output inq_we; 
+input           se;                     input           si;                     output          so;                     
+
+
+
+
+wire		;			// input Q write enable
+wire [3:0]	inq_wraddr;		// input Q write address
+wire            inq_read_en;            // input Q read enable
+wire [3:0]	inq_rdaddr;		// input Q read address
+wire		inq_bp;			// bypass the input Q SRAM
+wire		inq_bp_inv;		// don't bypass the input Q SRAM
+wire		inq_fwrd;		// input Q is fwrd
+wire		inq_fwrd_inv;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;			wire [3:0]	;		// input Q write address
+wire            inq_read_en;            // input Q read enable
+wire [3:0]	inq_rdaddr;		// input Q read address
+wire		inq_bp;			// bypass the input Q SRAM
+wire		inq_bp_inv;		// don't bypass the input Q SRAM
+wire		inq_fwrd;		// input Q is fwrd
+wire		inq_fwrd_inv;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire            ;            // input Q read enable
+wire [3:0]	inq_rdaddr;		// input Q read address
+wire		inq_bp;			// bypass the input Q SRAM
+wire		inq_bp_inv;		// don't bypass the input Q SRAM
+wire		inq_fwrd;		// input Q is fwrd
+wire		inq_fwrd_inv;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;            wire [3:0]	;		// input Q read address
+wire		inq_bp;			// bypass the input Q SRAM
+wire		inq_bp_inv;		// don't bypass the input Q SRAM
+wire		inq_fwrd;		// input Q is fwrd
+wire		inq_fwrd_inv;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire		;			// bypass the input Q SRAM
+wire		inq_bp_inv;		// don't bypass the input Q SRAM
+wire		inq_fwrd;		// input Q is fwrd
+wire		inq_fwrd_inv;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;			wire		;		// don't bypass the input Q SRAM
+wire		inq_fwrd;		// input Q is fwrd
+wire		inq_fwrd_inv;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire		;		// input Q is fwrd
+wire		inq_fwrd_inv;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire		;		// input Q is not fwrd
+wire		inq_add;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire		;		// add pipe request
+wire		inq_mul;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire		;		// multiply pipe request
+wire		inq_div;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire		;		// divide pipe request
+wire  		fadd_clken_l;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire  		;		// add      pipe clk enable - asserted low
+wire 		fmul_clken_l;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire 		;		// multiply pipe clk enable - asserted low
+wire 		fdiv_clken_l;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire 		;		// divide   pipe clk enable - asserted low
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Outputs of fpu_in_dp.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+wire [7:0]	fp_op_in;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		
+
+
+wire [7:0]	;		// request opcode
+wire            fp_op_in_7in;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire            ;           // request opcode
+wire [4:0]	inq_id;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;           wire [4:0]	;			// request ID to the operation pipes
+wire [1:0]	inq_rnd_mode;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;			wire [1:0]	;		// request rounding mode to op pipes
+wire [1:0]	inq_fcc;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire [1:0]	;		// request cc ID to op pipes
+wire [7:0]	inq_op;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire [7:0]	;			// request opcode to op pipes
+wire		inq_in1_exp_neq_ffs;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;			wire		;	// request operand 1 exp!=ff's
+wire		inq_in1_exp_eq_0;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;	wire		;	// request operand 1 exp==0
+wire		inq_in1_53_0_neq_0;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;	wire		;	// request operand 1[53:0]!=0
+wire		inq_in1_50_0_neq_0;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;	wire		;	// request operand 1[50:0]!=0
+wire		inq_in1_53_32_neq_0;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;	wire		;	// request operand 1[53:32]!=0
+wire [63:0]	inq_in1;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;	wire [63:0]	;		// request operand 1 to op pipes
+wire		inq_in2_exp_neq_ffs;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;		wire		;	// request operand 2 exp!=ff's
+wire		inq_in2_exp_eq_0;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;	wire		;	// request operand 2 exp==0
+wire		inq_in2_53_0_neq_0;	// request operand 2;	wire		;	// request operand 2;	wire		;	// request operand 2[50:0]!=0
+wire		inq_in2_53_32_neq_0;	// request operand 2[53:32]!=0
+wire [63:0]	inq_in2;		// request operand 2 to op pipes
+
+// 6/20/03: New outputs to drive fpu-level i_fpu_inq_sram inputs 
+wire [4:0] fp_id_in; // id to be written into inq_sram
+wire [1:0] fp_rnd_mode_in; // rnd_mode to be written into inq_sram
+wire [1:0] fp_fcc_in; // fcc to be written into inq_sram
+wire [68:0] fp_src1_in; // operand1 and its pre-computed bits portion
+wire [68:0] fp_src2_in; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;	wire		;	// request operand 2[53:32]!=0
+wire [63:0]	inq_in2;		// request operand 2 to op pipes
+
+// 6/20/03: New outputs to drive fpu-level i_fpu_inq_sram inputs 
+wire [4:0] fp_id_in; // id to be written into inq_sram
+wire [1:0] fp_rnd_mode_in; // rnd_mode to be written into inq_sram
+wire [1:0] fp_fcc_in; // fcc to be written into inq_sram
+wire [68:0] fp_src1_in; // operand1 and its pre-computed bits portion
+wire [68:0] fp_src2_in; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;	wire [63:0]	;		// request operand 2 to op pipes
+
+// 6/20/03: New outputs to drive fpu-level i_fpu_inq_sram inputs 
+wire [4:0] fp_id_in; // id to be written into inq_sram
+wire [1:0] fp_rnd_mode_in; // rnd_mode to be written into inq_sram
+wire [1:0] fp_fcc_in; // fcc to be written into inq_sram
+wire [68:0] fp_src1_in; // operand1 and its pre-computed bits portion
+wire [68:0] fp_src2_in; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;		
+wire [4:0] ; // id to be written into inq_sram
+wire [1:0] fp_rnd_mode_in; // rnd_mode to be written into inq_sram
+wire [1:0] fp_fcc_in; // fcc to be written into inq_sram
+wire [68:0] fp_src1_in; // operand1 and its pre-computed bits portion
+wire [68:0] fp_src2_in; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+; wire [1:0] ; // rnd_mode to be written into inq_sram
+wire [1:0] fp_fcc_in; // fcc to be written into inq_sram
+wire [68:0] fp_src1_in; // operand1 and its pre-computed bits portion
+wire [68:0] fp_src2_in; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+; wire [1:0] ; // fcc to be written into inq_sram
+wire [68:0] fp_src1_in; // operand1 and its pre-computed bits portion
+wire [68:0] fp_src2_in; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+; wire [68:0] ; // operand1 and its pre-computed bits portion
+wire [68:0] fp_src2_in; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+; wire [68:0] ; // operand2, includes pre-computed bits
+
+wire fp_data_rdy;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+; 
+wire ;
+
+
+///////////////////////////////////////////////////////////////////////////////
+//
+//	Instantiations.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fpu_in_ctl fpu_in_ctl (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+;
+
+
+
+fpu_in_ctl  (
+	.pcx_fpio_data_rdy_px2		(pcx_fpio_data_rdy_px2),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+ (
+	.pcx_fpio_data_rdy_px2		(),
+	.pcx_fpio_data_px2		(pcx_fpio_data_px2[123:118]),
+	.fp_op_in    			(fp_op_in[3:2]),
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.pcx_fpio_data_px2		([123:118]),
+	.fp_op_in    			([3:2]),
+        .fp_op_in_7in                   (),
+	.a1stg_step			(a1stg_step),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.a1stg_step			(),
+	.m1stg_step			(m1stg_step),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.m1stg_step			(),
+	.d1stg_step			(d1stg_step),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.d1stg_step			(),
+	.add_pipe_active		(add_pipe_active),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.add_pipe_active		(),
+	.mul_pipe_active		(mul_pipe_active),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.mul_pipe_active		(),
+	.div_pipe_active		(div_pipe_active),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.div_pipe_active		(),
+	.sehold (sehold),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.sehold (),
+	.arst_l				(arst_l),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.arst_l				(),
+	.grst_l				(grst_l),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.grst_l				(),
+	.rclk			(rclk),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.rclk			(),
+
+        .fp_data_rdy			(fp_data_rdy),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+
+        .fp_data_rdy			(),
+	.fadd_clken_l			(fadd_clken_l),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.fadd_clken_l			(),
+	.fmul_clken_l			(fmul_clken_l),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.fmul_clken_l			(),
+	.fdiv_clken_l			(fdiv_clken_l),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.fdiv_clken_l			(),
+
+	.inq_we				(inq_we),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+
+	.inq_we				(),
+	.inq_wraddr			(inq_wraddr[3:0]),
+	.inq_read_en			(inq_read_en),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_wraddr			([3:0]),
+	.inq_read_en			(),
+	.inq_rdaddr			(inq_rdaddr[3:0]),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_rdaddr			([3:0]),
+	.inq_bp				(),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_bp_inv			(),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_fwrd			(),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_fwrd_inv			(),
+	.inq_add			(inq_add),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_add			(),
+	.inq_mul			(inq_mul),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_mul			(),
+	.inq_div			(inq_div),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_div			(),
+
+	.se           (se),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+
+	.se           (),
+  .si           (si),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+  .si           (),
+  .so           (scan_out_fpu_in_ctl)
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+  .so           ()
+);
+
+
+fpu_in_dp fpu_in_dp (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+)
+);
+
+
+fpu_in_dp  (
+        .fp_data_rdy			(fp_data_rdy),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+ (
+        .fp_data_rdy			(),
+        .fpio_data_px2_116_112          (pcx_fpio_data_px2[116:112]),
+        .fpio_data_px2_79_72            (pcx_fpio_data_px2[79:72]),
+        .fpio_data_px2_67_0             (pcx_fpio_data_px2[67:0]),
+	.inq_fwrd			(inq_fwrd),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+        .fpio_data_px2_116_112          ([116:112]),
+        .fpio_data_px2_79_72            ([79:72]),
+        .fpio_data_px2_67_0             ([67:0]),
+	.inq_fwrd			(),
+	.inq_fwrd_inv			(inq_fwrd_inv),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_fwrd_inv			(),
+	.inq_bp				(inq_bp),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_bp				(),
+	.inq_bp_inv			(inq_bp_inv),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_bp_inv			(),
+	.inq_dout    (inq_dout[154:0]),
+	.rclk			(rclk),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_dout    ([154:0]),
+	.rclk			(),
+
+        .fp_op_in_7in                   (fp_op_in_7in),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+
+        .fp_op_in_7in                   (),
+	.inq_id				(inq_id[4:0]),
+	.inq_rnd_mode			(inq_rnd_mode[1:0]),
+	.inq_fcc			(inq_fcc[1:0]),
+	.inq_op				(inq_op[7:0]),
+	.inq_in1_exp_neq_ffs		(inq_in1_exp_neq_ffs),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_id				([4:0]),
+	.inq_rnd_mode			([1:0]),
+	.inq_fcc			([1:0]),
+	.inq_op				([7:0]),
+	.inq_in1_exp_neq_ffs		(),
+	.inq_in1_exp_eq_0		(inq_in1_exp_eq_0),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in1_exp_eq_0		(),
+	.inq_in1_53_0_neq_0		(inq_in1_53_0_neq_0),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in1_53_0_neq_0		(),
+	.inq_in1_50_0_neq_0		(inq_in1_50_0_neq_0),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in1_50_0_neq_0		(),
+	.inq_in1_53_32_neq_0		(inq_in1_53_32_neq_0),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in1_53_32_neq_0		(),
+	.inq_in1			(inq_in1[63:0]),
+	.inq_in2_exp_neq_ffs		(inq_in2_exp_neq_ffs),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in1			([63:0]),
+	.inq_in2_exp_neq_ffs		(),
+	.inq_in2_exp_eq_0		(inq_in2_exp_eq_0),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in2_exp_eq_0		(),
+	.inq_in2_53_0_neq_0		(inq_in2_53_0_neq_0),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in2_53_0_neq_0		(),
+	.inq_in2_50_0_neq_0		(inq_in2_50_0_neq_0),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in2_50_0_neq_0		(),
+	.inq_in2_53_32_neq_0		(inq_in2_53_32_neq_0),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in2_53_32_neq_0		(),
+	.inq_in2			(inq_in2[63:0]),
+
+	.fp_id_in (fp_id_in[4:0]),
+	.fp_rnd_mode_in (fp_rnd_mode_in[1:0]),
+	.fp_fcc_in (fp_fcc_in[1:0]),
+	.fp_op_in (fp_op_in[7:0]),
+	.fp_src1_in (fp_src1_in[68:0]),
+	.fp_src2_in (fp_src2_in[68:0]),
+
+	.se                             (se),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+	.inq_in2			([63:0]),
+
+	.fp_id_in ([4:0]),
+	.fp_rnd_mode_in ([1:0]),
+	.fp_fcc_in ([1:0]),
+	.fp_op_in ([7:0]),
+	.fp_src1_in ([68:0]),
+	.fp_src2_in ([68:0]),
+
+	.se                             (),
+        .si                             (scan_out_fpu_in_ctl),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+        .si                             (),
+        .so                             (so)
+);
+
+
+endmodule
+
+
+),
+        .so                             ()
+);
+
+
+endmodule
+
+
+)
+);
+
+
+endmodule
+
+

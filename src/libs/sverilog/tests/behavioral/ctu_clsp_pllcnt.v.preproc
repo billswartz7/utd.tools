@@ -1,0 +1,2185 @@
+ 
+module ctu_clsp_pllcnt(
+pll_locked_jl, pll_reset_ref_l, pll_reset_ref_dly1_l, 
+pll_raw_clk_out, io_pwron_rst_l, testmode_l, wrm_rst_ref, 
+wrm_rst_fc_ref, tst_rst_ref, bypclksel
+);
+
+
+   input       pll_raw_clk_out;
+   input       io_pwron_rst_l;
+   input       testmode_l;
+   input       wrm_rst_ref;
+   input       wrm_rst_fc_ref;
+   input       tst_rst_ref;
+   input       bypclksel;
+
+   output      pll_locked_jl;
+
+   output      pll_reset_ref_l;
+   output      pll_reset_ref_dly1_l;
+
+
+   parameter    PLL_ASSERTION_CNT = 7hh;    parameter    PLL_BYPASS_CNT = 15hh;    parameter    PLL_LCK_CNT = 15hh;    parameter    WRM_RST_CNT = 15hh;     parameter    TST_RST_CNT = 15hh;     parameter    FC_DCNT = 3bb;      
+   wire ;
+   wire wrm_rst_ref_fc_dly1;
+   wire wrm_rst_ref_fc_dly2_l;
+   wire tst_rst_ref_dly1;
+   wire tst_rst_ref_dly2_l;
+   //wire por_rst_ref_dly_l;
+   wire tst_rst_ld;
+   wire wrm_rst_ld;
+   wire wrm_rst_fc_ld;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+   wire wrm_rst_ref_fc_dly2_l;
+   wire tst_rst_ref_dly1;
+   wire tst_rst_ref_dly2_l;
+   //wire por_rst_ref_dly_l;
+   wire tst_rst_ld;
+   wire wrm_rst_ld;
+   wire wrm_rst_fc_ld;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+   wire tst_rst_ref_dly1;
+   wire tst_rst_ref_dly2_l;
+   //wire por_rst_ref_dly_l;
+   wire tst_rst_ld;
+   wire wrm_rst_ld;
+   wire wrm_rst_fc_ld;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+   wire tst_rst_ref_dly2_l;
+   //wire por_rst_ref_dly_l;
+   wire tst_rst_ld;
+   wire wrm_rst_ld;
+   wire wrm_rst_fc_ld;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+   //wire por_rst_ref_dly_l;
+   wire tst_rst_ld;
+   wire wrm_rst_ld;
+   wire wrm_rst_fc_ld;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+      wire ;
+   wire wrm_rst_ld;
+   wire wrm_rst_fc_ld;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+   wire wrm_rst_fc_ld;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+   wire por_rst_ld;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+   wire relock;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+   wire ;
+
+   reg  [14:0] pll_lck_cnt_init_nxt;
+   wire [14:0] pll_lck_cnt_init;
+   wire pll_lck_cnt_ld_nxt;
+   wire pll_lck_cnt_ld_1sht;
+
+   wire pwron_rst_l_d1;
+   wire pwron_rst_l_d2;
+   wire por_rst_1sht;
+   wire pll_locked_ref;
+
+   wire fc_dcnt_dn;
+   wire fc_dcnt_ld;
+   wire fc_dcnt_ld_nxt;
+   wire fc_dcnt_en;
+   wire [2:0] fc_dcnt_nxt;
+   wire [2:0] fc_dcnt;
+ 
+   wire pll_rst_cnt_dn;
+   wire [6:0] pll_rst_cnt_nxt;
+   wire [6:0] pll_rst_cnt;
+   wire pll_rst_cnt_en;
+   wire pll_lck_cnt_dn;
+   wire [14:0]  pll_lck_cnt_nxt;
+   wire [14:0]  pll_lck_cnt;
+   wire pll_lck_cnt_en;
+
+   //wire  pll_reset_ref_pre_l;
+   wire  pll_reset_ref_dly1_pre_l;
+   wire  bypclksel_sync;
+   wire pll_reset_short_l;
+   wire pll_reset_short_l_nxt;
+   wire pll_reset_dly1_l_nxt;
+   wire pll_reset_dly1_l;
+   wire pll_reset_dly2_l;
+   wire pll_reset_ref_l_nxt;
+   wire pll_reset_ref_dly1_l_nxt;
+
+   wire [4:0] rstsm;
+   reg [4:0] nxt_rstsm;
+
+//------------------------------
+//
+//  synchronizers
+//
+//------------------------------
+
+
+   ctu_synchronizer u_bypclksel(
+             .presyncdata(bypclksel),
+             .syncdata (bypclksel_sync),
+             .clk(pll_raw_clk_out)
+              );
+
+   ctu_synchronizer u_pwron_rst_l(
+             .presyncdata(io_pwron_rst_l),
+             .syncdata (pwron_rst_l_d1),
+             .clk(pll_raw_clk_out)
+              );
+
+ // ref_clk -> jbus_clk
+
+   ctu_synch_ref_jl u_pll_locked_jl(
+             .presyncdata(pll_locked_ref),
+             .syncdata (pll_locked_jl),
+             .pll_raw_clk_out(pll_raw_clk_out)
+              );
+
+//------------------------------
+//
+//  register inputs
+//
+//------------------------------
+
+   dff_ns u_wrm_rst_dly1_l(
+		      .din (wrm_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly1));
+
+   dff_ns u_wrm_rst_dly2_l(
+		      .din (~wrm_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (wrm_rst_ref_dly2_l));
+
+   assign wrm_rst_ld = wrm_rst_ref_dly1 & wrm_rst_ref_dly2_l; 
+
+   dff_ns u_wrm_rst_fc_dly(
+                      .din (wrm_rst_fc_ref),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly1));
+
+   dff_ns u_wrm_rst_fc_dly2_l(
+                      .din (~wrm_rst_ref_fc_dly1),
+                      .clk (pll_raw_clk_out),
+                      .q (wrm_rst_ref_fc_dly2_l));
+
+   assign wrm_rst_fc_ld = wrm_rst_ref_fc_dly1  & wrm_rst_ref_fc_dly2_l;
+
+   dff_ns u_tst_rst_dly1(
+		      .din (tst_rst_ref),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly1));
+
+   dff_ns u_tst_rst_dly2_l(
+		      .din (~tst_rst_ref_dly1),
+		      .clk (pll_raw_clk_out),
+		      .q (tst_rst_ref_dly2_l));
+
+   assign tst_rst_ld = tst_rst_ref_dly1 & tst_rst_ref_dly2_l; 
+
+
+   assign por_rst_ld = ~pll_reset_ref_l ; 
+
+
+   always @(/*AUTOSENSE*/bypclksel_sync or pll_lck_cnt_init
+	    or por_rst_ld or tst_rst_ld or wrm_rst_fc_ld or wrm_rst_ld)
+   begin
+       case (1'b1)
+       (por_rst_ld & ~bypclksel_sync) | wrm_rst_fc_ld:  pll_lck_cnt_init_nxt =  PLL_LCK_CNT;
+       wrm_rst_ld :  pll_lck_cnt_init_nxt =  WRM_RST_CNT;
+       tst_rst_ld :  pll_lck_cnt_init_nxt =  TST_RST_CNT;
+       (por_rst_ld & bypclksel_sync) :  pll_lck_cnt_init_nxt =  PLL_BYPASS_CNT;
+       default : pll_lck_cnt_init_nxt =  pll_lck_cnt_init;
+       endcase
+   end
+
+   dffrl_async_ns #(15) u_pll_lck_cnt_init(
+                      .din ( pll_lck_cnt_init_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt_init));
+
+ 
+   assign pll_lck_cnt_ld_nxt = tst_rst_ld | wrm_rst_ld | por_rst_ld | wrm_rst_ld;
+
+   dff_ns u_pll_lck_cnt_ld (
+		      .din (pll_lck_cnt_ld_nxt),
+		      .clk (pll_raw_clk_out),
+		      .q (pll_lck_cnt_ld_1sht));
+
+       
+   // tester reset and warm rset are mutually exclusive
+   assign  relock = tst_rst_ld | wrm_rst_ld | wrm_rst_fc_ld;
+
+//------------------------------------------------------- 
+// detect an edge on por to reset the PLL and lock counter 
+// use the reference clock to generate this edge 
+//-------------------------------------------------------
+
+  
+
+   dff_ns u_por_rst_ff_d (
+		      .din (pwron_rst_l_d1),
+		      .clk (pll_raw_clk_out),
+		      .q (pwron_rst_l_d2));
+
+   assign por_rst_1sht = pwron_rst_l_d1 & (~pwron_rst_l_d2);
+
+//------------------------------
+//
+//  pll rst counter:
+//
+//------------------------------
+
+    assign pll_rst_cnt_dn = (pll_rst_cnt ==  PLL_ASSERTION_CNT );
+    assign pll_rst_cnt_nxt = pll_reset_ref_l ? 7'h00:
+                             pll_rst_cnt_en ? pll_rst_cnt + 7'b0000001 :
+                             pll_rst_cnt;
+
+    dffrl_async_ns #(7) u_pll_rst_cnt (
+                      .din ( pll_rst_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_rst_cnt));
+
+//------------------------------
+//
+//  pll lock counter:
+//
+//------------------------------
+
+
+
+    assign pll_lck_cnt_dn = ~(|pll_lck_cnt[14:1]) & pll_lck_cnt[0];
+    assign pll_lck_cnt_nxt = pll_lck_cnt_ld_1sht ?  pll_lck_cnt_init:
+                             pll_lck_cnt_en ?  pll_lck_cnt - 15'h0001 :
+                             pll_lck_cnt;
+
+    dffrl_async_ns #(15) u_pll_lck_cnt (
+                      .din ( pll_lck_cnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                      .q (pll_lck_cnt));
+
+//------------------------------
+//
+//  frequncy change delay counter:
+//
+//------------------------------
+
+    assign fc_dcnt_dn = (fc_dcnt ==  FC_DCNT );
+    assign fc_dcnt_nxt = fc_dcnt_ld ? 3'b000:
+                             fc_dcnt_en ? fc_dcnt + 3'b001 :
+                             fc_dcnt;
+
+    dffrl_async_ns #(3) u_fc_dcnt (
+                      .din ( fc_dcnt_nxt),
+                      .clk (pll_raw_clk_out),
+                      .rst_l(io_pwron_rst_l),
+                     ;
+
+   reg

@@ -1,0 +1,27 @@
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+TIMESTAMP:Tue Oct 22 13:59:56 2019
+Statistics for riscv:
+num_stdcells:4902
+num_macros:0
+num_instances:5221
+num_pads:319
+num_nets:5039
+num_pins:16869
+num_implicit_feeds:0
+num_equivs:0
+num_unequivs:0
+num_ports:16869
+num_models:339
+eco_mode:0
+pin_pairs:0
+num_clusterable_stdcells:4902
+num_clusterable_macros:0
+scale:10
+macro_area:0.000e+00
+stdcell_area:7.880e+05
+gate_array:0
+total_area:7.884e+05
+total_stdcell_length:39401.6
+num_classes:1
+class 0 lb: 39401.6 ub: 39401.6 height:20 bottom:0 top:20

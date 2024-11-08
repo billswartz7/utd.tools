@@ -1,0 +1,159 @@
+module sparc_exu_div_32eql (
+      equal, 
+      in
+   ) ;
+   input [31:0] in;
+
+   output       equal;
+
+   wire [31:0]  ;
+   wire         notequal;
+
+   assign       inxor[0] = 1'b0;
+   assign inxor[1] = in[31] ^ in[30];
+   assign inxor[2] = in[30] ^ in[29];
+   assign inxor[3] = in[29] ^ in[28];
+   assign inxor[4] = in[28] ^ in[27];
+   assign inxor[5] = in[27] ^ in[26];
+   assign inxor[6] = in[26] ^ in[25];
+   assign inxor[7] = in[25] ^ in[24];
+   assign inxor[8] = in[24] ^ in[23];
+   assign inxor[9] = in[23] ^ in[22];
+   assign inxor[10] = in[22] ^ in[21];
+   assign inxor[11] = in[21] ^ in[20];
+   assign inxor[12] = in[20] ^ in[19];
+   assign inxor[13] = in[19] ^ in[18];
+   assign inxor[14] = in[18] ^ in[17];
+   assign inxor[15] = in[17] ^ in[16];
+   assign inxor[16] = in[16] ^ in[15];
+   assign inxor[17] = in[15] ^ in[14];
+   assign inxor[18] = in[14] ^ in[13];
+   assign inxor[19] = in[13] ^ in[12];
+   assign inxor[20] = in[12] ^ in[11];
+   assign inxor[21] = in[11] ^ in[10];
+   assign inxor[22] = in[10] ^ in[9];
+   assign inxor[23] = in[9] ^ in[8];
+   assign inxor[24] = in[8] ^ in[7];
+   assign inxor[25] = in[7] ^ in[6];
+   assign inxor[26] = in[6] ^ in[5];
+   assign inxor[27] = in[5] ^ in[4];
+   assign inxor[28] = in[4] ^ in[3];
+   assign inxor[29] = in[3] ^ in[2];
+   assign inxor[30] = in[2] ^ in[1];
+   assign inxor[31] = in[1] ^ in[0];
+
+   assign equal = ~notequal;
+   sparc_exu_aluor32 or32(// Outputs
+                          .out     (notequal),
+                          // Inputs
+                          .in       (inxor[31:0]));
+   
+endmodule // sparc_exu_div_32eql
+;
+   wire         ;
+
+   assign       inxor[0] = 1'b0;
+   assign inxor[1] = in[31] ^ in[30];
+   assign inxor[2] = in[30] ^ in[29];
+   assign inxor[3] = in[29] ^ in[28];
+   assign inxor[4] = in[28] ^ in[27];
+   assign inxor[5] = in[27] ^ in[26];
+   assign inxor[6] = in[26] ^ in[25];
+   assign inxor[7] = in[25] ^ in[24];
+   assign inxor[8] = in[24] ^ in[23];
+   assign inxor[9] = in[23] ^ in[22];
+   assign inxor[10] = in[22] ^ in[21];
+   assign inxor[11] = in[21] ^ in[20];
+   assign inxor[12] = in[20] ^ in[19];
+   assign inxor[13] = in[19] ^ in[18];
+   assign inxor[14] = in[18] ^ in[17];
+   assign inxor[15] = in[17] ^ in[16];
+   assign inxor[16] = in[16] ^ in[15];
+   assign inxor[17] = in[15] ^ in[14];
+   assign inxor[18] = in[14] ^ in[13];
+   assign inxor[19] = in[13] ^ in[12];
+   assign inxor[20] = in[12] ^ in[11];
+   assign inxor[21] = in[11] ^ in[10];
+   assign inxor[22] = in[10] ^ in[9];
+   assign inxor[23] = in[9] ^ in[8];
+   assign inxor[24] = in[8] ^ in[7];
+   assign inxor[25] = in[7] ^ in[6];
+   assign inxor[26] = in[6] ^ in[5];
+   assign inxor[27] = in[5] ^ in[4];
+   assign inxor[28] = in[4] ^ in[3];
+   assign inxor[29] = in[3] ^ in[2];
+   assign inxor[30] = in[2] ^ in[1];
+   assign inxor[31] = in[1] ^ in[0];
+
+   assign equal = ~notequal;
+   sparc_exu_aluor32 or32(// Outputs
+                          .out     (notequal),
+                          // Inputs
+                          .in       (inxor[31:0]));
+   
+endmodule // sparc_exu_div_32eql
+;
+
+   assign       [0] = 1bb;
+   assign [1] = [31] ^ [30];
+   assign [2] = [30] ^ [29];
+   assign [3] = [29] ^ [28];
+   assign [4] = [28] ^ [27];
+   assign [5] = [27] ^ [26];
+   assign [6] = [26] ^ [25];
+   assign [7] = [25] ^ [24];
+   assign [8] = [24] ^ [23];
+   assign [9] = [23] ^ [22];
+   assign [10] = [22] ^ [21];
+   assign [11] = [21] ^ [20];
+   assign [12] = [20] ^ [19];
+   assign [13] = [19] ^ [18];
+   assign [14] = [18] ^ [17];
+   assign [15] = [17] ^ [16];
+   assign [16] = [16] ^ [15];
+   assign [17] = [15] ^ [14];
+   assign [18] = [14] ^ [13];
+   assign [19] = [13] ^ [12];
+   assign [20] = [12] ^ [11];
+   assign [21] = [11] ^ [10];
+   assign [22] = [10] ^ [9];
+   assign [23] = [9] ^ [8];
+   assign [24] = [8] ^ [7];
+   assign [25] = [7] ^ [6];
+   assign [26] = [6] ^ [5];
+   assign [27] = [5] ^ [4];
+   assign [28] = [4] ^ [3];
+   assign [29] = [3] ^ [2];
+   assign [30] = [2] ^ [1];
+   assign [31] = [1] ^ [0];
+
+   assign  = ~notequal;
+   sparc_exu_aluor32 or32(// Outputs
+                          .out     (notequal),
+                          // Inputs
+                          .in       (inxor[31:0]));
+   
+endmodule // sparc_exu_div_32eql
+ = ~;
+   sparc_exu_aluor32 or32(// Outputs
+                          .out     (notequal),
+                          // Inputs
+                          .in       (inxor[31:0]));
+   
+endmodule // sparc_exu_div_32eql
+;
+   sparc_exu_aluor32 (// Outputs
+                          .out     (notequal),
+                          // Inputs
+                          .in       (inxor[31:0]));
+   
+endmodule // sparc_exu_div_32eql
+(                          .out     (),
+                          // Inputs
+                          .in       (inxor[31:0]));
+   
+endmodule // sparc_exu_div_32eql
+),
+                                                    .in       ([31:0]));
+   
+endmodule 

@@ -1,0 +1,21 @@
+
+
+	 			
+ 
+
+
+
+
+module pcx_buf_fpio(
+      pcx_fpio_data_px, pcx_fpio_data_rdy_px, 
+      pcx_fpio_data_ff_px, pcx_fpio_data_rdy_arb_px
+   );
+
+   output [-1:0]pcx_fpio_data_px;
+   output                 pcx_fpio_data_rdy_px;
+
+   input [-1:0]pcx_fpio_data_ff_px;
+   input                 pcx_fpio_data_rdy_arb_px;
+
+
+   assign 

@@ -1,0 +1,583 @@
+module sctag_dir_out(
+      parity_vld_out, so, parity_vld, 
+      rddata_out_c6_top, rddata_out_c6_bottom, rd_data_sel_c6_top, 
+   rd_data_sel_c6_bottom, parity_vld_in, rclk, si, se
+   );
+
+
+input	[31:0]	rddata_out_c6_top; input	[31:0]	rddata_out_c6_bottom; 
+input		rd_data_sel_c6_top; input		rd_data_sel_c6_bottom; 
+input	[2:0]	parity_vld_in; output	[2:0]	parity_vld_out; 
+output		so;
+input		rclk;
+input		si, se;
+output		parity_vld;
+
+
+wire	[31:0]	;
+wire	row1_parity;
+wire	row2_parity;
+wire	parity_vld_prev;
+
+// This is a 16 wide dp
+// bits {0,1} {2,3} occupy the same bit pitches.
+
+mux2ds  #(32) mux_rddata_out_c6(.dout (rddata_out_c6[31:0]) ,
+                	.in0(rddata_out_c6_top[31:0]), 
+			.in1(rddata_out_c6_bottom[31:0]),
+                	.sel0(rd_data_sel_c6_top), 
+			.sel1(~rd_data_sel_c6_top));
+
+zzpar16 par_row1_parity   ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+;
+wire	;
+wire	row2_parity;
+wire	parity_vld_prev;
+
+// This is a 16 wide dp
+// bits {0,1} {2,3} occupy the same bit pitches.
+
+mux2ds  #(32) mux_rddata_out_c6(.dout (rddata_out_c6[31:0]) ,
+                	.in0(rddata_out_c6_top[31:0]), 
+			.in1(rddata_out_c6_bottom[31:0]),
+                	.sel0(rd_data_sel_c6_top), 
+			.sel1(~rd_data_sel_c6_top));
+
+zzpar16 par_row1_parity   ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+;
+wire	;
+wire	parity_vld_prev;
+
+// This is a 16 wide dp
+// bits {0,1} {2,3} occupy the same bit pitches.
+
+mux2ds  #(32) mux_rddata_out_c6(.dout (rddata_out_c6[31:0]) ,
+                	.in0(rddata_out_c6_top[31:0]), 
+			.in1(rddata_out_c6_bottom[31:0]),
+                	.sel0(rd_data_sel_c6_top), 
+			.sel1(~rd_data_sel_c6_top));
+
+zzpar16 par_row1_parity   ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+;
+wire	;
+
+// This is a 16 wide dp
+// bits {0,1} {2,3} occupy the same bit pitches.
+
+mux2ds  #(32) mux_rddata_out_c6(.dout (rddata_out_c6[31:0]) ,
+                	.in0(rddata_out_c6_top[31:0]), 
+			.in1(rddata_out_c6_bottom[31:0]),
+                	.sel0(rd_data_sel_c6_top), 
+			.sel1(~rd_data_sel_c6_top));
+
+zzpar16 par_row1_parity   ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+;
+
+
+mux2ds  #(32) (.dout (rddata_out_c6[31:0]) ,
+                	.in0(rddata_out_c6_top[31:0]), 
+			.in1(rddata_out_c6_bottom[31:0]),
+                	.sel0(rd_data_sel_c6_top), 
+			.sel1(~rd_data_sel_c6_top));
+
+zzpar16 par_row1_parity   ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+(.dout ([31:0]) ,
+                	.in0([31:0]), 
+			.in1([31:0]),
+                	.sel0(), 
+			.sel1(~rd_data_sel_c6_top));
+
+zzpar16 par_row1_parity   ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+), 
+			.sel1(~));
+
+zzpar16 par_row1_parity   ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+));
+
+zzpar16    ( .z(row1_parity),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+   ( .z(),
+                        .d({1'b0,rddata_out_c6[30],rddata_out_c6[28],rddata_out_c6[26],
+			rddata_out_c6[24],rddata_out_c6[22],rddata_out_c6[20],
+			rddata_out_c6[18],rddata_out_c6[16],rddata_out_c6[14],
+			rddata_out_c6[12],rddata_out_c6[10],rddata_out_c6[8],
+			rddata_out_c6[6],rddata_out_c6[4],rddata_out_c6[2]}));
+
+zzpar16 par_row2_parity   ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+),
+                        .d({1bb,[30],[28],[26],
+			[24],[22],[20],
+			[18],[16],[14],
+			[12],[10],[8],
+			[6],[4],[2]}));
+
+zzpar16    ( .z(row2_parity),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+   ( .z(),
+                        .d({rddata_out_c6[31],rddata_out_c6[29],rddata_out_c6[27],
+                        rddata_out_c6[25],rddata_out_c6[23],rddata_out_c6[21],
+                        rddata_out_c6[19],rddata_out_c6[17],rddata_out_c6[15],
+                        rddata_out_c6[13],rddata_out_c6[11],rddata_out_c6[9],
+                        rddata_out_c6[7],rddata_out_c6[5],rddata_out_c6[3],rddata_out_c6[1]}));
+
+assign	parity_vld_prev = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+),
+                        .d({[31],[29],[27],
+                        [25],[23],[21],
+                        [19],[17],[15],
+                        [13],[11],[9],
+                        [7],[5],[3],[1]}));
+
+assign	 = (row1_parity ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+ = ( ^ row2_parity) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+ ^ ) 
+			& rddata_out_c6[0]  &
+			( rd_data_sel_c6_top | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+) 
+			& [0]  &
+			(  | rd_data_sel_c6_bottom);
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+ | );
+
+
+dff_s   #(1) ff_parity_vld
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+);
+
+
+dff_s   #(1) 
+              (.q   (parity_vld),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+
+              (.q   (),
+               .din (parity_vld_prev),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+),
+               .din (),
+               .clk (rclk),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+),
+               .clk (),
+               .se(se), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+),
+               .se(), .si  (), .so  ()
+              ) ;
+
+
+
+assign	parity_vld_out = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+), .si  (), .so  ()
+              ) ;
+
+
+
+assign	 = parity_vld_in ; // use a 30X buffer.
+
+endmodule
+ =  ; // use a 30X buffer.
+
+endmodule
+ ; 
+endmodule

@@ -1,0 +1,2989 @@
+####################################################
+time 1572014653 Fri Oct 25 09:44:13 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11010 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.cdo...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../logic/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[cut]:reading LEF file:../../ASAP7.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[::utdtools::search_input]:input file:riscv.v does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.v does not exist.  Looking in ../logic/output ...
+[::utdtools::search_input]:found... creating link to ../logic/output/riscv.v...link:riscv.v
+[cut]:reading Verilog file:../logic/output/riscv.v
+[icread_verilog]:../logic/output/riscv.v read.
+[make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+You may wish to edit this cells characteristics in the library.
+[make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+You may wish to edit this cells characteristics in the library.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../logic/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[cut]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[write_def]:riscv.def written.
+waiting here
+
+itranslate terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1572014653 Fri Oct 25 09:44:13 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11022 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.fdo...
+Welcome to the TimberWolf SimFloorplan Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../cut/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[floorplan]:reading LEF file:../../ASAP7.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../cut/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[floorplan]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cut/output ...
+[::utdtools::search_input]:found... creating link to ../cut/output/riscv.def...link:riscv.def
+[floorplan]:reading DEF file:../cut/output/riscv.def
+    components:4788
+[convert_sites_to_rows]:No sites found.
+    nets:4925
+WARNING[sites_available]:Did not find 4 pad sites.
+[icread_def]:../cut/output/riscv.def read.
+[write_con]:riscv.con written.
+[write_ckt]:riscv.ckt written.
+[icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+[add_feedthru]:No feed thru cell found.  Adding a default one.
+WARNING[add_feedthru]:Not enough space for additional feed layer:M3 in feed model:icfeed1 pitch:0.05400 width of model:0.03600
+
+WARNING[add_feedthru]:Not enough space for additional feed layer:M5 in feed model:icfeed1 pitch:0.04800 width of model:0.03600
+
+WARNING[add_feedthru]:Not enough space for additional feed layer:M7 in feed model:icfeed1 pitch:0.06400 width of model:0.03600
+
+[icwrite_lib]:riscv.lib written.
+[write_par]:riscv.par written.
+####################################################
+time 1572014654 Fri Oct 25 09:44:14 2019:iflow started...
+@ iflow -stop ifp -x -v -flow flow.route1 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11034 PVERSION v2.0.0pre46
+
+iTools master control
+
+iflow version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 07:57:55 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+iflow switches:
+	Verbose mode on.
+	Graphics mode on.
+	Flow will terminate on error.
+	Automatic flow execution on - Autoflow ON.
+	Last programs in flow: ifp
+	iTools mode on.
+
+	Flow directory given:flow.route1
+
+
+% time 1572014655 Fri Oct 25 09:44:15 2019:Syntax started...
+####################################################
+time 1572014655 Fri Oct 25 09:44:15 2019:syntax started...
+@ /Users/bill/version1/itools/bin/Darwin/syntax riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11064 PVERSION v2.0.0pre46
+
+iTools System Syntax Checker
+
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+syntax switches:
+
+
+Determining intrinsic scale...
+no syntax errors in library:riscv.lib
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found.
+
+
+syntax terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014656 Fri Oct 25 09:44:16 2019:syntax exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11064
+
+time 1572014656 Fri Oct 25 09:44:16 2019:Syntax completed...
+time 1572014656 Fri Oct 25 09:44:16 2019:ifp started pid 11072 from iflow...
+@ flow: flow.route1 flowfile: flow.route1/standard.flow
+####################################################
+time 1572014656 Fri Oct 25 09:44:16 2019:ifp started...
+@ /Users/bill/version1/itools/bin/Darwin/ifp -v -w 33554444 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11072 PVERSION v2.0.0pre46
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 0.01263 0.01075 0.01263 0.01075
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 0.01263
+default_block_yspace       : 0.01075
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 1851934137
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 4000.00
+script                     : /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/riscv.fdo (auto detected)
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 0.01263
+                               y: 0.01075
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% ####################################################
+time 1572014657 Fri Oct 25 09:44:17 2019:simplify started...
+@ /Users/bill/version1/itools/bin/Darwin/simplify -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11082 PVERSION v2.0.0pre46
+
+iTools System Netlist Simplifier
+
+simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:48:34 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+
+simplify switches:
+
+iTools System Netlist Simplifier
+
+simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:48:34 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+Memory status ->   0KB in use.
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+simplify switches:
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5107
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+Read  250 models so far...
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5107
+Read  300 models so far...
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Memory status ->1024KB in use.
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read 2000 cell instances so far...
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Memory status ->2048KB in use.
+Read 2000 cell instances so far...
+Memory status ->3072KB in use.
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Memory status ->4096KB in use.
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+time 1572014657 Fri Oct 25 09:44:17 2019:simplify completed...
+
+simplify terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014657 Fri Oct 25 09:44:17 2019:simplify exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11082
+
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+
+simplify terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+
+The rand generator seed was: 1851934137
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 4.73e+10
+mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+mean short side : 2.16e+05      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 738.7200000000
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:27.17938    bdylength:27.17938
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 2115173
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :22.76550
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :25.89379
+Wirelength:
+	All nets             :182124
+	Limited nets         :182124
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+   xspan     = 27
+   yspan     = 27.36000
+   core area = 7.39e+02
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :21.17325
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :24.30154
+Wirelength:
+	All nets             :169386
+	Limited nets         :169386
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+   xspan     = 27.17950
+   yspan     = 27.36000
+   core area = 7.44e+02
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+ifp terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014725 Fri Oct 25 09:45:25 2019:ifp exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11072
+
+time 1572014725 Fri Oct 25 09:45:25 2019:ifp completed pid 11072 from iflow with status:0...
+[auto_flow]:Stop program criteria met after execution of ifp
+
+iflow terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014725 Fri Oct 25 09:45:25 2019:iflow exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11034
+
+
+itranslate terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+####################################################
+time 1572014725 Fri Oct 25 09:45:25 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11104 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.pdo...
+Welcome to the TimberWolf SimPlace Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../floorplan/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[place]:reading LEF file:../../ASAP7.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../floorplan/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[place]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../floorplan/output ...
+[::utdtools::search_input]:found... creating link to ../floorplan/output/riscv.def...link:riscv.def
+[place]:reading DEF file:../floorplan/output/riscv.def
+    components:4788
+[convert_sites_to_rows]:95 rows found.
+    nets:4925
+WARNING[sites_available]:Did not find 4 pad sites.
+[icread_def]:../floorplan/output/riscv.def read.
+[compact_rows]:Number of rows compacted from 95 to 95.
+[write_con]:riscv.con written.
+[write_ckt]:riscv.ckt written.
+[icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+[add_feedthru]:No feed thru cell found.  Adding a default one.
+WARNING[add_feedthru]:Not enough space for additional feed layer:M3 in feed model:icfeed1 pitch:0.05400 width of model:0.03600
+
+WARNING[add_feedthru]:Not enough space for additional feed layer:M5 in feed model:icfeed1 pitch:0.04800 width of model:0.03600
+
+WARNING[add_feedthru]:Not enough space for additional feed layer:M7 in feed model:icfeed1 pitch:0.06400 width of model:0.03600
+
+[icwrite_lib]:riscv.lib written.
+[write_par]:riscv.par written.
+####################################################
+time 1572014726 Fri Oct 25 09:45:26 2019:syntax started...
+@ /Users/bill/version1/itools/bin/Darwin/syntax -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf HOST mac4.local PID 11117 PVERSION v2.0.0pre46
+
+iTools System Syntax Checker
+
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+syntax switches:
+
+
+Determining intrinsic scale...
+no syntax errors in library:riscv.lib
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found.
+
+Reading constraint file riscv.con...
+done reading constraint file. No syntax errors.
+
+syntax terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014726 Fri Oct 25 09:45:26 2019:syntax exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf HOST mac4.local PID 11117
+
+####################################################
+time 1572014726 Fri Oct 25 09:45:26 2019:iplacesc started...
+@ /Users/bill/version1/itools/bin/Darwin/iplacesc -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf HOST mac4.local PID 11126 PVERSION v2.0.0pre46
+
+Row-Based Placement Control Program
+
+iplacesc version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:49:03 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplacesc switches:
+	Graphics mode on.
+	Errors will not be displayed graphically.
+	Verbose mode on.
+
+% 
+Please Note!!!
+	You have requested to run iplacesc version 1 in
+	{hierarchical} mode by default.  Hierarchical mode is 5-7x faster
+	and yields better quality placements for circuits with
+	more than roughly 300 cells.  For circuits smaller
+	than this, flat mode will be enforced.
+####################################################
+time 1572014728 Fri Oct 25 09:45:28 2019:iplace_simplify started...
+@ /Users/bill/version1/itools/bin/Darwin/iplace_simplify -s -v -n riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place HOST mac4.local PID 11135 PVERSION v2.0.0pre46
+
+iTools System Netlist Simplifier
+
+iplace_simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:48:34 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplace_simplify switches:
+	output netlist will be simplified
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5107
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file itools.con
+
+Row information found in constraint file itools.con
+Ignoring any future row definitions.
+
+
+No syntax errors in constraint file riscv.con
+
+
+No syntax errors in constraint file itools.con
+
+[set_ignore]:force ignore net clk
+[set_ignore]:force ignore net CTRL.cyc
+[set_ignore]:force ignore net rst
+[set_ignore]:force ignore net 1'h0
+
+
+Writing riscv.sckt file...
+Writing riscv.slib file...
+Writing riscv.scon file...
+time 1572014728 Fri Oct 25 09:45:28 2019:simplify completed...
+
+iplace_simplify terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014728 Fri Oct 25 09:45:28 2019:iplace_simplify exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place HOST mac4.local PID 11135
+
+####################################################
+time 1572014729 Fri Oct 25 09:45:29 2019:syntax started...
+@ /Users/bill/version1/itools/bin/Darwin/syntax -st riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place HOST mac4.local PID 11145 PVERSION v2.0.0pre46
+
+iTools System Syntax Checker
+
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+syntax switches:
+	check .sckt instead of .ckt
+
+
+Determining intrinsic scale...
+no syntax errors in library:riscv.slib
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+no syntax errors in library:riscv.slib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found.
+
+
+syntax terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014729 Fri Oct 25 09:45:29 2019:syntax exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place HOST mac4.local PID 11145
+
+####################################################
+time 1572014731 Fri Oct 25 09:45:31 2019:cluster started...
+@ /Users/bill/version1/itools/bin/Darwin/cluster -v -n -R 579004042 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place/p1/stage0 HOST mac4.local PID 11154 PVERSION v2.0.0pre46
+
+Row-Based Hierarchical Cluster Program
+
+cluster version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:27:44 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+except_threshold       : default
+cannonical_suffixes    : off
+cluster_file           : default
+compress_files         : off
+driver_opt             : off
+driver_factor          : 0
+general_mode           : off
+include_macros         : off
+ignore_keepouts        : on
+new_weight             : off
+random_seed            : 579004042
+target                 : default
+tolerance              : 0.25
+upper_bound            : default
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:5107
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+no syntax errors in library:riscv.slib
+no syntax problem in circuit file.
+no syntax errors in physical description.
+WARNING[check_nets]:Net <clk> has 399 pins
+WARNING[check_nets]:Net <CTRL.cyc> has 199 pins
+WARNING[check_nets]:Net <rst> has 267 pins
+WARNING[check_nets]:Net <1'h0> has 134 pins
+[check_nets]:Max pins on a net is:399 pins
+WARNING[gather_info2]:Net <clk> has 399 pins
+
+Cell Statistics:
+Average cell width     :0.53571
+Standard dev. of width :0.41359
+Narrowest standard cell:0.32400 instance: _4144_ model: INV_1x
+Widest standard cell   :1.83600 instance: _8534_ model: DFF_1x 
+Median standard cell   :0.37800
+Ratio largest/smallest :5.66667
+
+Average cell area      :0.15429
+Standard dev. of area  :0.11911
+Smallest area cell     :0.09331
+Largest area cell      :0.52877
+Median area cell       :0.10886
+Ratio largest/smallest :5.66667
+Cells considered       :4788
+
+Seed = 579004042
+[read_cschedule]:Target cell counts not set in riscv.csched, using internal calculation.
+[build_cluster]:Number in cluster=3.265990,lower bound=0.16071,upper bound=3.49927
+
+Iter T        Wire       Acc.
+ -1: 0.00e+00 0          0.948
+  0: 3.51e+03 6618844    0.947 977       
+  1: 3.64e+03 6533352    0.940 1061      
+  2: 3.37e+03 6459532    0.931 1083      
+  3: 2.80e+03 6438076    0.924 1120      
+  4: 2.30e+03 6381141    0.895 1146      
+  5: 1.79e+03 6304990    0.877 1283      
+  6: 1.46e+03 6252925    0.839 1335      
+  7: 1.21e+03 6198134    0.806 1367      
+  8: 9.62e+02 6110534    0.788 1461      
+  9: 8.73e+02 6033244    0.734 1387      
+ 10: 8.06e+02 5947395    0.705 1449      
+ 11: 7.25e+02 5884734    0.687 1552      
+ 12: 7.06e+02 5782436    0.646 1669      
+ 13: 6.64e+02 5747113    0.631 1669      
+ 14: 6.08e+02 5690661    0.615 1882      
+ 15: 5.93e+02 5656839    0.580 1851      
+ 16: 5.42e+02 5589233    0.575 1894      
+ 17: 5.08e+02 5555964    0.550 1804      
+ 18: 4.91e+02 5515077    0.524 1961      
+ 19: 4.89e+02 5491990    0.499 1942      
+ 20: 4.56e+02 5448166    0.496 2093      
+ 21: 4.12e+02 5423868    0.486 2006      
+ 22: 4.10e+02 5399400    0.449 2153      
+ 23: 3.89e+02 5355129    0.452 2293      
+ 24: 4.04e+02 5319125    0.431 2168      
+ 25: 4.10e+02 5300677    0.437 2267      
+ 26: 4.41e+02 5297870    0.424 2500      
+ 27: 4.30e+02 5299862    0.445 2385      
+ 28: 4.28e+02 5308283    0.441 2293      
+ 29: 4.24e+02 5278608    0.442 2177      
+ 30: 4.26e+02 5287061    0.439 2252      
+ 31: 4.62e+02 5287382    0.422 2205      
+ 32: 4.59e+02 5290940    0.441 2266      
+ 33: 4.37e+02 5306299    0.451 2313      
+ 34: 4.50e+02 5296231    0.433 2271      
+ 35: 4.35e+02 5265197    0.447 2161      
+ 36: 4.64e+02 5284180    0.425 2432      
+ 37: 4.51e+02 5306712    0.447 2312      
+ 38: 4.43e+02 5310721    0.443 2269      
+ 39: 4.16e+02 5304650    0.453 2218      
+ 40: 4.40e+02 5292864    0.427 2248      
+ 41: 4.30e+02 5278791    0.445 2433      
+ 42: 4.29e+02 5267257    0.440 2241      
+ 43: 4.19e+02 5300581    0.445 2191      
+ 44: 4.42e+02 5279082    0.428 2156      
+ 45: 4.46e+02 5275411    0.438 2260      
+ 46: 4.54e+02 5301814    0.436 2353      
+ 47: 4.37e+02 5290945    0.449 2290      
+ 48: 4.32e+02 5295214    0.443 2342      
+ 49: 4.45e+02 5295697    0.434 2563      
+ 50: 4.30e+02 5268059    0.447 2524      
+ 51: 4.17e+02 5287515    0.446 2372      
+ 52: 4.23e+02 5288627    0.437 2323      
+ 53: 4.26e+02 5291848    0.438 2355      
+ 54: 4.11e+02 5282860    0.447 2495      
+ 55: 4.31e+02 5289553    0.429 2344      
+ 56: 4.37e+02 5272503    0.437 2342      
+ 57: 4.24e+02 5268213    0.447 2361      
+ 58: 4.10e+02 5266131    0.448 2390      
+ 59: 4.33e+02 5263487    0.427 2467      
+ 60: 4.26e+02 5288228    0.443 2411      
+ 61: 4.46e+02 5273331    0.430 2302      
+ 62: 4.52e+02 5277608    0.437 2412      
+ 63: 4.32e+02 5309180    0.449 2286      
+ 64: 4.17e+02 5281404    0.448 2385      
+ 65: 4.00e+02 5246457    0.449 2552      
+ 66: 4.16e+02 5254056    0.431 2384      
+ 67: 4.44e+02 5264439    0.426 2495      
+ 68: 4.47e+02 5260586    0.438 2456      
+ 69: 4.63e+02 5278909    0.432 2359      
+ 70: 4.51e+02 5301351    0.446 2290      
+ 71: 4.34e+02 5296553    0.449 2327      
+ 72: 4.26e+02 5300125    0.444 2309      
+ 73: 4.32e+02 5293561    0.437 2318      
+ 74: 4.28e+02 5283958    0.442 2511      
+ 75: 4.31e+02 5283464    0.438 2395      
+ 76: 4.46e+02 5259100    0.432 2528      
+ 77: 4.30e+02 5272143    0.447 2442      
+ 78: 4.41e+02 5264208    0.434 2536      
+ 79: 4.33e+02 5260542    0.443 2447      
+ 80: 4.55e+02 5291059    0.429 2436      
+ 81: 4.00e+02 5287458    0.458 2333      
+ 82: 3.84e+02 5240723    0.420 2373      
+ 83: 3.79e+02 5233693    0.396 2484      
+ 84: 3.59e+02 5202005    0.387 2668      
+ 85: 3.35e+02 5188308    0.374 2550      
+ 86: 3.24e+02 5170457    0.350 2590      
+ 87: 2.98e+02 5159167    0.346 2602      
+ 88: 2.87e+02 5130435    0.322 2536      
+ 89: 2.94e+02 5119717    0.293 2748      
+ 90: 2.68e+02 5075901    0.306 2899      
+ 91: 2.40e+02 5062618    0.298 2770      
+ 92: 2.26e+02 5027649    0.274 2800      
+ 93: 2.31e+02 5004394    0.245 2930      
+ 94: 2.34e+02 4994097    0.236 2848      
+ 95: 2.39e+02 4980654    0.223 2936      
+ 96: 2.16e+02 4957093    0.240 2916      
+ 97: 2.01e+02 4948191    0.224 3066      
+ 98: 1.90e+02 4934932    0.212 3021      
+ 99: 1.71e+02 4924889    0.214 3151      
+100: 1.63e+02 4904596    0.193 3127      
+101: 1.55e+02 4887714    0.184 3064      
+102: 1.58e+02 4880546    0.161 3037      
+103: 1.53e+02 4866134    0.167 3142      
+104: 1.43e+02 4847759    0.166 3239      
+105: 1.38e+02 4846349    0.154 3454      
+106: 1.29e+02 4834530    0.153 3355      
+107: 1.27e+02 4826976    0.137 3243      
+108: 1.24e+02 4822280    0.131 3381      
+109: 1.21e+02 4814764    0.127 3395      
+110: 1.17e+02 4808202    0.123 3330      
+111: 1.10e+02 4805648    0.124 3402      
+112: 1.09e+02 4802588    0.108 3389      
+113: 1.13e+02 4800043    0.093 3318      
+114: 1.06e+02 4795742    0.111 3355      
+115: 1.01e+02 4791289    0.103 3415      
+116: 9.20e+01 4789050    0.108 3461      
+117: 8.79e+01 4784750    0.095 3368      
+118: 8.33e+01 4782388    0.092 3460      
+119: 7.66e+01 4779680    0.095 3376      
+120: 7.09e+01 4776380    0.090 3554      
+121: 6.27e+01 4777082    0.098 3385      
+122: 5.84e+01 4775623    0.083 3543      
+123: 5.33e+01 4775370    0.084 3333      
+124: 4.99e+01 4771774    0.076 3631      
+125: 1.50e+01 4769671    0.085 3608      
+126: 7.96e+00 4766284    0.071 3534      
+127: 2.79e+00 4764806    0.077 3475      
+128: 1.41e+00 4761909    0.068 3539      
+129: 8.74e-01 4760068    0.061 3484      
+130: 4.90e-01 4758151    0.061 3506      
+131: 2.52e-01 4756251    0.061 3699      
+132: 1.55e-01 4755522    0.056 3564      
+133: 6.52e-02 4754022    0.061 3636      
+134: 2.55e-02 4753133    0.061 3489      
+135: 9.95e-03 4753083    0.059 3337      
+[build_cluster]:
+Total attempts=345032, is 72 times number of stdcells
+Final cluster cost:4753083   
+#  1 pin, avg_w= 0.0, net(    4)=    0 ( 0.0%), pin(    4)=    0 ( 0.0%)
+#  2 pin, avg_w= 0.3, net( 3128)= 2290 (73.2%), pin( 6256)= 4580 (73.2%)
+#  3 pin, avg_w= 0.8, net(  828)=  311 (37.6%), pin( 2484)= 1192 (48.0%)
+#  4 pin, avg_w= 1.4, net(  354)=   46 (13.0%), pin( 1416)=  480 (33.9%)
+#  5 pin, avg_w= 2.0, net(  175)=    9 ( 5.1%), pin(  875)=  258 (29.5%)
+#  6 pin, avg_w= 2.7, net(  107)=    0 ( 0.0%), pin(  642)=  133 (20.7%)
+#  7 pin, avg_w= 3.2, net(   47)=    0 ( 0.0%), pin(  329)=   50 (15.2%)
+#  8 pin, avg_w= 3.5, net(   22)=    0 ( 0.0%), pin(  176)=   32 (18.2%)
+#  9 pin, avg_w= 4.0, net(   17)=    1 ( 5.9%), pin(  153)=   30 (19.6%)
+# 10 pin, avg_w= 4.9, net(    9)=    0 ( 0.0%), pin(   90)=    8 ( 8.9%)
+# 11 pin, avg_w= 5.4, net(  222)=    0 ( 0.0%), pin( 2442)=  192 ( 7.9%)
+# 14 pin, avg_w= 6.9, net(    1)=    0 ( 0.0%), pin(   14)=    1 ( 7.1%)
+# 15 pin, avg_w= 7.4, net(    1)=    0 ( 0.0%), pin(   15)=    1 ( 6.7%)
+# 18 pin, avg_w= 8.9, net(    2)=    0 ( 0.0%), pin(   36)=    5 (13.9%)
+# 31 pin, avg_w=15.4, net(    1)=    0 ( 0.0%), pin(   31)=    3 ( 9.7%)
+# 33 pin, avg_w=16.4, net(    1)=    0 ( 0.0%), pin(   33)=    3 ( 9.1%)
+# 38 pin, avg_w=19.0, net(    1)=    0 ( 0.0%), pin(   38)=    1 ( 2.6%)
+# 52 pin, avg_w=25.9, net(    1)=    0 ( 0.0%), pin(   52)=    5 ( 9.6%)
+#134 pin, avg_w=67.0, net(    1)=    0 ( 0.0%), pin(  134)=    0 ( 0.0%)
+#199 pin, avg_w=99.4, net(    1)=    0 ( 0.0%), pin(  199)=   17 ( 8.5%)
+#267 pin, avg_w=133.5, net(    1)=    0 ( 0.0%), pin(  267)=    0 ( 0.0%)
+#399 pin, avg_w=199.5, net(    1)=    0 ( 0.0%), pin(  399)=    0 ( 0.0%)
+[output_hierarchy]:total 2657 nets eliminated(54%),  6991 pins shrunk(43%)
+[output_hierarchy]:total 2268 nets left(46%),  9094 pins left(57%)
+[output_hier]:total instances:1786 original instances:5107
+[main]:Generating hierarchical netlist.
+[main]:Writing riscv.cckt and riscv.cluster files.
+time 1572014731 Fri Oct 25 09:45:31 2019:cluster completed...
+
+cluster terminated normally with no errors and 6 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014731 Fri Oct 25 09:45:31 2019:cluster exits 0 errors 6 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place/p1/stage0 HOST mac4.local PID 11154
+
+####################################################
+time 1572014740 Fri Oct 25 09:45:40 2019:cluster started...
+@ /Users/bill/version1/itools/bin/Darwin/cluster -v -n -R 579004042 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place/p1/stage1 HOST mac4.local PID 11166 PVERSION v2.0.0pre46
+
+Row-Based Hierarchical Cluster Program
+
+cluster version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:27:44 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+except_threshold       : default
+cannonical_suffixes    : off
+cluster_file           : default
+compress_files         : off
+driver_opt             : off
+driver_factor          : 0
+general_mode           : off
+include_macros         : off
+ignore_keepouts        : on
+new_weight             : off
+random_seed            : 579004042
+target                 : default
+tolerance              : 0.25
+upper_bound            : default
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:1786
+[look_for_hints]:Number of nets :2268
+[look_for_hints]:Number of gpins:9094
+
+no syntax errors in library:riscv.slib
+no syntax problem in circuit file.
+no syntax errors in physical description.
+WARNING[check_nets]:Net <CTRL.cyc> has 182 pins
+WARNING[check_nets]:Net <1'h0> has 134 pins
+WARNING[check_nets]:Net <clk> has 399 pins
+WARNING[check_nets]:Net <rst> has 267 pins
+[check_nets]:Max pins on a net is:399 pins
+WARNING[gather_info2]:Net <clk> has 399 pins
+
+Cell Statistics:
+Average cell width     :1.74847
+Standard dev. of width :1.23424
+Narrowest standard cell:0.32400 instance: _TW_00006 model: cl1_5
+Widest standard cell   :3.45600 instance: _TW_00034 model: cl1_19 
+Median standard cell   :1.72800
+Ratio largest/smallest :10.6667
+
+Average cell area      :0.50356
+Standard dev. of area  :0.35546
+Smallest area cell     :0.09331
+Largest area cell      :0.99533
+Median area cell       :0.49766
+Ratio largest/smallest :10.6667
+Cells considered       :1467
+
+Seed = 579004042
+[read_cschedule]:Target cell counts not set in riscv.csched, using internal calculation.
+[build_cluster]:Number in cluster=4.009700,lower bound=0.52454,upper bound=14.02165
+
+Iter T        Wire       Acc.
+ -1: 0.00e+00 0          0.938
+  0: 2.57e+03 4202472    0.932 84        
+  1: 2.66e+03 4139011    0.912 116       
+  2: 2.67e+03 4130683    0.906 97        
+  3: 2.62e+03 4114486    0.904 99        
+  4: 2.51e+03 4097328    0.901 98        
+  5: 2.38e+03 4096826    0.877 90        
+  6: 2.21e+03 4091533    0.879 102       
+  7: 2.01e+03 4080927    0.871 120       
+  8: 1.81e+03 4058935    0.852 106       
+  9: 1.54e+03 4064233    0.889 113       
+ 10: 1.32e+03 4033812    0.858 132       
+ 11: 1.16e+03 4010617    0.815 126       
+ 12: 1.00e+03 3990635    0.797 151       
+ 13: 8.85e+02 3960121    0.758 133       
+ 14: 7.86e+02 3934522    0.725 150       
+ 15: 7.03e+02 3909004    0.698 167       
+ 16: 6.50e+02 3898459    0.635 169       
+ 17: 6.07e+02 3866106    0.612 161       
+ 18: 5.49e+02 3836454    0.630 193       
+ 19: 4.94e+02 3817502    0.608 170       
+ 20: 4.55e+02 3788804    0.567 167       
+ 21: 4.28e+02 3763349    0.528 223       
+ 22: 4.25e+02 3751725    0.460 195       
+ 23: 4.00e+02 3732107    0.505 188       
+ 24: 3.84e+02 3703463    0.483 194       
+ 25: 3.86e+02 3697023    0.435 197       
+ 26: 3.77e+02 3686729    0.460 192       
+ 27: 3.79e+02 3681144    0.435 241       
+ 28: 3.78e+02 3674702    0.446 239       
+ 29: 3.88e+02 3668629    0.409 238       
+ 30: 3.96e+02 3655686    0.421 257       
+ 31: 4.11e+02 3654235    0.398 227       
+ 32: 3.97e+02 3657119    0.478 227       
+ 33: 3.93e+02 3664381    0.452 215       
+ 34: 3.91e+02 3652280    0.444 218       
+ 35: 3.87e+02 3644576    0.448 208       
+ 36: 3.82e+02 3632841    0.452 238       
+ 37: 3.88e+02 3636316    0.427 269       
+ 38: 3.97e+02 3631218    0.415 235       
+ 39: 3.94e+02 3617942    0.452 223       
+ 40: 4.00e+02 3615871    0.419 245       
+ 41: 4.04e+02 3612469    0.427 240       
+ 42: 4.15e+02 3609066    0.415 219       
+ 43: 4.03e+02 3601913    0.474 208       
+ 44: 3.90e+02 3600048    0.476 227       
+ 45: 4.00e+02 3599377    0.413 277       
+ 46: 4.05e+02 3595610    0.425 252       
+ 47: 4.12e+02 3593606    0.423 264       
+ 48: 4.19e+02 3592232    0.423 213       
+ 49: 4.16e+02 3592582    0.446 246       
+ 50: 4.21e+02 3593941    0.421 261       
+ 51: 4.22e+02 3585815    0.441 250       
+ 52: 4.26e+02 3582459    0.431 209       
+ 53: 4.44e+02 3571433    0.404 251       
+ 54: 4.51e+02 3575250    0.417 266       
+ 55: 4.62e+02 3585587    0.411 261       
+ 56: 4.75e+02 3587741    0.409 273       
+ 57: 4.66e+02 3603297    0.460 237       
+ 58: 4.45e+02 3612931    0.491 220       
+ 59: 4.52e+02 3605090    0.415 212       
+ 60: 4.51e+02 3596146    0.446 248       
+ 61: 4.46e+02 3600696    0.452 242       
+ 62: 4.42e+02 3596008    0.448 226       
+ 63: 4.52e+02 3590116    0.415 292       
+ 64: 4.68e+02 3596227    0.400 204       
+ 65: 4.78e+02 3599120    0.415 228       
+ 66: 4.79e+02 3597393    0.441 253       
+ 67: 4.68e+02 3590053    0.466 242       
+ 68: 4.66e+02 3590172    0.448 215       
+ 69: 4.74e+02 3589721    0.419 224       
+ 70: 4.67e+02 3584295    0.460 249       
+ 71: 4.48e+02 3582367    0.485 285       
+ 72: 4.35e+02 3584103    0.474 266       
+ 73: 4.28e+02 3580064    0.462 291       
+ 74: 4.30e+02 3570277    0.435 263       
+ 75: 4.36e+02 3572995    0.427 263       
+ 76: 4.34e+02 3566249    0.444 232       
+ 77: 4.47e+02 3555523    0.411 276       
+ 78: 4.57e+02 3554524    0.415 230       
+ 79: 4.37e+02 3550875    0.483 254       
+ 80: 4.42e+02 3553957    0.425 265       
+ 81: 4.34e+02 3551558    0.448 230       
+ 82: 4.30e+02 3544554    0.421 242       
+ 83: 4.31e+02 3543671    0.388 274       
+ 84: 4.13e+02 3543357    0.419 280       
+ 85: 4.00e+02 3540097    0.394 305       
+ 86: 3.86e+02 3538264    0.384 292       
+ 87: 3.54e+02 3534762    0.425 246       
+ 88: 3.30e+02 3537861    0.392 273       
+ 89: 3.02e+02 3530983    0.396 273       
+ 90: 2.79e+02 3522122    0.378 278       
+ 91: 2.63e+02 3514680    0.337 294       
+ 92: 2.40e+02 3505966    0.365 347       
+ 93: 2.24e+02 3495362    0.324 300       
+ 94: 2.23e+02 3493222    0.250 325       
+ 95: 2.12e+02 3487641    0.283 299       
+ 96: 2.00e+02 3475026    0.285 262       
+ 97: 1.90e+02 3463301    0.267 305       
+ 98: 1.83e+02 3455681    0.240 272       
+ 99: 1.77e+02 3452128    0.230 328       
+100: 1.69e+02 3448868    0.230 339       
+101: 1.65e+02 3441163    0.203 364       
+102: 1.56e+02 3439163    0.222 376       
+103: 1.51e+02 3437497    0.199 306       
+104: 1.46e+02 3432459    0.187 310       
+105: 1.38e+02 3428805    0.207 308       
+106: 1.32e+02 3425134    0.181 364       
+107: 1.30e+02 3420951    0.150 313       
+108: 1.24e+02 3419522    0.172 331       
+109: 1.21e+02 3417719    0.154 376       
+110: 1.15e+02 3416309    0.168 404       
+111: 1.12e+02 3414347    0.146 322       
+112: 1.07e+02 3413501    0.160 356       
+113: 1.01e+02 3409727    0.158 358       
+114: 9.85e+01 3408103    0.129 374       
+115: 9.60e+01 3406074    0.119 395       
+116: 9.01e+01 3405415    0.156 332       
+117: 8.75e+01 3401666    0.117 368       
+118: 8.42e+01 3401885    0.125 378       
+119: 8.07e+01 3400448    0.123 351       
+120: 7.79e+01 3399644    0.113 361       
+121: 7.47e+01 3397905    0.119 395       
+122: 7.18e+01 3396373    0.109 348       
+123: 7.07e+01 3394140    0.082 368       
+124: 6.79e+01 3393935    0.103 318       
+125: 4.20e+01 3393078    0.109 364       
+126: 4.02e+01 3392389    0.060 338       
+127: 3.10e+01 3390464    0.086 346       
+128: 2.61e+01 3389495    0.072 371       
+129: 2.40e+01 3388953    0.064 346       
+130: 2.17e+01 3387359    0.062 316       
+131: 1.93e+01 3385945    0.062 315       
+132: 1.92e+01 3386005    0.047 367       
+133: 1.70e+01 3385741    0.055 356       
+134: 1.09e+01 3384517    0.092 359       
+135: 8.88e+00 3384252    0.060 357       
+136: 7.48e+00 3381690    0.057 417       
+137: 6.41e+00 3381573    0.053 348       
+138: 4.84e+00 3381079    0.064 355       
+139: 4.71e+00 3381031    0.035 355       
+140: 4.42e+00 3379751    0.037 372       
+141: 4.15e+00 3379646    0.033 411       
+142: 3.43e+00 3379532    0.047 360       
+143: 2.50e+00 3379206    0.058 333       
+144: 2.11e+00 3379121    0.039 395       
+145: 1.91e+00 3378784    0.029 343       
+146: 1.34e+00 3378587    0.057 369       
+147: 1.09e+00 3378255    0.037 375       
+148: 8.40e-01 3377933    0.041 326       
+149: 6.57e-01 3377428    0.037 374       
+150: 5.43e-01 3377421    0.029 326       
+151: 4.18e-01 3377093    0.037 394       
+152: 2.98e-01 3377092    0.041 373       
+153: 2.34e-01 3377092    0.029 371       
+154: 1.83e-01 3377092    0.027 350       
+155: 1.40e-01 3377088    0.029 357       
+[build_cluster]:
+Total attempts=80028, is 54 times number of stdcells
+Final cluster cost:3377088   
+#  1 pin, avg_w= 0.0, net(    4)=    0 ( 0.0%), pin(    4)=    0 ( 0.0%)
+#  2 pin, avg_w= 0.5, net( 1188)=  641 (54.0%), pin( 2376)= 1282 (54.0%)
+#  3 pin, avg_w= 1.0, net(  467)=   92 (19.7%), pin( 1401)=  457 (32.6%)
+#  4 pin, avg_w= 1.6, net(  196)=   16 ( 8.2%), pin(  784)=  195 (24.9%)
+#  5 pin, avg_w= 2.0, net(   83)=    4 ( 4.8%), pin(  415)=  109 (26.3%)
+#  6 pin, avg_w= 2.6, net(   47)=    0 ( 0.0%), pin(  282)=   72 (25.5%)
+#  7 pin, avg_w= 3.0, net(   32)=    0 ( 0.0%), pin(  224)=   58 (25.9%)
+#  8 pin, avg_w= 3.4, net(   25)=    0 ( 0.0%), pin(  200)=   60 (30.0%)
+#  9 pin, avg_w= 3.6, net(   34)=    0 ( 0.0%), pin(  306)=  109 (35.6%)
+# 10 pin, avg_w= 4.4, net(   60)=    1 ( 1.7%), pin(  600)=  167 (27.8%)
+# 11 pin, avg_w= 5.2, net(  120)=    0 ( 0.0%), pin( 1320)=  231 (17.5%)
+# 13 pin, avg_w= 6.1, net(    1)=    0 ( 0.0%), pin(   13)=    4 (30.8%)
+# 14 pin, avg_w= 6.3, net(    1)=    0 ( 0.0%), pin(   14)=    7 (50.0%)
+# 15 pin, avg_w= 6.9, net(    1)=    0 ( 0.0%), pin(   15)=    6 (40.0%)
+# 16 pin, avg_w= 5.6, net(    1)=    0 ( 0.0%), pin(   16)=    8 (50.0%)
+# 28 pin, avg_w=13.3, net(    1)=    0 ( 0.0%), pin(   28)=   12 (42.9%)
+# 30 pin, avg_w=14.4, net(    1)=    0 ( 0.0%), pin(   30)=   13 (43.3%)
+# 37 pin, avg_w=18.3, net(    1)=    0 ( 0.0%), pin(   37)=    6 (16.2%)
+# 47 pin, avg_w=22.0, net(    1)=    0 ( 0.0%), pin(   47)=   20 (42.6%)
+#134 pin, avg_w=66.7, net(    1)=    0 ( 0.0%), pin(  134)=   34 (25.4%)
+#182 pin, avg_w=90.6, net(    1)=    0 ( 0.0%), pin(  182)=   50 (27.5%)
+#267 pin, avg_w=133.1, net(    1)=    0 ( 0.0%), pin(  267)=   90 (33.7%)
+#399 pin, avg_w=199.0, net(    1)=    0 ( 0.0%), pin(  399)=  143 (35.8%)
+[output_hierarchy]:total  754 nets eliminated(33%),  3133 pins shrunk(34%)
+[output_hierarchy]:total 1514 nets left(67%),  5961 pins left(66%)
+[output_hier]:total instances:685 original instances:1786
+[main]:Generating hierarchical netlist.
+[main]:Writing riscv.cckt and riscv.cluster files.
+time 1572014740 Fri Oct 25 09:45:40 2019:cluster completed...
+
+cluster terminated normally with no errors and 6 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014740 Fri Oct 25 09:45:40 2019:cluster exits 0 errors 6 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place/p1/stage1 HOST mac4.local PID 11166
+
+####################################################
+time 1572014747 Fri Oct 25 09:45:47 2019:iplacesc.v1 started...
+@ /Users/bill/version1/itools/bin/Darwin/iplacesc.v1 -s 2 -v -w 33554444 -R 579004042 riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/place/timberwolf/place/p1/stage2 HOST mac4.local PID 11177 PVERSION v2.0.0pre46
+
+Row-Based Placement Program
+
+iplacesc.v1 version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:49:06 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+iplacesc.v1 switches:
+	Graphics mode on
+	Exit iteration:85
+	Verbose mode on
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+Options specified:
+adaptive_row_spacing     : 0
+add_feeds                : off
+add_rigid_spacers        : on
+adjust_cell_offset       : on
+adjust_gate_array_rows   : on
+alignment_tolerance      : 0
+allow_long_rows          : off
+allow_uneven_rows        : off
+allow_pad_overlap        : off
+autodetect_script        : off
+auto_row_lengths         : default (on but off for complex rows)
+auto_wire_weight         : on
+background               : white
+bendcost_threshold       : 0.000 (default) 
+buffer_timing            : on
+calc_row_index           : off
+check_overlap            : on
+check_pin_access         : on
+check_ports              : off
+cluster                  : off
+cluster_priority         : off
+cluster_split_param      : default (calculated)
+cluster_split_weight     : 1000.00
+compact_ports            : autodetect
+compact_port_algorithm   : 3
+compress_files           : off
+contiguous_pad_groups    : on
+convert_paths_to_pinpairs: off
+core_to_padspace         : 0.06463 0.06463 0.06463 0.06463
+corner_pads              : on
+cost_obstacles           : on
+cost_only                : off
+cover_cell_transparent   : off
+create_pl1in_instances   : off
+default_pin_capacitance  : (20.00 fF)
+design_style             : stdcell
+eco_autodetect           : off
+eco_buffer_tree          : off
+eco_constraint_factor    : -1
+eco_constraint_xfactor   : -1.00 relative
+eco_driver_weight        : 1
+eco_ignore_version       : off
+eco_placement_improve    : off
+eco_preview              : off
+eco_start_iteration      : 100
+eco_use_pl1_in_data      : on
+equalize_rows            : off
+even_placement           : off
+except_threshold         : default
+exit_on_error            : off
+fast                     : 10
+fix_orientation_problems : on
+fix_side_pin_access      : off
+gate_array_exit          : off
+gate_array_spacer        : ~TWSPACER
+graphics                 : on
+grid                     : none
+horizontal_path_weight   : 0.000 (calculated)
+horizontal_weight        : 1.000
+ignore_feeds             : off
+ignore_keepouts          : on
+iterate                  : off
+iterate_debug            : off
+iterate_script           : default
+large_net_threshold      : 100
+load balancing           : off
+merge_port_layers        : autodetected
+minimum_pad_space        : calculated
+net_reporting            : on
+orientation_optimization : off
+overlap_algorithm        : ordered
+overlap_mode             : left_justify
+padspacing               : uniform
+over_the_cell_feed_layer : default
+parallel_daemons         : on
+parallel_debug           : off
+parallel execution       : off
+parallel_row_update      : default
+parallel_slave_graphics  : off
+parallel timeout         : 0
+parallel_remote_start    : on
+path_detail_limit        : 10
+pdef_factor              : 10.000
+pdef_filename            : default
+pin_layers               : default
+power_domain_attempts    : 4
+power_domain_height      : 0
+power_domain_isolation   : on
+power_domain_spacing     : 0
+power_domain_width       : 0
+power_domain_exec        : off
+power_domain_start       : default
+power_domain_weight      : 1
+pre_equalize_rows        : off
+precision_row_control    : default
+preload_rows             : off
+probe_offset             : 0
+processor limit          : unlimited
+process_model_pins       : on
+prune_amount             : default
+quench                   : off
+random_seed              : 579004042
+relax_pin_access         : off
+require_vias             : on
+restart                  : off
+restrict_ports_to_channel: off
+row_blockage_percent     : 50.000
+row_definitions          : fixed
+row_var_percent          : 0.000
+save_file                : on
+scale                    : 4000.00
+schematic_ordering       : off
+script                   : none
+shared_boundary_opt      : on
+slow                     : 0
+soft_fold_weight         : 1.00
+spare_columns            : 5 (default)
+spare_extent             : 1.000000 1.000000 (default)
+spare_place_gravity      : on
+spare_place_globals      : 2
+spare_global_weight      : 1.00
+stage termination        : 85
+steiner_wire_length      : off
+strict_row_constraints   : off
+taper_percentage         : 0.100
+time_factor              : 3.000
+time_update              : 5 (default)
+timeout                  : none
+track.pitch              : 0.06463
+uniform_spacer_algorithm : FIXED
+unlap_max_checking       : off
+update_overlap           : 0
+use_initial_placement    : off
+vertical_path_weight     : 1.000 (user supplied)
+vertical_wire_weight     : 1.000
+zsa_read_pth             : off
+% Reading .slib, .sckt, and .scon files...
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:685
+[look_for_hints]:Number of nets :1514
+[look_for_hints]:Number of gpins:5961
+
+no syntax errors in library:riscv.slib
+no syntax errors in physical description.
+no syntax problem in circuit file.
+no syntax errors in netlist description.
+Reading constraint file riscv.scon...
+done reading constraint file. No syntax errors.
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:M1 pitch:0.03600 offset:0.01800
+Pin layers:
+layer:M1 pitch:0.03600 offset:0.01800
+
+Need timing graph...no
+[autodetect_port_layers]:didn't autodetect port layers.
+median:2.61900
+
+[cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+
+
+
+total cell length: 1296.02700
+total block length: 1296.02700
+rowSep                  : 0.000
+
+
+[auto_wire_weight]:vertical_wire_weight has been set by user.
+Effective row separation has been set to 1.00
+Modified vertical wire weight has been set to 1000000.00
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (27.18000,27.36000).
+Adjusted padring: (-0.12925,-0.12925) (27.18000,27.48925).
+
+block x-span:27  block y-span:27.36000
+
+
+TIMING FACTOR (COMPUTED) : 4.000000
+Original Average Cell Width:3.54106
+average_cell_width is:3.54106
+standard deviation of cell length is:2.49011
+narrowest standard cell:0.27000
+widest standard cell:13.98600
+average row length:27
+Normal row control algorithm.
+ratio:51.8
+
+Row-based Cell Distribution: 
+[ 1- 10] ( 0.27000  1.64175) : 8.470  2.459  0.546  1.639  0.273  2.732  0.273  0.273 20.765  1.913 
+[11- 20] ( 1.77875  3.01325) : 1.913  4.098  3.005  0.000  0.546  0.546  0.273  0.273  0.273  1.093 
+[21- 30] ( 3.15025  4.38500) : 0.273  0.273  0.273  0.273  0.820  0.546  1.639  0.820  1.093  1.093 
+[31- 40] ( 4.52175  5.75650) : 1.639  0.820  0.546  1.093  1.093  0.273  1.093  1.913  1.093  0.820 
+[41- 50] ( 5.89350  7.12800) : 1.366  1.913  2.732  1.913  2.186  3.279  4.645  6.011  6.284  0.273 
+[51- 60] ( 7.26500  8.49975) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[61- 70] ( 8.63675  9.87125) : 0.000  0.000  0.000  0.000  0.000  0.273  0.000  0.000  0.000  0.000 
+[71- 80] (10.00825 11.24300) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[81- 90] (11.37975 12.61450) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000 
+[91-100] (12.75150 13.98600) : 0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.000  0.273 
+Bin width:2194.56 smallest:4320 => largest:223776
+
+iplacesc starting from the beginning
+raw bin width :10.62312
+adjusted bin width :8.19200
+number of x bins    :4
+number of y bins    :0
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 46989.90750
+
+[findcost]:the large and non-global ignored nets:
+WARNING[findcost]:Large net <clk> has 256 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <rst> has 177 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 132 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h0> has 100 pins exceeding threshold and is now IGNORED.
+
+[findcost]:The active global nets:	NONE
+
+[findcost]:The defined global nets but not present in netlist:	NONE
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 787
+The number of nets with 3 pins is 279
+The number of nets with 4 pins is 141
+The number of nets with 5 pins is 70
+The number of nets with 6 pins is 40
+The number of nets with 7 pins is 42
+The number of nets with 8 pins is 41
+The number of nets with 9 pins is 36
+The number of nets with 10 pins is 36
+The number of nets with 11 pins is 30
+The number of nets with 16 pins is 1
+The number of nets with 17 pins is 1
+The number of nets with 27 pins is 1
+The number of nets with 31 pins is 1
+The number of nets with 100 pins or more is 4
+Average number of pins per net = 3.507285
+The maximum number of pins on a single net is:256
+
+Pad information:
+Core: (0,0) (27,27.36000).
+Padring: (-0.12925,-20.02800) (27.18000,47.38800).
+Die: (-20.02800,-20.03800) (47.02800,47.39800).
+
+
+Percentage of Nets Connecting to at least 2 cells:1.00
+Percentage of Nets Connecting to at least 3 cells:0.50
+Percentage of Nets Connecting to at least 4 cells:0.30
+Percentage of Nets Connecting to at least 5 cells:0.21
+Percentage of Nets Connecting to at least 6 cells:0.17
+
+mean row var width :1.77053
+block:   1 (0,0) (27,0.57600) desire:27 val:1.77056
+block:   2 (0,0.57600) (27,1.15200) desire:27 val:1.77056
+block:   3 (0,1.15200) (27,1.72800) desire:27 val:1.77056
+block:   4 (0,1.72800) (27,2.30400) desire:27 val:1.77056
+block:   5 (0,2.30400) (27,2.88000) desire:27 val:1.77056
+block:   6 (0,2.88000) (27,3.45600) desire:27 val:1.77056
+block:   7 (0,3.45600) (27,4.03200) desire:27 val:1.77056
+block:   8 (0,4.03200) (27,4.60800) desire:27 val:1.77056
+block:   9 (0,4.60800) (27,5.18400) desire:27 val:1.77056
+block:  10 (0,5.18400) (27,5.76000) desire:27 val:1.77056
+block:  11 (0,5.76000) (27,6.33600) desire:27 val:1.77056
+block:  12 (0,6.33600) (27,6.91200) desire:27 val:1.77056
+block:  13 (0,6.91200) (27,7.48800) desire:27 val:1.77056
+block:  14 (0,7.48800) (27,8.06400) desire:27 val:1.77056
+block:  15 (0,8.06400) (27,8.64000) desire:27 val:1.77056
+block:  16 (0,8.64000) (27,9.21600) desire:27 val:1.77056
+block:  17 (0,9.21600) (27,9.79200) desire:27 val:1.77056
+block:  18 (0,9.79200) (27,10.36800) desire:27 val:1.77056
+block:  19 (0,10.36800) (27,10.94400) desire:27 val:1.77056
+block:  20 (0,10.94400) (27,11.52000) desire:27 val:1.77056
+block:  21 (0,11.52000) (27,12.09600) desire:27 val:1.77056
+block:  22 (0,12.09600) (27,12.67200) desire:27 val:1.77056
+block:  23 (0,12.67200) (27,13.24800) desire:27 val:1.77056
+block:  24 (0,13.24800) (27,13.82400) desire:27 val:1.77056
+block:  25 (0,13.82400) (27,14.40000) desire:27 val:1.77056
+block:  26 (0,14.40000) (27,14.97600) desire:27 val:1.77056
+block:  27 (0,14.97600) (27,15.55200) desire:27 val:1.77056
+block:  28 (0,15.55200) (27,16.12800) desire:27 val:1.77056
+block:  29 (0,16.12800) (27,16.70400) desire:27 val:1.77056
+block:  30 (0,16.70400) (27,17.28000) desire:27 val:1.77056
+block:  31 (0,17.28000) (27,17.85600) desire:27 val:1.77056
+block:  32 (0,17.85600) (27,18.43200) desire:27 val:1.77056
+block:  33 (0,18.43200) (27,19.00800) desire:27 val:1.77056
+block:  34 (0,19.00800) (27,19.58400) desire:27 val:1.77056
+block:  35 (0,19.58400) (27,20.16000) desire:27 val:1.77056
+block:  36 (0,20.16000) (27,20.73600) desire:27 val:1.77056
+block:  37 (0,20.73600) (27,21.31200) desire:27 val:1.77056
+block:  38 (0,21.31200) (27,21.88800) desire:27 val:1.77056
+block:  39 (0,21.88800) (27,22.46400) desire:27 val:1.77056
+block:  40 (0,22.46400) (27,23.04000) desire:27 val:1.77056
+block:  41 (0,23.04000) (27,23.61600) desire:27 val:1.77056
+block:  42 (0,23.61600) (27,24.19200) desire:27 val:1.77056
+block:  43 (0,24.19200) (27,24.76800) desire:27 val:1.77056
+block:  44 (0,24.76800) (27,25.34400) desire:27 val:1.77056
+block:  45 (0,25.34400) (27,25.92000) desire:27 val:1.77056
+block:  46 (0,25.92000) (27,26.49600) desire:27 val:1.77056
+block:  47 (0,26.49600) (27,27.07200) desire:27 val:1.77056
+block:  48 (0,27.07200) (27,27.36000) desire:27 val:1.77056
+Total Desired Length:1296.02700
+
+bdxlen:27  bdylen:27.36000
+l:0  t:27.36000  r:27  b:0
+
+
+
+THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 46729.49050
+Attempts per iteration:1830
+
+Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc
+####################################################
+time 1572014762 Fri Oct 25 09:46:02 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11194 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.tdo...
+Welcome to the TimberWolf SimCTS Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../place/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[cts]:reading LEF file:../../ASAP7.lef
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../place/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[cts]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../place/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[cts]:No input file named riscv.def found. Aborting
+####################################################
+time 1572014763 Fri Oct 25 09:46:03 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11205 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.gdo...
+Welcome to the TimberWolf SimGrouter Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../cts/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[grouter]:reading LEF file:../../ASAP7.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../cts/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[grouter]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cts/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[grouter]:No input file named riscv.def found. Aborting
+####################################################
+time 1572014764 Fri Oct 25 09:46:04 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11216 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.ddo...
+Welcome to the TimberWolf Detailer Router Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../groute/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[drouter]:reading LEF file:../../ASAP7.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../groute/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[drouter]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../groute/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[drouter]:No input file named riscv.def found. Aborting
+####################################################
+time 1572014765 Fri Oct 25 09:46:05 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11227 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.ado...
+Welcome to the Sim Assembly Program...
+We are going to process 1...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../droute/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[assemble]:reading LEF file:../../ASAP7.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../droute/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[assemble]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../droute/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[assemble]:No input file named riscv.def found. Aborting
+####################################################
+time 1572014765 Fri Oct 25 09:46:05 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11239 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.mdo...
+Welcome to the Sim MetalFill Program...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../assemble/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[metalfill]:reading LEF file:../../ASAP7.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../assemble/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[metalfill]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../assemble/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[metalfill]:No input file named riscv.def found. Aborting
+####################################################
+time 1572014765 Fri Oct 25 09:46:05 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools HOST mac4.local PID 11250 PVERSION v2.0.0pre46
+argv[0]: -v
+argv[1]: -do
+argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal
+argv[3]: riscv
+[::utdtools::check_do_file]:No user do file. Using default: riscv.odo...
+Welcome to the Final Output Program...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../metalfill/output ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:ASAP7.lef does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../ASAP7.lef...link:ASAP7.lef
+[final]:reading LEF file:../../ASAP7.lef
+[check_ports]:Port checking turned off.
+[icread_lef]:Options: -model_obs keepout -scale -merge_layers
+[icread_lef]:../../ASAP7.lef read.
+[add_feedthru]:Model FILL requested but not found.
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../metalfill/output ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:new_lib6.lib does not exist.  Looking in ../../ ...
+[::utdtools::search_input]:found... creating link to ../../new_lib6.lib...link:new_lib6.lib
+[final]:reading Synopsys Library file:../../new_lib6.lib
+[icread_synopsys]:reading ../../new_lib6.lib...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../metalfill/output ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+[::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+ERROR[final]:No input file named riscv.def found. Aborting
+####################################################
+time 1572014803 Fri Oct 25 09:46:43 2019:ifp started...
+@ ifp -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11279 PVERSION v2.0.0pre46
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 0.01263 0.01075 0.01263 0.01075
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 0.01263
+default_block_yspace       : 0.01075
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 1851934137
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 4000.00
+script                     : /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/riscv.fdo (auto detected)
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 0.01263
+                               y: 0.01075
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% ####################################################
+time 1572014804 Fri Oct 25 09:46:44 2019:simplify started...
+@ /Users/bill/version1/itools/bin/Darwin/simplify -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11280 PVERSION v2.0.0pre46
+
+
+iTools System Netlist Simplifier
+
+simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:48:34 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+simplify switches:
+
+iTools System Netlist Simplifier
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5107
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+simplify version:v2.0.0pre46
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+iTools/TimberWolf compilation:Thu Oct 24 08:48:34 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+time 1572014804 Fri Oct 25 09:46:44 2019:simplify completed...
+
+simplify terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572014804 Fri Oct 25 09:46:44 2019:simplify exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11280
+
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+Memory status ->   0KB in use.
+
+
+simplify switches:
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5107
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Memory status ->1024KB in use.
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Memory status ->2048KB in use.
+Read 2000 cell instances so far...
+Memory status ->3072KB in use.
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Memory status ->4096KB in use.
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+
+simplify terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+
+The rand generator seed was: 1851934137
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 4.73e+10
+mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+mean short side : 2.16e+05      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 738.7200000000
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:27.17938    bdylength:27.17938
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 2115173
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :22.76550
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :25.89379
+Wirelength:
+	All nets             :182124
+	Limited nets         :182124
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+   xspan     = 27
+   yspan     = 27.36000
+   core area = 7.39e+02
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :21.17325
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :24.30154
+Wirelength:
+	All nets             :169386
+	Limited nets         :169386
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+   xspan     = 27.17950
+   yspan     = 27.36000
+   core area = 7.44e+02
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+ifp terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572015011 Fri Oct 25 09:50:11 2019:ifp exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11279
+
+####################################################
+time 1572015048 Fri Oct 25 09:50:48 2019:ifp started...
+@ ifp -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11323 PVERSION v2.0.0pre46
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 0.01263 0.01075 0.01263 0.01075
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 0.01263
+default_block_yspace       : 0.01075
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 1851934137
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 4000.00
+script                     : /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/riscv.fdo (auto detected)
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 0.01263
+                               y: 0.01075
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% ####################################################
+time 1572015049 Fri Oct 25 09:50:49 2019:simplify started...
+@ /Users/bill/version1/itools/bin/Darwin/simplify -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11324 PVERSION v2.0.0pre46
+
+iTools System Netlist Simplifier
+
+simplify version:v2.0.0pre46
+iTools/TimberWolf compilation:Thu Oct 24 08:48:34 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+
+simplify switches:
+
+iTools System Netlist Simplifier
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+simplify version:v2.0.0pre46
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5107
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+Read   50 models so far...
+Read  100 models so far...
+iTools/TimberWolf compilation:Thu Oct 24 08:48:34 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+
+Read 3000 cell instances so far...
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+
+Memory status ->   0KB in use.
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+
+simplify switches:
+
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+time 1572015050 Fri Oct 25 09:50:50 2019:simplify completed...
+
+simplify terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572015050 Fri Oct 25 09:50:50 2019:simplify exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf HOST mac4.local PID 11324
+
+
+Options specified:
+coreinstance             : none
+cost_only                : off
+floor_stdcells           : off
+ignore_keepouts          : off
+include_prerouting       : on
+limit_core_shapes        : 1
+model_fixed_rows         : off
+net_ignore_limit         : 100
+
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5107
+[look_for_hints]:Number of nets :4925
+[look_for_hints]:Number of gpins:16085
+
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Memory status ->1024KB in use.
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+Read  400 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Memory status ->2048KB in use.
+Read 2000 cell instances so far...
+Memory status ->3072KB in use.
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Memory status ->4096KB in use.
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found in physical description.
+
+
+No syntax errors in constraint file riscv.con
+
+
+Writing floorplan/riscv.mckt file...
+Writing floorplan/riscv.mlib file...
+Writing floorplan/riscv.mcon file...
+Writing floorplan/riscv.scon file...
+
+simplify terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+
+The rand generator seed was: 1851934137
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 4.73e+10
+mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+mean short side : 2.16e+05      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 738.7200000000
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:27.17938    bdylength:27.17938
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 2115173
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :22.76550
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :25.89379
+Wirelength:
+	All nets             :182124
+	Limited nets         :182124
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+   xspan     = 27
+   yspan     = 27.36000
+   core area = 7.39e+02
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :21.17325
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :24.30154
+Wirelength:
+	All nets             :169386
+	Limited nets         :169386
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+   xspan     = 27.17950
+   yspan     = 27.36000
+   core area = 7.44e+02
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+ifp terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572015062 Fri Oct 25 09:51:02 2019:ifp exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11323
+
+####################################################
+time 1572015107 Fri Oct 25 09:51:47 2019:ifp started...
+@ ifp -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11339 PVERSION v2.0.0pre46
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 0.01263 0.01075 0.01263 0.01075
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 0.01263
+default_block_yspace       : 0.01075
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 1910546375
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 4000.00
+script                     : none
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 0.01263
+                               y: 0.01075
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% 
+The rand generator seed was: 1910546375
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 4.73e+10
+mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+mean short side : 2.16e+05      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 738.7200000000
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:27.17938    bdylength:27.17938
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 2212753
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :27.72150
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :30.84979
+Wirelength:
+	All nets             :221772
+	Limited nets         :221772
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+   xspan     = 27
+   yspan     = 27.36000
+   core area = 7.39e+02
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :24.31975
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :27.44804
+Wirelength:
+	All nets             :194558
+	Limited nets         :194558
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+   xspan     = 27.17950
+   yspan     = 27.36000
+   core area = 7.44e+02
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+ifp terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572015120 Fri Oct 25 09:52:00 2019:ifp exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11339
+
+####################################################
+time 1572015157 Fri Oct 25 09:52:37 2019:ifp started...
+@ ifp -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11348 PVERSION v2.0.0pre46
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 0.01263 0.01075 0.01263 0.01075
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 0.01263
+default_block_yspace       : 0.01075
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 715452586
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 4000.00
+script                     : none
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 0.01263
+                               y: 0.01075
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% 
+The rand generator seed was: 715452586
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 4.73e+10
+mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+mean short side : 2.16e+05      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 738.7200000000
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:27.17938    bdylength:27.17938
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 2020954
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :20.39613
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :23.52441
+Wirelength:
+	All nets             :163169
+	Limited nets         :163169
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+   xspan     = 27
+   yspan     = 27.36000
+   core area = 7.39e+02
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :21.37438
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :24.50266
+Wirelength:
+	All nets             :170995
+	Limited nets         :170995
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+   xspan     = 27.17950
+   yspan     = 27.36000
+   core area = 7.44e+02
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+ifp terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572015183 Fri Oct 25 09:53:03 2019:ifp exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11348
+
+####################################################
+time 1572015228 Fri Oct 25 09:53:48 2019:ifp started...
+@ ifp -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11358 PVERSION v2.0.0pre46
+WARNING[init_parasitics]:Capacitance values cannot be normalized.
+   Timing driven placement cannot be performed only wire length minimization.
+   If you intent to run timing driven placement, please check the .par
+   file for layer capacitances equal to 0.0.
+
+
+
+
+
+Options specified:
+allow_row_overlap          : off
+autodetect_script          : on
+background                 : white
+bendcost_threshold         : 0.000 (default) 
+block_alignment            : ALIGN_NONE
+check_ports                : off
+chip_aspect_ratio          : 1.000
+contiguous_pad_groups      : on
+core                       : 0 0 0 0
+core_to_padspace           : 0.01263 0.01075 0.01263 0.01075
+coremacro_rows             : default
+cover_cell_transparent     : off
+default_block_xspace       : 0.01263
+default_block_yspace       : 0.01075
+default_tracks_per_channel : 0
+detail_script_file         : none
+do_compaction              : 1 (iterations)
+do_partition               : off
+double_height_rows         : odd
+fast                       : 0
+floorplan                  : on
+generate_rows              : on
+graphics                   : on
+graphics_wait              : on
+xgrid                      : 1 (no grid)
+ygrid                      : 1 (no grid)
+ignore_keepouts            : off
+minimum_pad_space          : calculated
+mirror                     : even
+no_edit_during_quickroute  : on
+off_corner_distance        : 0
+origin                     : 0 0
+over_the_cell              : off
+padspacing                 : uniform
+post_rowgen_func           : none
+random_seed                : 1730364828
+require_vias               : on
+restart                    : off
+rowSep                     : 0.000
+save_routes                : on
+scale                      : 4000.00
+script                     : /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan/riscv.fdo (auto detected)
+slow                       : 0
+softpin_pitch_factor       : 1.000
+timeout                    : none
+vertical_wire_weight       : 1.000
+wire_estimation            : on
+wire_estimation_factor     : N/A
+wiring_reduction           : calculated
+
+Calculated effective track pitch:
+                               x: 0.01263
+                               y: 0.01075
+
+default.tracks.per.channel: 0
+ifp instructed to do global route for circuit:<riscv>
+% 
+The rand generator seed was: 1730364828
+
+
+no syntax errors in library:riscv.mlib
+no syntax problem in circuit file.
+Reading constraint file riscv.mcon...
+done reading constraint file. No syntax errors.
+The number of nets with  2 pins is 251
+The number of nets with  3 pins is 32
+The number of nets with 100 pins or more is 0
+The total number of nets is: 283
+The maximum number of pins on a single net is: 3
+Need timing graph...no
+
+Total cell area : 4.73e+10
+mean cell area : 4.73e+10      std deviation cell area : 0.00e+00
+mean short side : 2.16e+05      std deviation short side : 0.00e+00
+largest cell : core_inst (1) area: 738.7200000000
+maxBinXG automatically set to:3
+maxBinYG automatically set to:3
+bdxlength:27.17938    bdylength:27.17938
+
+
+
+THE ROUTE COST OF THE CURRENT PLACEMENT: 2023361
+THE PENALTY OF THE CURRENT PLACEMENT: 0
+
+FINAL PLACEMENT RESULTS AFTER VIOLATION REMOVAL ARE:
+   routing cost        :33.74412
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :36.87241
+Wirelength:
+	All nets             :269953
+	Limited nets         :269953
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27 t:27.36000
+   xspan     = 27
+   yspan     = 27.36000
+   core area = 7.39e+02
+
+-------------------------------------
+
+IFP FINAL RESULTS ARE:
+   routing cost        :19.77437
+   overlap penalty     :78289.55700
+   lapFactor * overlap :3.12829
+   timing penalty      :0
++  timeFactor * timepen:0
+-------------------------------------
+   total cost          :22.90266
+Wirelength:
+	All nets             :158195
+	Limited nets         :158195
+	All nets without pads:0
+
+
+CORE Bounding Box: l:0 r:0 b:27.17950 t:27.36000
+   xspan     = 27.17950
+   yspan     = 27.36000
+   core area = 7.44e+02
+
+-------------------------------------
+
+Statistics:
+Number of Cells: 1
+Number of Pads: 319
+Number of Nets: 283 
+Number of Pins: 921 
+
+ifp terminated normally with no errors and 1 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1572015245 Fri Oct 25 09:54:05 2019:ifp exits 0 errors 1 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/riscv/utdtools/floorplan/timberwolf/floorplan HOST mac4.local PID 11358
+

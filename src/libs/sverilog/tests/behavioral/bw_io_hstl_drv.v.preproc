@@ -1,0 +1,23 @@
+
+
+  
+
+module bw_io_hstl_drv(
+
+      pad, 
+   
+      sel_data_n, pad_up, pad_dn_l,  por,
+   bsr_up, bsr_dn_l,  cbu, cbd, vddo );
+
+output	pad;
+input [8:1] cbu;
+input [8:1] cbd;
+input	sel_data_n;
+input	pad_up;
+input	pad_dn_l;
+input	por;
+input	bsr_up;
+input	bsr_dn_l;
+inout	vddo;
+
+reg

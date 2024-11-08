@@ -1,0 +1,76 @@
+
+	 			        
+
+
+module i2c_sctrl (
+      jbi_mondo_rd, jbi_int_rd, clk_int_rd, dram0_int_rd, dram1_int_rd, 
+   iob_man_int_rd, spi_int_rd, jbi_ack_rd, clk_ack_rd, dram0_ack_rd, 
+   dram1_ack_rd, iob_man_ack_rd, iob_int_ack_rd, spi_ack_rd, 
+   bounce_ack_rd, rd_nack_rd, int_sel, ack_sel, mondo_srvcd_d1, 
+   int_srvcd_d1, ack_srvcd_d1, io_buf_tail_s, io_mondo_data_wr_s, 
+   io_buf_avail, int_srvcd, io_buf_wr, io_buf_tail_ptr, 
+   iob_tap_packet_vld, iob_jbi_mondo_ack, iob_jbi_mondo_nack, 
+      rst_l, clk, jbi_mondo_vld, jbi_mondo_target, spi_int_vld, 
+   iob_man_int_vld, dram1_int_vld, dram0_int_vld, clk_int_vld, 
+   jbi_int_vld, rd_nack_vld, bounce_ack_vld, spi_ack_vld, 
+   iob_int_ack_vld, iob_man_ack_vld, dram1_ack_vld, dram0_ack_vld, 
+   clk_ack_vld, jbi_ack_vld, ack_packet_d1, io_buf_head_f, 
+   mondo_busy_vec_f, srvc_wr_ack, cpu_intman_acc, cpu_intctrl_acc, 
+   creg_intctrl_mask, tap_iob_busy
+   );
+
+   
+      input                            rst_l;
+   input 			    clk;
+
+
+      input 			    jbi_mondo_vld;
+   input [-1:0]    jbi_mondo_target;
+				
+   input 			    spi_int_vld;
+   input 			    iob_man_int_vld;
+   input 			    dram1_int_vld;
+   input 			    dram0_int_vld;
+   input 			    clk_int_vld;
+   input 			    jbi_int_vld;
+
+   input 			    rd_nack_vld;
+   input 			    bounce_ack_vld;
+   input 			    spi_ack_vld;
+   input 			    iob_int_ack_vld;
+   input 			    iob_man_ack_vld;
+   input 			    dram1_ack_vld;
+   input 			    dram0_ack_vld;
+   input 			    clk_ack_vld;
+   input 			    jbi_ack_vld;
+
+   output 			    jbi_mondo_rd;
+   
+   output 			    jbi_int_rd;       
+   output 			    clk_int_rd;       
+   output 			    dram0_int_rd;     
+   output 			    dram1_int_rd;
+   output 			    iob_man_int_rd;
+   output 			    spi_int_rd;       
+
+   output 			    jbi_ack_rd;
+   output 			    clk_ack_rd;
+   output 			    dram0_ack_rd;
+   output 			    dram1_ack_rd;
+   output 			    iob_man_ack_rd;
+   output 			    iob_int_ack_rd;
+   output 			    spi_ack_rd;
+   output 			    bounce_ack_rd;
+   output 			    rd_nack_rd;
+   
+   		       
+      output [-1:0] int_sel;
+   output [-1:0] ack_sel;
+   output 			    mondo_srvcd_d1;
+   output 			    int_srvcd_d1;
+   output 			    ack_srvcd_d1;
+
+   input [-1:0] ack_packet_d1;
+	
+   
+      input [:

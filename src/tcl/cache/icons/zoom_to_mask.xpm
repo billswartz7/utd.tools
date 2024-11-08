@@ -1,0 +1,39 @@
+/* XPM */
+static char *zoom_to_mask[] = {
+/* width height num_colors chars_per_pixel */
+"    26    26        6            1",
+/* colors */
+". c #000000",
+"# c #0000ff",
+"a c #800000",
+"b c #808080",
+"c c #c0c0c0",
+"d c #ffffff",
+/* pixels */
+"cccccccccccccccccccccccccc",
+"cccccccccccccccccccccccccc",
+"ccccccaaaaaccccccccccccccc",
+"cccccadddddacccccccccccccc",
+"ccccaddddddda####cc####ccc",
+"cccadddddddddacccccccc#ccc",
+"cccadddddddddacccccccc#ccc",
+"cccadddddddddacccccccc#ccc",
+"cccadddddddddacccccccc#ccc",
+"cccadddddddddacccccccccccc",
+"ccccadddddddaccccccccccccc",
+"cccccadddddaaccccccccc#ccc",
+"ccccccaaaaacc.bbdccccc#ccc",
+"cccccc#cccccc.bbbdcccc#ccc",
+"cccccc#cccccc..bbbdccc#ccc",
+"cccccc#ccccccd..bbbdcc#ccc",
+"ccccccccccccccd..bbbdccccc",
+"cccccccccccccccd..bbdccccc",
+"cccccc#cccccccccd..bdc#ccc",
+"cccccc#ccccccccccdddcc#ccc",
+"cccccc#ccccccccccccccc#ccc",
+"cccccc#ccccccccccccccc#ccc",
+"cccccc#####cc####cc####ccc",
+"cccccccccccccccccccccccccc",
+"cccccccccccccccccccccccccc",
+"cccccccccccccccccccccccccc"
+};

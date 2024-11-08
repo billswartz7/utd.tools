@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//SoftQuad//DTD HoTMetaL PRO 5.0::19980907::extensions to HTML 4.0//EN" "hmpro5.dtd">
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE> Knowledge Level</TITLE>
+</HEAD>
+ 
+<BODY>
+<SCRIPT SRC="utdinclude.js"></SCRIPT>
+<SCRIPT>UTDsection("Start") ;</SCRIPT>
+<H1>Knowledge Criteria</H1>
+<P>Copyright (c) 1998-2022. TimberWolf Systems, Inc. All right reserved. </P>
+<P>Copyright (c) 2022. University of Texas at Dallas All right reserved. </P>
+<P>EZlearn allows users of all levels of expertise to use <B>utdtools</B>
+effectively. Currently, there are four levels of expertice: Novice,
+Intermediate, Expert, and Developer. The interface is simplified for Novices
+and explanations are as detailed as possible. No advanced options are available
+to the Novice. The Intermediate interface allows more options to the
+<B>utdtools</B> programs. The Expert mode allows the user access to all options
+to <B>utdtools</B>. The Developer mode allows the user to modify the hypertext in
+order to customize it for their own application. Reread this document in expert
+mode for more details on how to enter the Developer mode.</P>
+<SCRIPT>JS_COND(expr="$EZUSER==Expert||$EZUSER==Developer",
+HTML="<P><FONT COLOR=red>In order to enter <I>\"Developer\"</I> mode, you need 
+to set the EZDEVELOPER environment variable in the shell before executing EZlearn. 
+For example, using csh you would enter:</FONT></P><P><CODE><B><CENTER>setenv EZDEVELOPER 1</CENTER></B></CODE></P>
+<P>This extra step insures that ordinary users don't change modes and accidently modify the hypertext.</P>") ;
+</SCRIPT>
+</BODY>
+</HTML>
+ 

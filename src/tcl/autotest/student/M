@@ -1,0 +1,11 @@
+
+all: problem1
+
+problem1 : problem1.o
+	g++ -o problem1 problem1.o -lm
+
+
+problem1.o : problem1.cpp
+	g++ -c -g problem1.cpp
+
+

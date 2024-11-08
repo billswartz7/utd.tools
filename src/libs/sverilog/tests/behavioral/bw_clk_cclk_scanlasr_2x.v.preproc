@@ -1,0 +1,6 @@
+
+module bw_clk_cclk_scanlasr_2x (so, sd, ck, r_l);
+output so;
+input sd, ck, r_l;
+
+reg

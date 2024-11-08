@@ -1,0 +1,8 @@
+
+module lsu_dc_parity_gen (parity_out, data_in);
+
+parameter WIDTH = 8 ;
+parameter NUM = 16 ;
+
+input	[WIDTH * NUM - 1 : 0]	data_in ; 
+output	[NUM - 1 : 0]		parity_out ; reg

@@ -1,0 +1,340 @@
+#!/bin/sh
+# Wrapper around a program to pick correct binary.
+# Donated by TimberWolf Systems, Inc.
+# $Id$
+# $Log$
+# 
+
+if [ $# = 0 ]
+then
+  echo "Syntax:"
+  echo "       utdos <command>"
+  echo "       utdos [-noexec] [-detach] [-redirect <file>] [-echosub] [-wait] "
+  echo "            [-override] [utdtools <directory>] [utdversion <version>]"
+  echo "            [utdcd <directory>] <command>"
+  echo ""
+  echo "  Optional arguments must be present in the order specified above."
+  echo ""
+  exit 1 ;
+fi
+
+command=$1
+ARGC=$#
+
+# First see if we should just echo command.
+# if the first argument is noexec, turn on the noexec flag.
+if [ "${command}" = "-noexec" ]
+then
+  no_exec=1 ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 1`
+else
+  ARGC=$#
+  command=$1
+  no_exec= ;
+fi
+
+# Next see if we should just detatch the program and run in background.
+if [ "${command}" = "-detach" ]
+then
+  detach=1 ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 1`
+else
+  detach= ;
+  ARGC=$#
+  command=$1
+fi
+
+if [ "${command}" = "-redirect" ]
+then
+  if [ $ARGC -lt 2 ]
+  then
+    echo "ERROR:Not enough arguments for -redirect command" ;
+    exit 1 ;
+  fi
+  redirect=$2 ;
+  shift ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 2`
+else
+  ARGC=$#
+  command=$1
+  redirect=/dev/null ;
+fi
+
+# Next see if we should echo the subprocess id.
+if [ "${command}" = "-echosub" ]
+then
+  echo_sub=1 ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 1`
+else
+  echo_sub=0 ;
+  ARGC=$#
+  command=$1
+fi
+
+# Next see if we should wait at the exit by execing a Bourne shell.
+if [ "${command}" = "-wait" ]
+then
+  wait_at_end=1 ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 1`
+else
+  wait_at_end= ;
+  ARGC=$#
+  command=$1
+fi
+
+# Next see if we should override the utdtools variable if it exists.
+if [ "${command}" = "-override" ]
+then
+  override=1 ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 1`
+else
+  override= ;
+  ARGC=$#
+  command=$1
+fi
+
+# The desired behavior is as follows:
+# When UTDTOOLS is set in a csh or shell, this has highest precedence unless
+# the override switch is enabled. When rsh calls /bin/sh or /bin/csh, it 
+# must have a UTDTOOLS value set or the calling program must use utdtools to set
+# the openroad directory.  We fail when it is not given in the environment
+# variable and it is not specified by utdtools argument.
+# 
+
+# if the first argument is utdtools, then save the directory.
+if [ "${command}" = "utdtools" ]
+then
+  if [ $ARGC -lt 2 ]
+  then
+    echo "ERROR:Not enough arguments for utdtools command" ;
+    exit 1 ;
+  fi
+  utdtoolsgiven=$2 ;
+  shift ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 2`
+else
+  ARGC=$#
+  command=$1
+  utdtoolsgiven= ;
+fi
+
+utdtools=${UTDTOOLS}
+
+if [ "${utdtools}" ]
+then
+  if [ "${utdtoolsgiven}" ]
+    then
+    if [ "${utdtoolsgiven}" != "${utdtools}" ]
+      then
+	if [ $override ] 
+	then
+	  utdtools=${utdtoolsgiven} ;
+	  UTDTOOLS=${utdtools} ;
+	  export UTDTOOLS
+	else 
+	  echo "WARNING[utdos]:utdtools given:${utdtoolsgiven} != UTDTOOLS:${utdtools}"
+	  echo "Using environment variable value:${utdtools}"
+	fi
+
+    fi
+  fi
+else
+  if [ ! "${utdtoolsgiven}" ]
+  then
+    echo "ERROR[utdos]:UTDTOOLS is not set."
+    echo "Please set UTDTOOLS to the UTD tools root directory."
+    echo "Please modify the appropriate shell script startup files."
+    exit 1 ;
+  else
+    utdtools=${utdtoolsgiven} ;
+    UTDTOOLS=${utdtools} ;
+    export UTDTOOLS
+  fi ;
+fi
+
+utdos=${UTDTOOLSOS}
+if [ ! "${utdos}" ]
+then
+  utdos=`${utdtools}/bin/oruname`
+fi
+
+if [ ! "${utdos}" ]
+then
+  echo "ERROR[utdos]:UTDTOOLSOS is not set."
+  echo "Change directory to the root directory and source"
+  echo "appropriate startup file or add to the shell startup file."
+  exit 1 ;
+fi
+
+if [ "${command}" = "utdversion" ]
+then
+  if [ $ARGC -lt 2 ]
+  then
+    echo "ERROR:Not enough arguments for utdversion command" ;
+    exit 1 ;
+  fi
+  utdtoolsversion=$2 ;
+  shift ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 2`
+else
+  ARGC=$#
+  command=$1
+  utdtoolsversion= ;
+fi
+
+utdtoolsversion=${UTDTOOLSVERSION}
+
+if [ "${utdtoolsversion}" ]
+then
+  if [ "${utdtoolsversiongiven}" ]
+    then
+    if [ "${utdtoolsversiongiven}" != "${utdtoolsversion}" ]
+      then
+	if [ $override ] 
+	then
+	  utdtoolsversion=${utdtoolsversiongiven} ;
+	  UTDTOOLSVERSION=${utdtoolsversion} ;
+	  export UTDTOOLSVERSION
+	else 
+	  echo "WARNING[utdos]:utdtoolsversion given:${utdtoolsversiongiven} != UTDTOOLSVERSION:${utdtoolsversion}"
+	  echo "Using environment variable value:${utdtoolsversion}"
+	fi
+
+    fi
+  fi
+else
+  if [ ! "${utdtoolsversiongiven}" ]
+  then
+    echo "ERROR[utdos]:UTDTOOLSVERSION is not set."
+    echo "Please set UTDTOOLSVERSION to the UTD tools version which should be vxx.xx.x."
+    echo "Please modify the appropriate shell script startup files."
+    exit 1 ;
+  else
+    utdtools=${utdtoolsversiongiven} ;
+    UTDTOOLSVERSION=${utdtoolsversion} ;
+    export UTDTOOLSVERSION
+  fi ;
+fi
+
+
+# if the first argument is cd, then change directory first.
+if [ "${command}" = "utdcd" ]
+then
+  if [ $ARGC -lt 2 ]
+  then
+    echo "ERROR[utdos]:Not enough arguments for utdcd command" ;
+    exit 1 ;
+  fi
+  cd $2 ;
+  shift ;
+  shift ;
+  command=$1
+  ARGC=`expr $ARGC - 2`
+fi
+
+arglist=
+while [ $ARGC -gt 0 ]; do
+  shift
+  arglist="$arglist $1"
+  ARGC=`expr $ARGC - 1`
+done ;
+
+if [ ! "${arglist}" ]
+then
+    echo "ERROR[utdos]:Arglist is empty" ;
+    exit 1 ;
+fi
+
+# Now execute the command.
+# echo "${utdtools}/bin/${utdos}/${command} ${arglist}"
+# echo "utdtools:${utdtools}"
+# echo "utdos:${utdos}"
+# echo "command:${command}"
+
+# check to see if the file is in the bin directory or the bin/utdos directory.
+if [ $no_exec ]
+then
+  if [ -f ${utdtools}/${utdtoolsversion}/bin/${command} ]
+  then
+    echo "${utdtools}/${utdtoolsversion}/bin/${command} ${arglist}"
+  else
+    echo "${utdtools}/${utdtoolsversion}/bin/${utdos}/${command} ${arglist}"
+  fi
+else
+
+# We are going to execute the program.  It is important to export the
+# variables.
+  UTDTOOLS=${utdtools}
+  export UTDTOOLS
+  UTDTOOLSOS=${utdos}
+  export UTDTOOLSOS
+  if test $UTDTOOLSOS = HPUX;then
+    NEWLD=`echo $SHLIB_PATH | awk -F: 'BEGIN { first = 1 } { for( i = 1 ; i <= NF ; i++ ){ if( $i !~ /openroad/ ){ if( first ){ first = 0 ; } else { printf( ":" ) ; } printf( "%s", $i ) ; } } printf( "\n" ) ; }'`
+    SHLIB_PATH="${UTDTOOLS}/libs:$NEWLD"
+    unset NEWLD
+    export SHLIB_PATH
+  elif test $UTDTOOLSOS = Darwin;then
+    NEWLD=`echo $DYLD_LIBRARY_PATH | awk -F: 'BEGIN { first = 1 } { for( i = 1 ; i <= NF ; i++ ){ if( $i !~ /openroad/ ){ if( first ){ first = 0 ; } else { printf( ":" ) ; } printf( "%s", $i ) ; } } printf( "\n" ) ; }'`
+    DYLD_LIBRARY_PATH="${UTDTOOLS}/libs:$NEWLD"
+    unset NEWLD
+    export DYLD_LIBRARY_PATH
+  else
+    NEWLD=`echo $LD_LIBRARY_PATH | awk -F: 'BEGIN { first = 1 } { for( i = 1 ; i <= NF ; i++ ){ if( $i !~ /openroad/ ){ if( first ){ first = 0 ; } else { printf( ":" ) ; } printf( "%s", $i ) ; } } printf( "\n" ) ; }'`
+    LD_LIBRARY_PATH="${UTDTOOLS}/libs:$NEWLD"
+    unset NEWLD
+    export LD_LIBRARY_PATH
+  fi
+
+  if [ -f ${utdtools}/${utdtoolsversion}/bin/${command} ]
+  then
+    if [ $detach ] 
+    then
+      ${utdtools}/${utdtoolsversion}/bin/${command} ${arglist} </dev/null 1>${redirect} 2>${redirect} &
+      if [ $echo_sub ] ; then
+	echo "[1] $!"
+      fi
+    else 
+      if [ $wait_at_end ]
+      then
+	${utdtools}/${utdtoolsversion}/bin/${command} ${arglist}
+	echo "To continue execution, enter exit."
+	exec /bin/sh
+      else
+	exec ${utdtools}/${utdtoolsversion}/bin/${command} ${arglist}
+      fi
+    fi
+  else
+    if [ $detach ] 
+    then
+      ${utdtools}/${utdtoolsversion}/bin/${utdos}/${command} ${arglist} </dev/null 1>${redirect} 2>${redirect} &
+      if [ $echo_sub ] ; then
+	echo "[1] $!"
+      fi
+    else 
+      if [ $wait_at_end ]
+      then
+	${utdtools}/${utdtoolsversion}/bin/${utdos}/${command} ${arglist}
+	echo "To continue execution, enter exit."
+	exec /bin/sh
+      else
+	exec ${utdtools}/${utdtoolsversion}/bin/${utdos}/${command} ${arglist}
+      fi
+    fi
+  fi
+fi

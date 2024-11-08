@@ -1,0 +1,377 @@
+
+	 			        
+
+
+
+module c2i (
+      wr_ack_io_buf_din, ucb_buf_acpt, tap_mondo_dout_d2_f, 
+   tap_mondo_acc_seq_d2_f, tap_mondo_acc_addr_invld_d2_f, 
+   srvc_wr_ack, rd_nack_ucb_sel, mondo_source_wr_l, mondo_source_din, 
+   mondo_data_addr_p1, mondo_data_addr_p0, mondo_data1_wr_lo_l, 
+   mondo_data1_wr_hi_l, mondo_data1_din_lo, mondo_data1_din_hi, 
+   mondo_data0_wr_lo_l, mondo_data0_wr_hi_l, mondo_data0_din_lo, 
+   mondo_data0_din_hi, mondo_busy_wr_p2, mondo_busy_wr_p1, 
+   mondo_busy_din_p2, mondo_busy_din_p1, mondo_busy_addr_p2, 
+   mondo_busy_addr_p1, mondo_busy_addr_p0, iob_tap_stall, 
+   iob_pcx_stall_pq, iob_man_ucb_sel, iob_jbi_spi_vld, 
+   iob_jbi_spi_data, iob_jbi_pio_vld, iob_jbi_pio_data, 
+   iob_int_ucb_sel, iob_dram13_vld, iob_dram13_data, iob_dram02_vld, 
+   iob_dram02_data, iob_clk_vld, iob_clk_data, int_buf_din_raw, 
+   cpu_mondo_wr_d2, cpu_buf_wr_l, cpu_buf_tail_ptr, cpu_buf_rd_l, 
+   cpu_buf_head_ptr, cpu_buf_din_lo, cpu_buf_din_hi, 
+   c2i_rd_nack_packet, c2i_packet_is_wr_req, c2i_packet_is_rd_req, 
+   bounce_ucb_sel, cpu_mondo_rd_d2, c2i_packet, c2i_packet_vld, 
+      tx_sync, tap_mondo_wr_s, tap_mondo_din_s, tap_mondo_acc_seq_s, 
+   tap_mondo_acc_addr_s, tap_iob_vld, tap_iob_data, rx_sync, rst_l, 
+   rd_nack_ucb_buf_acpt, pcx_iob_data_rdy_px2, pcx_iob_data_px2, 
+   mondo_source_dout, mondo_data1_dout_lo, mondo_data1_dout_hi, 
+   mondo_data0_dout_lo, mondo_data0_dout_hi, mondo_busy_dout, 
+   jbi_iob_spi_stall, jbi_iob_pio_stall, iob_man_ucb_buf_acpt, 
+   iob_int_ucb_buf_acpt, io_mondo_source_din_s, io_mondo_data_wr_s, 
+   io_mondo_data_wr_addr_s, io_mondo_data1_din_s, 
+   io_mondo_data0_din_s, io_buf_avail, int_buf_hit_hwm, 
+   dram13_iob_stall, dram02_iob_stall, cpu_rst_l, cpu_clk, 
+   cpu_buf_dout_lo, cpu_buf_dout_hi, clk_iob_stall, clk, 
+   bounce_ucb_buf_acpt
+   );
+
+   
+   
+      input		bounce_ucb_buf_acpt;	   input		clk;			   input		clk_iob_stall;		   input [64:0]		cpu_buf_dout_hi;	   input [64:0]		cpu_buf_dout_lo;	   input		cpu_clk;		   input		cpu_rst_l;		   input		dram02_iob_stall;	   input		dram13_iob_stall;	   input		int_buf_hit_hwm;	   input		io_buf_avail;		   input [-1:0]io_mondo_data0_din_s;   input [-1:0]io_mondo_data1_din_s;   input [-1:0]io_mondo_data_wr_addr_s;   input		io_mondo_data_wr_s;	   input [-1:0]io_mondo_source_din_s;   input		iob_int_ucb_buf_acpt;	   input		iob_man_ucb_buf_acpt;	   input		jbi_iob_pio_stall;	   input		jbi_iob_spi_stall;	   input		mondo_busy_dout;	   input [64:0]		mondo_data0_dout_hi;	   input [64:0]		mondo_data0_dout_lo;	   input [64:0]		mondo_data1_dout_hi;	   input [64:0]		mondo_data1_dout_lo;	   input [-1:0]mondo_source_dout;   input [-1:0]pcx_iob_data_px2;	   input		pcx_iob_data_rdy_px2;	   input		rd_nack_ucb_buf_acpt;	   input		rst_l;			   input		rx_sync;		   input [-1:0]tap_iob_data;	   input		tap_iob_vld;		   input [-1:0]tap_mondo_acc_addr_s;   input		tap_mondo_acc_seq_s;	   input [63:0]		tap_mondo_din_s;	   input		tap_mondo_wr_s;		   input		tx_sync;		   
+
+   
+      output		bounce_ucb_sel;		   output		c2i_packet_is_rd_req;	   output		c2i_packet_is_wr_req;	   output [-1:0]c2i_rd_nack_packet;   output [64:0]	cpu_buf_din_hi;		   output [64:0]	cpu_buf_din_lo;		   output [-1:0]cpu_buf_head_ptr;   output		cpu_buf_rd_l;		   output [-1:0]cpu_buf_tail_ptr;   output		cpu_buf_wr_l;		   output		cpu_mondo_wr_d2;	   output [159:0]	int_buf_din_raw;	   output [-1:0]iob_clk_data;	   output		iob_clk_vld;		   output [-1:0]iob_dram02_data;	   output		iob_dram02_vld;		   output [-1:0]iob_dram13_data;	   output		iob_dram13_vld;		   output		iob_int_ucb_sel;	   output [-1:0]iob_jbi_pio_data;	   output		iob_jbi_pio_vld;	   output [-1:0]iob_jbi_spi_data;	   output		iob_jbi_spi_vld;	   output		iob_man_ucb_sel;	   output		iob_pcx_stall_pq;	   output		iob_tap_stall;		   output [-1:0]mondo_busy_addr_p0;   output [-1:0]mondo_busy_addr_p1;   output [-1:0]mondo_busy_addr_p2;   output		mondo_busy_din_p1;	   output		mondo_busy_din_p2;	   output		mondo_busy_wr_p1;	   output		mondo_busy_wr_p2;	   output [64:0]	mondo_data0_din_hi;	   output [64:0]	mondo_data0_din_lo;	   output		mondo_data0_wr_hi_l;	   output		mondo_data0_wr_lo_l;	   output [64:0]	mondo_data1_din_hi;	   output [64:0]	mondo_data1_din_lo;	   output		mondo_data1_wr_hi_l;	   output		mondo_data1_wr_lo_l;	   output [-1:0]mondo_data_addr_p0;   output [-1:0]mondo_data_addr_p1;   output [-1:0]mondo_source_din;   output		mondo_source_wr_l;	   output		rd_nack_ucb_sel;	   output		srvc_wr_ack;		   output		tap_mondo_acc_addr_invld_d2_f;   output		tap_mondo_acc_seq_d2_f;	   output [63:0]	tap_mondo_dout_d2_f;	   output		ucb_buf_acpt;		   output [-1:0]wr_ack_io_buf_din;   
+      output		cpu_mondo_rd_d2;	
+      output [-1:0]c2i_packet;	   output 		c2i_packet_vld;		   
+   
+      wire [-1:0];	// From c2i_sdp of c2i_sdp.v
+   wire			clk_ucb_buf_acpt;	// From clk_ucb_buf of c2i_buf.v
+   wire			clk_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`IOB_CPU_BUF_INDEX:0]cpu_buf_head_s;	// From c2i_sctrl of c2i_sctrl.v
+   wire			cpu_buf_rd;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`IOB_CPU_BUF_INDEX:0]cpu_buf_tail_f;	// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_mondo_addr_invld_d2;// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_mondo_rd_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_packet_is_req;	// From c2i_sctrl of c2i_sctrl.v
+   wire [`UCB_PKT_WIDTH-1:0]cpu_packet_type;	// From c2i_sctrl of c2i_sctrl.v
+   wire			dram0_ucb_buf_acpt;	// From dram0_ucb_buf of c2i_buf.v
+   wire			dram0_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			dram1_ucb_buf_acpt;	// From dram1_ucb_buf of c2i_buf.v
+   wire			dram1_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			io_mondo_data_wr;	// From c2i_fctrl of c2i_fctrl.v
+   wire			iob_tap_busy;		// From c2i_sctrl of c2i_sctrl.v
+   wire			jbi_ucb_buf_acpt;	// From jbi_ucb_buf of c2i_buf.v
+   wire			jbi_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			mondo_addr_creg_mbusy_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_addr_creg_mdata0_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_addr_creg_mdata1_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire [`IOB_MONDO_DATA_INDEX-1:0]mondo_data_addr_p0_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_data_bypass_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire [`PCX_AD_HI-`PCX_AD_LO:0]pcx_iob_addr;	// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_CP_HI-`PCX_TH_LO:0]pcx_iob_cputhr;// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_RQ_HI-`PCX_RQ_LO:0]pcx_iob_req;	// From c2i_fdp of c2i_fdp.v
+   wire			pcx_iob_vld;		// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_WIDTH-1:0]pcx_packet;		// From c2i_sdp of c2i_sdp.v
+   wire			spi_ucb_buf_acpt;	// From spi_ucb_buf of c2i_buf.v
+   wire			spi_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]tap_iob_packet;// From tap_ucb_buf of ucb_bus_in.v
+   wire			tap_iob_packet_vld;	// From tap_ucb_buf of ucb_bus_in.v
+   wire			tap_mondo_rd_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]tap_packet;	// From c2i_sdp of c2i_sdp.v
+   wire			tap_sel;		// From c2i_sctrl of c2i_sctrl.v
+   // End of automatics
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * cpu-to-io fast control
+    *****************************************************************/
+   c2i_fctrl c2i_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.iob_pcx_stall_pq(iob_pcx_stall_pq),
+			.io_mondo_data_wr(io_mondo_data_wr),
+			.mondo_data_bypass_d1(mondo_data_bypass_d1),
+			.mondo_addr_creg_mdata0_dec_d1(mondo_addr_creg_mdata0_dec_d1),
+			.mondo_addr_creg_mdata1_dec_d1(mondo_addr_creg_mdata1_dec_d1),
+			.mondo_addr_creg_mbusy_dec_d1(mondo_addr_creg_mbusy_dec_d1),
+			.cpu_mondo_rd_d1(cpu_mondo_rd_d1),
+			.tap_mondo_rd_d1(tap_mondo_rd_d1),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_addr_invld_d2(cpu_mondo_addr_invld_d2),
+			.mondo_data_addr_p0_d1(mondo_data_addr_p0_d1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.cpu_buf_tail_f	(cpu_buf_tail_f[`IOB_CPU_BUF_INDEX:0]),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.tap_mondo_acc_addr_invld_d2_f(tap_mondo_acc_addr_invld_d2_f),
+			.tap_mondo_acc_seq_d2_f(tap_mondo_acc_seq_d2_f),
+			.mondo_data_addr_p0(mondo_data_addr_p0[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_data_addr_p1(mondo_data_addr_p1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_data0_wr_lo_l(mondo_data0_wr_lo_l),
+			.mondo_data0_wr_hi_l(mondo_data0_wr_hi_l),
+			.mondo_data1_wr_lo_l(mondo_data1_wr_lo_l),
+			.mondo_data1_wr_hi_l(mondo_data1_wr_hi_l),
+			.mondo_source_wr_l(mondo_source_wr_l),
+			.mondo_busy_addr_p0(mondo_busy_addr_p0[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_addr_p1(mondo_busy_addr_p1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_addr_p2(mondo_busy_addr_p2[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_wr_p1(mondo_busy_wr_p1),
+			.mondo_busy_wr_p2(mondo_busy_wr_p2),
+			.cpu_buf_wr_l	(cpu_buf_wr_l),
+			.cpu_buf_tail_ptr(cpu_buf_tail_ptr[`IOB_CPU_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.pcx_iob_data_rdy_px2(pcx_iob_data_rdy_px2),
+			.pcx_iob_vld	(pcx_iob_vld),
+			.pcx_iob_req	(pcx_iob_req[`PCX_RQ_HI-`PCX_RQ_LO:0]),
+			.pcx_iob_addr	(pcx_iob_addr[`PCX_AD_HI-`PCX_AD_LO:0]),
+			.pcx_iob_cputhr	(pcx_iob_cputhr[`PCX_CP_HI-`PCX_TH_LO:0]),
+			.cpu_buf_head_s	(cpu_buf_head_s[`IOB_CPU_BUF_INDEX:0]),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_mondo_data_wr_addr_s(io_mondo_data_wr_addr_s[`IOB_MONDO_DATA_INDEX-1:0]),
+			.tap_mondo_acc_addr_s(tap_mondo_acc_addr_s[`IOB_ADDR_WIDTH-1:0]),
+			.tap_mondo_acc_seq_s(tap_mondo_acc_seq_s),
+			.tap_mondo_wr_s	(tap_mondo_wr_s));
+
+   
+   /*****************************************************************
+    * cpu-to-io fast datapath
+    *****************************************************************/
+   c2i_fdp c2i_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .pcx_iob_vld	(pcx_iob_vld),
+		    .pcx_iob_req	(pcx_iob_req[`PCX_RQ_HI-`PCX_RQ_LO:0]),
+		    .pcx_iob_addr	(pcx_iob_addr[`PCX_AD_HI-`PCX_AD_LO:0]),
+		    .pcx_iob_cputhr	(pcx_iob_cputhr[`PCX_CP_HI-`PCX_TH_LO:0]),
+		    .int_buf_din_raw	(int_buf_din_raw[159:0]),
+		    .tap_mondo_dout_d2_f(tap_mondo_dout_d2_f[63:0]),
+		    .mondo_data0_din_lo	(mondo_data0_din_lo[64:0]),
+		    .mondo_data0_din_hi	(mondo_data0_din_hi[64:0]),
+		    .mondo_data1_din_lo	(mondo_data1_din_lo[64:0]),
+		    .mondo_data1_din_hi	(mondo_data1_din_hi[64:0]),
+		    .mondo_source_din	(mondo_source_din[`IOB_MOND;	   wire			;	// From clk_ucb_buf of c2i_buf.v
+   wire			clk_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`IOB_CPU_BUF_INDEX:0]cpu_buf_head_s;	// From c2i_sctrl of c2i_sctrl.v
+   wire			cpu_buf_rd;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`IOB_CPU_BUF_INDEX:0]cpu_buf_tail_f;	// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_mondo_addr_invld_d2;// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_mondo_rd_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_packet_is_req;	// From c2i_sctrl of c2i_sctrl.v
+   wire [`UCB_PKT_WIDTH-1:0]cpu_packet_type;	// From c2i_sctrl of c2i_sctrl.v
+   wire			dram0_ucb_buf_acpt;	// From dram0_ucb_buf of c2i_buf.v
+   wire			dram0_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			dram1_ucb_buf_acpt;	// From dram1_ucb_buf of c2i_buf.v
+   wire			dram1_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			io_mondo_data_wr;	// From c2i_fctrl of c2i_fctrl.v
+   wire			iob_tap_busy;		// From c2i_sctrl of c2i_sctrl.v
+   wire			jbi_ucb_buf_acpt;	// From jbi_ucb_buf of c2i_buf.v
+   wire			jbi_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			mondo_addr_creg_mbusy_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_addr_creg_mdata0_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_addr_creg_mdata1_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire [`IOB_MONDO_DATA_INDEX-1:0]mondo_data_addr_p0_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_data_bypass_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire [`PCX_AD_HI-`PCX_AD_LO:0]pcx_iob_addr;	// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_CP_HI-`PCX_TH_LO:0]pcx_iob_cputhr;// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_RQ_HI-`PCX_RQ_LO:0]pcx_iob_req;	// From c2i_fdp of c2i_fdp.v
+   wire			pcx_iob_vld;		// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_WIDTH-1:0]pcx_packet;		// From c2i_sdp of c2i_sdp.v
+   wire			spi_ucb_buf_acpt;	// From spi_ucb_buf of c2i_buf.v
+   wire			spi_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]tap_iob_packet;// From tap_ucb_buf of ucb_bus_in.v
+   wire			tap_iob_packet_vld;	// From tap_ucb_buf of ucb_bus_in.v
+   wire			tap_mondo_rd_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]tap_packet;	// From c2i_sdp of c2i_sdp.v
+   wire			tap_sel;		// From c2i_sctrl of c2i_sctrl.v
+   // End of automatics
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * cpu-to-io fast control
+    *****************************************************************/
+   c2i_fctrl c2i_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.iob_pcx_stall_pq(iob_pcx_stall_pq),
+			.io_mondo_data_wr(io_mondo_data_wr),
+			.mondo_data_bypass_d1(mondo_data_bypass_d1),
+			.mondo_addr_creg_mdata0_dec_d1(mondo_addr_creg_mdata0_dec_d1),
+			.mondo_addr_creg_mdata1_dec_d1(mondo_addr_creg_mdata1_dec_d1),
+			.mondo_addr_creg_mbusy_dec_d1(mondo_addr_creg_mbusy_dec_d1),
+			.cpu_mondo_rd_d1(cpu_mondo_rd_d1),
+			.tap_mondo_rd_d1(tap_mondo_rd_d1),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_addr_invld_d2(cpu_mondo_addr_invld_d2),
+			.mondo_data_addr_p0_d1(mondo_data_addr_p0_d1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.cpu_buf_tail_f	(cpu_buf_tail_f[`IOB_CPU_BUF_INDEX:0]),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.tap_mondo_acc_addr_invld_d2_f(tap_mondo_acc_addr_invld_d2_f),
+			.tap_mondo_acc_seq_d2_f(tap_mondo_acc_seq_d2_f),
+			.mondo_data_addr_p0(mondo_data_addr_p0[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_data_addr_p1(mondo_data_addr_p1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_data0_wr_lo_l(mondo_data0_wr_lo_l),
+			.mondo_data0_wr_hi_l(mondo_data0_wr_hi_l),
+			.mondo_data1_wr_lo_l(mondo_data1_wr_lo_l),
+			.mondo_data1_wr_hi_l(mondo_data1_wr_hi_l),
+			.mondo_source_wr_l(mondo_source_wr_l),
+			.mondo_busy_addr_p0(mondo_busy_addr_p0[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_addr_p1(mondo_busy_addr_p1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_addr_p2(mondo_busy_addr_p2[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_wr_p1(mondo_busy_wr_p1),
+			.mondo_busy_wr_p2(mondo_busy_wr_p2),
+			.cpu_buf_wr_l	(cpu_buf_wr_l),
+			.cpu_buf_tail_ptr(cpu_buf_tail_ptr[`IOB_CPU_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.pcx_iob_data_rdy_px2(pcx_iob_data_rdy_px2),
+			.pcx_iob_vld	(pcx_iob_vld),
+			.pcx_iob_req	(pcx_iob_req[`PCX_RQ_HI-`PCX_RQ_LO:0]),
+			.pcx_iob_addr	(pcx_iob_addr[`PCX_AD_HI-`PCX_AD_LO:0]),
+			.pcx_iob_cputhr	(pcx_iob_cputhr[`PCX_CP_HI-`PCX_TH_LO:0]),
+			.cpu_buf_head_s	(cpu_buf_head_s[`IOB_CPU_BUF_INDEX:0]),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_mondo_data_wr_addr_s(io_mondo_data_wr_addr_s[`IOB_MONDO_DATA_INDEX-1:0]),
+			.tap_mondo_acc_addr_s(tap_mondo_acc_addr_s[`IOB_ADDR_WIDTH-1:0]),
+			.tap_mondo_acc_seq_s(tap_mondo_acc_seq_s),
+			.tap_mondo_wr_s	(tap_mondo_wr_s));
+
+   
+   /*****************************************************************
+    * cpu-to-io fast datapath
+    *****************************************************************/
+   c2i_fdp c2i_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .pcx_iob_vld	(pcx_iob_vld),
+		    .pcx_iob_req	(pcx_iob_req[`PCX_RQ_HI-`PCX_RQ_LO:0]),
+		    .pcx_iob_addr	(pcx_iob_addr[`PCX_AD_HI-`PCX_AD_LO:0]),
+		    .pcx_iob_cputhr	(pcx_iob_cputhr[`PCX_CP_HI-`PCX_TH_LO:0]),
+		    .int_buf_din_raw	(int_buf_din_raw[159:0]),
+		    .tap_mondo_dout_d2_f(tap_mondo_dout_d2_f[63:0]),
+		    .mondo_data0_din_lo	(mondo_data0_din_lo[64:0]),
+		    .mondo_data0_din_hi	(mondo_data0_din_hi[64:0]),
+		    .mondo_data1_din_lo	(mondo_data1_din_lo[64:0]),
+		    .mondo_data1_din_hi	(mondo_data1_din_hi[64:0]),
+		    .mondo_source_din	(mondo_source_din[`IOB_MOND;	   wire			;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`IOB_CPU_BUF_INDEX:0]cpu_buf_head_s;	// From c2i_sctrl of c2i_sctrl.v
+   wire			cpu_buf_rd;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`IOB_CPU_BUF_INDEX:0]cpu_buf_tail_f;	// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_mondo_addr_invld_d2;// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_mondo_rd_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire			cpu_packet_is_req;	// From c2i_sctrl of c2i_sctrl.v
+   wire [`UCB_PKT_WIDTH-1:0]cpu_packet_type;	// From c2i_sctrl of c2i_sctrl.v
+   wire			dram0_ucb_buf_acpt;	// From dram0_ucb_buf of c2i_buf.v
+   wire			dram0_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			dram1_ucb_buf_acpt;	// From dram1_ucb_buf of c2i_buf.v
+   wire			dram1_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			io_mondo_data_wr;	// From c2i_fctrl of c2i_fctrl.v
+   wire			iob_tap_busy;		// From c2i_sctrl of c2i_sctrl.v
+   wire			jbi_ucb_buf_acpt;	// From jbi_ucb_buf of c2i_buf.v
+   wire			jbi_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire			mondo_addr_creg_mbusy_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_addr_creg_mdata0_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_addr_creg_mdata1_dec_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire [`IOB_MONDO_DATA_INDEX-1:0]mondo_data_addr_p0_d1;// From c2i_fctrl of c2i_fctrl.v
+   wire			mondo_data_bypass_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire [`PCX_AD_HI-`PCX_AD_LO:0]pcx_iob_addr;	// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_CP_HI-`PCX_TH_LO:0]pcx_iob_cputhr;// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_RQ_HI-`PCX_RQ_LO:0]pcx_iob_req;	// From c2i_fdp of c2i_fdp.v
+   wire			pcx_iob_vld;		// From c2i_fdp of c2i_fdp.v
+   wire [`PCX_WIDTH-1:0]pcx_packet;		// From c2i_sdp of c2i_sdp.v
+   wire			spi_ucb_buf_acpt;	// From spi_ucb_buf of c2i_buf.v
+   wire			spi_ucb_sel;		// From c2i_sctrl of c2i_sctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]tap_iob_packet;// From tap_ucb_buf of ucb_bus_in.v
+   wire			tap_iob_packet_vld;	// From tap_ucb_buf of ucb_bus_in.v
+   wire			tap_mondo_rd_d1;	// From c2i_fctrl of c2i_fctrl.v
+   wire [`UCB_64PAY_PKT_WIDTH-1:0]tap_packet;	// From c2i_sdp of c2i_sdp.v
+   wire			tap_sel;		// From c2i_sctrl of c2i_sctrl.v
+   // End of automatics
+   
+   
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * cpu-to-io fast control
+    *****************************************************************/
+   c2i_fctrl c2i_fctrl (
+			/*AUTOINST*/
+			// Outputs
+			.iob_pcx_stall_pq(iob_pcx_stall_pq),
+			.io_mondo_data_wr(io_mondo_data_wr),
+			.mondo_data_bypass_d1(mondo_data_bypass_d1),
+			.mondo_addr_creg_mdata0_dec_d1(mondo_addr_creg_mdata0_dec_d1),
+			.mondo_addr_creg_mdata1_dec_d1(mondo_addr_creg_mdata1_dec_d1),
+			.mondo_addr_creg_mbusy_dec_d1(mondo_addr_creg_mbusy_dec_d1),
+			.cpu_mondo_rd_d1(cpu_mondo_rd_d1),
+			.tap_mondo_rd_d1(tap_mondo_rd_d1),
+			.cpu_mondo_rd_d2(cpu_mondo_rd_d2),
+			.cpu_mondo_addr_invld_d2(cpu_mondo_addr_invld_d2),
+			.mondo_data_addr_p0_d1(mondo_data_addr_p0_d1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.cpu_buf_tail_f	(cpu_buf_tail_f[`IOB_CPU_BUF_INDEX:0]),
+			.cpu_mondo_wr_d2(cpu_mondo_wr_d2),
+			.tap_mondo_acc_addr_invld_d2_f(tap_mondo_acc_addr_invld_d2_f),
+			.tap_mondo_acc_seq_d2_f(tap_mondo_acc_seq_d2_f),
+			.mondo_data_addr_p0(mondo_data_addr_p0[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_data_addr_p1(mondo_data_addr_p1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_data0_wr_lo_l(mondo_data0_wr_lo_l),
+			.mondo_data0_wr_hi_l(mondo_data0_wr_hi_l),
+			.mondo_data1_wr_lo_l(mondo_data1_wr_lo_l),
+			.mondo_data1_wr_hi_l(mondo_data1_wr_hi_l),
+			.mondo_source_wr_l(mondo_source_wr_l),
+			.mondo_busy_addr_p0(mondo_busy_addr_p0[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_addr_p1(mondo_busy_addr_p1[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_addr_p2(mondo_busy_addr_p2[`IOB_MONDO_DATA_INDEX-1:0]),
+			.mondo_busy_wr_p1(mondo_busy_wr_p1),
+			.mondo_busy_wr_p2(mondo_busy_wr_p2),
+			.cpu_buf_wr_l	(cpu_buf_wr_l),
+			.cpu_buf_tail_ptr(cpu_buf_tail_ptr[`IOB_CPU_BUF_INDEX-1:0]),
+			// Inputs
+			.cpu_rst_l	(cpu_rst_l),
+			.cpu_clk	(cpu_clk),
+			.tx_sync	(tx_sync),
+			.rx_sync	(rx_sync),
+			.pcx_iob_data_rdy_px2(pcx_iob_data_rdy_px2),
+			.pcx_iob_vld	(pcx_iob_vld),
+			.pcx_iob_req	(pcx_iob_req[`PCX_RQ_HI-`PCX_RQ_LO:0]),
+			.pcx_iob_addr	(pcx_iob_addr[`PCX_AD_HI-`PCX_AD_LO:0]),
+			.pcx_iob_cputhr	(pcx_iob_cputhr[`PCX_CP_HI-`PCX_TH_LO:0]),
+			.cpu_buf_head_s	(cpu_buf_head_s[`IOB_CPU_BUF_INDEX:0]),
+			.int_buf_hit_hwm(int_buf_hit_hwm),
+			.io_mondo_data_wr_s(io_mondo_data_wr_s),
+			.io_mondo_data_wr_addr_s(io_mondo_data_wr_addr_s[`IOB_MONDO_DATA_INDEX-1:0]),
+			.tap_mondo_acc_addr_s(tap_mondo_acc_addr_s[`IOB_ADDR_WIDTH-1:0]),
+			.tap_mondo_acc_seq_s(tap_mondo_acc_seq_s),
+			.tap_mondo_wr_s	(tap_mondo_wr_s));
+
+   
+   /*****************************************************************
+    * cpu-to-io fast datapath
+    *****************************************************************/
+   c2i_fdp c2i_fdp (
+		    /*AUTOINST*/
+		    // Outputs
+		    .pcx_iob_vld	(pcx_iob_vld),
+		    .pcx_iob_req	(pcx_iob_req[`PCX_RQ_HI-`PCX_RQ_LO:0]),
+		    .pcx_iob_addr	(pcx_iob_addr[`PCX_AD_HI-`PCX_AD_LO:0]),
+		    .pcx_iob_cputhr	(pcx_iob_cputhr[`PCX_CP_HI-`PCX_TH_LO:0]),
+		    .int_buf_din_raw	(int_buf_din_raw[159:0]),
+		    .tap_mondo_dout_d2_f(tap_mondo_dout_d2_f[63:0]),
+		    .mondo_data0_din_lo	(mondo_data0_din_lo[64:0]),
+		    .mondo_data0_din_hi	(mondo_data0_din_hi[64:0]),
+		    .mondo_data1_din_lo	(mondo_data1_din_lo[64:0]),
+		    .mondo_data1_din_hi	(mondo_data1_din_hi[64:0]),
+		    .mondo_source_din	(mondo_source_din[`IOB_MOND;		   wire [:

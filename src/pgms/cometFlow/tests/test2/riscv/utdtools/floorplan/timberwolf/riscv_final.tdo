@@ -1,0 +1,3 @@
+icread_itools::state floorplan
+icwrite_def [file join ../ output riscv.def] -unplaced
+exit

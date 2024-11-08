@@ -1,0 +1,11 @@
+
+
+module bw_efc_latch (d,  c, q );
+
+parameter SIZE = 1;
+
+input	[SIZE-1:0]	d ;	input			c ;	
+output	[SIZE-1:0]	q ;	
+
+
+bw_u1_scanlg_2x 

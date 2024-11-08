@@ -1,0 +1,306 @@
+# Ymakefile for TWS libary archives.
+# "$Id: Ymakefile,v 1.10 2019/12/16 13:58:41 bills Exp $"
+#
+#include macros
+
+#destination of output executable
+DEST=../
+PNAME=js${OSUFFIX}
+
+#where the object code is located
+objdir=../obj${OSUFFIX}
+O=${objdir}/
+
+# where the archive is located.
+JSPATH=${objdir}/${JSLIBA}
+
+SRC= \
+	prarena.c \
+	prassert.c \
+	prdtoa.c \
+	prhash.c \
+	prlog2.c \
+	prlong.c \
+	prprintf.c \
+	prtime.c \
+	jsapi.c \
+	jsarray.c \
+	jsatom.c \
+	jsbool.c \
+	jscntxt.c \
+	jsdate.c \
+	jsdbgapi.c \
+	jsemit.c \
+	jsfun.c \
+	jsgc.c \
+	js.c \
+	jsinterp.c \
+	jslock.c \
+	jsmath.c \
+	jsnum.c \
+	jsobj.c \
+	jsopcode.c \
+	jsparse.c \
+	jsregexp.c \
+	jsscan.c \
+	jsscope.c \
+	jsscript.c \
+	jsstr.c \
+	jsxdrapi.c
+
+OBJ= \
+	${O}prarena.o \
+	${O}prassert.o \
+	${O}prdtoa.o \
+	${O}prhash.o \
+	${O}prlog2.o \
+	${O}prlong.o \
+	${O}prprintf.o \
+	${O}prtime.o \
+	${O}jsapi.o \
+	${O}jsarray.o \
+	${O}jsatom.o \
+	${O}jsbool.o \
+	${O}jscntxt.o \
+	${O}jsdate.o \
+	${O}jsdbgapi.o \
+	${O}jsemit.o \
+	${O}jsfun.o \
+	${O}jsgc.o \
+	${O}jsinterp.o \
+	${O}jslock.o \
+	${O}jsmath.o \
+	${O}jsnum.o \
+	${O}jsobj.o \
+	${O}jsopcode.o \
+	${O}jsparse.o \
+	${O}jsregexp.o \
+	${O}jsscan.o \
+	${O}jsscope.o \
+	${O}jsscript.o \
+	${O}jsstr.o \
+	${O}jsxdrapi.o
+
+INS= prosdep.h
+
+
+DATESRC=../../../pgms/date/src/date.c
+
+#----------------------------------------------------------------
+# The information below is modified by the configure script.
+#----------------------------------------------------------------
+AC_FLAGS = @DEFS@
+CSWITCHES = ${OPTIONS} ${AC_FLAGS} -D@CPU_OS@ -DXP_UNIX -DSVR4 -DSYSV \
+-D_BSD_SOURCE -DPOSIX_SOURCE -DJSFILE
+
+info:   
+	-@echo "make archives - usage:"
+	-@echo "Users should type 'make all'"
+	-@echo "To make js interpreter, type 'twmake jscript'"
+	-@echo " "
+
+# puts library relative to this directory at TWS
+all:check_machine ${JSPATH}
+
+${JSPATH} : ${OBJ}
+	${MAKE} reset_lib O="" objdir=${objdir}
+
+reset_lib :
+	${RM} -f ${JSPATH}
+	( cd ${objdir} ; \
+	  ${AR} crv ${JSPATH} ${OBJ} ; \
+	) ;
+	${RANLIB} ${JSPATH}
+
+clean:
+	${RM} ${O}* *~ foo *.bak
+
+
+# how to build makefile dependencies
+depend : 
+	${MAKEDEPEND} -p ${O} ${MAKEDARGS}
+
+config : 
+	${MV} Makefile.${ICOS} Makefile.in
+	CC="${CC_CONFIG}" ./configure
+	${RM} config.cache
+	${MV} Makefile Makefile.${ICOS}
+
+check_machine:
+	${CHECK_MACHINE}
+
+jscript : ${DEST}${PNAME}
+
+${DEST}${PNAME} : ${JSPATH} ${STDLIBPATH} ${O}js.o
+	${CC} ${CFLAGS} ${CSWITCHES} -o ${DEST}${PNAME} ${O}js.o ${JSPATH} \
+	${STDLIB} ${SIMPLE_LINKLIB}
+
+cpu_test: 
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prcpucfg.c
+	${MV} prcpucfg.o ${O}prcpucfg.o
+	${CC} ${CFLAGS} ${CSWITCHES} -o cpu_test ${O}prcpucfg.o ${SIMPLE_LINKLIB}
+
+
+export:
+	@for i in $(SRC2); do \
+		(${ECHO} "mynawk export.awk $$i > ${ICDIR}/export/$$i" ; \
+		mynawk export.awk $$i > ${ICDIR}/export/$$i ) ; \
+	done ;
+
+#$(GEN): ${PROTOFILE}
+#	$(RPCCOM) ${PROTOFILE}
+
+# ********************* begin sccs *********************************
+#default sccs operation is get
+SCCS=co
+SCCS_OP=
+#current release
+REL=
+
+# how to get sources from sccs
+sources : ${SRC} ${INS} ${YMAKEFILE}
+${SRC} ${INS} ${YMAKEFILE}: 
+	${SCCS} ${SCCS_OP} ${REL} $@
+# **********************  end sccs *********************************
+#BEGIN DEPENDENCIES -- DO NOT DELETE THIS LINE
+
+#END DEPENDENCIES -- DO NOT DELETE THIS LINE
+
+
+
+# How to compile the sources
+${O}prarena.o: prarena.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prarena.c
+	${MV} prarena.o ${O}prarena.o
+
+${O}prassert.o:prassert.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prassert.c
+	${MV} prassert.o ${O}prassert.o
+
+${O}prdtoa.o:prdtoa.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prdtoa.c
+	${MV} prdtoa.o ${O}prdtoa.o
+
+${O}prhash.o:prhash.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prhash.c
+	${MV} prhash.o ${O}prhash.o
+
+${O}prlog2.o:prlog2.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prlog2.c
+	${MV} prlog2.o ${O}prlog2.o
+
+${O}prlong.o:prlong.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prlong.c
+	${MV} prlong.o ${O}prlong.o
+
+${O}prprintf.o:prprintf.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prprintf.c
+	${MV} prprintf.o ${O}prprintf.o
+
+${O}prtime.o:prtime.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  prtime.c
+	${MV} prtime.o ${O}prtime.o
+
+${O}jsapi.o:jsapi.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsapi.c
+	${MV} jsapi.o ${O}jsapi.o
+
+${O}jsarray.o:jsarray.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsarray.c
+	${MV} jsarray.o ${O}jsarray.o
+
+${O}jsatom.o:jsatom.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsatom.c
+	${MV} jsatom.o ${O}jsatom.o
+
+${O}jsbool.o:jsbool.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsbool.c
+	${MV} jsbool.o ${O}jsbool.o
+
+${O}jscntxt.o:jscntxt.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jscntxt.c
+	${MV} jscntxt.o ${O}jscntxt.o
+
+${O}jsdate.o:jsdate.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsdate.c
+	${MV} jsdate.o ${O}jsdate.o
+
+${O}jsdbgapi.o:jsdbgapi.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsdbgapi.c
+	${MV} jsdbgapi.o ${O}jsdbgapi.o
+
+${O}jsemit.o:jsemit.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsemit.c
+	${MV} jsemit.o ${O}jsemit.o
+
+${O}jsfun.o:jsfun.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsfun.c
+	${MV} jsfun.o ${O}jsfun.o
+
+${O}jsgc.o:jsgc.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsgc.c
+	${MV} jsgc.o ${O}jsgc.o
+
+${O}jsinterp.o:jsinterp.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsinterp.c
+	${MV} jsinterp.o ${O}jsinterp.o
+
+${O}jslock.o:jslock.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jslock.c
+	${MV} jslock.o ${O}jslock.o
+
+${O}jsmath.o:jsmath.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsmath.c
+	${MV} jsmath.o ${O}jsmath.o
+
+${O}jsnum.o:jsnum.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsnum.c
+	${MV} jsnum.o ${O}jsnum.o
+
+${O}jsobj.o:jsobj.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsobj.c
+	${MV} jsobj.o ${O}jsobj.o
+
+${O}jsopcode.o:jsopcode.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsopcode.c
+	${MV} jsopcode.o ${O}jsopcode.o
+
+${O}jsparse.o:jsparse.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsparse.c
+	${MV} jsparse.o ${O}jsparse.o
+
+${O}jsregexp.o:jsregexp.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsregexp.c
+	${MV} jsregexp.o ${O}jsregexp.o
+
+${O}jsscan.o:jsscan.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsscan.c
+	${MV} jsscan.o ${O}jsscan.o
+
+${O}jsscope.o:jsscope.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsscope.c
+	${MV} jsscope.o ${O}jsscope.o
+
+${O}jsscript.o:jsscript.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsscript.c
+	${MV} jsscript.o ${O}jsscript.o
+
+${O}jsstr.o:jsstr.c 
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsstr.c 
+	${MV} jsstr.o ${O}jsstr.o
+
+${O}jsxdrapi.o:jsxdrapi.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  jsxdrapi.c
+	${MV} jsxdrapi.o ${O}jsxdrapi.o
+
+${O}twjs.o:twjs.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  twjs.c
+	${MV} twjs.o ${O}twjs.o
+
+
+# ################### TEST PROGRAMS ##############################
+${O}js.o:js.c
+	${CC} ${CFLAGS} ${IDIR} ${CSWITCHES} -c  js.c
+	${MV} js.o ${O}js.o
+
+# end makefile

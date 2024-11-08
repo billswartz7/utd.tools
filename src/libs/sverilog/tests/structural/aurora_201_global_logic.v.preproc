@@ -1,0 +1,1789 @@
+
+     
+
+module aurora_201_GLOBAL_LOGIC
+(
+        CH_BOND_DONE,
+
+    EN_CHAN_SYNC,
+
+
+        LANE_UP,
+    SOFT_ERROR,
+    HARD_ERROR,
+    CHANNEL_BOND_LOAD,
+    GOT_A,
+    GOT_V,
+
+    GEN_A,
+    GEN_K,
+    GEN_R,
+    GEN_V,
+    RESET_LANES,
+
+
+        USER_CLK,
+    RESET,
+    POWER_DOWN,
+
+    CHANNEL_UP,
+    START_RX,
+    CHANNEL_SOFT_ERROR,
+    CHANNEL_HARD_ERROR
+
+);
+
+ 
+
+
+        input              CH_BOND_DONE;
+
+    output             EN_CHAN_SYNC;
+
+
+        input              SOFT_ERROR;
+    input              LANE_UP;
+    input              HARD_ERROR;
+    input              CHANNEL_BOND_LOAD;
+    input   [0:1]      GOT_A;
+    input              GOT_V;
+
+    output             GEN_A;
+    output  [0:1]      GEN_K;
+    output  [0:1]      GEN_R;
+    output  [0:1]      GEN_V;
+    output             RESET_LANES;
+
+
+        input              USER_CLK;
+    input              RESET;
+    input              POWER_DOWN;
+
+    output             CHANNEL_UP;
+    output             START_RX;
+    output             CHANNEL_SOFT_ERROR;
+    output             CHANNEL_HARD_ERROR;
+
+
+
+
+    wire               ;
+    wire               reset_channel_i;
+    wire               did_ver_i;
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // State Machine for channel bonding and verification.
+    aurora_201_CHANNEL_INIT_SM channel_init_sm_i
+    (
+        // GTP Interface
+        .CH_BOND_DONE(CH_BOND_DONE),
+
+        .EN_CHAN_SYNC(EN_CHAN_SYNC),
+
+
+        // Aurora Lane Interface
+
+        .CHANNEL_BOND_LOAD(CHANNEL_BOND_LOAD),
+        .GOT_A(GOT_A),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+;
+    wire               ;
+    wire               did_ver_i;
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // State Machine for channel bonding and verification.
+    aurora_201_CHANNEL_INIT_SM channel_init_sm_i
+    (
+        // GTP Interface
+        .CH_BOND_DONE(CH_BOND_DONE),
+
+        .EN_CHAN_SYNC(EN_CHAN_SYNC),
+
+
+        // Aurora Lane Interface
+
+        .CHANNEL_BOND_LOAD(CHANNEL_BOND_LOAD),
+        .GOT_A(GOT_A),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+;
+    wire               ;
+
+
+//*********************************Main Body of Code**********************************
+
+
+    // State Machine for channel bonding and verification.
+    aurora_201_CHANNEL_INIT_SM channel_init_sm_i
+    (
+        // GTP Interface
+        .CH_BOND_DONE(CH_BOND_DONE),
+
+        .EN_CHAN_SYNC(EN_CHAN_SYNC),
+
+
+        // Aurora Lane Interface
+
+        .CHANNEL_BOND_LOAD(CHANNEL_BOND_LOAD),
+        .GOT_A(GOT_A),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+;
+
+
+
+
+        aurora_201_CHANNEL_INIT_SM 
+    (
+        // GTP Interface
+        .CH_BOND_DONE(CH_BOND_DONE),
+
+        .EN_CHAN_SYNC(EN_CHAN_SYNC),
+
+
+        // Aurora Lane Interface
+
+        .CHANNEL_BOND_LOAD(CHANNEL_BOND_LOAD),
+        .GOT_A(GOT_A),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+
+    (
+                .CH_BOND_DONE(),
+
+        .EN_CHAN_SYNC(EN_CHAN_SYNC),
+
+
+        // Aurora Lane Interface
+
+        .CHANNEL_BOND_LOAD(CHANNEL_BOND_LOAD),
+        .GOT_A(GOT_A),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+        .EN_CHAN_SYNC(),
+
+
+        // Aurora Lane Interface
+
+        .CHANNEL_BOND_LOAD(CHANNEL_BOND_LOAD),
+        .GOT_A(GOT_A),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+        
+        .CHANNEL_BOND_LOAD(),
+        .GOT_A(GOT_A),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .GOT_A(),
+        .GOT_V(GOT_V),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .GOT_V(),
+
+        .RESET_LANES(RESET_LANES),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+        .RESET_LANES(),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+                .USER_CLK(),
+        .RESET(RESET),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .RESET(),
+
+        .START_RX(START_RX),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+        .START_RX(),
+        .CHANNEL_UP(CHANNEL_UP),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .CHANNEL_UP(),
+
+
+        // Idle and Verification Sequence Generator Interface
+        .DID_VER(did_ver_i),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+                .DID_VER(),
+
+        .GEN_VER(gen_ver_i),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+        .GEN_VER(),
+
+
+        // Channel Error Management Module Interface
+        .RESET_CHANNEL(reset_channel_i)
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+                .RESET_CHANNEL()
+
+    );
+
+
+
+    // Idle and verification sequence generator module.
+    aurora_201_IDLE_AND_VER_GEN idle_and_ver_gen_i
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+)
+
+    );
+
+
+
+        aurora_201_IDLE_AND_VER_GEN 
+    (
+        // Channel Init SM Interface
+        .GEN_VER(gen_ver_i),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+
+    (
+                .GEN_VER(),
+
+        .DID_VER(did_ver_i),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+        .DID_VER(),
+
+
+        // Aurora Lane Interface
+        .GEN_A(GEN_A),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+                .GEN_A(),
+        .GEN_K(GEN_K),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .GEN_K(),
+        .GEN_R(GEN_R),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .GEN_R(),
+        .GEN_V(GEN_V),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .GEN_V(),
+
+
+        // System Interface
+        .RESET(RESET),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+                .RESET(),
+        .USER_CLK(USER_CLK)
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .USER_CLK()
+    );
+
+
+
+    // Channel Error Management module.
+    aurora_201_CHANNEL_ERROR_DETECT channel_error_detect_i
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+)
+    );
+
+
+
+        aurora_201_CHANNEL_ERROR_DETECT 
+    (
+        // Aurora Lane Interface
+        .SOFT_ERROR(SOFT_ERROR),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+
+    (
+                .SOFT_ERROR(),
+        .HARD_ERROR(HARD_ERROR),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .HARD_ERROR(),
+        .LANE_UP(LANE_UP),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .LANE_UP(),
+
+
+        // System Interface
+        .USER_CLK(USER_CLK),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+                .USER_CLK(),
+        .POWER_DOWN(POWER_DOWN),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .POWER_DOWN(),
+
+        .CHANNEL_SOFT_ERROR(CHANNEL_SOFT_ERROR),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+        .CHANNEL_SOFT_ERROR(),
+        .CHANNEL_HARD_ERROR(CHANNEL_HARD_ERROR),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+        .CHANNEL_HARD_ERROR(),
+
+
+        // Channel Init State Machine Interface
+        .RESET_CHANNEL(reset_channel_i)
+    );
+
+endmodule
+),
+
+
+                .RESET_CHANNEL()
+    );
+
+endmodule
+)
+    );
+
+endmodule

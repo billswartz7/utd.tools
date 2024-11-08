@@ -1,0 +1,46 @@
+
+     
+
+module aurora_201_SYM_GEN
+(
+        GEN_SCP,
+    GEN_ECP,
+    GEN_PAD,
+    TX_PE_DATA,
+    TX_PE_DATA_V,
+    GEN_CC,
+
+
+        GEN_A,
+    GEN_K,
+    GEN_R,
+    GEN_V,
+
+
+        GEN_K_FSM,
+    GEN_SP_DATA,
+    GEN_SPA_DATA,
+
+
+        TX_CHAR_IS_K,
+    TX_DATA,
+
+
+        USER_CLK
+);
+ 
+
+
+        input           GEN_SCP;            input           GEN_ECP;            input           GEN_PAD;            input   [0:15]  TX_PE_DATA;         input           TX_PE_DATA_V;       input           GEN_CC;         
+
+        input           GEN_A;              input   [0:1]   GEN_K;              input   [0:1]   GEN_R;              input   [0:1]   GEN_V;          
+
+        input           GEN_K_FSM;          input   [0:1]   GEN_SP_DATA;        input   [0:1]   GEN_SPA_DATA;   
+
+        output  [1:0]   TX_CHAR_IS_K;       output  [15:0]  TX_DATA;        
+
+        input           USER_CLK;       
+
+
+
+    reg

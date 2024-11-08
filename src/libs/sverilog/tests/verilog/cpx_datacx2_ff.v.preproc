@@ -1,0 +1,65 @@
+
+	 			
+ 
+
+
+
+
+module cpx_datacx2_ff(
+      cpx_spc_data_cx2, cpx_spc_data_rdy_cx2, so, 
+      cpx_spc_data_cx_l, cpx_spc_data_rdy_cx, rclk, si, se
+   );
+   
+
+   output [-1:0]		cpx_spc_data_cx2;	
+   output 		cpx_spc_data_rdy_cx2;	
+   output 		so;
+   
+   input [-1:0]		cpx_spc_data_cx_l;	
+   input 		cpx_spc_data_rdy_cx;	
+   input 		rclk;
+   input 		si;
+   input 		se;
+   
+
+   wire [-1:0]		;	
+   
+   
+   dff_s #(`CPX_WIDTH) dff_ccx_data_spc(
+            .din           (cpx_spc_data_cx_l[`CPX_WIDTH-1:0]),
+	    .q             (cpx_spc_data_cx2_l[`CPX_WIDTH-1:0]),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (`CPX_WIDTH'd0),
+	    .so            ());
+
+
+
+assign cpx_spc_data_cx2 = ~cpx_spc_data_cx2_l; 
+
+
+
+      dff_s #(1) dff_ccx_datardy_spc(
+            .din           (cpx_spc_data_rdy_cx),
+	    .q             (cpx_spc_data_rdy_cx2),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (1'd0),
+	    .so            ());
+
+
+endmodule // cpx_grant_ff
+
+
+
+
+
+
+
+
+
+ 
+;	
+   
+   
+   dff_s #()

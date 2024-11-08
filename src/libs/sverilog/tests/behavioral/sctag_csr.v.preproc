@@ -1,0 +1,64 @@
+
+ 
+ 
+
+
+
+module sctag_csr( 
+      so, csr_fbctl_scrub_ready, l2_bypass_mode_on, csr_fbctl_l2off, 
+   csr_tagctl_l2off, csr_wbctl_l2off, csr_mbctl_l2off, 
+   csr_vuad_l2off, l2_dir_map_on, l2_dbg_en, l2_steering_tid, 
+   error_nceen, error_ceen, csr_wr_dirpinj_en, oneshot_dir_clear_c3, 
+   csr_rd_data_c8, error_status_veu, error_status_vec, sctag_clk_tr, 
+      csr_inst_wr_data_c8, csr_bist_read_data, arst_l, grst_l, si, se, 
+   dbginit_l, rclk, csr_erren_wr_en_c8, csr_ctl_wr_en_c8, 
+   csr_errstate_wr_en_c8, csr_errinj_wr_en_c8, csr_rd_mux1_sel_c7, 
+   csr_rd_mux2_sel_c7, csr_rd_mux3_sel_c7, arbdp_csr_addr_c9, 
+   evict_addr, rdmard_addr_c12, dir_addr_c9, scrub_addr_way, 
+   data_ecc_idx, err_state_in_rw, err_state_in_mec, err_state_in_meu, 
+   err_state_in, mux1_synd_sel, mux2_synd_sel, csr_synd_wr_en, 
+   vuad_syndrome_c9, lda_syndrome_c9, wr_enable_tid_c9, 
+   csr_tid_wr_en, csr_async_wr_en, set_async_c9, error_rw_en, 
+   diag_wr_en, mux1_addr_sel, mux2_addr_sel, csr_addr_wr_en, 
+   arbctl_dir_wr_en_c4, oqdp_tid_c8
+   );
+
+output	so;
+
+output	csr_fbctl_scrub_ready; output	l2_bypass_mode_on; output	csr_fbctl_l2off;
+output	csr_tagctl_l2off;
+output	csr_wbctl_l2off;
+output	csr_mbctl_l2off;
+output	csr_vuad_l2off;
+output	l2_dir_map_on; output	l2_dbg_en;	output	[4:0]	l2_steering_tid; output	error_nceen, error_ceen ;
+output	csr_wr_dirpinj_en;
+output	oneshot_dir_clear_c3; 
+
+
+output	[63:0]	csr_rd_data_c8;
+output	error_status_veu, error_status_vec ;
+
+input	[63:0]	csr_inst_wr_data_c8;	input	[12:0]	csr_bist_read_data; output		sctag_clk_tr; 
+input 		arst_l, grst_l, si, se;
+input		dbginit_l;
+input 		rclk;
+
+input		csr_erren_wr_en_c8;
+input		csr_ctl_wr_en_c8;
+input		csr_errstate_wr_en_c8;
+input		csr_errinj_wr_en_c8;
+
+
+
+input	[3:0]	csr_rd_mux1_sel_c7;
+input		csr_rd_mux2_sel_c7;
+input	[1:0]	csr_rd_mux3_sel_c7;
+
+
+input	[39:4]	arbdp_csr_addr_c9 ; input	[39:6]	evict_addr ;	input	[39:6]  rdmard_addr_c12; input	[10:0]	dir_addr_c9 ; input   [3:0]   scrub_addr_way;   input	[9:0] 	data_ecc_idx; 
+
+
+input           err_state_in_rw ;
+input           err_state_in_mec ;
+input           err_state_in_meu ;
+input   [:

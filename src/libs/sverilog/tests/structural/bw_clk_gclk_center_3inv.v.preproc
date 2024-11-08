@@ -1,0 +1,85 @@
+module bw_clk_gclk_center_3inv(jbus_out ,ddr_out ,cmp_out ,jbus_in ,
+     ddr_in ,cmp_in );
+output		jbus_out ;
+output		ddr_out ;
+output		cmp_out ;
+input		jbus_in ;
+input		ddr_in ;
+input		cmp_in ;
+ 
+ 
+ 
+bw_clk_gclk_inv_224x  (
+     .clkout          (ddr_out ),
+     .clkin           (ddr_in ) );
+bw_clk_gclk_inv_224x xjbus (
+     .clkout          (jbus_out ),
+     .clkin           (jbus_in ) );
+bw_clk_gclk_inv_224x xcmp (
+     .clkout          (cmp_out ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ (
+     .clkout          ( ),
+     .clkin           (ddr_in ) );
+bw_clk_gclk_inv_224x xjbus (
+     .clkout          (jbus_out ),
+     .clkin           (jbus_in ) );
+bw_clk_gclk_inv_224x xcmp (
+     .clkout          (cmp_out ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ ),
+     .clkin           ( ) );
+bw_clk_gclk_inv_224x xjbus (
+     .clkout          (jbus_out ),
+     .clkin           (jbus_in ) );
+bw_clk_gclk_inv_224x xcmp (
+     .clkout          (cmp_out ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ ) );
+bw_clk_gclk_inv_224x  (
+     .clkout          (jbus_out ),
+     .clkin           (jbus_in ) );
+bw_clk_gclk_inv_224x xcmp (
+     .clkout          (cmp_out ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ (
+     .clkout          ( ),
+     .clkin           (jbus_in ) );
+bw_clk_gclk_inv_224x xcmp (
+     .clkout          (cmp_out ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ ),
+     .clkin           ( ) );
+bw_clk_gclk_inv_224x xcmp (
+     .clkout          (cmp_out ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ ) );
+bw_clk_gclk_inv_224x  (
+     .clkout          (cmp_out ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ (
+     .clkout          ( ),
+     .clkin           (cmp_in ) );
+endmodule
+
+ ),
+     .clkin           ( ) );
+endmodule
+
+ ) );
+endmodule
+

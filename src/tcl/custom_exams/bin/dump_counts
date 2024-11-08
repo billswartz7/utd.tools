@@ -1,0 +1,33 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+echo " "
+echo "Syntax: dump_counts <SQLdatabase>"
+echo "        build the code to supply the counts for exam."
+echo " "
+exit 1  ;
+fi
+
+icdir=${ICDIR}
+
+if [ ! "${icdir}" ] ; then
+  echo " "
+  echo "ERROR[randomize]:ICDIR is not set."
+  echo "Please set ICDIR to the iTools root directory."
+  echo " "
+  exit 1
+fi
+
+utd_dir=${UTDEXAMS}
+
+if [ ! "${utd_dir}" ] ; then
+  echo " "
+  echo "ERROR[randomize]:UTDEXAMS is not set."
+  echo "Please set UTDEXAMS to the custom_exams root directory."
+  echo " "
+  exit 1
+fi
+
+exec ${ICDIR}/bin/icos ICtclsh -i -v -do ${utd_dir}/tcl/dump_counts.tcl -a ${1+"$@"}
+

@@ -1,0 +1,45 @@
+
+ 
+ 
+ 
+
+
+module ctu_dft_bist (
+dft_wake_thr, bist_jtag_result, bist_jtag_abort_done, 
+ctu_sctag0_mbisten, ctu_sctag1_mbisten, ctu_sctag2_mbisten, 
+ctu_sctag3_mbisten, ctu_spc7_mbisten, ctu_spc6_mbisten, 
+ctu_spc5_mbisten, ctu_spc4_mbisten, ctu_spc3_mbisten, 
+ctu_spc2_mbisten, ctu_spc1_mbisten, ctu_spc0_mbisten, 
+cmp_clk, cmp_rst_l, cmp_tx_en, cmp_rx_en, jbus_clk, jbus_rst_l, 
+io_tck, iob_ctu_coreavail, clsp_bist_dobist, clsp_bist_type, 
+clsp_bist_ctrl, jtag_bist_serial, jtag_bist_parallel, 
+jtag_bist_active, jtag_bist_abort, sctag0_ctu_mbistdone, 
+sctag1_ctu_mbistdone, sctag2_ctu_mbistdone, sctag3_ctu_mbistdone, 
+spc7_ctu_mbistdone, spc6_ctu_mbistdone, spc5_ctu_mbistdone, 
+spc4_ctu_mbistdone, spc3_ctu_mbistdone, spc2_ctu_mbistdone, 
+spc1_ctu_mbistdone, spc0_ctu_mbistdone, sctag0_ctu_mbisterr, 
+sctag1_ctu_mbisterr, sctag2_ctu_mbisterr, sctag3_ctu_mbisterr, 
+spc7_ctu_mbisterr, spc6_ctu_mbisterr, spc5_ctu_mbisterr, 
+spc4_ctu_mbisterr, spc3_ctu_mbisterr, spc2_ctu_mbisterr, 
+spc1_ctu_mbisterr, spc0_ctu_mbisterr
+);
+input cmp_clk;
+input cmp_rst_l;
+input cmp_tx_en;
+input cmp_rx_en;
+input jbus_clk;
+input jbus_rst_l;
+input io_tck;
+
+input [-1:0] iob_ctu_coreavail;
+output 			   dft_wake_thr;
+
+input 			   clsp_bist_dobist;
+input 			   clsp_bist_type;
+input [5:0] 		   clsp_bist_ctrl;
+
+input 			   jtag_bist_serial;
+input 			   jtag_bist_parallel;
+input [-1:0]  jtag_bist_active;
+input 			   jtag_bist_abort;
+output [(*

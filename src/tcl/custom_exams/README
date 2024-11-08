@@ -1,0 +1,6 @@
+To get around strange character at the beginning, use emacs to edit the 
+first character away.  Bug in eLearning.   Make sure to use comma 
+delimited data.  You can also use fixsize
+
+To run use
+ICTk -i -v randomize.tcl

@@ -1,0 +1,134 @@
+#!/bin/sh
+
+# "$RCSfile: make_lib_dir,v $ $Revision: 1.30 $ $Date: 2012/05/23 16:11:40 $"
+
+RM=/bin/rm
+
+# ############## shell script to set up directory structure ################
+problem()
+{
+    echo ""
+    echo "ERROR[make_lib_dir]: script failure."
+    echo "Problem encountered during lib directory installation"
+    echo "Syntax:"
+    echo "       make_lib_dir directoryName"
+    echo ""
+    exit 1 ;
+}
+
+trap problem KILL
+trap problem INT
+trap problem QUIT
+
+openroados=${OPENROADOS}
+if [ ! "${openroados}" ] ; then
+    echo ""
+    echo "ERROR:OPENROADOS environment variable not set"
+    echo "OPENROADOS is architecture of the OpenRoad host build machine"
+    echo ""
+    exit
+fi
+
+if [ $# = 1 ] ; then
+    OPENROADOS=$1
+    echo "Making links for ${OPENROADOS}"
+    if [ -d lib/${OPENROADOS} ] ; then
+	echo "Directory ${OPENROADOS} correctly exists"
+	exit 0 
+    else
+	mkdir -p lib/${OPENROADOS}
+    fi
+    SUFFIX=".${OPENROADOS}"
+else
+  problem ;
+fi
+
+top_dir=`pwd`
+build_libs=.libs
+
+cd lib/${OPENROADOS}
+# To create the list below run build_links in the $OPENROAD/lib directory.
+# standard library
+
+# tcl
+${RM} -f libopen_tcl8.6.a ; 
+ln -s ${top_dir}/lib/tcl/unix/libopen_tcl8.6.a
+${RM} -f libopen_tcl8.6.so ; 
+ln -s ${top_dir}/lib/tcl/unix/libopen_tcl8.6.so
+${RM} -f libopen_tcl8.6.dylib ; 
+ln -s ${top_dir}/lib/tcl/unix/libopen_tcl8.6.dylib
+
+# tcl_stub
+${RM} -f libopen_tclstub8.6.a ; 
+ln -s ${top_dir}/lib/tcl/unix/libopen_tclstub8.6.a
+${RM} -f libopen_tclstub8.6.so ; 
+ln -s ${top_dir}/lib/tcl/unix/libopen_tclstub8.6.so
+${RM} -f libopen_tclstub8.6.dylib ; 
+ln -s ${top_dir}/lib/tcl/unix/libopen_tclstub8.6.dylib
+
+# tk
+${RM} -f libopen_tk8.6.a ; 
+ln -s ${top_dir}/lib/tk/unix/libopen_tk8.6.a
+${RM} -f libopen_tk8.6.so ; 
+ln -s ${top_dir}/lib/tk/unix/libopen_tk8.6.so
+${RM} -f libopen_tk8.6.dylib ; 
+ln -s ${top_dir}/lib/tk/unix/libopen_tk8.6.dylib
+
+# tkstub
+${RM} -f libopen_tkstub8.6.a ; 
+ln -s ${top_dir}/lib/tk/unix/libopen_tkstub8.6.a
+${RM} -f libopen_tkstub8.6.so ; 
+ln -s ${top_dir}/lib/tk/unix/libopen_tkstub8.6.so
+${RM} -f libopen_tkstub8.6.dylib ; 
+ln -s ${top_dir}/lib/tk/unix/libopen_tkstub8.6.dylib
+
+# tix
+${RM} -f libopen_tix.a ; 
+ln -s ${top_dir}/lib/tix/libopen_tix8.4.3.a 
+${RM} -f libopen_tix.so ; 
+ln -s ${top_dir}/lib/tix/libopen_tix8.4.3.so 
+${RM} -f libopen_tix.dylib ; 
+ln -s ${top_dir}/lib/tix/libopen_tix8.4.3.dylib 
+
+# utd
+${RM} -f libutd.a ; 
+ln -s ${top_dir}/lib/utd/src/${build_libs}/libutd.a
+${RM} -f libutd.so ; 
+ln -s ${top_dir}/lib/utd/src/${build_libs}/libutd.so
+${RM} -f libutd.dylib ; 
+ln -s ${top_dir}/lib/utd/src/${build_libs}/libutd.dylib
+
+# gui
+${RM} -f libopen_gui.a ; 
+ln -s ${top_dir}/lib/gui/src/${build_libs}/libopen_gui.a
+${RM} -f libopen_gui.so ; 
+ln -s ${top_dir}/lib/gui/src/${build_libs}/libopen_gui.so
+${RM} -f libopen_gui.dylib ; 
+ln -s ${top_dir}/lib/gui/src/${build_libs}/libopen_gui.dylib
+
+# verilog
+${RM} -f libopen_verilog.a ; 
+ln -s ${top_dir}/lib/verilog/src/${build_libs}/libopen_verilog.a
+${RM} -f libopen_verilog.so ; 
+ln -s ${top_dir}/lib/verilog/src/${build_libs}/libopen_verilog.so
+${RM} -f libopen_verilog.dylib ; 
+ln -s ${top_dir}/lib/verilog/src/${build_libs}/libopen_verilog.dylib
+
+# lef
+${RM} -f liblef.a ; 
+ln -s ${top_dir}/lib/lef/lef/${build_libs}/liblef.a
+${RM} -f liblef.so ; 
+ln -s ${top_dir}/lib/lef/lef/${build_libs}/liblef.so
+${RM} -f liblef.dylib ; 
+ln -s ${top_dir}/lib/lef/lef/${build_libs}/liblef.dylib
+
+# def
+${RM} -f libdef.a ; 
+ln -s ${top_dir}/lib/def/def/${build_libs}/libdef.a
+${RM} -f libdef.so ; 
+ln -s ${top_dir}/lib/def/def/${build_libs}/libdef.so
+${RM} -f libdef.dylib ; 
+ln -s ${top_dir}/lib/def/def/${build_libs}/libdef.dylib
+
+exit 0 ;
+

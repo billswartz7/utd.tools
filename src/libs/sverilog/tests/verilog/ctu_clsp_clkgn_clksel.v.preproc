@@ -1,0 +1,2817 @@
+ 
+
+module ctu_clsp_clkgn_clksel(
+clkout, sysclk_sel, 
+io_pwron_rst_l, sel, testmode_l, sysclk, divbypclk, byp_mult_sel_l, 
+nstepsel, jtag_clock_dr, capture_l, bypmode
+);
+
+input io_pwron_rst_l;
+input [2:0] sel;
+input testmode_l;
+input sysclk;
+input divbypclk;
+input byp_mult_sel_l;
+input nstepsel;
+input jtag_clock_dr;
+input capture_l;
+input bypmode;
+
+output clkout;
+output sysclk_sel;
+
+wire ;
+wire altclk_sync_l;
+wire tck_sync;
+wire bypclk_sync_pre;
+wire bypclk_sync;
+wire tck_sync_pre;
+wire force_alt_clk_sync;
+wire mult_sel;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire tck_sync;
+wire bypclk_sync_pre;
+wire bypclk_sync;
+wire tck_sync_pre;
+wire force_alt_clk_sync;
+wire mult_sel;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire bypclk_sync_pre;
+wire bypclk_sync;
+wire tck_sync_pre;
+wire force_alt_clk_sync;
+wire mult_sel;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire bypclk_sync;
+wire tck_sync_pre;
+wire force_alt_clk_sync;
+wire mult_sel;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire tck_sync_pre;
+wire force_alt_clk_sync;
+wire mult_sel;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire force_alt_clk_sync;
+wire mult_sel;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire mult_sel;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+
+wire nstep_clock_dr;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+
+wire ;
+wire clock_dr;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire altclk_sync_l_bar;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+wire sysclk_sel_bar;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+wire ;
+
+
+   // -----------------------------------------------
+   //
+   //  N-step and jtag_clock_dr mode
+   //  When dft_clsp_capture_l is asserted, nstep goes through,
+   //  otherwise jtag_clock_dr goes through. 
+   //  jtag_clock_dr can be dft_jtag_clock_dr (from dft) or j_clk/io_tck2
+   //  if dft_clsp_parallel_scan is asserted
+   //
+   // -----------------------------------------------
+   // Clock gating
+   // capture cycle:
+   // capture_l is low, let nstep clock through
+   // assign nstep_clock_dr = jtag_clock_dr & capture_l;
+   // capture_l changes value on neg edge of tck
+
+ 
+      ctu_and2 u_capture_l_gated (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+
+
+                                          
+ 
+      ctu_and2  (.a (jtag_clock_dr), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (.a (), .b(capture_l), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .b(), .z(nstep_clock_dr));
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .z());
+
+
+      // nstep_clock_dr is undefined in ctu pin base parallel scan  mode
+
+      ctu_mux21 u_jtag_clock_mux_gated( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+
+      
+      ctu_mux21 ( .z(clock_dr), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+( .z(), .s(testmode_l), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .s(), .d0(jtag_clock_dr), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .d0(), 
+                                                                      .d1(nstep_clock_dr));
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), 
+                                                                      .d1());
+
+      // Work around Reading macro
+
+       ctu_clksel_async_synchronizer u_mult_sel_clk(
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+      
+       ctu_clksel_async_synchronizer (
+             .presyncdata(mult_sel),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+(
+             .presyncdata(),
+             .syncdata (force_alt_clk_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .syncdata (),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .arst_l(),
+             .aset_l(1'b1),
+             .clk (sysclk)
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .aset_l(1bb),
+             .clk ()
+                );
+
+       ctu_clksel_async_synchronizer u_byp_mult_sel_sync(
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+                );
+
+       ctu_clksel_async_synchronizer (
+             .presyncdata(altclk_sync_pre),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+(
+             .presyncdata(),
+             .syncdata (altclk_sync_l),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .syncdata (),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .arst_l(),
+             .aset_l(1'b1),
+             .clk (divbypclk)
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .aset_l(1bb),
+             .clk ()
+                );
+       ctu_clksel_async_synchronizer u_bypclk_sync(
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+                );
+       ctu_clksel_async_synchronizer (
+             .presyncdata(bypclk_sync_pre),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+(
+             .presyncdata(),
+             .syncdata (bypclk_sync),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .syncdata (),
+             .aset_l(io_pwron_rst_l),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .aset_l(),
+             .arst_l(1'b1),
+             .clk(divbypclk)
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .arst_l(1bb),
+             .clk()
+              );
+       ctu_clksel_async_synchronizer u_tck_sync(
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+              );
+       ctu_clksel_async_synchronizer (
+             .presyncdata(tck_sync_pre),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+(
+             .presyncdata(),
+             .syncdata (tck_sync),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .syncdata (),
+             .arst_l(io_pwron_rst_l),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .arst_l(),
+             .aset_l(1'b1),
+             .clk(jtag_clock_dr)
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+             .aset_l(1bb),
+             .clk()
+              );
+
+       assign mult_sel = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+)
+              );
+
+       assign  = bypmode | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ =  | nstepsel;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ | ;
+       assign force_altclk_l =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+       assign  =  sel[0];
+       assign altclk_sync_pre =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ =  [0];
+       assign  =  byp_mult_sel_l;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ =  ;
+       assign bypclk_sync_pre = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+;
+       assign  = sel[2] ;
+       assign tck_sync_pre =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ = [2] ;
+       assign  =  sel[1];
+
+       bw_u1_aoi22_4x u_clkout_gated ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ =  [1];
+
+       bw_u1_aoi22_4x  ( .a1(bypclk_sync), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ ( .a1(), .a2(divbypclk),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .a2(),
+                                       .b1(tck_sync),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                                       .b1(),.b2(clock_dr), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),.b2(), .z(clkout));
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .z());
+
+       ctu_inv u_altclk_sync_l_gated (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+       ctu_inv  (.z(altclk_sync_l_bar), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (.z(), .a(altclk_sync_l));
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .a());
+       bw_u1_oai21_4x  u_sysclk_sel_bar_gated (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+       bw_u1_oai21_4x   (.a  (altclk_sync_l_bar),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (.a  (),
+                                               .b1 (force_altclk_l),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                                               .b1 (),
+                                               .b2 (force_alt_clk_sync),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                                               .b2 (),
+                                               .z (sysclk_sel_bar));
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+),
+                                               .z ());
+       ctu_inv u_sysclk_sel_gated (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+       ctu_inv  (.z(sysclk_sel), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+ (.z(), .a(sysclk_sel_bar));
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+), .a());
+
+endmodule
+// Local Variables:
+// verilog-library-directories:("." "../../common/rtl")
+// verilog-library-files:      ("../../common/rtl/swrvr_clib.v")
+// verilog-auto-sense-defines-constant:t
+// End:
+));
+
+endmodule

@@ -1,0 +1,2 @@
+module add synthesis/yosys
+yosys -c riscv.tcl

@@ -1,0 +1,1688 @@
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 13:59:45 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine cut
+# cut
+set previous logic
+# logic
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcut
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory cut
+cd cut
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn c
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.cdo...
+# riscv.cdo
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../logic/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [cut]:reading LEF file:../../osu035.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# ######################## VERILOG ############################
+set input_name $::utdtools::verilog_fileS
+# riscv.v
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.v does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.v does not exist.  Looking in ../logic/output ...
+# [::utdtools::search_input]:found... creating link to ../logic/output/riscv.v...link:riscv.v
+icmessage imsg $routine "reading Verilog file:$fpath\n"
+# [cut]:reading Verilog file:../logic/output/riscv.v
+icread_verilog -auto  -flatten $fpath
+# [icread_verilog]:../logic/output/riscv.v read.
+# [make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+# You may wish to edit this cells characteristics in the library.
+# [make_portcell_model]:Could not find portcell model.  Creating a dummy one.
+# You may wish to edit this cells characteristics in the library.
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../logic/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [cut]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## OUTPUT ############################
+icbackup_directory output
+cd output
+
+icwrite_def ${dsn}.def -unplaced
+# [write_def]:riscv.def written.
+
+icmessage imsg null "waiting here\n"
+# waiting here
+icexit 0
+
+# itranslate terminated normally at Tue Oct 22 13:59:46 2019
+# with no errors and 0 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 13:59:46 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine floorplan
+# floorplan
+set previous cut
+# cut
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfloorplan
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory floorplan
+cd floorplan
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn f
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.fdo...
+# riscv.fdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimFloorplan Program...\n"
+# Welcome to the TimberWolf SimFloorplan Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s c -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/floorplan
+set folder [file tail $dirname]
+# floorplan
+if {$folder != "floorplan"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../cut/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [floorplan]:reading LEF file:../../osu035.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../cut/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [floorplan]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cut/output ...
+# [::utdtools::search_input]:found... creating link to ../cut/output/riscv.def...link:riscv.def
+icmessage imsg $routine "reading DEF file:$fpath\n"
+# [floorplan]:reading DEF file:../cut/output/riscv.def
+icread_def $fpath -no_pad_extract
+#     components:4902
+# [convert_sites_to_rows]:No sites found.
+#     nets:5039
+# WARNING[sites_available]:Did not find 4 pad sites.
+# [icread_def]:../cut/output/riscv.def read.
+
+
+# Now output the TimberWolf files
+icbackup_directory timberwolf
+icbackup_directory output
+cd timberwolf
+icwrite_ic -notplaced -hierarchy -sitedefs
+# [write_con]:riscv.con written.
+# [write_ckt]:riscv.ckt written.
+# [icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+# [icwrite_lib]:riscv.lib written.
+# [write_par]:riscv.par written.
+
+set f [open ${dsn}.fdo w]
+# file8
+puts $f ""
+puts $f "proc fix_the_pads { } {"
+puts $f "  icplacepads::extract_vectors_from_pads"
+puts $f "  icplacepads::equalize_sides {L B R T}"
+puts $f "  icplace_pads uniform -free_side -core_to_padspace 20"
+puts $f "  icplacepads::convert_to_exact"
+puts $f "  twpad dumpconstraints output/itools.con -append"
+puts $f "}"
+puts $f ""
+puts $f "icprerouting convert"
+puts $f "icfloorplan"
+puts $f "iccontext placement"
+puts $f "fix_the_pads"
+close $f
+
+
+set icos [file join $icdirG bin icos]
+# /Users/bill/version1/itools/bin/icos
+
+###################################################################
+# Now call the floorplanner flow.
+###################################################################
+set opts "-stop ifp -x -v"
+# -stop ifp -x -v
+if {([info exists ::utdtools::nographicsS]) && ($::utdtools::nographicS)} {
+  append opts " -n"
+}
+set flow flow.route1
+# flow.route1
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG itools $opts -flow $flow ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+# Create the ${dsn}_final.tdo script.
+set f [open ${dsn}_final.tdo w]
+# file8
+puts $f "icread_itools::state floorplan"
+puts $f "icwrite_def \[file join ../ output ${dsn}.def] -unplaced"
+puts $f "exit"
+close $f
+
+# Next call translator to create output files.
+if {[catch {bgexec statusTG -output outputG $icos icdir $icdirG itranslate -v -do ${dsn}_final.tdo ${dsn}} msg]} {  
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+icexit 0
+
+# itranslate terminated normally at Tue Oct 22 13:59:53 2019
+# with no errors and 1 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 13:59:53 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine place
+# place
+set previous floorplan
+# floorplan
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twplace
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory place
+cd place
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn p
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.pdo...
+# riscv.pdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimPlace Program...\n"
+# Welcome to the TimberWolf SimPlace Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/place
+set folder [file tail $dirname]
+# place
+if {$folder != "place"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../floorplan/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [place]:reading LEF file:../../osu035.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../floorplan/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [place]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../floorplan/output ...
+# [::utdtools::search_input]:found... creating link to ../floorplan/output/riscv.def...link:riscv.def
+icmessage imsg $routine "reading DEF file:$fpath\n"
+# [place]:reading DEF file:../floorplan/output/riscv.def
+icread_def $fpath -convert_to_exact_pads
+#     components:4902
+# [convert_sites_to_rows]:45 rows found.
+#     nets:5039
+# WARNING[sites_available]:Did not find 4 pad sites.
+# [icread_def]:../floorplan/output/riscv.def read.
+
+
+# Now output the TimberWolf files
+icbackup_directory timberwolf
+icbackup_directory output
+cd timberwolf
+# Don't want to confuse things use TimberWolf default script.
+icpar_option ICSC autodetect_script off
+# off
+icpar_option ICSC fast 10
+# 10
+icwrite_ic -notplaced -writerows
+# [compact_rows]:Number of rows compacted from 45 to 45.
+# [write_con]:riscv.con written.
+# [write_ckt]:riscv.ckt written.
+# [icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+# [icwrite_lib]:riscv.lib written.
+# [write_par]:riscv.par written.
+icbackup_directory floorplan/output
+file copy ${dsn}.con [file join floorplan output itools.con]
+
+set icos [file join $icdirG bin icos]
+# /Users/bill/version1/itools/bin/icos
+
+###################################################################
+# Now call the syntax check and the placer.
+###################################################################
+if {([info exists ::utdtools::nographicsS]) && ($::utdtools::nographicS)} {
+  append opts " -n -v"
+} else {
+  append opts " -v"
+}
+#  -v
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG syntax -v ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG iplacesc ${opts} ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+# Create the ${dsn}_final.tdo script.
+set f [open ${dsn}_final.tdo w]
+# file8
+puts $f "icread_itools::state place"
+puts $f "icwrite_def \[file join ../ output ${dsn}.def] -placed \
+-sections {rows nocoresites vias components pins nets}"
+puts $f "exit"
+close $f
+
+# Next call translator to create output files.
+if {[catch {bgexec statusTG -output outputG $icos icdir $icdirG itranslate -v -do ${dsn}_final.tdo ${dsn}} msg]} {  
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+icmessage imsg twplace "placement completed.\n"
+# [twplace]:placement completed.
+exit 0
+
+# itranslate terminated normally at Tue Oct 22 14:00:53 2019
+# with no errors and 1 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 14:00:54 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine cts
+# cts
+set previous place
+# place
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twcts
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory cts
+cd cts
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn t
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.tdo...
+# riscv.tdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimCTS Program...\n"
+# Welcome to the TimberWolf SimCTS Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/cts
+set folder [file tail $dirname]
+# cts
+if {$folder != "cts"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../place/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [cts]:reading LEF file:../../osu035.lef
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../place/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [cts]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$def_path == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../place/output ...
+# [::utdtools::search_input]:found... creating link to ../place/output/riscv.def...link:riscv.def
+icread_def $def_path -convert_to_exact_pads
+#     components:4902
+# [convert_sites_to_rows]:45 rows found.
+#     nets:5039
+# WARNING[sites_available]:Did not find 4 pad sites.
+# [icread_def]:../place/output/riscv.def read.
+
+
+# Now output the TimberWolf files
+icbackup_directory timberwolf
+icbackup_directory output
+cd timberwolf
+# Don't want to confuse things use TimberWolf default script.
+icpar_option ICSC autodetect_script off
+# off
+icwrite_ic -placed
+# [compact_rows]:Number of rows compacted from 45 to 45.
+# [write_con]:riscv.con written.
+# [write_ckt]:riscv.ckt written.
+# [icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+# [icwrite_lib]:riscv.lib written.
+# [write_par]:riscv.par written.
+cd ../
+
+set outfile [file join [pwd] output ${dsn}.def]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/cts/output/riscv.def
+
+
+###################################################################
+# For now just copy def file to the output directory
+###################################################################
+if {[file type $def_path] == "link"} {
+  if {[catch {set real_file_path [file readlink $def_path]} msg]} {
+    icwait
+  }
+  set full_path [file join ../ place output $real_file_path]
+} else {
+  set full_path $def_path
+}
+# ../place/output/riscv.def
+file copy $full_path $outfile
+
+icexit 0
+
+# itranslate terminated normally at Tue Oct 22 14:00:54 2019
+# with no errors and 1 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 14:00:54 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine grouter
+# grouter
+set previous cts
+# cts
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twgrouter
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory groute
+cd groute
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn g
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.gdo...
+# riscv.gdo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf SimGrouter Program...\n"
+# Welcome to the TimberWolf SimGrouter Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute
+set folder [file tail $dirname]
+# groute
+if {$folder != "groute"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../cts/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [grouter]:reading LEF file:../../osu035.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../cts/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [grouter]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../cts/output ...
+# [::utdtools::search_input]:found... creating link to ../cts/output/riscv.def...link:riscv.def
+icmessage imsg $routine "reading DEF file:$fpath\n"
+# [grouter]:reading DEF file:../cts/output/riscv.def
+icread_def $fpath -convert_to_exact_pads
+#     components:4902
+# [convert_sites_to_rows]:45 rows found.
+#     nets:5039
+# WARNING[sites_available]:Did not find 4 pad sites.
+# [icread_def]:../cts/output/riscv.def read.
+
+
+# Now output the TimberWolf files
+icbackup_directory timberwolf
+icbackup_directory output
+cd timberwolf
+
+# For TimberWolf global router abstract ports
+set models [twinstance used -include_required]
+# AND2X1 AND2X2 AOI21X1 AOI22X1 BUFX2 DFFPOSX1 DFFSR INVX1 INVX2 IRQ {IRQnum[0]} {IRQnum[1]} {IRQnum[2]} {IRQnum[3]} MUX2X1 NAND2X1 NAND3X1 NOR2X1 NOR3X1 OAI21X1 OAI22X1 OR2X2 XNOR2X1 XOR2X1 {baddr[0]} {baddr[10]} {baddr[11]} {baddr[12]} {baddr[13]} {baddr[14]} {baddr[15]} {baddr[16]} {baddr[17]} {baddr[18]} {baddr[19]} {baddr[1]} {baddr[20]} {baddr[21]} {baddr[22]} {baddr[23]} {baddr[24]} {baddr[25]} {baddr[26]} {baddr[27]} {baddr[28]} {baddr[29]} {baddr[2]} {baddr[30]} {baddr[31]} {baddr[3]} {baddr[4]} {baddr[5]} {baddr[6]} {baddr[7]} {baddr[8]} {baddr[9]} {bdi[0]} {bdi[10]} {bdi[11]} {bdi[12]} {bdi[13]} {bdi[14]} {bdi[15]} {bdi[16]} {bdi[17]} {bdi[18]} {bdi[19]} {bdi[1]} {bdi[20]} {bdi[21]} {bdi[22]} {bdi[23]} {bdi[24]} {bdi[25]} {bdi[26]} {bdi[27]} {bdi[28]} {bdi[29]} {bdi[2]} {bdi[30]} {bdi[31]} {bdi[3]} {bdi[4]} {bdi[5]} {bdi[6]} {bdi[7]} {bdi[8]} {bdi[9]} {bdo[0]} {bdo[10]} {bdo[11]} {bdo[12]} {bdo[13]} {bdo[14]} {bdo[15]} {bdo[16]} {bdo[17]} {bdo[18]} {bdo[19]} {bdo[1]} {bdo[20]} {bdo[21]} {bdo[22]} {bdo[23]} {bdo[24]} {bdo[25]} {bdo[26]} {bdo[27]} {bdo[28]} {bdo[29]} {bdo[2]} {bdo[30]} {bdo[31]} {bdo[3]} {bdo[4]} {bdo[5]} {bdo[6]} {bdo[7]} {bdo[8]} {bdo[9]} {bsz[0]} {bsz[1]} bwr clk {extA[0]} {extA[10]} {extA[11]} {extA[12]} {extA[13]} {extA[14]} {extA[15]} {extA[16]} {extA[17]} {extA[18]} {extA[19]} {extA[1]} {extA[20]} {extA[21]} {extA[22]} {extA[23]} {extA[24]} {extA[25]} {extA[26]} {extA[27]} {extA[28]} {extA[29]} {extA[2]} {extA[30]} {extA[31]} {extA[3]} {extA[4]} {extA[5]} {extA[6]} {extA[7]} {extA[8]} {extA[9]} {extB[0]} {extB[10]} {extB[11]} {extB[12]} {extB[13]} {extB[14]} {extB[15]} {extB[16]} {extB[17]} {extB[18]} {extB[19]} {extB[1]} {extB[20]} {extB[21]} {extB[22]} {extB[23]} {extB[24]} {extB[25]} {extB[26]} {extB[27]} {extB[28]} {extB[29]} {extB[2]} {extB[30]} {extB[31]} {extB[3]} {extB[4]} {extB[5]} {extB[6]} {extB[7]} {extB[8]} {extB[9]} extDone {extFunc3[0]} {extFunc3[1]} {extFunc3[2]} {extR[0]} {extR[10]} {extR[11]} {extR[12]} {extR[13]} {extR[14]} {extR[15]} {extR[16]} {extR[17]} {extR[18]} {extR[19]} {extR[1]} {extR[20]} {extR[21]} {extR[22]} {extR[23]} {extR[24]} {extR[25]} {extR[26]} {extR[27]} {extR[28]} {extR[29]} {extR[2]} {extR[30]} {extR[31]} {extR[3]} {extR[4]} {extR[5]} {extR[6]} {extR[7]} {extR[8]} {extR[9]} extStart {rfD[0]} {rfD[10]} {rfD[11]} {rfD[12]} {rfD[13]} {rfD[14]} {rfD[15]} {rfD[16]} {rfD[17]} {rfD[18]} {rfD[19]} {rfD[1]} {rfD[20]} {rfD[21]} {rfD[22]} {rfD[23]} {rfD[24]} {rfD[25]} {rfD[26]} {rfD[27]} {rfD[28]} {rfD[29]} {rfD[2]} {rfD[30]} {rfD[31]} {rfD[3]} {rfD[4]} {rfD[5]} {rfD[6]} {rfD[7]} {rfD[8]} {rfD[9]} {rfRS1[0]} {rfRS1[10]} {rfRS1[11]} {rfRS1[12]} {rfRS1[13]} {rfRS1[14]} {rfRS1[15]} {rfRS1[16]} {rfRS1[17]} {rfRS1[18]} {rfRS1[19]} {rfRS1[1]} {rfRS1[20]} {rfRS1[21]} {rfRS1[22]} {rfRS1[23]} {rfRS1[24]} {rfRS1[25]} {rfRS1[26]} {rfRS1[27]} {rfRS1[28]} {rfRS1[29]} {rfRS1[2]} {rfRS1[30]} {rfRS1[31]} {rfRS1[3]} {rfRS1[4]} {rfRS1[5]} {rfRS1[6]} {rfRS1[7]} {rfRS1[8]} {rfRS1[9]} {rfRS2[0]} {rfRS2[10]} {rfRS2[11]} {rfRS2[12]} {rfRS2[13]} {rfRS2[14]} {rfRS2[15]} {rfRS2[16]} {rfRS2[17]} {rfRS2[18]} {rfRS2[19]} {rfRS2[1]} {rfRS2[20]} {rfRS2[21]} {rfRS2[22]} {rfRS2[23]} {rfRS2[24]} {rfRS2[25]} {rfRS2[26]} {rfRS2[27]} {rfRS2[28]} {rfRS2[29]} {rfRS2[2]} {rfRS2[30]} {rfRS2[31]} {rfRS2[3]} {rfRS2[4]} {rfRS2[5]} {rfRS2[6]} {rfRS2[7]} {rfRS2[8]} {rfRS2[9]} {rfrd[0]} {rfrd[1]} {rfrd[2]} {rfrd[3]} {rfrd[4]} {rfrs1[0]} {rfrs1[1]} {rfrs1[2]} {rfrs1[3]} {rfrs1[4]} {rfrs2[0]} {rfrs2[1]} {rfrs2[2]} {rfrs2[3]} {rfrs2[4]} rfwr rst
+icabstract $models
+# [icabstract]:prerouting model:AND2X1...
+# [icabstract]:prerouting model:AND2X2...
+# [icabstract]:prerouting model:AOI21X1...
+# [icabstract]:prerouting model:AOI22X1...
+# [icabstract]:prerouting model:BUFX2...
+# [icabstract]:prerouting model:DFFPOSX1...
+# [icabstract]:prerouting model:DFFSR...
+# [icabstract]:prerouting model:INVX1...
+# [icabstract]:prerouting model:INVX2...
+# [icabstract]:prerouting model:MUX2X1...
+# [icabstract]:prerouting model:NAND2X1...
+# [icabstract]:prerouting model:NAND3X1...
+# [icabstract]:prerouting model:NOR2X1...
+# [icabstract]:prerouting model:NOR3X1...
+# [icabstract]:prerouting model:OAI21X1...
+# [icabstract]:prerouting model:OAI22X1...
+# [icabstract]:prerouting model:OR2X2...
+# [icabstract]:prerouting model:XNOR2X1...
+# WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+# [icabstract]:prerouting model:XOR2X1...
+# WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+# [icabstract]:successfully prerouted 19 models.
+
+# Don't want to confuse things use TimberWolf default script.
+icpar_option TWGR autodetect_script off
+# off
+icpar_option TWGR iterations 1
+# 1
+icpar_option TWGR reassign_iterations 1
+# 1
+icpar_option TWGR create_gcells on
+# on
+icwrite_ic -placed -writerows
+# [compact_rows]:Number of rows compacted from 45 to 45.
+# [write_con]:riscv.con written.
+# [write_ckt]:riscv.ckt written.
+# [icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+# [icwrite_lib]:riscv.iclib written.
+# [icwrite_lib]:riscv.lib written.
+# [write_par]:riscv.par written.
+icwrite_placement ${dsn}.pl1
+# [icwrite_placement]:riscv.pl1 written.
+# 
+
+set icos [file join $icdirG bin icos]
+# /Users/bill/version1/itools/bin/icos
+
+###################################################################
+# Now call the syntax check and the placer.
+###################################################################
+if {([info exists ::utdtools::nographicsS]) && ($::utdtools::nographicS)} {
+  append opts " -n -v"
+} else {
+  append opts " -v"
+}
+#  -v
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG syntax -v ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG grouter ${opts} ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+# Create the ${dsn}_final.tdo script.
+set f [open ${dsn}_final.tdo w]
+# file8
+puts $f "icread_itools::state groute"
+puts $f "icwrite_def \[file join ../ output ${dsn}.def] -placed \
+-sections {rows nocoresites vias components pins nets}"
+puts $f "# Copy over the .guide file"
+puts $f "set guide_path \[file join groute output ${dsn}.guide]"
+puts $f "if {\[file exists \$guide_path]} {"
+puts $f "  set output_guide \[file join ../output ${dsn}.guide]"
+puts $f "  file copy \$guide_path \$output_guide"
+puts $f "}"
+puts $f "exit"
+close $f
+
+# Next call translator to create output files.
+if {[catch {bgexec statusTG -output outputG $icos icdir $icdirG itranslate -v -do ${dsn}_final.tdo ${dsn}} msg]} {  
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+icmessage imsg twplace "global routing completed.\n"
+# [twplace]:global routing completed.
+exit 0
+
+# itranslate terminated normally at Tue Oct 22 14:01:51 2019
+# with no errors and 1 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 14:01:51 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine drouter
+# drouter
+set previous groute
+# groute
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twdrouter
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory droute
+cd droute
+
+# Now source any necessary do files.
+set do_file [::utdtools::source_flow_do_files $dsn d -nosource]
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.ddo...
+# riscv.ddo
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the TimberWolf Detailer Router Program...\n"
+# Welcome to the TimberWolf Detailer Router Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/droute
+set folder [file tail $dirname]
+# droute
+if {$folder != "droute"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../groute/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [drouter]:reading LEF file:../../osu035.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../groute/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [drouter]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../groute/output ...
+# [::utdtools::search_input]:found... creating link to ../groute/output/riscv.def...link:riscv.def
+icmessage imsg $routine "reading DEF file:$fpath\n"
+# [drouter]:reading DEF file:../groute/output/riscv.def
+icread_def $fpath -convert_to_exact_pads
+#     components:8941
+# [convert_sites_to_rows]:45 rows found.
+#     nets:5039
+# WARNING[sites_available]:Did not find 4 pad sites.
+# [icread_def]:../groute/output/riscv.def read.
+
+# ######################## GUIDE FILE ############################
+set input_name ${dsn}.guide
+# riscv.guide
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.guide does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.guide does not exist.  Looking in ../groute/output ...
+# [::utdtools::search_input]:found... creating link to ../groute/output/riscv.guide...link:riscv.guide
+icmessage imsg $routine "creating guide file link:$fpath\n"
+# [drouter]:creating guide file link:../groute/output/riscv.guide
+
+
+# Now output the TimberWolf files
+icbackup_directory timberwolf
+icbackup_directory output
+cd timberwolf
+
+# For TimberWolf global router abstract ports
+set models [twinstance used -include_required]
+# AND2X1 AND2X2 AOI21X1 AOI22X1 BUFX2 DFFPOSX1 DFFSR FILL INVX1 INVX2 IRQ {IRQnum[0]} {IRQnum[1]} {IRQnum[2]} {IRQnum[3]} MUX2X1 NAND2X1 NAND3X1 NOR2X1 NOR3X1 OAI21X1 OAI22X1 OR2X2 XNOR2X1 XOR2X1 {baddr[0]} {baddr[10]} {baddr[11]} {baddr[12]} {baddr[13]} {baddr[14]} {baddr[15]} {baddr[16]} {baddr[17]} {baddr[18]} {baddr[19]} {baddr[1]} {baddr[20]} {baddr[21]} {baddr[22]} {baddr[23]} {baddr[24]} {baddr[25]} {baddr[26]} {baddr[27]} {baddr[28]} {baddr[29]} {baddr[2]} {baddr[30]} {baddr[31]} {baddr[3]} {baddr[4]} {baddr[5]} {baddr[6]} {baddr[7]} {baddr[8]} {baddr[9]} {bdi[0]} {bdi[10]} {bdi[11]} {bdi[12]} {bdi[13]} {bdi[14]} {bdi[15]} {bdi[16]} {bdi[17]} {bdi[18]} {bdi[19]} {bdi[1]} {bdi[20]} {bdi[21]} {bdi[22]} {bdi[23]} {bdi[24]} {bdi[25]} {bdi[26]} {bdi[27]} {bdi[28]} {bdi[29]} {bdi[2]} {bdi[30]} {bdi[31]} {bdi[3]} {bdi[4]} {bdi[5]} {bdi[6]} {bdi[7]} {bdi[8]} {bdi[9]} {bdo[0]} {bdo[10]} {bdo[11]} {bdo[12]} {bdo[13]} {bdo[14]} {bdo[15]} {bdo[16]} {bdo[17]} {bdo[18]} {bdo[19]} {bdo[1]} {bdo[20]} {bdo[21]} {bdo[22]} {bdo[23]} {bdo[24]} {bdo[25]} {bdo[26]} {bdo[27]} {bdo[28]} {bdo[29]} {bdo[2]} {bdo[30]} {bdo[31]} {bdo[3]} {bdo[4]} {bdo[5]} {bdo[6]} {bdo[7]} {bdo[8]} {bdo[9]} {bsz[0]} {bsz[1]} bwr clk {extA[0]} {extA[10]} {extA[11]} {extA[12]} {extA[13]} {extA[14]} {extA[15]} {extA[16]} {extA[17]} {extA[18]} {extA[19]} {extA[1]} {extA[20]} {extA[21]} {extA[22]} {extA[23]} {extA[24]} {extA[25]} {extA[26]} {extA[27]} {extA[28]} {extA[29]} {extA[2]} {extA[30]} {extA[31]} {extA[3]} {extA[4]} {extA[5]} {extA[6]} {extA[7]} {extA[8]} {extA[9]} {extB[0]} {extB[10]} {extB[11]} {extB[12]} {extB[13]} {extB[14]} {extB[15]} {extB[16]} {extB[17]} {extB[18]} {extB[19]} {extB[1]} {extB[20]} {extB[21]} {extB[22]} {extB[23]} {extB[24]} {extB[25]} {extB[26]} {extB[27]} {extB[28]} {extB[29]} {extB[2]} {extB[30]} {extB[31]} {extB[3]} {extB[4]} {extB[5]} {extB[6]} {extB[7]} {extB[8]} {extB[9]} extDone {extFunc3[0]} {extFunc3[1]} {extFunc3[2]} {extR[0]} {extR[10]} {extR[11]} {extR[12]} {extR[13]} {extR[14]} {extR[15]} {extR[16]} {extR[17]} {extR[18]} {extR[19]} {extR[1]} {extR[20]} {extR[21]} {extR[22]} {extR[23]} {extR[24]} {extR[25]} {extR[26]} {extR[27]} {extR[28]} {extR[29]} {extR[2]} {extR[30]} {extR[31]} {extR[3]} {extR[4]} {extR[5]} {extR[6]} {extR[7]} {extR[8]} {extR[9]} extStart {rfD[0]} {rfD[10]} {rfD[11]} {rfD[12]} {rfD[13]} {rfD[14]} {rfD[15]} {rfD[16]} {rfD[17]} {rfD[18]} {rfD[19]} {rfD[1]} {rfD[20]} {rfD[21]} {rfD[22]} {rfD[23]} {rfD[24]} {rfD[25]} {rfD[26]} {rfD[27]} {rfD[28]} {rfD[29]} {rfD[2]} {rfD[30]} {rfD[31]} {rfD[3]} {rfD[4]} {rfD[5]} {rfD[6]} {rfD[7]} {rfD[8]} {rfD[9]} {rfRS1[0]} {rfRS1[10]} {rfRS1[11]} {rfRS1[12]} {rfRS1[13]} {rfRS1[14]} {rfRS1[15]} {rfRS1[16]} {rfRS1[17]} {rfRS1[18]} {rfRS1[19]} {rfRS1[1]} {rfRS1[20]} {rfRS1[21]} {rfRS1[22]} {rfRS1[23]} {rfRS1[24]} {rfRS1[25]} {rfRS1[26]} {rfRS1[27]} {rfRS1[28]} {rfRS1[29]} {rfRS1[2]} {rfRS1[30]} {rfRS1[31]} {rfRS1[3]} {rfRS1[4]} {rfRS1[5]} {rfRS1[6]} {rfRS1[7]} {rfRS1[8]} {rfRS1[9]} {rfRS2[0]} {rfRS2[10]} {rfRS2[11]} {rfRS2[12]} {rfRS2[13]} {rfRS2[14]} {rfRS2[15]} {rfRS2[16]} {rfRS2[17]} {rfRS2[18]} {rfRS2[19]} {rfRS2[1]} {rfRS2[20]} {rfRS2[21]} {rfRS2[22]} {rfRS2[23]} {rfRS2[24]} {rfRS2[25]} {rfRS2[26]} {rfRS2[27]} {rfRS2[28]} {rfRS2[29]} {rfRS2[2]} {rfRS2[30]} {rfRS2[31]} {rfRS2[3]} {rfRS2[4]} {rfRS2[5]} {rfRS2[6]} {rfRS2[7]} {rfRS2[8]} {rfRS2[9]} {rfrd[0]} {rfrd[1]} {rfrd[2]} {rfrd[3]} {rfrd[4]} {rfrs1[0]} {rfrs1[1]} {rfrs1[2]} {rfrs1[3]} {rfrs1[4]} {rfrs2[0]} {rfrs2[1]} {rfrs2[2]} {rfrs2[3]} {rfrs2[4]} rfwr rst
+icabstract $models
+# [icabstract]:prerouting model:AND2X1...
+# [icabstract]:prerouting model:AND2X2...
+# [icabstract]:prerouting model:AOI21X1...
+# [icabstract]:prerouting model:AOI22X1...
+# [icabstract]:prerouting model:BUFX2...
+# [icabstract]:prerouting model:DFFPOSX1...
+# [icabstract]:prerouting model:DFFSR...
+# [icabstract]:prerouting model:INVX1...
+# [icabstract]:prerouting model:INVX2...
+# [icabstract]:prerouting model:MUX2X1...
+# [icabstract]:prerouting model:NAND2X1...
+# [icabstract]:prerouting model:NAND3X1...
+# [icabstract]:prerouting model:NOR2X1...
+# [icabstract]:prerouting model:NOR3X1...
+# [icabstract]:prerouting model:OAI21X1...
+# [icabstract]:prerouting model:OAI22X1...
+# [icabstract]:prerouting model:OR2X2...
+# [icabstract]:prerouting model:XNOR2X1...
+# WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+# [icabstract]:prerouting model:XOR2X1...
+# WARNING[preroute_end_pin]:could not reference portname for   pin:Y.  Please check.
+# [icabstract]:successfully prerouted 19 models.
+
+# Don't want to confuse things use TimberWolf default script.
+icpar_option TWDR autodetect_script off
+# off
+if {[file exists ../${do_file}]} {
+  icpar_option TWDR route_script ../${do_file}
+}
+icwrite_ic -placed -writerows
+# [compact_rows]:Number of rows compacted from 45 to 45.
+# [write_con]:riscv.con written.
+# [write_ckt]:riscv.ckt written.
+# [icwrite_lib]:All cells present.  No dummy cells were needed in translation.
+# [icwrite_lib]:riscv.iclib written.
+# [icwrite_lib]:riscv.lib written.
+# [write_par]:riscv.par written.
+icwrite_placement ${dsn}.pl1
+# [icwrite_placement]:riscv.pl1 written.
+# 
+
+set icos [file join $icdirG bin icos]
+# /Users/bill/version1/itools/bin/icos
+
+###################################################################
+# Now call the syntax check and the placer.
+###################################################################
+if {[catch {eval bgexec statusG -output outputG $icos icdir $icdirG syntax -v ${dsn}} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+if {([info exists ::utdtools::nographicsS]) && ($::utdtools::nographicS)} {
+  append opts " -n -v"
+} else {
+  append opts " -v"
+}
+#  -v
+set program_cmd "$icos icdir $icdirG TimberWolfDR ${opts} ${dsn}"
+# /Users/bill/version1/itools/bin/icos icdir /Users/bill/version1/itools TimberWolfDR  -v riscv
+if {[catch {eval bgexec statusG -output outputG -keepnewline false -onoutput [list {puts stderr}] $program_cmd} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg:$msg"
+  close $fp
+}
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 16:37:53 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine assemble
+# assemble
+set previous droute
+# droute
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twassemble
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory assemble
+cd assemble
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn a
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.ado...
+# riscv.ado
+
+set num_parts $::utdtools::numPartitionS
+# 1
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the Sim Assembly Program...\n"
+# Welcome to the Sim Assembly Program...
+icmessage imsg null "We are going to process $num_parts...\n"
+# We are going to process 1...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/assemble
+set folder [file tail $dirname]
+# assemble
+if {$folder != "assemble"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../droute/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [assemble]:reading LEF file:../../osu035.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../droute/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [assemble]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+if {$num_parts == 1} {  
+  set input_name $::utdtools::def_fileS
+  if {$input_name != ""} {
+    # change this to multiple files if needed
+    set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+    if {$def_path == ""} {
+      icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+      icwait
+      exit 1
+    }
+  }
+  icmessage imsg $routine "reading DEF file:$def_path\n"
+  icread_def $def_path -convert_to_exact_pads
+} else {
+  icmessage errmsg $routine "multiple partitions not supported yet.\n"
+  exit 1
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../droute/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 16:37:54 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine metalfill
+# metalfill
+set previous assemble
+# assemble
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twmetalfill
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory metalfill
+cd metalfill
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn m
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.mdo...
+# riscv.mdo
+
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the Sim MetalFill Program...\n"
+# Welcome to the Sim MetalFill Program...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/metalfill
+set folder [file tail $dirname]
+# metalfill
+if {$folder != "metalfill"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../assemble/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [metalfill]:reading LEF file:../../osu035.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../assemble/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [metalfill]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$def_path == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../assemble/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 16:37:55 2019
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${ICDIR}/bin/icos itranslate -v -do $0 ${1+"$@"}
+
+set routine final
+# final
+set previous metalfill
+# metalfill
+
+global env
+global argv
+global icdirG
+if {[info exists env(ICDIR)]} {
+  set icdirG $env(ICDIR)
+} {
+  puts stderr "ERROR:cannot get iTools environment variable:ICDIR"
+  exit 1
+}
+# /Users/bill/version1/itools
+lappend auto_path $icdirG/tcl/common
+# /Users/bill/version1/itools/tcl/libtcl /Users/bill/version1/itools/tcl ./lib /usr/local/lib /Users/bill/version1/itools/tcl/translate /Users/bill/version1/itools/tcl/common /Users/bill/version1/itools/tcl/common
+
+set args $argv
+# -v -do /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal riscv
+set num_args [llength $args]
+# 4
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  icmessage imsg null "argv\[$i]: $arg_el\n"
+}
+# argv[0]: -v
+# argv[1]: -do
+# argv[2]: /Users/bill/version1/utdtools/utdtools.1.0/scripts/flow/twfinal
+# argv[3]: riscv
+incr i -1
+# 3
+set dsn [lindex $args $i]
+# riscv
+
+icbackup_directory final
+cd final
+
+# Now source any necessary do files.
+::utdtools::source_flow_do_files $dsn o
+# [::utdtools::check_do_file]:No user do file. Using default: riscv.odo...
+# riscv.odo
+
+set dsn $::utdtools::designNameS
+# riscv
+icmessage imsg null "Welcome to the Final Output Program...\n"
+# Welcome to the Final Output Program...
+
+# Now do some functionality
+# We should be in the floorplan directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/Darwin/flow -s p -dir cut .... 
+set dirname [pwd]
+# /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/final
+set folder [file tail $dirname]
+# final
+if {$folder != "final"} {
+  icmessage errmg $routine "we are not in the proper directory:$folder\n"
+  icwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::utdtools::lef_fileS
+# osu035.lef
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../metalfill/output ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lef does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lef...link:osu035.lef
+icmessage imsg $routine "reading LEF file:$fpath\n"
+# [final]:reading LEF file:../../osu035.lef
+iccheck_ports off
+# [check_ports]:Port checking turned off.
+icread_lef $fpath -scale -model_obs keepout -merge_layers
+# [icread_lef]:Options: -model_obs keepout -scale -merge_layers
+# [icread_lef]:../../osu035.lef read.
+
+# We need to do this for TimberWolf
+if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
+  icmake_default_feedthru -exists $::utdtools::feednameS
+}
+# WARNING[add_feedthru]:Not enough space for additional feed layer:metal4 in feed model:FILL pitch:3.2 width of model:1.6
+# 
+# 0
+
+# ######################## TIMING ############################
+set input_name $::utdtools::timing_fileS
+# osu035.lib
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../metalfill/output ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:osu035.lib does not exist.  Looking in ../../ ...
+# [::utdtools::search_input]:found... creating link to ../../osu035.lib...link:osu035.lib
+icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+# [final]:reading Synopsys Library file:../../osu035.lib
+icread_synopsys -new $fpath
+# [icread_synopsys]:reading ../../osu035.lib...
+
+# ######################## DEF ############################
+set input_name $::utdtools::def_fileS
+# riscv.def
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set def_path [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$def_path == ""} {
+    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    icwait
+    exit 1
+  }
+}
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in . ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../metalfill/output ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../ ...
+# [::utdtools::search_input]:input file:riscv.def does not exist.  Looking in ../../ ...
+# ERROR[final]:No input file named riscv.def found. Aborting
+exit
+
+# itranslate terminated abnormally at Tue Oct 22 16:37:57 2019
+# with 1 error[s] and 0 warning[s]
+

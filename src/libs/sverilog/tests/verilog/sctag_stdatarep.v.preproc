@@ -1,0 +1,38 @@
+module sctag_stdatarep(
+      rep_store_data_c2, sctag_scdata_stdecc_c2, 
+      arbdp_store_data_c2
+   );
+
+
+input  [77:0]	arbdp_store_data_c2; 
+output  [77:0]	rep_store_data_c2;  output  [77:0]	sctag_scdata_stdecc_c2;  
+
+assign	 = arbdp_store_data_c2 ;
+
+
+assign	rep_store_data_c2 = arbdp_store_data_c2 ;
+
+
+endmodule
+ =  ;
+
+
+assign	rep_store_data_c2 = arbdp_store_data_c2 ;
+
+
+endmodule
+ ;
+
+
+assign	 = arbdp_store_data_c2 ;
+
+
+endmodule
+ =  ;
+
+
+endmodule
+ ;
+
+
+endmodule

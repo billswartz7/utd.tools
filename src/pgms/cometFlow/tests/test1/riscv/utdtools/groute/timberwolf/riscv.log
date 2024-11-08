@@ -1,0 +1,1270 @@
+####################################################
+time 1571770856 Tue Oct 22 14:00:56 2019:syntax started...
+@ /Users/bill/version1/itools/bin/Darwin/syntax -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 81098 PVERSION v2.0.0pre46
+
+iTools System Syntax Checker
+
+syntax version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:28:48 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+syntax switches:
+
+
+Determining intrinsic scale...
+no syntax errors in library:riscv.lib
+Read   50 models so far...
+Read  100 models so far...
+Read  150 models so far...
+Read  200 models so far...
+Read  250 models so far...
+Read  300 models so far...
+Read  350 models so far...
+no syntax errors in library:riscv.lib
+Read   50 cell instances so far...
+Read  100 cell instances so far...
+Read  150 cell instances so far...
+Read  200 cell instances so far...
+Read  250 cell instances so far...
+Read  300 cell instances so far...
+Read  350 cell instances so far...
+Read  400 cell instances so far...
+Read  450 cell instances so far...
+Read  500 cell instances so far...
+Read  550 cell instances so far...
+Read  600 cell instances so far...
+Read  650 cell instances so far...
+Read  700 cell instances so far...
+Read  750 cell instances so far...
+Read  800 cell instances so far...
+Read  850 cell instances so far...
+Read  900 cell instances so far...
+Read  950 cell instances so far...
+Read 1000 cell instances so far...
+Read 2000 cell instances so far...
+Read 3000 cell instances so far...
+Read 4000 cell instances so far...
+Read 5000 cell instances so far...
+no syntax problem in circuit file.
+
+No syntax errors were found.
+
+Reading constraint file riscv.con...
+done reading constraint file. No syntax errors.
+
+syntax terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+
+time 1571770856 Tue Oct 22 14:00:56 2019:syntax exits 0 errors 0 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 81098
+
+####################################################
+time 1571770856 Tue Oct 22 14:00:56 2019:grouter started...
+@ /Users/bill/version1/itools/bin/Darwin/grouter -v riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 81107 PVERSION v2.0.0pre46
+
+Row-Based Placement and Global Routing Program
+
+grouter version:v2.0.0pre46
+iTools/TimberWolf compilation:Sun Sep 22 10:27:58 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+grouter switches:
+	Graphics mode on
+
+Options specified:
+add_rigid_spacers       : off
+alignment_tolerance     : 0
+allow_long_rows         : off
+allow_pad_overlap       : off
+allow_row_overlap       : off
+allow_wired_or_cycles   : on
+autodetect_script       : off
+background              : white
+check_pin_access        : on
+chosen_iteration        : min_peak
+compaction              : on
+compact_ports            : autodetect
+compact_port_algorithm  : 3
+core_to_padspace        : 2 2 2 2
+corner_pads             : off
+cover_cell_transparent  : off
+create_gcells           : on
+debug_otc_feeds         : off
+debug_side_pin_access   : off
+density_pad_adjust      : on
+distribute_feeds        : on
+do_global_route         : on
+drc_adjust_placement    : off
+eco_constraint_xfactor  : 0.00 relative
+eco_placement           : off
+end_around              : off
+equalize_rows           : on
+equalize_tolerance      : default
+exit_on_failure         : off
+fast                    : off
+feed_fudge_factor       : 0
+feed_search             : 5
+feed_spacer_equivalent  : on
+fix_side_pin_access     : off
+fixed_width             : off
+freeway_assign          : default
+graphics                : on
+gr_placement_improve    : on
+xgrid                   : 1 (no grid)
+ygrid                   : 1 (no grid)
+guide_scale             : 2000
+ignore_io_layers        : none
+incremental_routing     : off
+io_end_around           : off
+iterations              : 1
+max_width               : unconstrained
+maze_route              : off
+minimum_pad_space       : calculated
+minimize_memory         : off
+minimize_vertical_cons  : on
+modify_placement        : off
+modify_prerouting       : off
+move_io_to_channel      : off
+one_pad_connect         : off
+optimize_side_pads      : off
+orientation_optimization: on
+otc_block_adjacent      : off
+otc_feed                : on
+otc_grid_feeds          : on
+otc_max_blockage        : on
+otc_river_route         : off
+otc_threshold           : default
+otc_vertical_constraints: on
+output_at_density       : off
+output_at_density_pitch : track_pitch
+output_horizontal_layers: 2
+output_pinfile          : on
+output_regions          : on
+overlap_algorithm       : ordered
+overlap_mode            : left_justify
+over_the_cell           : on
+over_the_cell_capacity  : 0
+over_the_cell_feed_layer: default
+padspacing              : uniform
+pads_from_placement     : on
+pin_layers              : default
+port warnings           : on
+pre_equalize_rows       : off
+process_model_pins      : on
+radius_factor           : default
+random_seed             : 918618843
+reassign_feeds          : on
+reassign_iterations     : 1
+redundant_side_pin_feeds: off
+relax_pin_access        : off
+remove_ports            : off
+restrict_ports_to_channel: off
+require_vias            : on
+row_blockage_percent    : 50.000
+row_definition          : fixed
+scale                   : 10.00
+shared_boundary_opt     : on
+script                  : default
+side_pin_access_wc      : off
+spacer                  : default
+steiner_points          : on
+strategy                : min_peak
+strip_feeds             : off
+track_pitch             : 2000
+via_extent              : default
+vertical_cons_feed_sep  : 5
+vertical_wire_weight    : 1.000
+% 
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+no syntax errors in library:riscv.lib
+no syntax problem in circuit file.
+no syntax errors in physical description.
+Reading constraint file riscv.con...
+done reading constraint file. No syntax errors.
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:metal2 pitch:1.6 offset:0.8
+Pin layers:
+layer:metal2 pitch:1.6 offset:0.8
+
+WARNING[otc_init]:over_the_cell.feed_layer not defined.
+Using first vertical layer : metal2 pitch:1.6 offset:0.8
+Adding vertical layer      : metal4 pitch:3.2 offset:1.6
+Over the cell layers:
+layer : metal2 pitch:1.6 offset:0.8
+layer : metal4 pitch:3.2 offset:1.6
+
+
+Over the cell feedthru layer freedom:
+  metal2 : obstructed
+  metal4 : unobstructed
+
+WARNING[process_model_pins]:No pin access for pin:port of model:IRQ. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:IRQ. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:IRQnum[0]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:IRQnum[0]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:IRQnum[1]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:IRQnum[1]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:IRQnum[2]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:IRQnum[2]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:IRQnum[3]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:IRQnum[3]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:Y of model:XNOR2X1. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:Y of model:XOR2X1. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[0]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[0]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[10]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[10]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[11]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[11]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[12]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[12]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[13]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[13]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[14]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[14]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[15]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[15]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[16]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[16]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[17]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[17]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[18]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[18]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[19]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[19]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[1]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[1]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[20]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[20]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[21]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[21]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[22]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[22]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[23]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[23]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[24]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[24]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[25]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[25]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[26]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[26]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[27]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[27]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[28]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[28]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[29]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[29]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[2]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[2]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[30]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[30]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[31]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[31]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[3]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[3]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[4]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[4]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[5]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[5]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[6]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[6]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[7]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[7]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[8]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[8]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:baddr[9]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:baddr[9]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[0]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[0]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[10]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[10]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[11]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[11]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[12]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[12]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[13]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[13]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[14]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[14]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[15]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[15]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[16]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[16]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[17]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[17]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[18]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[18]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[19]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:world of model:bdi[19]. This will cause poor detailed-routing performance.
+WARNING[process_model_pins]:No pin access for pin:port of model:bdi[1]. This will cause poor detailed-routing performance.
+URGENT[Ywarnctrl]:Too many messages:100 in function:process_model_pins.  Now quiet.
+Too many messages:100 in function:process_model_pins.  Now quiet.
+[autodetect_port_layers]:didn't autodetect port layers.
+
+Core cells will be gridded based on site information present
+in the riscv.con file.
+xgrid:1.6 xoffset:0
+
+Need timing graph...no
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 626603.6
+
+WARNING[findcost_init]:Net 'rst' has 266 pins and it will be routed...
+WARNING[findcost_init]:Net 'CTRL.cyc' has 232 pins and it will be routed...
+WARNING[findcost_init]:Net 'clk' has 399 pins and it will be routed...
+WARNING[findcost_init]:Net '1'h1' has 264 pins and it will be routed...
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 3016
+The number of nets with 3 pins is 1032
+The number of nets with 4 pins is 357
+The number of nets with 5 pins is 185
+The number of nets with 6 pins is 97
+The number of nets with 7 pins is 34
+The number of nets with 8 pins is 23
+The number of nets with 9 pins is 16
+The number of nets with 10 pins is 14
+The number of nets with 11 pins is 249
+The number of nets with 12 pins is 1
+The number of nets with 15 pins is 1
+The number of nets with 16 pins is 1
+The number of nets with 21 pins is 1
+The number of nets with 25 pins is 1
+The number of nets with 32 pins is 1
+The number of nets with 36 pins is 1
+The number of nets with 39 pins is 1
+The number of nets with 100 pins or more is 4
+Average number of pins per net = 3.119762
+The maximum number of pins on a single net is:399
+No wired-or connected nets detected...
+-------------------------------------------------------
+
+GLOBAL ROUTING ITERATION: 1
+
+TimberWolfGR did NOT call even_the_rows()
+WARNING[build_rboxes]:Invalid sliver region:97
+************** MST INFO *********************
+Number of steiner points added:0
+Steiner wirelength:                 (363069.8,405160.2)
+Steiner portlength:                 (363006.6,258008.2)
+
+Num switchable ladders:1571
+Num complex region segments:319
+
+Initial feed penalty:57079
+C region:  1 tracks:6
+C region:  3 tracks:11
+C region:  5 tracks:18
+C region:  7 tracks:12
+C region:  9 tracks:19
+C region: 11 tracks:11
+C region: 13 tracks:16
+R region: 14 tracks:1
+C region: 15 tracks:14
+R region: 16 tracks:2
+C region: 17 tracks:19
+C region: 19 tracks:12
+C region: 21 tracks:21
+R region: 22 tracks:1
+C region: 23 tracks:13
+C region: 25 tracks:26
+C region: 27 tracks:14
+R region: 28 tracks:1
+C region: 29 tracks:24
+C region: 31 tracks:20
+C region: 33 tracks:30
+R region: 34 tracks:1
+C region: 35 tracks:21
+C region: 37 tracks:18
+C region: 39 tracks:16
+C region: 41 tracks:21
+R region: 42 tracks:1
+C region: 43 tracks:16
+C region: 45 tracks:23
+C region: 47 tracks:15
+C region: 49 tracks:24
+C region: 51 tracks:15
+C region: 53 tracks:20
+C region: 55 tracks:13
+C region: 57 tracks:20
+C region: 59 tracks:13
+C region: 61 tracks:22
+C region: 63 tracks:13
+C region: 65 tracks:22
+C region: 67 tracks:10
+C region: 69 tracks:23
+C region: 71 tracks:9
+C region: 73 tracks:15
+C region: 75 tracks:10
+C region: 77 tracks:26
+C region: 79 tracks:12
+C region: 81 tracks:18
+C region: 83 tracks:15
+C region: 85 tracks:21
+C region: 87 tracks:8
+C region: 89 tracks:20
+I region: 92 tracks:27
+I region: 93 tracks:1
+I region: 94 tracks:43
+I region: 95 tracks:31
+I region: 96 tracks:25
+I region: 97 tracks:23
+I region: 98 tracks:8
+density: 930  core tracks: 765
+
+************** STEINER TREE INFO *********************
+Number of steiner points added:427
+Steiner wirelength:                 (359821.0,395723.2)
+Steiner portlength:                 (359758.8,252956.2)
+
+Num switchables:7619 Num nonswitchable:4644 Percentage:62.13 active_nets:3992
+
+steiner flips :    1543 /    2524 (61.13%)
+total  flips  :    6542 /   15755 (41.52%)
+THIS IS THE NUMBER OF TRACKS: 595
+
+
+C region:  1 tracks:5
+C region:  3 tracks:11
+C region:  5 tracks:13
+C region:  7 tracks:13
+C region:  9 tracks:13
+C region: 11 tracks:12
+C region: 13 tracks:13
+C region: 15 tracks:12
+C region: 17 tracks:13
+C region: 19 tracks:13
+C region: 21 tracks:13
+R region: 22 tracks:1
+C region: 23 tracks:14
+C region: 25 tracks:14
+C region: 27 tracks:14
+R region: 28 tracks:1
+C region: 29 tracks:14
+C region: 31 tracks:15
+C region: 33 tracks:15
+R region: 34 tracks:1
+C region: 35 tracks:15
+C region: 37 tracks:14
+C region: 39 tracks:15
+C region: 41 tracks:14
+R region: 42 tracks:1
+C region: 43 tracks:15
+C region: 45 tracks:15
+C region: 47 tracks:14
+C region: 49 tracks:14
+C region: 51 tracks:14
+C region: 53 tracks:15
+C region: 55 tracks:15
+C region: 57 tracks:14
+C region: 59 tracks:14
+C region: 61 tracks:13
+C region: 63 tracks:13
+C region: 65 tracks:13
+C region: 67 tracks:13
+C region: 69 tracks:14
+C region: 71 tracks:13
+C region: 73 tracks:13
+C region: 75 tracks:13
+C region: 77 tracks:13
+C region: 79 tracks:13
+C region: 81 tracks:13
+C region: 83 tracks:13
+C region: 85 tracks:13
+C region: 87 tracks:13
+C region: 89 tracks:13
+C region: 91 tracks:7
+I region: 92 tracks:13
+I region: 93 tracks:12
+I region: 94 tracks:43
+I region: 95 tracks:31
+I region: 96 tracks:25
+I region: 97 tracks:16
+I region: 98 tracks:8
+density: 760  core tracks: 608
+
+[globroute]:Number of tracks verified.
+Num switchables:7578 Num nonswitchable:4654 Percentage:61.95 active_nets:3987
+C region:  1 tracks:5
+C region:  3 tracks:10
+C region:  5 tracks:11
+C region:  7 tracks:11
+C region:  9 tracks:11
+C region: 11 tracks:12
+C region: 13 tracks:12
+C region: 15 tracks:11
+C region: 17 tracks:12
+C region: 19 tracks:13
+C region: 21 tracks:13
+R region: 22 tracks:1
+C region: 23 tracks:13
+C region: 25 tracks:13
+C region: 27 tracks:14
+R region: 28 tracks:1
+C region: 29 tracks:14
+C region: 31 tracks:14
+C region: 33 tracks:15
+R region: 34 tracks:1
+C region: 35 tracks:14
+C region: 37 tracks:14
+C region: 39 tracks:14
+C region: 41 tracks:14
+R region: 42 tracks:1
+C region: 43 tracks:14
+C region: 45 tracks:15
+C region: 47 tracks:14
+C region: 49 tracks:14
+C region: 51 tracks:14
+C region: 53 tracks:14
+C region: 55 tracks:14
+C region: 57 tracks:14
+C region: 59 tracks:14
+C region: 61 tracks:13
+C region: 63 tracks:13
+C region: 65 tracks:13
+C region: 67 tracks:13
+C region: 69 tracks:14
+C region: 71 tracks:13
+C region: 73 tracks:12
+C region: 75 tracks:12
+C region: 77 tracks:12
+C region: 79 tracks:12
+C region: 81 tracks:12
+C region: 83 tracks:13
+C region: 85 tracks:12
+C region: 87 tracks:12
+C region: 89 tracks:12
+C region: 91 tracks:7
+I region: 92 tracks:13
+I region: 93 tracks:15
+I region: 94 tracks:43
+I region: 95 tracks:31
+I region: 96 tracks:25
+I region: 97 tracks:16
+I region: 98 tracks:8
+density: 737  core tracks: 582
+
+WARNING[check_feed_penalty]:Mismatch for feed penalty 60066 incr. vs 61172 complete
+Final feed penalty: 61172
+
+There were 171 steiner disconnects.
+We were able to avoid adding 0 steiner feeds.
+
+Final feed estimation:
+	row:  1 need:  82 avail: 432 diff:-350
+	row:  2 need: 143 avail: 406 diff:-263
+	row:  3 need: 173 avail: 401 diff:-228
+	row:  4 need: 209 avail: 380 diff:-171
+	row:  5 need: 234 avail: 377 diff:-143
+	row:  6 need: 250 avail: 387 diff:-137
+	row:  7 need: 253 avail: 385 diff:-132
+	row:  8 need: 286 avail: 354 diff: -68
+	row:  9 need: 287 avail: 378 diff: -91
+	row: 10 need: 301 avail: 369 diff: -68
+	row: 11 need: 308 avail: 392 diff: -84
+	row: 12 need: 320 avail: 389 diff: -69
+	row: 13 need: 312 avail: 408 diff: -96
+	row: 14 need: 314 avail: 390 diff: -76
+	row: 15 need: 338 avail: 379 diff: -41
+	row: 16 need: 358 avail: 386 diff: -28
+	row: 17 need: 369 avail: 394 diff: -25
+	row: 18 need: 370 avail: 383 diff: -13
+	row: 19 need: 373 avail: 380 diff:  -7
+	row: 20 need: 377 avail: 378 diff:  -1
+	row: 21 need: 353 avail: 353 diff:   0
+	row: 22 need: 375 avail: 374 diff:   1
+	row: 23 need: 367 avail: 386 diff: -19
+	row: 24 need: 361 avail: 352 diff:   9
+	row: 25 need: 375 avail: 375 diff:   0
+	row: 26 need: 353 avail: 355 diff:  -2
+	row: 27 need: 340 avail: 365 diff: -25
+	row: 28 need: 313 avail: 378 diff: -65
+	row: 29 need: 310 avail: 357 diff: -47
+	row: 30 need: 309 avail: 388 diff: -79
+	row: 31 need: 312 avail: 368 diff: -56
+	row: 32 need: 335 avail: 390 diff: -55
+	row: 33 need: 334 avail: 361 diff: -27
+	row: 34 need: 327 avail: 364 diff: -37
+	row: 35 need: 348 avail: 344 diff:   4
+	row: 36 need: 343 avail: 389 diff: -46
+	row: 37 need: 339 avail: 363 diff: -24
+	row: 38 need: 313 avail: 366 diff: -53
+	row: 39 need: 284 avail: 374 diff: -90
+	row: 40 need: 291 avail: 355 diff: -64
+	row: 41 need: 249 avail: 362 diff:-113
+	row: 42 need: 222 avail: 370 diff:-148
+	row: 43 need: 209 avail: 367 diff:-158
+	row: 44 need: 159 avail: 365 diff:-206
+	row: 45 need:  77 avail: 414 diff:-337
+ assigned region:2 feeds:   78 implicit:   78 explicit:    0
+ assigned region:4 feeds:  135 implicit:  135 explicit:    0
+ assigned region:6 feeds:  165 implicit:  159 explicit:    6
+ assigned region:8 feeds:  201 implicit:  173 explicit:   28
+ assigned region:10 feeds:  224 implicit:  186 explicit:   38
+ assigned region:12 feeds:  245 implicit:  211 explicit:   34
+ assigned region:14 feeds:  247 implicit:  210 explicit:   37
+ assigned region:16 feeds:  278 implicit:  234 explicit:   44
+ assigned region:18 feeds:  278 implicit:  243 explicit:   35
+ assigned region:20 feeds:  288 implicit:  246 explicit:   42
+ assigned region:22 feeds:  301 implicit:  259 explicit:   42
+ assigned region:24 feeds:  311 implicit:  268 explicit:   43
+ assigned region:26 feeds:  303 implicit:  273 explicit:   30
+ assigned region:28 feeds:  305 implicit:  269 explicit:   36
+ assigned region:30 feeds:  327 implicit:  273 explicit:   54
+ assigned region:32 feeds:  346 implicit:  287 explicit:   59
+ assigned region:34 feeds:  363 implicit:  296 explicit:   67
+ assigned region:36 feeds:  360 implicit:  288 explicit:   72
+ assigned region:38 feeds:  366 implicit:  288 explicit:   78
+ assigned region:40 feeds:  364 implicit:  285 explicit:   79
+ assigned region:42 feeds:  348 implicit:  265 explicit:   83
+ assigned region:44 feeds:  368 implicit:  281 explicit:   87
+ assigned region:46 feeds:  361 implicit:  291 explicit:   70
+ assigned region:48 feeds:  343 implicit:  256 explicit:   87
+ assigned region:50 feeds:  370 implicit:  290 explicit:   80
+ assigned region:52 feeds:  342 implicit:  264 explicit:   78
+ assigned region:54 feeds:  335 implicit:  250 explicit:   85
+ assigned region:56 feeds:  307 implicit:  253 explicit:   54
+ assigned region:58 feeds:  304 implicit:  251 explicit:   53
+ assigned region:60 feeds:  302 implicit:  253 explicit:   49
+ assigned region:62 feeds:  304 implicit:  247 explicit:   57
+ assigned region:64 feeds:  327 implicit:  266 explicit:   61
+ assigned region:66 feeds:  326 implicit:  246 explicit:   80
+ assigned region:68 feeds:  314 implicit:  246 explicit:   68
+ assigned region:70 feeds:  332 implicit:  252 explicit:   80
+ assigned region:72 feeds:  335 implicit:  271 explicit:   64
+ assigned region:74 feeds:  327 implicit:  248 explicit:   79
+ assigned region:76 feeds:  300 implicit:  230 explicit:   70
+ assigned region:78 feeds:  278 implicit:  231 explicit:   47
+ assigned region:80 feeds:  280 implicit:  231 explicit:   49
+ assigned region:82 feeds:  238 implicit:  207 explicit:   31
+ assigned region:84 feeds:  210 implicit:  199 explicit:   11
+ assigned region:86 feeds:  198 implicit:  186 explicit:   12
+ assigned region:88 feeds:  149 implicit:  148 explicit:    1
+ assigned region:90 feeds:   76 implicit:   76 explicit:    0
+Num of pos crossings:0
+
+Number of implicit feedthrus used : 10599
+Number of explicit feedthrus added: 2260
+There were 657 cross overlaps
+
+Row lengths after feedthru insertion:
+BLOCK    TOTAL CELL LENGTHS    OVER/UNDER TARGET      DESIRE
+    1                1019.2                  128       891.2
+    2                1019.2                  128       891.2
+    3                1019.2                  128       891.2
+    4                1019.2                  128       891.2
+    5                1019.2                  128       891.2
+    6                1019.2                  128       891.2
+    7                1019.2                  128       891.2
+    8                1019.2                  128       891.2
+    9                1019.2                  128       891.2
+   10                1019.2                  128       891.2
+   11                1019.2                  128       891.2
+   12                1019.2                  128       891.2
+   13                1019.2                  128       891.2
+   14                1019.2                  128       891.2
+   15                1019.2                  128       891.2
+   16                1019.2                  128       891.2
+   17                1019.2                  128       891.2
+   18                1019.2                  128       891.2
+   19                1019.2                  128       891.2
+   20                1019.2                  128       891.2
+   21                1019.2                  128       891.2
+   22                1019.2                  128       891.2
+   23                1019.2                  128       891.2
+   24                1019.2                  128       891.2
+   25                1019.2                  128       891.2
+   26                1019.2                  128       891.2
+   27                1019.2                  128       891.2
+   28                1019.2                  128       891.2
+   29                1019.2                  128       891.2
+   30                1019.2                  128       891.2
+   31                1019.2                  128       891.2
+   32                1019.2                  128       891.2
+   33                1019.2                  128       891.2
+   34                1019.2                  128       891.2
+   35                1019.2                  128       891.2
+   36                1019.2                  128       891.2
+   37                1019.2                  128       891.2
+   38                1019.2                  128       891.2
+   39                1019.2                  128       891.2
+   40                1019.2                  128       891.2
+   41                1019.2                  128       891.2
+   42                1019.2                  128       891.2
+   43                1019.2                  128       891.2
+   44                1019.2                  128       891.2
+   45                1019.2                  128       891.2
+
+SHORTEST Block is:   1. Its length is:1019.2
+LONGEST  Block is:   1. Its length is:1019.2
+
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,-22) (889.6,922).
+Adjusted padring: (0,-22) (1021.2,922).
+
+WARNING[build_rboxes]:Invalid sliver region:97
+[reassign_feeds]:old cost:1642006 new cost:62923
+[reassign_feeds]:old cost:860721 new cost:54141
+[reassign_feeds]:old cost:1738947 new cost:70206
+[reassign_feeds]:old cost:2052819 new cost:108555
+[reassign_feeds]:old cost:2465059 new cost:169581
+[reassign_feeds]:old cost:1845520 new cost:164506
+[reassign_feeds]:old cost:1584059 new cost:118448
+[reassign_feeds]:old cost:1923564 new cost:230159
+[reassign_feeds]:old cost:1511491 new cost:131080
+[reassign_feeds]:old cost:1919328 new cost:205737
+[reassign_feeds]:old cost:1929202 new cost:160657
+[reassign_feeds]:old cost:1817332 new cost:239081
+[reassign_feeds]:old cost:1666792 new cost:178435
+[reassign_feeds]:old cost:1629483 new cost:239920
+[reassign_feeds]:old cost:1253893 new cost:198871
+[reassign_feeds]:old cost:2154471 new cost:289498
+[reassign_feeds]:old cost:1982831 new cost:278636
+[reassign_feeds]:old cost:2430049 new cost:350830
+[reassign_feeds]:old cost:2118563 new cost:486096
+[reassign_feeds]:old cost:1708241 new cost:383330
+[reassign_feeds]:old cost:2047547 new cost:404813
+[reassign_feeds]:old cost:1973629 new cost:431821
+[reassign_feeds]:old cost:1857700 new cost:318038
+[reassign_feeds]:old cost:2398024 new cost:413659
+[reassign_feeds]:old cost:1865123 new cost:373145
+[reassign_feeds]:old cost:1523318 new cost:267787
+[reassign_feeds]:old cost:1855850 new cost:530675
+[reassign_feeds]:old cost:1726404 new cost:188750
+[reassign_feeds]:old cost:1572390 new cost:166908
+[reassign_feeds]:old cost:1900067 new cost:130128
+[reassign_feeds]:old cost:1460117 new cost:151125
+[reassign_feeds]:old cost:1986069 new cost:208591
+[reassign_feeds]:old cost:1605096 new cost:285388
+[reassign_feeds]:old cost:2638137 new cost:246917
+[reassign_feeds]:old cost:2059307 new cost:359506
+[reassign_feeds]:old cost:2033352 new cost:288102
+[reassign_feeds]:old cost:2582140 new cost:386088
+[reassign_feeds]:old cost:1332174 new cost:212812
+[reassign_feeds]:old cost:2437652 new cost:135394
+[reassign_feeds]:old cost:1599866 new cost:134942
+[reassign_feeds]:old cost:1778056 new cost:63740
+[reassign_feeds]:old cost:1229715 new cost:36211
+[reassign_feeds]:old cost:729892 new cost:55818
+[reassign_feeds]:old cost:199890 new cost:28317
+[reassign_feeds]:old cost:1626451 new cost:13900
+[remove_dangling_feedthrus]:169 dangling feedthrus were detected and removed.
+
+Steiner cell swap and rotation optimization.
+swap_limit:-36.2
+initial total global wire   :	723708.4
+initial total timing penalty:	0
+
+
+iterations              :	27
+final total global wire :	683230.6
+final total time penalty:	0
+
+Total global wire reduced by:	5.593%
+
+VERIFICATION
+final total global wire :	681843.9
+final total time penalty:	0
+
+
+WARNING[build_rboxes]:Invalid sliver region:97
+[reassign_feeds]:old cost:752905 new cost:76640
+[reassign_feeds]:old cost:250256 new cost:42989
+[reassign_feeds]:old cost:266355 new cost:58280
+[reassign_feeds]:old cost:434464 new cost:144134
+[reassign_feeds]:old cost:549444 new cost:165602
+[reassign_feeds]:old cost:501784 new cost:148902
+[reassign_feeds]:old cost:640041 new cost:129657
+[reassign_feeds]:old cost:407492 new cost:129057
+[reassign_feeds]:old cost:231110 new cost:100933
+[reassign_feeds]:old cost:254140 new cost:137119
+[reassign_feeds]:old cost:341226 new cost:224790
+[reassign_feeds]:old cost:446407 new cost:198092
+[reassign_feeds]:old cost:403182 new cost:97850
+[reassign_feeds]:old cost:481050 new cost:118494
+[reassign_feeds]:old cost:438231 new cost:237318
+[reassign_feeds]:old cost:448856 new cost:188643
+[reassign_feeds]:old cost:688211 new cost:269784
+[reassign_feeds]:old cost:932040 new cost:409113
+[reassign_feeds]:old cost:593828 new cost:496926
+[reassign_feeds]:old cost:500087 new cost:308651
+[reassign_feeds]:old cost:560333 new cost:307219
+[reassign_feeds]:old cost:561887 new cost:366127
+[reassign_feeds]:old cost:373318 new cost:282711
+[reassign_feeds]:old cost:567083 new cost:303854
+[reassign_feeds]:old cost:694301 new cost:276062
+[reassign_feeds]:old cost:323072 new cost:209899
+[reassign_feeds]:old cost:314806 new cost:547307
+[reassign_feeds]:old cost:403111 new cost:216453
+[reassign_feeds]:old cost:229551 new cost:177501
+[reassign_feeds]:old cost:220460 new cost:107475
+[reassign_feeds]:old cost:268837 new cost:102390
+[reassign_feeds]:old cost:291203 new cost:101234
+[reassign_feeds]:old cost:276818 new cost:183871
+[reassign_feeds]:old cost:267330 new cost:184932
+[reassign_feeds]:old cost:472040 new cost:291279
+[reassign_feeds]:old cost:821907 new cost:271023
+[reassign_feeds]:old cost:821486 new cost:537863
+[reassign_feeds]:old cost:541320 new cost:147439
+[reassign_feeds]:old cost:765520 new cost:155788
+[reassign_feeds]:old cost:446175 new cost:203157
+[reassign_feeds]:old cost:188534 new cost:115367
+[reassign_feeds]:old cost:96029 new cost:30178
+[reassign_feeds]:old cost:119859 new cost:28285
+[reassign_feeds]:old cost:74963 new cost:21959
+[reassign_feeds]:old cost:77783 new cost:9658
+Num switchable ladders:0
+Num complex region segments:313
+
+C region:  1 tracks:23
+C region:  3 tracks:19
+C region:  5 tracks:21
+C region:  7 tracks:21
+R region:  8 tracks:1
+C region:  9 tracks:30
+R region: 10 tracks:1
+C region: 11 tracks:23
+C region: 13 tracks:23
+R region: 14 tracks:1
+C region: 15 tracks:24
+R region: 16 tracks:1
+C region: 17 tracks:28
+R region: 18 tracks:1
+C region: 19 tracks:24
+R region: 20 tracks:1
+C region: 21 tracks:25
+R region: 22 tracks:1
+C region: 23 tracks:26
+R region: 24 tracks:1
+C region: 25 tracks:32
+C region: 27 tracks:25
+R region: 28 tracks:2
+C region: 29 tracks:29
+R region: 30 tracks:1
+C region: 31 tracks:30
+R region: 32 tracks:1
+C region: 33 tracks:36
+C region: 35 tracks:31
+R region: 36 tracks:2
+C region: 37 tracks:32
+R region: 38 tracks:1
+C region: 39 tracks:29
+R region: 40 tracks:1
+C region: 41 tracks:30
+R region: 42 tracks:2
+C region: 43 tracks:26
+R region: 44 tracks:2
+C region: 45 tracks:35
+R region: 46 tracks:2
+C region: 47 tracks:37
+C region: 49 tracks:27
+R region: 50 tracks:2
+C region: 51 tracks:30
+R region: 52 tracks:1
+C region: 53 tracks:28
+R region: 54 tracks:2
+C region: 55 tracks:31
+R region: 56 tracks:1
+C region: 57 tracks:28
+R region: 58 tracks:1
+C region: 59 tracks:37
+C region: 61 tracks:29
+C region: 63 tracks:29
+C region: 65 tracks:30
+R region: 66 tracks:1
+C region: 67 tracks:33
+C region: 69 tracks:33
+C region: 71 tracks:31
+C region: 73 tracks:30
+C region: 75 tracks:32
+R region: 76 tracks:1
+C region: 77 tracks:28
+C region: 79 tracks:30
+C region: 81 tracks:26
+R region: 82 tracks:1
+C region: 83 tracks:23
+C region: 85 tracks:26
+R region: 86 tracks:1
+C region: 87 tracks:24
+C region: 89 tracks:18
+C region: 91 tracks:25
+I region: 92 tracks:1
+I region: 93 tracks:1
+I region: 94 tracks:2
+I region: 97 tracks:14
+I region: 98 tracks:54
+density: 1392  core tracks: 1287
+
+Num switchables:4688 Num nonswitchable:19832 Percentage:19.12 active_nets:3116
+
+steiner flips :       0 /      83 (0.00%)
+total  flips  :      46 /     245 (18.78%)
+THIS IS THE NUMBER OF TRACKS: 1264
+
+
+C region:  1 tracks:23
+C region:  3 tracks:19
+C region:  5 tracks:21
+C region:  7 tracks:21
+R region:  8 tracks:1
+C region:  9 tracks:30
+R region: 10 tracks:1
+C region: 11 tracks:23
+C region: 13 tracks:23
+R region: 14 tracks:1
+C region: 15 tracks:24
+R region: 16 tracks:1
+C region: 17 tracks:28
+R region: 18 tracks:1
+C region: 19 tracks:24
+R region: 20 tracks:1
+C region: 21 tracks:25
+R region: 22 tracks:1
+C region: 23 tracks:26
+R region: 24 tracks:1
+C region: 25 tracks:31
+C region: 27 tracks:25
+R region: 28 tracks:2
+C region: 29 tracks:29
+R region: 30 tracks:1
+C region: 31 tracks:31
+R region: 32 tracks:1
+C region: 33 tracks:31
+C region: 35 tracks:31
+R region: 36 tracks:2
+C region: 37 tracks:31
+R region: 38 tracks:1
+C region: 39 tracks:29
+R region: 40 tracks:1
+C region: 41 tracks:30
+R region: 42 tracks:2
+C region: 43 tracks:27
+R region: 44 tracks:2
+C region: 45 tracks:31
+R region: 46 tracks:2
+C region: 47 tracks:33
+C region: 49 tracks:28
+R region: 50 tracks:2
+C region: 51 tracks:30
+R region: 52 tracks:1
+C region: 53 tracks:28
+R region: 54 tracks:2
+C region: 55 tracks:31
+R region: 56 tracks:1
+C region: 57 tracks:28
+R region: 58 tracks:1
+C region: 59 tracks:31
+C region: 61 tracks:29
+C region: 63 tracks:29
+C region: 65 tracks:30
+R region: 66 tracks:1
+C region: 67 tracks:31
+C region: 69 tracks:31
+C region: 71 tracks:31
+C region: 73 tracks:30
+C region: 75 tracks:31
+R region: 76 tracks:1
+C region: 77 tracks:28
+C region: 79 tracks:30
+C region: 81 tracks:26
+R region: 82 tracks:1
+C region: 83 tracks:23
+C region: 85 tracks:26
+R region: 86 tracks:1
+C region: 87 tracks:24
+C region: 89 tracks:18
+C region: 91 tracks:25
+I region: 92 tracks:1
+I region: 93 tracks:1
+I region: 94 tracks:2
+I region: 97 tracks:14
+I region: 98 tracks:54
+density: 1369  core tracks: 1264
+
+[globroute]:Number of tracks verified.
+Num switchables:4688 Num nonswitchable:19832 Percentage:19.12 active_nets:3116
+C region:  1 tracks:19
+C region:  3 tracks:19
+C region:  5 tracks:20
+C region:  7 tracks:22
+R region:  8 tracks:1
+C region:  9 tracks:25
+R region: 10 tracks:1
+C region: 11 tracks:23
+C region: 13 tracks:21
+R region: 14 tracks:1
+C region: 15 tracks:23
+R region: 16 tracks:1
+C region: 17 tracks:24
+R region: 18 tracks:1
+C region: 19 tracks:22
+R region: 20 tracks:1
+C region: 21 tracks:23
+R region: 22 tracks:1
+C region: 23 tracks:25
+R region: 24 tracks:1
+C region: 25 tracks:25
+C region: 27 tracks:25
+R region: 28 tracks:2
+C region: 29 tracks:27
+R region: 30 tracks:1
+C region: 31 tracks:27
+R region: 32 tracks:1
+C region: 33 tracks:30
+C region: 35 tracks:28
+R region: 36 tracks:2
+C region: 37 tracks:29
+R region: 38 tracks:1
+C region: 39 tracks:28
+R region: 40 tracks:1
+C region: 41 tracks:25
+R region: 42 tracks:2
+C region: 43 tracks:26
+R region: 44 tracks:2
+C region: 45 tracks:31
+R region: 46 tracks:2
+C region: 47 tracks:33
+C region: 49 tracks:26
+R region: 50 tracks:2
+C region: 51 tracks:27
+R region: 52 tracks:1
+C region: 53 tracks:28
+R region: 54 tracks:2
+C region: 55 tracks:28
+R region: 56 tracks:1
+C region: 57 tracks:27
+R region: 58 tracks:1
+C region: 59 tracks:30
+C region: 61 tracks:29
+C region: 63 tracks:28
+C region: 65 tracks:27
+R region: 66 tracks:1
+C region: 67 tracks:29
+C region: 69 tracks:30
+C region: 71 tracks:29
+C region: 73 tracks:28
+C region: 75 tracks:27
+R region: 76 tracks:1
+C region: 77 tracks:28
+C region: 79 tracks:26
+C region: 81 tracks:22
+R region: 82 tracks:1
+C region: 83 tracks:21
+C region: 85 tracks:21
+R region: 86 tracks:1
+C region: 87 tracks:23
+C region: 89 tracks:17
+C region: 91 tracks:21
+I region: 92 tracks:1
+I region: 93 tracks:1
+I region: 94 tracks:2
+I region: 97 tracks:14
+I region: 98 tracks:54
+density: 1277  core tracks: 1172
+
+[remove_dangling_feedthrus]:36 dangling feedthrus were detected and removed.
+[vertical_constraint_min]:Initial number of cycles:44
+[vertical_constraint_min]:number of cycles after  first stage:5
+[vertical_constraint_min]:number of cycles after second stage:3
+[vertical_constraint_min]:number of cycles after  third stage:0
+C region:  1 tracks:19
+C region:  3 tracks:19
+C region:  5 tracks:20
+C region:  7 tracks:21
+R region:  8 tracks:1
+C region:  9 tracks:25
+R region: 10 tracks:1
+C region: 11 tracks:23
+C region: 13 tracks:21
+R region: 14 tracks:1
+C region: 15 tracks:23
+R region: 16 tracks:1
+C region: 17 tracks:24
+R region: 18 tracks:1
+C region: 19 tracks:22
+R region: 20 tracks:1
+C region: 21 tracks:23
+R region: 22 tracks:1
+C region: 23 tracks:25
+R region: 24 tracks:1
+C region: 25 tracks:25
+C region: 27 tracks:25
+R region: 28 tracks:2
+C region: 29 tracks:27
+R region: 30 tracks:1
+C region: 31 tracks:27
+R region: 32 tracks:1
+C region: 33 tracks:30
+C region: 35 tracks:27
+R region: 36 tracks:2
+C region: 37 tracks:29
+R region: 38 tracks:1
+C region: 39 tracks:28
+R region: 40 tracks:1
+C region: 41 tracks:25
+R region: 42 tracks:2
+C region: 43 tracks:25
+R region: 44 tracks:2
+C region: 45 tracks:31
+R region: 46 tracks:2
+C region: 47 tracks:33
+C region: 49 tracks:26
+R region: 50 tracks:2
+C region: 51 tracks:27
+R region: 52 tracks:1
+C region: 53 tracks:28
+R region: 54 tracks:2
+C region: 55 tracks:28
+R region: 56 tracks:1
+C region: 57 tracks:27
+R region: 58 tracks:1
+C region: 59 tracks:30
+C region: 61 tracks:29
+C region: 63 tracks:28
+C region: 65 tracks:27
+R region: 66 tracks:1
+C region: 67 tracks:29
+C region: 69 tracks:30
+C region: 71 tracks:29
+C region: 73 tracks:28
+C region: 75 tracks:27
+R region: 76 tracks:1
+C region: 77 tracks:28
+C region: 79 tracks:27
+C region: 81 tracks:22
+R region: 82 tracks:1
+C region: 83 tracks:21
+C region: 85 tracks:20
+R region: 86 tracks:1
+C region: 87 tracks:23
+C region: 89 tracks:17
+C region: 91 tracks:21
+I region: 92 tracks:1
+I region: 93 tracks:1
+I region: 94 tracks:2
+I region: 97 tracks:14
+I region: 98 tracks:54
+density: 1274  core tracks: 1169
+
+[vertical_constraint_min]:Final number of cycles:0
+
+Maximum memory utilization during global routing:32083088
+ area = 3.30e+06 (1019.2 x 3238 [1169 tracks])
+
+************** FINAL WIRE LENGTH *********************
+Number of steiner points added:0
+Steiner wirelength:                 (682402.0,2575461.7)
+Steiner portlength:                 (682386.9,4538.7)
+
+
+FINAL NUMBER OF TRACKS FOR THIS ITERATION: 1169
+FINAL NUMBER OF IO TRACKS FOR THIS ITERATION: 72
+FINAL AREA = 3.51e+06 (1019.2 x 3448 [1169 tracks])
+
+THIS G. ROUTING IS BEING SAVED AS BEST SO FAR
+
+
+
+Amount of row bowing : 0
+[output]:No bowing excessive was found.
+No optimization is necessary.
+
+
+***********************************************************
+CHOSEN ITERATION:1 :
+*ACTUAL* FINAL AREA = 3.51e+06 (1019.2 x 3448 [1169 tracks]) [33 peak tracks]
+***********************************************************
+
+
+Statistics:
+Number of Standard Cells: 4902
+Number of Macros: 0 
+Number of Pads: 319 
+Number of Instances: 5221 
+Number of Nets: 5039 
+Number of Pins: 37031 
+Number of Implicit Feed Thrus: 10599
+Number of Feed Thrus Added: 2260
+Feed Percentage: 9.02%
+Average Row Separation: 2.83
+
+
+Runtime Statistics
+-------------------------
+Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+Machine type: Darwin
+Date        : Tue Oct 22 14:01:50 2019
+
+User    time:  12.6 seconds
+System  time:   0.4 seconds
+Elapsed time:  54.6 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =   26171392B (24MB)
+Virtual memory size              =    4287488K (4187MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =    32083088 (30MB)
+Current heap size                =    14526624 (13MB)
+
+Major page faults = 7
+Minor page faults = 13511
+Swaps = 0
+
+Input blocks = 1
+Output blocks = 17
+
+Context switch (voluntary) = 7161
+Context switch (involuntary) = 1093
+
+
+grouter terminated normally with no errors and 11 warning[s] (641 suppressed warnings) (status arg:0 status:0 status given:0) 
+
+time 1571770910 Tue Oct 22 14:01:50 2019:grouter exits 0 errors 11 warnings
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 81107
+
+####################################################
+time 1571770910 Tue Oct 22 14:01:50 2019:itranslate started...
+@ /Users/bill/version1/itools/bin/Darwin/itranslate -v -do riscv_final.tdo riscv 
+@ /Users/bill/version1/utdtools/pgms/cometFlow/tests/test1/riscv/utdtools/groute/timberwolf HOST 0-1b-63-9-4-5.dyn.utdallas.edu PID 81118 PVERSION v2.0.0pre46
+[readpar]:riscv.par read.
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+no syntax errors in library:riscv.lib
+Library file:riscv.lib read successfully.
+
+
+[look_for_hints]:Found hints in <riscv.stat> file
+[look_for_hints]:Number of insts:5221
+[look_for_hints]:Number of nets :5039
+[look_for_hints]:Number of gpins:16869
+
+no syntax problem in circuit file.
+Circuit file:riscv.ckt read successfully.
+
+Constraint file:riscv.con read successfully.
+
+[icread_con]:riscv.con read.
+[read_placement]:groute/output/riscv.pl2 read.
+[write_def]:../output/riscv.def written.
+
+itranslate terminated normally with no errors and 0 warning[s] (status arg:0 status:0 status given:0) 
+

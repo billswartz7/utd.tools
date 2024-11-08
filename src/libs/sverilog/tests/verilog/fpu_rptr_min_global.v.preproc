@@ -1,0 +1,52 @@
+
+
+module fpu_bufrpt_grp4 (
+	in,
+	out
+);
+	
+	input [3:0] in;
+	output [3:0] out;
+
+	assign [3:0] = [3:0];
+
+endmodule
+
+
+module fpu_rptr_fp_cpx_grp16 (
+	in,
+	out
+);
+
+	input [15:0] in;
+	output [15:0] out;
+
+	assign [15:0] = [15:0];
+
+endmodule
+
+
+module fpu_rptr_pcx_fpio_grp16 (
+	in,
+	out
+);
+
+	input [15:0] in;
+	output [15:0] out;
+
+	assign [15:0] = [15:0];
+
+endmodule
+
+module fpu_rptr_inq (
+	in,
+	out
+);
+	
+	input [155:0] in;
+	output [155:0] out;
+
+	assign [155:0] = [155:0];
+
+endmodule
+

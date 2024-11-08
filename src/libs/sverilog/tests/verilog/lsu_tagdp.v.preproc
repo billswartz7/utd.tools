@@ -1,0 +1,4854 @@
+module lsu_tagdp( 
+      so, lsu_misc_rdata_w2, lsu_rd_dtag_parity_g, 
+      rclk, si, se, lsu_va_wtchpt_addr, lsu_va_wtchpt_sel_g, dva_vld_m, 
+   dtag_rdata_w0_m, dtag_rdata_w1_m, dtag_rdata_w2_m, 
+   dtag_rdata_w3_m, lsu_dtag_rsel_m, lsu_local_ldxa_data_g, 
+   lsu_local_ldxa_sel_g, lsu_tlb_rd_data, lsu_local_ldxa_tlbrd_sel_g, 
+   lsu_local_diagnstc_tagrd_sel_g
+   );
+
+   input         rclk;
+   input         si;
+   input         se;
+   output        so;
+   
+input [47:3]  lsu_va_wtchpt_addr ;
+input         lsu_va_wtchpt_sel_g;
+   
+input  [3:0]     dva_vld_m;	  input  [29:0]    dtag_rdata_w0_m; input  [29:0]    dtag_rdata_w1_m; input  [29:0]    dtag_rdata_w2_m; input  [29:0]    dtag_rdata_w3_m; input  [3:0]     lsu_dtag_rsel_m; 
+input  [47:0]    lsu_local_ldxa_data_g; input            lsu_local_ldxa_sel_g;  
+input  [63:0]    lsu_tlb_rd_data; input            lsu_local_ldxa_tlbrd_sel_g;
+input            lsu_local_diagnstc_tagrd_sel_g;
+
+
+output [63:0]    lsu_misc_rdata_w2; output [3:0]     lsu_rd_dtag_parity_g; 
+
+wire             ,
+                 dtag_rdata_w1_parity_g,
+                 dtag_rdata_w2_parity_g,
+                 dtag_rdata_w3_parity_g;
+
+wire   [29:0]    dtag_rdata_sel_m,
+                 dtag_rdata_sel_g;
+
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_m,
+                 dtag_rdata_w1_8b_parity_m,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ,
+                 dtag_rdata_w2_parity_g,
+                 dtag_rdata_w3_parity_g;
+
+wire   [29:0]    dtag_rdata_sel_m,
+                 dtag_rdata_sel_g;
+
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_m,
+                 dtag_rdata_w1_8b_parity_m,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ,
+                 dtag_rdata_w3_parity_g;
+
+wire   [29:0]    dtag_rdata_sel_m,
+                 dtag_rdata_sel_g;
+
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_m,
+                 dtag_rdata_w1_8b_parity_m,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ;
+
+wire   [29:0]    dtag_rdata_sel_m,
+                 dtag_rdata_sel_g;
+
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_m,
+                 dtag_rdata_w1_8b_parity_m,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+
+wire   [29:0]    ,
+                 dtag_rdata_sel_g;
+
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_m,
+                 dtag_rdata_w1_8b_parity_m,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ;
+
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_m,
+                 dtag_rdata_w1_8b_parity_m,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+
+
+wire   [3:0]     ,
+                 dtag_rdata_w1_8b_parity_m,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ,
+                 dtag_rdata_w2_8b_parity_m,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ,
+                 dtag_rdata_w3_8b_parity_m;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ;
+
+wire   [3:0]     dtag_rdata_w0_8b_parity_g,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+
+wire   [3:0]     ,
+                 dtag_rdata_w1_8b_parity_g,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ,
+                 dtag_rdata_w2_8b_parity_g,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ,
+                 dtag_rdata_w3_8b_parity_g;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                 ;
+
+wire	[63:0]	 lsu_misc_rdata_g;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+
+wire	[63:0]	 ;
+
+wire		 dtag_vld_sel_m, dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+
+wire		 , dtag_vld_sel_g;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+, ;
+
+   wire  clk;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+
+   wire  ;
+   assign clk = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+   assign  = rclk;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ = ;
+   
+//=================================================================================================
+//      Select Tag Read data / ldxa data
+//=================================================================================================
+
+// select 1 out of 4 tags
+mux4ds  #(31) dtag_rdata_sel (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+;
+   
+
+mux4ds  #(31)  (
+        .in0    ({dtag_rdata_w0_m[29:0],dva_vld_m[0]}),
+        .in1    ({dtag_rdata_w1_m[29:0],dva_vld_m[1]}),
+        .in2    ({dtag_rdata_w2_m[29:0],dva_vld_m[2]}),
+        .in3    ({dtag_rdata_w3_m[29:0],dva_vld_m[3]}),
+        .sel0   (lsu_dtag_rsel_m[0]),  
+        .sel1   (lsu_dtag_rsel_m[1]),
+        .sel2   (lsu_dtag_rsel_m[2]),  
+        .sel3   (lsu_dtag_rsel_m[3]),
+        .dout   ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+        .in0    ({[29:0],[0]}),
+        .in1    ({[29:0],[1]}),
+        .in2    ({[29:0],[2]}),
+        .in3    ({[29:0],[3]}),
+        .sel0   ([0]),  
+        .sel1   ([1]),
+        .sel2   ([2]),  
+        .sel3   ([3]),
+        .dout   ({[29:0],})
+);
+
+dff_s  #(31) dtag_rdata_sel_g_ff (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+})
+);
+
+dff_s  #(31)  (
+           .din  ({dtag_rdata_sel_m[29:0],dtag_vld_sel_m}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+           .din  ({[29:0],}),
+           .q    ({dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+}),
+           .q    ({[29:0],}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+}),
+           .clk  (),
+           .se   (se),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+           .se   (),       .si (),          .so ());
+
+mux4ds  #(64) lsu_misc_rdata_sel (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),       .si (),          .so ());
+
+mux4ds  #(64)  (
+        .in0    ({16'h0,lsu_local_ldxa_data_g[47:0]}),
+        .in1    (lsu_tlb_rd_data[63:0]),
+        .in2    ({16'h0,lsu_va_wtchpt_addr[47:3],3'b000}),                           
+        .in3    ({33'h0,dtag_rdata_sel_g[29:0],dtag_vld_sel_g}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+        .in0    ({16hh,[47:0]}),
+        .in1    ([63:0]),
+        .in2    ({16hh,[47:3],3bb}),                           
+        .in3    ({33hh,[29:0],}),
+        .sel0   (lsu_local_ldxa_sel_g),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+}),
+        .sel0   (),  
+        .sel1   (lsu_local_ldxa_tlbrd_sel_g),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),  
+        .sel1   (),
+        .sel2   (lsu_va_wtchpt_sel_g),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+        .sel2   (),
+        .sel3   (lsu_local_diagnstc_tagrd_sel_g),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+        .sel3   (),
+        .dout   (lsu_misc_rdata_g[63:0])
+);
+
+dff_s  #(64) lsu_misc_rdata_w2_ff (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+        .dout   ([63:0])
+);
+
+dff_s  #(64)  (
+           .din  (lsu_misc_rdata_g[63:0]),
+           .q    (lsu_misc_rdata_w2[63:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+           .din  ([63:0]),
+           .q    ([63:0]),
+           .clk  (),
+           .se   (se),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+           .se   (),       .si (),          .so ());
+
+
+//=================================================================================================
+//      Tag Parity Calculation
+//=================================================================================================
+
+// flop tag parity bits 
+dff_s  #(4) dtag_rdata_parity_g_ff (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),       .si (),          .so ());
+
+
+
+dff_s  #(4)  (
+           .din  ({dtag_rdata_w0_m[29],
+                   dtag_rdata_w1_m[29],
+                   dtag_rdata_w2_m[29],
+                   dtag_rdata_w3_m[29]}),
+           .q    ({dtag_rdata_w0_parity_g,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+           .din  ({[29],
+                   [29],
+                   [29],
+                   [29]}),
+           .q    ({,
+                   dtag_rdata_w1_parity_g,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                   ,
+                   dtag_rdata_w2_parity_g,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                   ,
+                   dtag_rdata_w3_parity_g}),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+,
+                   }),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+}),
+           .clk  (),
+           .se   (se),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+           .se   (),       .si (),          .so ());
+
+
+// generate 8bit parity for all ways before g-flop
+assign  dtag_rdata_w0_8b_parity_m[0] = ^dtag_rdata_w0_m[7:0] ;
+assign  dtag_rdata_w0_8b_parity_m[1] = ^dtag_rdata_w0_m[15:8] ;
+assign  dtag_rdata_w0_8b_parity_m[2] = ^dtag_rdata_w0_m[23:16] ;
+assign  dtag_rdata_w0_8b_parity_m[3] = ^dtag_rdata_w0_m[28:24] ;
+
+assign  dtag_rdata_w1_8b_parity_m[0] = ^dtag_rdata_w1_m[7:0] ;
+assign  dtag_rdata_w1_8b_parity_m[1] = ^dtag_rdata_w1_m[15:8] ;
+assign  dtag_rdata_w1_8b_parity_m[2] = ^dtag_rdata_w1_m[23:16] ;
+assign  dtag_rdata_w1_8b_parity_m[3] = ^dtag_rdata_w1_m[28:24] ;
+
+assign  dtag_rdata_w2_8b_parity_m[0] = ^dtag_rdata_w2_m[7:0] ;
+assign  dtag_rdata_w2_8b_parity_m[1] = ^dtag_rdata_w2_m[15:8] ;
+assign  dtag_rdata_w2_8b_parity_m[2] = ^dtag_rdata_w2_m[23:16] ;
+assign  dtag_rdata_w2_8b_parity_m[3] = ^dtag_rdata_w2_m[28:24] ;
+
+assign  dtag_rdata_w3_8b_parity_m[0] = ^dtag_rdata_w3_m[7:0] ;
+assign  dtag_rdata_w3_8b_parity_m[1] = ^dtag_rdata_w3_m[15:8] ;
+assign  dtag_rdata_w3_8b_parity_m[2] = ^dtag_rdata_w3_m[23:16] ;
+assign  dtag_rdata_w3_8b_parity_m[3] = ^dtag_rdata_w3_m[28:24] ;
+
+
+// g-flop for 8-bit parity for all 4 ways
+
+dff_s  #(4) dtag_rdata_w0_8b_parity_g_ff (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),       .si (),          .so ());
+
+
+assign  [0] = ^[7:0] ;
+assign  [1] = ^[15:8] ;
+assign  [2] = ^[23:16] ;
+assign  [3] = ^[28:24] ;
+
+assign  [0] = ^[7:0] ;
+assign  [1] = ^[15:8] ;
+assign  [2] = ^[23:16] ;
+assign  [3] = ^[28:24] ;
+
+assign  [0] = ^[7:0] ;
+assign  [1] = ^[15:8] ;
+assign  [2] = ^[23:16] ;
+assign  [3] = ^[28:24] ;
+
+assign  [0] = ^[7:0] ;
+assign  [1] = ^[15:8] ;
+assign  [2] = ^[23:16] ;
+assign  [3] = ^[28:24] ;
+
+
+
+dff_s  #(4)  (
+           .din  (dtag_rdata_w0_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w0_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+           .din  ([3:0]),
+           .q    ([3:0]),
+           .clk  (),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+           .se   (),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w1_8b_parity_g_ff (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),       .si (),          .so ());
+
+dff_s  #(4)  (
+           .din  (dtag_rdata_w1_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w1_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+           .din  ([3:0]),
+           .q    ([3:0]),
+           .clk  (),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+           .se   (),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w2_8b_parity_g_ff (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),       .si (),          .so ());
+
+dff_s  #(4)  (
+           .din  (dtag_rdata_w2_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w2_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+           .din  ([3:0]),
+           .q    ([3:0]),
+           .clk  (),
+           .se   (se),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+           .se   (),       .si (),          .so ());
+
+dff_s  #(4) dtag_rdata_w3_8b_parity_g_ff (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),       .si (),          .so ());
+
+dff_s  #(4)  (
+           .din  (dtag_rdata_w3_8b_parity_m[3:0]),
+           .q    (dtag_rdata_w3_8b_parity_g[3:0]),
+           .clk  (clk),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+ (
+           .din  ([3:0]),
+           .q    ([3:0]),
+           .clk  (),
+           .se   (se),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),
+           .se   (),       .si (),          .so ());
+
+
+assign  lsu_rd_dtag_parity_g[0]  =  ^({dtag_rdata_w0_8b_parity_g[3:0],dtag_rdata_w0_parity_g});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+),       .si (),          .so ());
+
+
+assign  [0]  =  ^({[3:0],});
+assign  lsu_rd_dtag_parity_g[1]  =  ^({dtag_rdata_w1_8b_parity_g[3:0],dtag_rdata_w1_parity_g});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+});
+assign  [1]  =  ^({[3:0],});
+assign  lsu_rd_dtag_parity_g[2]  =  ^({dtag_rdata_w2_8b_parity_g[3:0],dtag_rdata_w2_parity_g});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+});
+assign  [2]  =  ^({[3:0],});
+assign  lsu_rd_dtag_parity_g[3]  =  ^({dtag_rdata_w3_8b_parity_g[3:0],dtag_rdata_w3_parity_g});
+
+endmodule
+});
+assign  [3]  =  ^({[3:0],});
+
+endmodule
+});
+
+endmodule

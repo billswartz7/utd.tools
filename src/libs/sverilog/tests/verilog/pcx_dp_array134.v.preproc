@@ -1,0 +1,122 @@
+
+
+	 			
+ 
+
+
+ 
+
+module pcx_dp_array134(
+      pcx_scache3_data_px_l, pcx_scache1_data_px_l, pcx_fpio_data_px_l, 
+   scan_out, 
+      spc7_pcx_data_pa, spc6_pcx_data_pa, spc5_pcx_data_pa, 
+   spc4_pcx_data_pa, spc3_pcx_data_pa, spc2_pcx_data_pa, 
+   spc1_pcx_data_pa, spc0_pcx_data_pa, shiftenable, rclk, 
+   arbpc4_pcxdp_shift_px, arbpc4_pcxdp_qsel1_pa, 
+   arbpc4_pcxdp_qsel0_pa, arbpc4_pcxdp_q0_hold_pa, 
+   arbpc4_pcxdp_grant_pa, arbpc3_pcxdp_shift_px, 
+   arbpc3_pcxdp_qsel1_pa, arbpc3_pcxdp_qsel0_pa, 
+   arbpc3_pcxdp_q0_hold_pa, arbpc3_pcxdp_grant_pa, 
+   arbpc1_pcxdp_shift_px, arbpc1_pcxdp_qsel1_pa, 
+   arbpc1_pcxdp_qsel0_pa, arbpc1_pcxdp_q0_hold_pa, 
+   arbpc1_pcxdp_grant_pa, scan_in
+   );
+
+   
+      output [-1:0]pcx_fpio_data_px_l;	   output [-1:0]pcx_scache1_data_px_l;   output [-1:0]pcx_scache3_data_px_l;   
+   
+      input [7:0]		arbpc1_pcxdp_grant_pa;	   input [7:0]		arbpc1_pcxdp_q0_hold_pa;   input [7:0]		arbpc1_pcxdp_qsel0_pa;	   input [7:0]		arbpc1_pcxdp_qsel1_pa;	   input [7:0]		arbpc1_pcxdp_shift_px;	   input [7:0]		arbpc3_pcxdp_grant_pa;	   input [7:0]		arbpc3_pcxdp_q0_hold_pa;   input [7:0]		arbpc3_pcxdp_qsel0_pa;	   input [7:0]		arbpc3_pcxdp_qsel1_pa;	   input [7:0]		arbpc3_pcxdp_shift_px;	   input [7:0]		arbpc4_pcxdp_grant_pa;	   input [7:0]		arbpc4_pcxdp_q0_hold_pa;   input [7:0]		arbpc4_pcxdp_qsel0_pa;	   input [7:0]		arbpc4_pcxdp_qsel1_pa;	   input [7:0]		arbpc4_pcxdp_shift_px;	   input		rclk;			   input		shiftenable;		   input [-1:0]spc0_pcx_data_pa;	   input [-1:0]spc1_pcx_data_pa;	   input [-1:0]spc2_pcx_data_pa;	   input [-1:0]spc3_pcx_data_pa;	   input [-1:0]spc4_pcx_data_pa;	   input [-1:0]spc5_pcx_data_pa;	   input [-1:0]spc6_pcx_data_pa;	   input [-1:0]spc7_pcx_data_pa;	   
+   
+      
+   input  scan_in;
+   output scan_out;
+   
+                        
+
+   pcx_dp1 (/*AUTOINST*/
+		   // Outputs
+		   .scan_out		(),			 // Templated
+		   .pcx_scache1_data_px_l(pcx_scache1_data_px_l[`PCX_WIDTH-1:0]),
+		   // Inputs
+		   .arbpc1_pcxdp_grant_pa(arbpc1_pcxdp_grant_pa[7:0]),
+		   .arbpc1_pcxdp_q0_hold_pa(arbpc1_pcxdp_q0_hold_pa[7:0]),
+		   .arbpc1_pcxdp_qsel0_pa(arbpc1_pcxdp_qsel0_pa[7:0]),
+		   .arbpc1_pcxdp_qsel1_pa(arbpc1_pcxdp_qsel1_pa[7:0]),
+		   .arbpc1_pcxdp_shift_px(arbpc1_pcxdp_shift_px[7:0]),
+		   .rclk		(rclk),
+		   .scan_in		(),			 // Templated
+		   .shiftenable		(shiftenable),
+		   .spc0_pcx_data_pa	(spc0_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc1_pcx_data_pa	(spc1_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc2_pcx_data_pa	(spc2_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc3_pcx_data_pa	(spc3_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc4_pcx_data_pa	(spc4_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc5_pcx_data_pa	(spc5_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc6_pcx_data_pa	(spc6_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc7_pcx_data_pa	(spc7_pcx_data_pa[`PCX_WIDTH-1:0]));
+
+       /*
+   pcx_dp3 AUTO_TEMPLATE(
+			  .scan_out	(),
+			  .scan_in	());
+*/                 
+
+   pcx_dp3 pcx_dp3(/*AUTOINST*/
+		   // Outputs
+		   .scan_out		(),			 // Templated
+		   .pcx_scache3_data_px_l(pcx_scache3_data_px_l[`PCX_WIDTH-1:0]),
+		   // Inputs
+		   .arbpc3_pcxdp_grant_pa(arbpc3_pcxdp_grant_pa[7:0]),
+		   .arbpc3_pcxdp_q0_hold_pa(arbpc3_pcxdp_q0_hold_pa[7:0]),
+		   .arbpc3_pcxdp_qsel0_pa(arbpc3_pcxdp_qsel0_pa[7:0]),
+		   .arbpc3_pcxdp_qsel1_pa(arbpc3_pcxdp_qsel1_pa[7:0]),
+		   .arbpc3_pcxdp_shift_px(arbpc3_pcxdp_shift_px[7:0]),
+		   .rclk		(rclk),
+		   .scan_in		(),			 // Templated
+		   .shiftenable		(shiftenable),
+		   .spc0_pcx_data_pa	(spc0_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc1_pcx_data_pa	(spc1_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc2_pcx_data_pa	(spc2_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc3_pcx_data_pa	(spc3_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc4_pcx_data_pa	(spc4_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc5_pcx_data_pa	(spc5_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc6_pcx_data_pa	(spc6_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc7_pcx_data_pa	(spc7_pcx_data_pa[`PCX_WIDTH-1:0]));
+
+       /*
+   pcx_dp4 AUTO_TEMPLATE(
+		   	  .pcx_io_data_px_l	(pcx_fpio_data_px_l[`PCX_WIDTH-1:0]),
+			  .scan_out	(),
+			  .scan_in	());
+*/                 
+
+   pcx_dp4 pcx_dp4(/*AUTOINST*/
+		   // Outputs
+		   .scan_out		(),			 // Templated
+		   .pcx_io_data_px_l	(pcx_fpio_data_px_l[`PCX_WIDTH-1:0]), // Templated
+		   // Inputs
+		   .arbpc4_pcxdp_grant_pa(arbpc4_pcxdp_grant_pa[7:0]),
+		   .arbpc4_pcxdp_q0_hold_pa(arbpc4_pcxdp_q0_hold_pa[7:0]),
+		   .arbpc4_pcxdp_qsel0_pa(arbpc4_pcxdp_qsel0_pa[7:0]),
+		   .arbpc4_pcxdp_qsel1_pa(arbpc4_pcxdp_qsel1_pa[7:0]),
+		   .arbpc4_pcxdp_shift_px(arbpc4_pcxdp_shift_px[7:0]),
+		   .rclk		(rclk),
+		   .scan_in		(),			 // Templated
+		   .shiftenable		(shiftenable),
+		   .spc0_pcx_data_pa	(spc0_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc1_pcx_data_pa	(spc1_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc2_pcx_data_pa	(spc2_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc3_pcx_data_pa	(spc3_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc4_pcx_data_pa	(spc4_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc5_pcx_data_pa	(spc5_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc6_pcx_data_pa	(spc6_pcx_data_pa[`PCX_WIDTH-1:0]),
+		   .spc7_pcx_data_pa	(spc7_pcx_data_pa[`PCX_WIDTH-1:0]));
+
+endmodule // pcx_dp_array134
+
+
+
+
+
+(
+		   		   .scan_out		(),			 		   .pcx_scache1_data_px_l(

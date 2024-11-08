@@ -1,0 +1,266 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE> Dynamic Documentation: Technical Discussion</TITLE>
+</HEAD>
+
+<BODY TEXT="#000010" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B"
+ ALINK="#FF0000">
+<SCRIPT SRC="icinclude.js"></SCRIPT>
+
+<SCRIPT>ICsection("Start") ;</SCRIPT>
+
+<H1><I>Technical Discussion of Dynamic Documentation</I></H1>
+<P>Dynamic documentation uses two Javascript (tm) functions to control and
+create the hypertext document, namely the Tk function <B>JS_TK()</B> and the
+conditional function <B>JS_COND()</B>. Both of these functions are invoked from
+within the &lt;<B>SCRIPT</B>&gt; tag.</P>
+<HR>
+<H4><U>The Tk Function</U></H4>
+<P>The <B>JS_TK</B> Javascript function creates active embedded windows within
+the hypertext. It is similar in nature to the JAVA <I>&quot;applet&quot;</I>
+tag. In fact, the JS_TK function is an alternative implementation of the applet
+tag using Tk/Tcl rather than JAVA. The major reasons for using Tk/Tcl rather
+than JAVA is that <B>1</B>) EZ CAD is a Tk/Tcl application, <B>2</B>) Tk/Tcl is
+freely available <FONT COLOR="#ff0000">NOW</FONT> for all Unix workstations, as
+well as MacIntosh, Windows, and WindowsNT, <B>3</B>) the JS_TK function does
+not allow access over the network for increased security, and <B>4</B>) the
+instability the of Java Virtual Machines on the platforms that we support.</P>
+<P>The definition of the Tk function is:</P>
+<CENTER>
+<P> <XMP>JS_TK(PROCEDURE=&quot;...&quot;, TKWINDOW [,ARGS=&quot;...&quot;]
+[,WIDTH=&quot;...&quot;] [,HEIGHT=&quot;...&quot;] [,ALIGN=&quot;...&quot;]
+[,PADX=&quot;...&quot;] [,PADY=&quot;...&quot;] [,ALT=&quot;...&quot;]
+[,ALTWIDTH=&quot;...&quot;] [,ALTHEIGHT]) ;</XMP> </P>
+</CENTER>
+<P>The keyword <B>JS_TK</B> starts a Tk embedded window. It must be followed
+with the <B>PROCEDURE</B> and <B>TKWINDOW</B>phrases. All other hypertext
+phrases are optional. Unlike JAVA, the width and height of the window is
+optional; without these phrases, Tk determines the size of the window based on
+the content of the windows in the native browser. Unfortunately, Netscape has
+the same shortcomings as JAVA. In order to support Netscape, the ALTWIDTH and
+ALTHEIGHT parameters are available. The string following the <B>PROCEDURE</B>
+phrase must be a valid Tk procedure. The procedure will be
+<A HREF="autoload.html">autoloaded</A> by adding the procedure to the tclIndex
+in the EZ tcl directory. Only procedures which are in the autoload index will
+be available for execution, thereby, increasing the security of the system. The
+Tk procedure's first argument must be the <A HREF="tk.html#tkpath">Tk window
+hierarchy</A> where the embedded window is to be created. The string following
+the <B>TKWINDOW</B> phrase names the tkwindow for Netscape embedding. It must
+be a unique <A HREF="tk.html#tkpath">Tk window identifier</A>.</P>
+<P>The optional keyword <B>ARGS</B> allows the user to pass additional
+arguments from the hypertext to the Tk/Tcl procedure. The optional <B>WIDTH</B>
+and <B>HEIGHT</B> phrases allow the user to control the size of the embedded
+window. The width and height are specified in screen pixels. Both <B>WIDTH</B>
+and <B>HEIGHT</B> must be supplied simultaneously; otherwise, the phrase is
+ignored. The optional <B>ALIGN</B> keyword allows the user to control the
+vertical alignment of the window. Currently, <B>TOP</B>, <B>MIDDLE</B>, and
+<B>BOTTOM</B> alignments are supported. The optional keyword <B>PADX</B> allows
+the user to specify a space on both sizes of the embedded window. The space is
+specified in screen pixels. Likewise, the optional keyword <B>PADY</B>
+specifies the spacing above and below the window in screen pixels. The optional
+keywords <B>ALTWIDTH</B> and <B>ALTHEIGHT</B> are available to control the
+respective width and height of the Netscape embedded window. They are ignored
+in the <B>itools</B> native browser. The optional keyword <B>ALT</B> specifies
+an alternate text for browsers that cannot display embedded windows. The
+<B>ALT</B> phrase is added for completeness but does not play any role in the
+EZ CAD System. All hypertext keywords are case sensitive and
+<FONT COLOR="#ff0000">MUST be either all lower or all upper case</FONT>.</P>
+<P>Now we will turn our attention to an example of a Tk function. The Tk
+procedures below implement a pull down menu for changing the user mode. </P>
+<PRE>
+<B>proc</B> <FONT COLOR="magenta">ez_user</FONT> {w} {
+    # Get the global variable which holds the current user state.
+    <B>upvar</B> #0 ICvarsG ic
+   
+    # Set the parameters which control the display of Tix combo box.
+    <B>set</B> name [tixOptionName $w]
+    <B>option</B> add *$name*TixComboBox*label.width 16
+    <B>option</B> add *$name*TixComboBox*label.anchor e
+    <B>option</B> add *$name*TixComboBox*entry.width 20
+
+    # Create a combo box which we will configure to become a pull down menu.
+    tixComboBox $w.user -label &quot;Level of Expertise&quot; &#092;
+        -editable false -dropdown true -command &quot;<FONT COLOR="magenta">user:select_user</FONT> $w.user&quot; &#092;
+        -history 0
+
+    # Insert the options into the pulldown menu
+    $w.user insert end Novice
+    $w.user insert end Intermediate
+    $w.user insert end Expert
+    <B>if</B> {$ic(S_developer)} {
+      $w.user insert end Developer
+    }
+
+    # Now lets set it to the current user mode.
+    tixSetSilent $w.user $ic(S_user)
+
+    # Now pack the widget so we can see the embedded window.
+    <B>pack</B> $w.user -side top -padx 20 -anchor center -pady 3
+
+}
+
+<B>proc</B> <FONT COLOR="magenta">user:select_user</FONT> {w s} {
+    # Update the global user state.
+    ICset_state -user $s
+
+    # Change the value of the selector.
+    tixSetSilent $w $s
+
+    # Tell the user the new mode. 
+    ic_message msg &quot;Selected user mode:$s&quot;
+
+    # Re render the hypertext in the new user mode.
+    ic:user_update render
+}
+</PRE>
+
+<P>To use this procedure, we just need to reference it in the hypertext. We
+would write:</P>
+<P><XMP><P><SCRIPT>JS_TK(PROCEDURE="ez_user", TKWINDOW=".tkuser", altwidth="400", altheight="30") ; </SCRIPT>
+
+</P>
+</XMP></P>
+<P>and we do so below:</P>
+<P><A NAME="pulldown"><SCRIPT>JS_TK(PROCEDURE="ez_user", TKWINDOW=".tkuser", altwidth="400", altheight="30") ;</SCRIPT>
+
+</A></P>
+<HR>
+<H4><U>The Conditional Function</U></H4>
+<P>The conditional Javascript function controls the display and execution of
+the hypertext within its definition. The definition of the conditional
+function:</P>
+<CENTER>
+<P> <XMP>JS_COND(EXPR=&quot;...&quot; , HTML=&quot;...&quot; [, LOGIC=NEGATIVE]
+)</XMP> </P>
+</CENTER>
+<CENTER>
+<P>or the alternate complete form</P>
+</CENTER>
+<P></P>
+<PRE>JS_COND(EXPR=&quot;...&quot; , HTML=&quot;...&quot; [, LOGIC=NEGATIVE] [,PROCEDURE=&quot;...&quot;]</PRE>
+
+<PRE>       [,TKWINDOW] [,ARGS=&quot;...&quot;] [,WIDTH=&quot;...&quot;] [,HEIGHT=&quot;...&quot;] [,ALIGN=&quot;...&quot;]</PRE>
+
+<PRE>       [,PADX=&quot;...&quot;] [,PADY=&quot;...&quot;] [,ALT=&quot;...&quot;] [,ALTWIDTH=&quot;...&quot;]</PRE> 
+<PRE>       [,ALTHEIGHT] [,TKPLACEMENT=&quot;before&quot;] ) </PRE>
+
+<P>The keyword <B>JS_COND</B> starts the conditional hypertext function. It
+must be followed with the <B>EXPR</B>, and <B>HTML</B> phrases. The
+<B>LOGIC</B> phase is optional. All hypertext keywords are case sensitive and
+<FONT COLOR="#ff0000">MUST be either all lower or all upper case</FONT>.
+However, the double quoted strings after the keywords are case sensitive.</P>
+<P>The <B>EXPR</B> keyword states an expression for when the hypertext is
+displayed. The expression may be separated by the logical operators <B>||</B>
+(or), <B>&amp;&amp;</B> (and), and <B>!</B> (not). In addition, parentheses may
+be used for complex logic. It is necessary that the expression must be a valid
+Tcl expression. It is important to note that white space is preserved within
+the double quotes. For example, </P>
+<CENTER>
+<P><XMP>EXPR=&quot;$ICMODE==standard cell tutorial||$ICMODE==macro cell
+tutorial,&quot;</XMP></P>
+</CENTER>
+<P>In the example, the condition code will be displayed if <I>&quot;standard
+cell tutorial&quot;</I> or <I>&quot;macro cell tutorial&quot;</I> mode is
+enabled. Notice that <I>&quot;macro cell tutorial,&quot;</I> ends in an OR
+operator This ensures that <I>&quot;macro cell tutorial&quot;</I> is taken as
+one string instead of three individual ones named <I>&quot;macro&quot;</I>,
+<I>&quot;cell&quot;</I>, and <I>'tutorial&quot;</I>. </P>
+<P>A builtin Tcl procedure evaluates the expression. Positive logic is used in
+the decision to display the hypertext. That is, if the expression is enabled by
+the Tcl procedure, the hypertext will be shown. The optional phrase
+<B>LOGIC=&quot;negative&quot;</B> allows the use of negative logic. This means
+that if the expression evaluates to false, the hypertext will not be shown;
+otherwise, it will be displayed. Nesting of conditional functions is
+<FONT COLOR="#ff0000">NOT permitted.</FONT> It is very important to remember
+that the HTML to be displayed must remain as one string. One can split the
+string over multiply lines in a file by using a backslash &quot;\&quot;
+character at the end of the line. In addition, double quotes within the HTML
+string must be escaped using the back-slash character (\).</P>
+<P>The alternate form of the command allows a Tk widget to be conditionally
+displayed. The Tk widget is rendered <FONT COLOR="#ff0000">*AFTER*</FONT> the
+accompanying HTML is displayed unless the <B>TKPLACEMENT=&quot;before&quot;</B>
+option is supplied. This form inherits all of the requirements and
+options of the <STRONG>JS_TK</STRONG> function above. For example, if a Tk
+widget is to be displayed conditionally, the <STRONG>PROCEDURE</STRONG> and the
+<STRONG>TKWINDOW keywords must both be present as the <STRONG>JS_TK</STRONG>
+function requires.</STRONG></P>
+<P>Now, let us show an example:</P>
+<P></P>
+<PRE><XMP><SCRIPT>JS_COND(EXPR="$ICUSER==Intermediate||$ICUSER==Expert",
+HTML="<P>This code will be displayed when the user mode is in intermediate or expert mode.</P>") ;
+</SCRIPT></XMP></PRE>
+
+<P></P>
+<PRE><XMP><SCRIPT>JS_COND(EXPR="$ICUSER==Intermediate||$ICvarsG(S_user)==Expert",
+LOGIC="negative", 
+HTML="<P>This code will be displayed whenever the user mode is *NOT* \
+in intermediate and *NOT* in expert mode.</P>") ;
+</SCRIPT></XMP></PRE>
+
+<P>Notice in the latter script that the expression contains $ICvarsG(S_user)
+and not $ICUSER. As you can see $ICUSER is a convenience variable and is a
+synonym for the Tcl variable $ICvarsG(S_user). Other convenience variables
+include <B>ICUSER</B>, <B>ICMODE</B>, <B>ICDESIGN</B>, and <B>ICFLOW</B>. A
+complete list is found <A HREF="convenience.html">here</A>. </P>
+<P>The Tcl procedure <I>&quot;iceval_expr&quot;</I> which evaluates the
+expression is defined as follows:</P>
+<PRE>
+<STRONG>proc</STRONG> iceval_expr {expression} {
+    <STRONG>global</STRONG> ICvarsG
+    <STRONG>if</STRONG> {[<STRONG>expr</STRONG> $expression]} {
+        <STRONG>return</STRONG> true ;
+    }
+    <STRONG>return</STRONG> false ;
+}</PRE>
+
+<P>Above are two fragments of conditional hypertext. Both fragments are
+dependent on the expression
+<I>&quot;$ICUSER==Intermediate||$ICUSER==Expert&quot;</I> but they have
+different and opposite logic. The Tcl procedure <I>&quot;iceval_expr&quot;</I>
+is also presented. All convenience variables are substituted in the expression
+<I>&quot;$ICUSER=Intermediate||$ICvarsG(S_user)==Expert&quot;</I> and the
+expression is double quoted to form a valid Tcl expression. It is then passed
+into the procedure iceval_expr to be evaluated. The global array variable
+<STRONG>ICvarsG(S_user)</STRONG> contains the current state of the user mode.
+It is defined and maintained by the EZ CAD system. The procedure evaluates the
+expression and returns true if the user is either an Intermediate or an Expert.
+Otherwise, it returns <B>false</B>. </P>
+<P>Now let us see the conditional code in action. We will change the color of
+the text to red so that the conditional hypertext will be apparent. Change
+modes and notice how the hypertext is displayed as the user mode is changed.
+Change the mode using the pulldown menu created below.</P>
+<P><SCRIPT>JS_TK(PROCEDURE="ez_user", TKWINDOW=".tkuser2", altwidth="400", altheight="30") ;</SCRIPT>
+
+</P>
+<P><FONT COLOR="#ff0000"> <SCRIPT>JS_COND(EXPR="$ICUSER==Intermediate||$ICUSER==Expert",
+HTML="<P>This code will be displayed when the user mode is in intermediate or expert mode. Change \
+the pulldown menu and you will change the display of this hypertext.</P>") ;
+</SCRIPT>
+
+<SCRIPT>JS_COND(EXPR="$ICUSER==Intermediate||$ICvarsG(S_user)==Expert",
+LOGIC="negative", 
+HTML="<P>This code will be displayed whenever the user mode is *NOT* in intermediate and *NOT* in expert mode.  Change the pulldown menu and you will change the display of this hypertext</P>" ) ;
+</SCRIPT>
+
+</FONT> </P>
+<P>Now one final example. Toggle the mode to <STRONG>Intermediate</STRONG> mode
+to see a button appear. You may view the hypertext using the <STRONG>View
+Source command under a Netscape browser or by the clicking on the
+<STRONG>View</STRONG> or <STRONG>Edit</STRONG> icon found in the native
+browser.</STRONG></P>
+<SCRIPT>JS_COND(EXPR="$ICUSER==Intermediate", HTML="<P>You should see button appear.",
+PROCEDURE="ic_button", TKWINDOW=".tkbutton", args="Success!", altwidth="400", altheight="30") ;
+</SCRIPT>
+
+<HR>
+<H4><U>Summary</U></H4>
+<P>We have presented a revolutionary new active hypertext documentation system
+and graphical user interface. This system understands different user knowledge
+levels, actively integrates the program into the documentation, and
+incorporates the latest research in usability engineering.</P>
+</BODY>
+</HTML>
+

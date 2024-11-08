@@ -1,0 +1,57 @@
+TYPE: library
+OUTPUT:ANSWER: %.2lf\n
+FILECHECK:{main C/C++ code} problem2.c problem2.cpp problem2.cxx
+FILECHECK:{include file} utdfib.h
+FILECHECK:{library C/C++ code} utdfib.c
+LIBCHECK:{library pathname} libfib UTDfibronacci
+PROBLEM:
+In this question, you will need to create a simple  program
+that will use a library to compute the Fibonacci series of
+the following number 
+
+   UTDx{Fibonacci},
+
+and then perform the following operation
+ 
+   UTDx{Fibop}.
+ 
+The name of the library function should called:
+
+   UTDfibronacci and should have the following prototype
+
+extern double UTDfibronacci( int number ) ;
+
+which should reside in the header file: utdfib.h.
+
+To identify the program instance, add the following line 
+to the top of your program:
+
+fprintf( stderr, "PROGRAMID: UTDx{UTDID}\n" ) ;
+You are  to output the answer on a single line followed by 
+a new line.  The output should be printed to the screen 
+using two digits of precision after the decimal place.
+You should output to stderr rather than stdout, that is, 
+use
+ 
+ fprintf ( stderr, format_string, ... )  
+ 
+as a mechanism to output the answer.  You should use the following
+template for your answer:
+
+"ANSWER: %.2lf\n"
+ 
+If your answer is an integer, cast it to a double.
+All floating point operations should be done in double precision.
+
+Put your library function in a file called utdfib.c or utdfib.cpp 
+containing you library function.   This file should include a
+include to the file utdfib.h.
+
+Put your main or calling program in a file called 'problem2.c' or
+'problem2.cpp' if you wish to write using C++.   The name of the
+program must be called problem2.
+ 
+Build a makefile for your program.  The name of the file should be
+'Makefile' and exist in the current working directory.   It should
+create a UTDx{libtype} library named 
+UTDx{libname} with the proper suffix.

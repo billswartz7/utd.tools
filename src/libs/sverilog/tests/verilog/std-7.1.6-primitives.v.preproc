@@ -1,0 +1,5 @@
+module driver (in, out, en);
+input [3:0] in;
+output [3:0] out;
+input en;
+bufif0

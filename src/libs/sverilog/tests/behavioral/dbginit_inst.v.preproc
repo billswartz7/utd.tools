@@ -1,0 +1,19 @@
+
+module dbginit_inst (
+ rst,
+ clk,
+ dbginit,
+ actual,
+ expected,
+ cnt_val,
+ mon_num
+
+);
+
+   parameter CMP_SZ = 1;
+
+
+  input rst;
+  input clk;
+  input dbginit;             input [CMP_SZ-1:0]  actual;      input [CMP_SZ-1:0]  expected;    input [10:0] cnt_val;      input [31:0] mon_num;    
+  reg

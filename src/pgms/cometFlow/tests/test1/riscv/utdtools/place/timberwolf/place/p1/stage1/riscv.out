@@ -1,0 +1,489 @@
+
+Row-Based Placement Program
+
+iplacesc.v1 version:v2.0.0pre46
+iTools/TimberWolf compilation:Mon Oct 14 19:37:27 CDT 2019 by bill using Darwin 14.5.0 (x86_64)
+
+Copyright (c) 1993-2019 TimberWolf Systems, Inc. All rights reserved.
+
+
+
+Options specified:
+adaptive_row_spacing     : 0
+add_feeds                : off
+add_rigid_spacers        : on
+adjust_cell_offset       : on
+adjust_gate_array_rows   : on
+alignment_tolerance      : 0
+allow_long_rows          : off
+allow_uneven_rows        : off
+allow_pad_overlap        : off
+autodetect_script        : off
+auto_row_lengths         : default (on but off for complex rows)
+auto_wire_weight         : on
+background               : white
+bendcost_threshold       : 0.000 (default) 
+buffer_timing            : on
+calc_row_index           : off
+check_overlap            : on
+check_pin_access         : on
+check_ports              : off
+cluster                  : on
+cluster_priority         : off
+cluster_split_param      : default (calculated)
+cluster_split_weight     : 1000.00
+compact_ports            : autodetect
+compact_port_algorithm   : 3
+compress_files           : off
+contiguous_pad_groups    : on
+convert_paths_to_pinpairs: off
+core_to_padspace         : 2 2 2 2
+corner_pads              : on
+cost_obstacles           : on
+cost_only                : off
+cover_cell_transparent   : off
+create_pl1in_instances   : off
+default_pin_capacitance  : (20.00 fF)
+design_style             : stdcell
+eco_autodetect           : off
+eco_buffer_tree          : off
+eco_constraint_factor    : -1
+eco_constraint_xfactor   : -1.00 relative
+eco_driver_weight        : 1
+eco_ignore_version       : off
+eco_placement_improve    : off
+eco_preview              : off
+eco_start_iteration      : 100
+eco_use_pl1_in_data      : on
+equalize_rows            : off
+even_placement           : off
+except_threshold         : default
+exit_on_error            : off
+fast                     : 10
+fix_orientation_problems : on
+fix_side_pin_access      : off
+gate_array_exit          : off
+gate_array_spacer        : ~TWSPACER
+graphics                 : on
+grid                     : none
+horizontal_path_weight   : 0.037 (calculated)
+horizontal_weight        : 1.000
+ignore_feeds             : off
+ignore_keepouts          : on
+iterate                  : off
+iterate_debug            : off
+iterate_script           : default
+large_net_threshold      : 100
+load balancing           : off
+merge_port_layers        : autodetected
+minimum_pad_space        : calculated
+net_reporting            : on
+orientation_optimization : off
+overlap_algorithm        : ordered
+overlap_mode             : left_justify
+padspacing               : uniform
+over_the_cell_feed_layer : default
+parallel_daemons         : on
+parallel_debug           : off
+parallel execution       : off
+parallel_row_update      : default
+parallel_slave_graphics  : off
+parallel timeout         : 0
+parallel_remote_start    : on
+path_detail_limit        : 10
+pdef_factor              : 10.000
+pdef_filename            : default
+pin_layers               : default
+power_domain_attempts    : 4
+power_domain_height      : 0
+power_domain_isolation   : on
+power_domain_spacing     : 0
+power_domain_width       : 0
+power_domain_exec        : off
+power_domain_start       : default
+power_domain_weight      : 1
+pre_equalize_rows        : off
+precision_row_control    : default
+preload_rows             : off
+probe_offset             : 0
+processor limit          : unlimited
+process_model_pins       : on
+prune_amount             : default
+quench                   : off
+random_seed              : 1520708458
+relax_pin_access         : off
+require_vias             : on
+restart                  : cluster
+restrict_ports_to_channel: off
+row_blockage_percent     : 50.000
+row_definitions          : fixed
+row_var_percent          : 0.000
+save_file                : on
+scale                    : 10.00
+schematic_ordering       : off
+script                   : none
+shared_boundary_opt      : on
+slow                     : 0
+soft_fold_weight         : 1.00
+spare_columns            : 5 (default)
+spare_extent             : 1.000000 1.000000 (default)
+spare_place_gravity      : on
+spare_place_globals      : 2
+spare_global_weight      : 1.00
+stage termination        : 100
+steiner_wire_length      : off
+strict_row_constraints   : off
+taper_percentage         : 0.100
+time_factor              : 3.000
+time_update              : 5 (default)
+timeout                  : none
+track.pitch              : 2
+uniform_spacer_algorithm : FIXED
+unlap_max_checking       : off
+update_overlap           : 0
+use_initial_placement    : off
+vertical_path_weight     : 1.000 (user supplied)
+vertical_wire_weight     : 1.000
+zsa_read_pth             : off
+% Reading .slib, .sckt, and .scon files...
+
+[look_for_hints]:Found hints in <riscv.sstat> file
+[look_for_hints]:Number of insts:1784
+[look_for_hints]:Number of nets :2423
+[look_for_hints]:Number of gpins:9788
+
+no syntax errors in library:riscv.slib
+no syntax errors in physical description.
+no syntax problem in circuit file.
+no syntax errors in netlist description.
+Reading constraint file riscv.scon...
+done reading constraint file. No syntax errors.
+
+WARNING[pinlayers_init]:pin_layers not defined.
+Using first vertical layer:metal2 pitch:1.6 offset:0.8
+Pin layers:
+layer:metal2 pitch:1.6 offset:0.8
+
+Need timing graph...no
+[autodetect_port_layers]:didn't autodetect port layers.
+median:27.2
+
+[cleanup_readcells2]:There are 0 ports in the design of which 0 are moveable.
+
+
+
+total cell length: 39401.6
+total block length: 39395.2
+rowSep                  : 0.000
+
+
+[auto_wire_weight]:vertical_wire_weight has been set by user.
+Effective row separation has been set to 1.00
+Modified vertical wire weight has been set to 1000000.00
+WARNING[auto_wire_weight]:The vertical wire weight has calculated a large number
+using auto_wire_weight which may cause the results to suffer.
+If this is due to a small row separation, the problem may be eliminated
+by turning auto_wire_weight to off in the .par file.
+WARNING[auto_wire_weight]:vertical wire weight reset to 1.0.
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (0,0) (888,900).
+Adjusted padring: (-4,-4) (888,904).
+
+block x-span:875.5  block y-span:900
+
+
+TIMING FACTOR (COMPUTED) : 4.000000
+Original Average Cell Width:26.9
+average_cell_width is:26.8953
+standard deviation of cell length is:19.0272
+narrowest standard cell:3.2
+widest standard cell:52.8
+average row length:875.5
+Normal row control algorithm.
+ratio:16.5
+
+Row-based Cell Distribution: 
+[ 1- 10] (     3.2      8.2) : 9.352  0.000  0.000 15.085  0.000  0.000  5.734  0.000  0.000  0.205 
+[11- 20] (     8.6     13.2) : 0.000  0.000  2.321  0.000  0.000  0.000  4.778  0.000  0.000  2.253 
+[21- 30] (    13.6     18.1) : 0.000  0.000  0.683  0.000  0.000  1.229  0.000  0.000  0.000  1.297 
+[31- 40] (    18.5     23.1) : 0.000  0.000  2.321  0.000  0.000  0.410  0.000  0.000  1.297  0.000 
+[41- 50] (    23.5       28) : 0.000  1.160  0.000  0.000  0.000  1.570  0.000  0.000  0.887  0.000 
+[51- 60] (    28.4       33) : 0.000  1.024  0.000  0.000  1.502  0.000  0.000  0.000  1.024  0.000 
+[61- 70] (    33.4       38) : 0.000  0.887  0.000  0.000  1.570  0.000  0.000  1.911  0.000  0.000 
+[71- 80] (    38.4     42.9) : 5.529  0.000  0.000  0.000  0.956  0.000  0.000  1.297  0.000  0.000 
+[81- 90] (    43.3     47.9) : 2.935  0.000  0.000  3.481  0.000  0.000  0.000  2.867  0.000  0.000 
+[91-100] (    48.3     52.8) : 4.983  0.000  0.000  6.485  0.000  0.000  7.235  0.000  0.000  5.734 
+Bin width:19.84 smallest:128 => largest:2112
+
+Cluster input complete...
+
+[calc_stat]:Average cluster size = 57.8, dev = 76.8
+Range limiter = 57.8, starting TG=10.000000
+raw bin width :80.7
+adjusted bin width :51.2
+number of x bins    :22
+number of y bins    :0
+
+
+
+THIS IS THE ROUTE COST OF THE ORIGINAL PLACEMENT: 805895.3
+
+[findcost]:the large and non-global ignored nets:
+WARNING[findcost]:Large net <rst> has 266 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <clk> has 399 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <CTRL.cyc> has 175 pins exceeding threshold and is now IGNORED.
+WARNING[findcost]:Large net <1'h1> has 264 pins exceeding threshold and is now IGNORED.
+
+[findcost]:The active global nets:	NONE
+
+[findcost]:The defined global nets but not present in netlist:	NONE
+The number of nets with 1 pins is 4
+The number of nets with 2 pins is 1323
+The number of nets with 3 pins is 447
+The number of nets with 4 pins is 201
+The number of nets with 5 pins is 95
+The number of nets with 6 pins is 44
+The number of nets with 7 pins is 25
+The number of nets with 8 pins is 21
+The number of nets with 9 pins is 35
+The number of nets with 10 pins is 59
+The number of nets with 11 pins is 158
+The number of nets with 13 pins is 1
+The number of nets with 15 pins is 1
+The number of nets with 19 pins is 1
+The number of nets with 24 pins is 1
+The number of nets with 28 pins is 1
+The number of nets with 30 pins is 1
+The number of nets with 35 pins is 1
+The number of nets with 100 pins or more is 4
+Average number of pins per net = 3.589913
+The maximum number of pins on a single net is:399
+
+Pad information:
+Core: (0,0) (875.5,900).
+Padring: (-4,-21.3) (888,921.3).
+Die: (-21.3,-22) (896.9,922).
+
+
+Percentage of Nets Connecting to at least 2 cells:1.00
+Percentage of Nets Connecting to at least 3 cells:0.46
+Percentage of Nets Connecting to at least 4 cells:0.27
+Percentage of Nets Connecting to at least 5 cells:0.19
+Percentage of Nets Connecting to at least 6 cells:0.16
+
+mean row var width :13.4
+block:   1 (0,0) (875.5,20) desire:875.5 val:13.4
+block:   2 (0,20) (875.5,40) desire:875.5 val:13.4
+block:   3 (0,40) (875.5,60) desire:875.5 val:13.4
+block:   4 (0,60) (875.5,80) desire:875.5 val:13.4
+block:   5 (0,80) (875.5,100) desire:875.5 val:13.4
+block:   6 (0,100) (875.5,120) desire:875.5 val:13.4
+block:   7 (0,120) (875.5,140) desire:875.5 val:13.4
+block:   8 (0,140) (875.5,160) desire:875.5 val:13.4
+block:   9 (0,160) (875.5,180) desire:875.5 val:13.4
+block:  10 (0,180) (875.5,200) desire:875.5 val:13.4
+block:  11 (0,200) (875.5,220) desire:875.5 val:13.4
+block:  12 (0,220) (875.5,240) desire:875.5 val:13.4
+block:  13 (0,240) (875.5,260) desire:875.5 val:13.4
+block:  14 (0,260) (875.5,280) desire:875.5 val:13.4
+block:  15 (0,280) (875.5,300) desire:875.5 val:13.4
+block:  16 (0,300) (875.5,320) desire:875.5 val:13.4
+block:  17 (0,320) (875.5,340) desire:875.5 val:13.4
+block:  18 (0,340) (875.5,360) desire:875.5 val:13.4
+block:  19 (0,360) (875.5,380) desire:875.5 val:13.4
+block:  20 (0,380) (875.5,400) desire:875.5 val:13.4
+block:  21 (0,400) (875.5,420) desire:875.5 val:13.4
+block:  22 (0,420) (875.5,440) desire:875.5 val:13.4
+block:  23 (0,440) (875.5,460) desire:875.5 val:13.4
+block:  24 (0,460) (875.5,480) desire:875.5 val:13.4
+block:  25 (0,480) (875.5,500) desire:875.5 val:13.4
+block:  26 (0,500) (875.5,520) desire:875.5 val:13.4
+block:  27 (0,520) (875.5,540) desire:875.5 val:13.4
+block:  28 (0,540) (875.5,560) desire:875.5 val:13.4
+block:  29 (0,560) (875.5,580) desire:875.5 val:13.4
+block:  30 (0,580) (875.5,600) desire:875.5 val:13.4
+block:  31 (0,600) (875.5,620) desire:875.5 val:13.4
+block:  32 (0,620) (875.5,640) desire:875.5 val:13.4
+block:  33 (0,640) (875.5,660) desire:875.5 val:13.4
+block:  34 (0,660) (875.5,680) desire:875.5 val:13.4
+block:  35 (0,680) (875.5,700) desire:875.5 val:13.4
+block:  36 (0,700) (875.5,720) desire:875.5 val:13.4
+block:  37 (0,720) (875.5,740) desire:875.5 val:13.4
+block:  38 (0,740) (875.5,760) desire:875.5 val:13.4
+block:  39 (0,760) (875.5,780) desire:875.5 val:13.4
+block:  40 (0,780) (875.5,800) desire:875.5 val:13.4
+block:  41 (0,800) (875.5,820) desire:875.5 val:13.4
+block:  42 (0,820) (875.5,840) desire:875.5 val:13.4
+block:  43 (0,840) (875.5,860) desire:875.5 val:13.4
+block:  44 (0,860) (875.5,880) desire:875.5 val:13.4
+block:  45 (0,880) (875.5,900) desire:875.5 val:13.4
+Total Desired Length:39395.2
+
+ 86  0.001     815573          0      27%
+THIS IS THE ROUTE COST OF THE MODIFIED PLACEMENT: 815573.3
+bdxlen:875.5  bdylen:900
+l:0  t:900  r:875.5  b:0
+
+
+
+THIS IS THE ROUTE COST OF THE CURRENT PLACEMENT: 815573.3
+Attempts per iteration:7325
+
+Iter        T       Wire       Time timeC row   flps  pflps    rej   acc  dacc
+ 85: 2.17e+03 1.91e+03     804876          0  4.00   8   1632    495   2846 0.274 0.286 0.323
+ 86: 1.68e+03 1.52e+03     790367          0  4.00   0   1848    462   2728 0.307 0.306 0.301
+ 87: 2.31e+03 1.31e+03     773918          0  4.00   0   1657    433   2768 0.285 0.273 0.281
+ 88: 2.18e+03 1.28e+03     758751          0  4.00   0   1579    398   2648 0.262 0.263 0.263
+ 89: 1.76e+03 1.02e+03     747066          0  4.00   0   1501    379   2638 0.250 0.249 0.245
+ 90: 1.84e+03 9.45e+02     736120          0  4.00   0   1423    318   2733 0.230 0.227 0.229
+ 91: 1.81e+03 8.80e+02     729400          0  4.00   0   1331    291   2555 0.215 0.214 0.214
+ 92: 1.83e+03 7.84e+02     723069          0  4.00   0   1255    251   2591 0.202 0.198 0.199
+ 93: 1.36e+03 7.90e+02     714653          0  4.00   0   1195    250   2499 0.185 0.193 0.186
+ 94: 1.37e+03 8.11e+02     712261          0  4.00   0   1106    220   2563 0.173 0.172 0.174
+ 95: 1.07e+03 5.22e+02     704238          0  4.00   0   1106    213   2723 0.174 0.168 0.162
+ 96: 1.16e+03 5.21e+02     699602          0  4.00   0    972    203   2559 0.151 0.149 0.151
+ 97: 9.38e+02 4.66e+02     694936          0  4.00   0    933    192   2626 0.145 0.146 0.141
+ 98: 1.06e+03 4.63e+02     690459          0  4.00   0    902    132   2657 0.131 0.128 0.132
+ 99: 7.92e+02 6.16e+02     688341          0  4.00   0    859    117   2662 0.115 0.130 0.123
+100: 9.37e+02 4.66e+02     684989          0  4.00   0    791    129   2566 0.123 0.111 0.115
+Removed the cell overlaps --- Will do neighbor interchanges only now
+
+TOTAL INTERCONNECT LENGTH: 684988.6
+
+BLOCK   LENGTHS ORIG_DESIRE    OVER/UNDER       MIN       MAX    DESIRE DEVIATION DESIRE_DEV
+   1       858       875       -18  -2.0%       862       889       875       -18         0
+   2       862       875       -13  -1.5%       862       889       875       -13         0
+   3       864       875       -11  -1.3%       862       889       875       -11         0
+   4       862       875       -13  -1.5%       862       889       875       -13         0
+   5       864       875       -11  -1.3%       862       889       875       -11         0
+   6       872       875        -3  -0.4%       862       889       875        -3         0
+   7       862       875       -13  -1.5%       862       889       875       -13         0
+   8       867       875        -8  -0.9%       862       889       875        -8         0
+   9       880       875         5   0.5%       862       889       875         5         0
+  10       885       875         9   1.1%       862       889       875         9         0
+  11       866       875       -10  -1.1%       862       889       875       -10         0
+  12       877       875         1   0.2%       862       889       875         1         0
+  13       885       875         9   1.1%       862       889       875         9         0
+  14       874       875        -2  -0.2%       862       889       875        -2         0
+  15       877       875         1   0.2%       862       889       875         1         0
+  16       875       875        -0  -0.0%       862       889       875        -0         0
+  17       886       875        11   1.3%       862       889       875        11         0
+  18       875       875        -0  -0.0%       862       889       875        -0         0
+  19       885       875         9   1.1%       862       889       875         9         0
+  20       880       875         5   0.5%       862       889       875         5         0
+  21       885       875         9   1.1%       862       889       875         9         0
+  22       880       875         5   0.5%       862       889       875         5         0
+  23       872       875        -3  -0.4%       862       889       875        -3         0
+  24       869       875        -7  -0.8%       862       889       875        -7         0
+  25       885       875         9   1.1%       862       889       875         9         0
+  26       877       875         1   0.2%       862       889       875         1         0
+  27       888       875        13   1.4%       862       889       875        13         0
+  28       882       875         6   0.7%       862       889       875         6         0
+  29       886       875        11   1.3%       862       889       875        11         0
+  30       885       875         9   1.1%       862       889       875         9         0
+  31       888       875        13   1.4%       862       889       875        13         0
+  32       872       875        -3  -0.4%       862       889       875        -3         0
+  33       886       875        11   1.3%       862       889       875        11         0
+  34       888       875        13   1.4%       862       889       875        13         0
+  35       878       875         3   0.3%       862       889       875         3         0
+  36       875       875        -0  -0.0%       862       889       875        -0         0
+  37       864       875       -11  -1.3%       862       889       875       -11         0
+  38       883       875         8   0.9%       862       889       875         8         0
+  39       886       875        11   1.3%       862       889       875        11         0
+  40       875       875        -0  -0.0%       862       889       875        -0         0
+  41       885       875         9   1.1%       862       889       875         9         0
+  42       866       875       -10  -1.1%       862       889       875       -10         0
+  43       866       875       -10  -1.1%       862       889       875       -10         0
+  44       862       875       -13  -1.5%       862       889       875       -13         0
+  45       862       875       -13  -1.5%       862       889       875       -13         0
+The longest row is:34, its length:888, deviation is:12.6
+The shortest row is:1, its length:857.6 Unevenness:30.4 3.54%
+
+iter     T      Wire      Time   accept
+WARNING[SApad_place]:Pad ring given in error.
+Given padring   : (-4,-21.3) (888,921.3).
+Adjusted padring: (-4,-21.3) (892,921.3).
+
+134  0.001     683737          0       6%
+135  0.001     683737          0       (no fixed constraint processing)
+135  0.001     675484          0      14%
+136  0.001     674972          0       6%
+137  0.001     673874          0       8%
+138  0.001     673745          0       6%
+139  0.001     673594          0       6%
+
+
+Annealing information:
+Iteration         Temp        Temp2      Totalcost           Wire  Sparebin      Time     TimeC   row  flips  pairflips  reject    accept   accept2     ratio
+---------  -----------  -----------  -------------  -------------  --------  --------  --------  ----  -----  ---------  ------  --------  --------  --------
+       85  2172.084554  1906.685217  804876.200000  804876.200000  0.000000  0.000000  4.000000  1632    495        495    2846  0.285508  0.274356  0.322757
+       86  1684.981012  1521.397925  790367.100000  790367.100000  0.000000  0.000000  4.000000  1848    462        462    2728  0.306137  0.306880  0.301280
+       87  2308.931867  1314.236046  773917.900000  773917.900000  0.000000  0.000000  4.000000  1657    433        433    2768  0.272953  0.284606  0.281232
+       88  2184.897494  1282.737902  758751.300000  758751.300000  0.000000  0.000000  4.000000  1579    398        398    2648  0.262944  0.262077  0.262517
+       89  1764.904370  1019.951465  747066.000000  747066.000000  0.000000  0.000000  4.000000  1501    379        379    2638  0.249233  0.250448  0.245049
+       90  1843.715288   945.317850  736120.200000  736120.200000  0.000000  0.000000  4.000000  1423    318        318    2733  0.226704  0.230190  0.228742
+       91  1809.355866   880.225661  729399.500000  729399.500000  0.000000  0.000000  4.000000  1331    291        291    2555  0.213650  0.214508  0.213521
+       92  1829.709129   783.859410  723068.800000  723068.800000  0.000000  0.000000  4.000000  1255    251        251    2591  0.198096  0.202008  0.199312
+       93  1362.454588   790.037513  714653.000000  714653.000000  0.000000  0.000000  4.000000  1195    250        250    2499  0.192622  0.184713  0.186049
+       94  1369.674484   811.349922  712260.700000  712260.700000  0.000000  0.000000  4.000000  1106    220        220    2563  0.172264  0.172640  0.173669
+       95  1065.493683   522.201811  704238.100000  704238.100000  0.000000  0.000000  4.000000  1106    213        213    2723  0.167522  0.174342  0.162113
+       96  1156.948992   521.169480  699602.100000  699602.100000  0.000000  0.000000  4.000000   972    203        203    2559  0.148703  0.151008  0.151325
+       97   937.875576   465.904386  694935.800000  694935.800000  0.000000  0.000000  4.000000   933    192        192    2626  0.145617  0.144635  0.141255
+       98  1064.605662   462.789907  690458.600000  690458.600000  0.000000  0.000000  4.000000   902    132        132    2657  0.128102  0.130717  0.131856
+       99   792.309234   615.675369  688341.400000  688341.400000  0.000000  0.000000  4.000000   859    117        117    2662  0.129883  0.115186  0.123082
+      100   937.291066   465.842362  684988.600000  684988.600000  0.000000  0.000000  4.000000   791    129        129    2566  0.110567  0.122661  0.114891
+
+
+[output]:output core with 0 errors and 0 warnings.
+
+
+[neighborhood_report]:No neighborhood constraints.
+
+
+
+FINAL CLUSTERED INTERCONNECT LENGTH:673593.8
+MAX NUMBER OF ATTEMPTED FLIPS PER T:7325
+
+Statistics:
+Number of Standard Cells: 1465
+Number of Macros: 0 
+Number of Pads: 319 
+Number of PadGroups: 0 
+Number of Instances: 1784 
+Number of Nets: 2423 
+Number of Pins: 10107 
+Number of Implicit Feed Thrus: 319
+
+
+Runtime Statistics
+-------------------------
+Machine name: 0-1b-63-9-4-5.dyn.utdallas.edu
+Machine type: Darwin
+Date        : Tue Oct 22 14:00:35 2019
+
+User    time:   0.8 seconds
+System  time:   0.1 seconds
+Elapsed time:  15.2 seconds
+
+Average resident text size       =          0K
+Average resident data+stack size =          0K
+Maximum resident size            =    6727680B (6570KB)
+Virtual memory size              =    4249600K (4150MB)
+Virtual memory limit soft        = 9007199254740992K (7EB)
+Virtual memory limit max         = 9007199254740992K (7EB)
+Maximum heap size                =     7028240 (6863KB)
+Current heap size                =     6975136 (6811KB)
+
+Major page faults = 0
+Minor page faults = 4770
+Swaps = 0
+
+Input blocks = 0
+Output blocks = 8
+
+Context switch (voluntary) = 2187
+Context switch (involuntary) = 288
+
+
+iplacesc.v1 terminated normally with no errors and 9 warning[s] (status arg:1024 status:0 status given:1024) 
+

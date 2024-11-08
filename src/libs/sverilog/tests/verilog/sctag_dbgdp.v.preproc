@@ -1,0 +1,116 @@
+	
+
+
+module sctag_dbgdp (
+      so, sctag_dbgbus_out, 
+      arbdp_dbg_addr_c3, arbdec_dbgdp_inst_c3, arbctl_dbgdp_inst_vld_c3, 
+   l2_dbg_en, rclk, si, se
+   );
+
+output	so;
+
+
+input	[29:0]	arbdp_dbg_addr_c3 ;	
+input	[8:0]	arbdec_dbgdp_inst_c3 ;
+input		arbctl_dbgdp_inst_vld_c3;
+input		l2_dbg_en ;
+input	rclk, si, se;
+
+
+output	[40:0]	sctag_dbgbus_out;
+
+
+wire	[40:0] 	 ;
+
+
+
+// MSB is the mux select 
+assign	dbgbus_c3 = { l2_dbg_en , 
+			arbctl_dbgdp_inst_vld_c3, 
+			arbdec_dbgdp_inst_c3,
+			arbdp_dbg_addr_c3 };
+
+
+dff_s     #(41)    ff_sctag_dbgbus_out   (.din(dbgbus_c3[40:0]), .clk(rclk),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+ ;
+
+
+
+assign	 = { l2_dbg_en , 
+			arbctl_dbgdp_inst_vld_c3, 
+			arbdec_dbgdp_inst_c3,
+			arbdp_dbg_addr_c3 };
+
+
+dff_s     #(41)    ff_sctag_dbgbus_out   (.din(dbgbus_c3[40:0]), .clk(rclk),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+ = {  , 
+			arbctl_dbgdp_inst_vld_c3, 
+			arbdec_dbgdp_inst_c3,
+			arbdp_dbg_addr_c3 };
+
+
+dff_s     #(41)    ff_sctag_dbgbus_out   (.din(dbgbus_c3[40:0]), .clk(rclk),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+ , 
+			, 
+			arbdec_dbgdp_inst_c3,
+			arbdp_dbg_addr_c3 };
+
+
+dff_s     #(41)    ff_sctag_dbgbus_out   (.din(dbgbus_c3[40:0]), .clk(rclk),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+, 
+			,
+			arbdp_dbg_addr_c3 };
+
+
+dff_s     #(41)    ff_sctag_dbgbus_out   (.din(dbgbus_c3[40:0]), .clk(rclk),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+,
+			 };
+
+
+dff_s     #(41)    ff_sctag_dbgbus_out   (.din(dbgbus_c3[40:0]), .clk(rclk),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+ };
+
+
+dff_s     #(41)       (.din(dbgbus_c3[40:0]), .clk(rclk),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+   (.din([40:0]), .clk(),
+                .q(sctag_dbgbus_out[40:0]), .se(se), .si(), .so());
+
+endmodule
+
+),
+                .q([40:0]), .se(), .si(), .so());
+
+endmodule
+
+), .si(), .so());
+
+endmodule
+

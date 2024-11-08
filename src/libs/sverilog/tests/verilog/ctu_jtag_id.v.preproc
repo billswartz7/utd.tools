@@ -1,0 +1,19 @@
+
+
+module ctu_jtag_id (
+mask_id
+);
+
+output [3:0] mask_id;
+
+parameter [9:1] id3_m = 9bb;
+parameter [9:1] id2_m = 9bb;
+parameter [9:1] id1_m = 9bb;
+parameter [9:1] id0_m = 9bb;
+
+assign 	   [0] = [1] ^ [2] ^ [3] ^ [4] ^ [5] ^ [6] ^ [7] ^ [8] ^ [9];
+assign 	   [1] = [1] ^ [2] ^ [3] ^ [4] ^ [5] ^ [6] ^ [7] ^ [8] ^ [9];
+assign 	   [2] = [1] ^ [2] ^ [3] ^ [4] ^ [5] ^ [6] ^ [7] ^ [8] ^ [9];
+assign 	   [3] = [1] ^ [2] ^ [3] ^ [4] ^ [5] ^ [6] ^ [7] ^ [8] ^ [9];
+
+endmodule

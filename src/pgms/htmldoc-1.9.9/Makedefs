@@ -1,0 +1,90 @@
+#
+# Makefile definitions for HTMLDOC, an HTML document processing program.
+#
+# Copyright © 2011-2019 by Michael R Sweet.
+# Copyright © 1997-2010 by Easy Software Products.
+#
+# This program is free software.  Distribution and use rights are outlined in
+# the file "COPYING".
+#
+
+#
+# Programs...
+#
+
+AR		=	/usr/bin/ar
+AWK		=	awk
+CC		=	clang
+CXX		=	clang++
+CHMOD		=	/bin/chmod
+CP		=	/bin/cp
+INSTALL		=	/Users/billswartz7/version1/utdtools/utd.tools/src/pgms/htmldoc-1.9.9/install-sh
+LN		=	/bin/ln -sf
+MKDIR		=	/bin/mkdir -p
+MV		=	/bin/mv
+POST		=	:
+RANLIB		=	ranlib
+RM		=	/bin/rm -f
+SHELL		=	/bin/sh
+
+# The extension to use for executables...
+EXEEXT		=	
+
+#
+# Installation programs...
+#
+
+INSTALL_BIN	=	$(INSTALL) -c -m 555 -s
+INSTALL_DATA	=	$(INSTALL) -c -m 444
+INSTALL_DIR	=	$(INSTALL) -d
+INSTALL_MAN	=	$(INSTALL) -c -m 444
+
+#
+# Directories...
+#
+
+BUILDROOT	=	$(DSTROOT)$(RPM_BUILD_ROOT)$(DESTDIR)
+bindir		=	/Users/billswartz7/version1/utdtools/utd.tools/v1.0.0/bin/bin
+datadir		=	/Users/billswartz7/version1/utdtools/utd.tools/v1.0.0/bin/share
+datarootdir	=	/Users/billswartz7/version1/utdtools/utd.tools/v1.0.0/bin/share
+exec_prefix	=	/Users/billswartz7/version1/utdtools/utd.tools/v1.0.0/bin
+includedir	=	${prefix}/include
+infodir		=	${datarootdir}/info
+libdir		=	${exec_prefix}/lib
+libexecdir	=	${exec_prefix}/libexec
+localstatedir	=	${prefix}/var
+mandir		=	${datarootdir}/man
+oldincludedir	=	/usr/include
+prefix		=	/Users/billswartz7/version1/utdtools/utd.tools/v1.0.0/bin
+sbindir		=	${exec_prefix}/sbin
+sharedstatedir	=	${prefix}/com
+srcdir		=	.
+sysconfdir	=	${prefix}/etc
+top_srcdir	=	.
+
+#
+# Program options...
+#
+# OPTIM   defines the common compiler optimization/debugging options.
+#
+
+ARFLAGS		=	cr
+CFLAGS		=	-I..  -D_FORTIFY_SOURCE=2 -mmacosx-version-min=10.13 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE $(OPTIM) -I../jpeg -I../png 
+CPPFLAGS	=	-I/usr/local/opt/zlib/include
+CXXFLAGS	=	-I..  -D_FORTIFY_SOURCE=2 -fno-rtti -fno-exceptions -mmacosx-version-min=10.13 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE $(OPTIM) -I../jpeg -I../png 
+LDFLAGS		=	 -mmacosx-version-min=10.13 $(OPTIM)
+LIBS		=	-framework Security -framework CoreFoundation ../png/libpng.a ../jpeg/libjpeg.a  -lz -lresolv -lm 
+OPTIM		=	-Wall -Wunused -Wno-char-subscripts -Wno-format-y2k -Os -g 
+
+#
+# Rules...
+#
+
+.SILENT:
+.SUFFIXES:	.a .c .cxx .h .o
+.c.o:
+	echo Compiling $<...
+	$(CC) $(CPPFLAGS) $(CFLAGS) -c $<
+.cxx.o:
+	echo Compiling $<...
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $<

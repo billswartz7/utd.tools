@@ -1,0 +1,125 @@
+#!/bin/sh
+# This comment makes this script an executable. Do *NOT* delete \
+eval exec ${UTDTOOLS}/${UTDTOOLSVERSION}/bin/utdos cometTix -n -q -q ${UTDTOOLS}/${UTDTOOLSVERSION}/bin/utdcustom_python -- $0 ${1+"$@"}
+
+proc customize_python_script {python_file remove_flag} {
+
+  set routine "customize_python_script"
+  if {![file exists $python_file]} {
+    # see if the name has already been converted.
+    set converted_file_name utd${python_file}
+    if {[file exists $converted_file_name]} {
+      utdmsg imsg $routine "Python script file:$converted_file_name already exists.\n\n"
+      exit 0
+    }
+    utdmsg errmsg $routine "Python script file:$python_file does not exist\n\n"
+    exit 1
+  }
+  file rename -force ${python_file} ${python_file}.orig
+  set orig_file ${python_file}.orig
+  set fpython [open ${orig_file} "r"]
+  if {$fpython == ""} {
+    utdmsg errmsg $routine "Could not open file:${orig_file} for reading.\n\n"
+    exit 1
+  } 
+  set file_data [read $fpython]
+  close $fpython
+  if {!([string equal -length 3 $python_file utd])} {
+    set python_file utd${python_file}
+  }
+  set fnew [open ${python_file} "w"]
+  if {$fnew == ""} {
+    utdmsg errmsg $routine "Could not open file:${python_file} for writing.\n\n"
+    exit 1
+  } 
+  # Now process python script
+  set line_cnt 0
+  set lines [split $file_data "\r\n"]
+  foreach line $lines {
+    incr line_cnt
+    if {$line_cnt == 1} {
+      puts $fnew "#!/usr/bin/env utdpython3"
+    } else {
+      puts $fnew "$line"
+    }
+  }
+  close $fnew
+  file attributes $python_file -permissions 0755
+
+  if {$remove_flag} {
+    file delete -force $orig_file
+  }
+  return $python_file
+
+}
+
+proc utdtrim_args { arg_list } {
+  # scan to see if we have a --
+  set item_num 0
+  set divider_flag false
+  foreach item $arg_list {
+    incr item_num
+    if {$item == "--"} {
+      set divider_flag true
+      break ;
+    }
+  }
+  if {$divider_flag} {
+    # puts stderr "got divider at $item_num"
+    # puts stderr "pwd: [pwd]"
+    return [lrange $arg_list $item_num end]
+  }
+  return $arg_list
+
+}
+
+set routine utdcustom_script
+global argv
+set args $argv
+# puts stderr "args: $args"
+set num_args [llength $args]
+# puts stderr "args: $args num_args:$num_args"
+set args [utdtrim_args $args]
+set num_args [llength $args]
+# puts stderr "args: $args num_args:$num_args"
+
+set remove_flag false
+set python_filename ""
+set new_dir ""
+for {set arg 0} {$arg < $num_args} {incr arg} {
+  set arg_el [lindex $args $arg]
+  if {($arg_el == "-help") ||($arg_el == "--help")} {
+    puts stderr "\nutdcustom_python -help\n"
+    puts stderr "utdcustom_python \[-remove\] <PythonScriptFileName>\n"
+    puts stderr "\tThe option -remove option will remove the original"
+    puts stderr "\tfile after the transformation.\n\n"
+    exit 0
+  } elseif {($arg_el == "-remove")} {
+    set remove_flag true
+  } elseif {($arg_el == "-newdir")} {
+    incr arg
+    if {$arg < $num_args} {
+      set new_dir [lindex $args $arg]
+    } else {
+      utdmsg errmsg $routine "Missing argument to -newdir\n"
+      exit 1
+    }
+  } else {
+    set python_filename $arg_el
+  }
+}
+
+if {$python_filename == ""} {
+  utdmsg errmsg $routine "Python filename not given.\n\n"
+  exit 1
+}
+
+# puts stderr "python_file: $python_filename"
+# puts stderr "remove_flag: $remove_flag"
+
+set new_filename [customize_python_script $python_filename $remove_flag]
+if {($new_filename != "") && ($new_dir != "")} {
+  file rename -force -- $new_filename $new_dir
+}
+
+exit 0

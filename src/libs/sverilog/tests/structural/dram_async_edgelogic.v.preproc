@@ -1,0 +1,32 @@
+module dram_async_edgelogic(
+      to_pad, 
+      data
+   );
+
+input			data;
+
+output			to_pad;
+
+
+
+wire  = data;
+
+assign to_pad  = n0;
+
+endmodule
+ = ;
+
+assign to_pad  = n0;
+
+endmodule
+;
+
+assign   = n0;
+
+endmodule
+  = ;
+
+endmodule
+;
+
+endmodule

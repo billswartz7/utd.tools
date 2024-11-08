@@ -1,0 +1,42 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+    echo " "
+    echo "Syntax: run_valgrind {program arguments}"
+    echo " "
+    echo "For example: run_valgrind iverilog nand3.v"
+    echo " "
+    echo " This will create a val.out file with all of the info and"
+    echo " a val.def file which contains the definitely lost memory references."
+    echo " "
+    echo "If you want to gdb to catch errors, enter  "
+    echo " "
+    echo " export GDB_DEBUG=1"
+    echo " "
+    echo "in the shell."
+    echo " "
+    exit 1  ;
+fi
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+gdb_debug=${GDB_DEBUG}
+if [ ! "${gdb_debug}" ] ; then
+  valgrind -v --leak-check=full --show-leak-kinds=all ${1+"$@"} 2>val.out
+else 
+  echo "After this command is run.  Enter gdb $1 in another terminal."
+  echo "Enter target remote | vgdb in the gdb terminal"
+  valgrind -v --vgdb-error=0 --leak-check=full --show-leak-kinds=all ${1+"$@"} 2>val.out
+  utdos valgrindp
+fi
+

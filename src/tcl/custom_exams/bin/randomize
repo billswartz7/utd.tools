@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+echo "Syntax: randomize <CSVfilename>"
+echo "        creates randomized teams of a given size"
+echo " "
+echo "        randomize <CSVfilename> <random_variables>"
+echo "          use a different random variable file.  By"
+echo "          default we use <CVSfilename>.vars"
+exit 1  ;
+fi
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/custom_exams/tcl/randomize.tcl -- ${1+"$@"}

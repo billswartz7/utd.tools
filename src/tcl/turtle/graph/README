@@ -1,0 +1,13 @@
+# To install the demo:
+   sudo apt-get install python3-tk
+   sudo apt install python3-pip
+   pip3 install networkx
+
+# To run the student demo
+   python3 student#1.py example_graph
+
+# To run the teacher demo
+   python3 demo.py example_graph
+
+
+

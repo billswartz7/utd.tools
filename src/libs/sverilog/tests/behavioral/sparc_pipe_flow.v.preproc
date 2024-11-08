@@ -1,0 +1,32 @@
+
+ 
+
+module sparc_pipe_flow (clk);
+
+
+ 
+
+
+ 
+
+
+ 
+
+
+ 
+
+
+ 
+
+
+ 
+
+
+ 
+
+
+ 
+
+
+input clk;
+integer

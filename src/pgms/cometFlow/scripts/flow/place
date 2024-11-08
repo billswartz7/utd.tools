@@ -1,0 +1,126 @@
+# This comment make this script an executable.  Do *NOT* delete \
+eval exec ${OPENROAD}/bin/cometFlow -s p -dir place -v -n -f -do ${OPENROAD}/scripts/flow/place ${1+"$@"}
+
+
+# The defaults settings.
+
+if {!([info exists env(OPENROAD)])} {
+  puts stderr "ERROR:cannot get OpenRoad environment variable:OPENROAD"
+  exit 1
+}
+
+set routine place
+set previous floorplan
+
+global env
+global argv
+
+# Get the design name
+set args $argv
+set num_args [llength $args]
+for {set i 0} {$i < $num_args} {incr i} {
+  set arg_el [lindex $args $i]
+  ormsg imsg null "argv\[$i]: $arg_el\n"
+}
+incr i -1
+set dsn [lindex $args $i]
+
+# Now source any necessary do files.
+::openroad::source_flow_do_files $dsn p
+
+set dsn $::openroad::designNameS
+ormsg imsg null "Welcome to the RePlace calling script..\n"
+set openroot $::openroad::rootdirS
+
+# Now do some functionality
+# We should be in the place directory as we created a directory here.
+# eval exec ${OPENROAD}/bin/flow -s c -dir cut .... 
+set dirname [pwd]
+set folder [file tail $dirname]
+if {$folder != "place"} {
+  ormsg errmg $routine "we are not in the proper directory:$folder\n"
+  orwait
+  exit 1
+}
+
+# ######################## LEF ############################
+set input_name $::openroad::lef_fileS
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set lef_file [::openroad::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$lef_file == ""} {
+    ormsg errmsg $routine "No input file named $input_name found. Aborting\n"
+    orwait
+    exit 1
+  }
+}
+
+# ######################## TIMING ############################
+set input_name $::openroad::timing_fileS
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::openroad::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    ormsg errmsg $routine "No input file named $input_name found. Aborting\n"
+    orwait
+    exit 1
+  }
+}
+
+# ######################## DEF ############################
+set input_name $::openroad::def_fileS
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set def_file [::openroad::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$def_file == ""} {
+    ormsg errmsg $routine "No input file named $input_name found. Aborting\n"
+    orwait
+    exit 1
+  }
+}
+
+# ######################## SDC ############################
+set input_name $::openroad::sdc_fileS
+if {$input_name != ""} {
+  # change this to multiple files if needed
+  set fpath [::openroad::search_input $input_name [list . ../${previous}/output ../ ../../] true]
+  if {$fpath == ""} {
+    ormsg errmsg $routine "No input file named $input_name found. Aborting\n"
+    orwait
+    exit 1
+  }
+}
+
+set pgm_path [file join $openroot bin RePlAce]
+set ntu_path [file join $openroot bin ntuplace3]
+set detail_placer NTU3
+
+puts stderr "Running placer...\n"
+# ./RePlAce -bmflag ispd -lef osu035.lef -def riscv.def -dpflag NTU3 -dploc ./ntuplace/ntuplace3 -output odir
+set program_cmd "$pgm_path -bmflag ispd -lef $lef_file -def $def_file -dpflag $detail_placer -dploc $ntu_path -output output"
+#
+#
+###################################################################
+# Now call the placer
+###################################################################
+global outputG
+
+if {[catch {eval bgexec statusG -output outputG -keepnewline false -onoutput [list {puts stderr}] $program_cmd} msg]} {
+  set fp [open "problem" w]
+  puts $fp "we got the following msg running RePlAce:$msg"
+  close $fp
+}
+
+# Now move the output def to it's proper place
+puts stderr "creating link..."
+cd output
+set outpath [file join ispd $dsn experiment0 ${dsn}_final.def]
+set oname [file join ${dsn}.def]
+if {[file exists $outpath]} {
+  if {[catch {file link -symbolic $oname $outpath} result_msg]} {
+    ormsg errmsg ::openroad::create_softllink "Problem:$result_msg"
+    orwait
+    exit 1
+  }
+}
+orexit 0

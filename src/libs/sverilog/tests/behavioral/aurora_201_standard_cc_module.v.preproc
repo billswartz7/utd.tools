@@ -1,0 +1,31 @@
+ 
+
+
+     
+
+module aurora_201_STANDARD_CC_MODULE
+(
+        WARN_CC,
+    DO_CC,
+    
+    
+        DCM_NOT_LOCKED,
+    USER_CLK,
+    CHANNEL_UP
+
+);
+
+ 
+
+    
+        output      WARN_CC;
+    output      DO_CC;
+    
+    
+        input       DCM_NOT_LOCKED;
+    input       USER_CLK;
+    input       CHANNEL_UP;
+    
+    
+
+    reg

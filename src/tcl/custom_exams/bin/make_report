@@ -1,0 +1,33 @@
+#!/bin/sh
+
+if [ $# -lt 1 ]
+then
+    echo "Syntax: make_report <file> [output_directory] :"
+    echo "     Read a file and convert it to HTML and then a PDF."
+    echo "     If directory is given, deposit it in the directory"
+    echo " "
+    exit 1  ;
+fi
+
+icdir=${ICDIR}
+
+if [ ! "${icdir}" ] ; then
+  echo " "
+  echo "ERROR[make_report]:ICDIR is not set."
+  echo "Please set ICDIR to the iTools root directory."
+  echo " "
+  exit 1
+fi
+
+utd_dir=${UTDEXAMS}
+
+if [ ! "${utd_dir}" ] ; then
+  echo " "
+  echo "ERROR[make_report]:UTDEXAMS is not set."
+  echo "Please set UTDEXAMS to the custom_exams root directory."
+  echo " "
+  exit 1
+fi
+
+exec ${ICDIR}/bin/icos ICtclsh -i -v -do ${utd_dir}/tcl/make_report.tcl -a ${1+"$@"}
+

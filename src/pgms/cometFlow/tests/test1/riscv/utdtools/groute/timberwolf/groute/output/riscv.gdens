@@ -1,0 +1,225 @@
+numrows 45 numregions 98
+density by channels
+channel     1 tracks 19
+channel     2 tracks 19
+channel     3 tracks 20
+channel     4 tracks 21
+channel     5 tracks 25
+channel     6 tracks 23
+channel     7 tracks 21
+channel     8 tracks 23
+channel     9 tracks 24
+channel    10 tracks 22
+channel    11 tracks 23
+channel    12 tracks 25
+channel    13 tracks 25
+channel    14 tracks 25
+channel    15 tracks 27
+channel    16 tracks 27
+channel    17 tracks 30
+channel    18 tracks 27
+channel    19 tracks 29
+channel    20 tracks 28
+channel    21 tracks 25
+channel    22 tracks 25
+channel    23 tracks 31
+channel    24 tracks 33
+channel    25 tracks 26
+channel    26 tracks 27
+channel    27 tracks 28
+channel    28 tracks 28
+channel    29 tracks 27
+channel    30 tracks 30
+channel    31 tracks 29
+channel    32 tracks 28
+channel    33 tracks 27
+channel    34 tracks 29
+channel    35 tracks 30
+channel    36 tracks 29
+channel    37 tracks 28
+channel    38 tracks 27
+channel    39 tracks 28
+channel    40 tracks 27
+channel    41 tracks 22
+channel    42 tracks 21
+channel    43 tracks 20
+channel    44 tracks 23
+channel    45 tracks 17
+channel    46 tracks 21
+density by regions
+region     1 tracks 19
+region     3 tracks 19
+region     5 tracks 20
+region     7 tracks 21
+region     8 tracks 1
+region     9 tracks 25
+region    10 tracks 1
+region    11 tracks 23
+region    13 tracks 21
+region    14 tracks 1
+region    15 tracks 23
+region    16 tracks 1
+region    17 tracks 24
+region    18 tracks 1
+region    19 tracks 22
+region    20 tracks 1
+region    21 tracks 23
+region    22 tracks 1
+region    23 tracks 25
+region    24 tracks 1
+region    25 tracks 25
+region    27 tracks 25
+region    28 tracks 2
+region    29 tracks 27
+region    30 tracks 1
+region    31 tracks 27
+region    32 tracks 1
+region    33 tracks 30
+region    35 tracks 27
+region    36 tracks 2
+region    37 tracks 29
+region    38 tracks 1
+region    39 tracks 28
+region    40 tracks 1
+region    41 tracks 25
+region    42 tracks 2
+region    43 tracks 25
+region    44 tracks 2
+region    45 tracks 31
+region    46 tracks 2
+region    47 tracks 33
+region    49 tracks 26
+region    50 tracks 2
+region    51 tracks 27
+region    52 tracks 1
+region    53 tracks 28
+region    54 tracks 2
+region    55 tracks 28
+region    56 tracks 1
+region    57 tracks 27
+region    58 tracks 1
+region    59 tracks 30
+region    61 tracks 29
+region    63 tracks 28
+region    65 tracks 27
+region    66 tracks 1
+region    67 tracks 29
+region    69 tracks 30
+region    71 tracks 29
+region    73 tracks 28
+region    75 tracks 27
+region    76 tracks 1
+region    77 tracks 28
+region    79 tracks 27
+region    81 tracks 22
+region    82 tracks 1
+region    83 tracks 21
+region    85 tracks 20
+region    86 tracks 1
+region    87 tracks 23
+region    89 tracks 17
+region    91 tracks 21
+region    92 tracks 1
+region    93 tracks 1
+region    94 tracks 2
+region    97 tracks 14
+region    98 tracks 54
+region definitions
+region     1          0        -20     1019.2          0 type C
+region     2          0          0     1019.2         20 type R 1
+region     3          0         20     1019.2         20 type C
+region     4          0         20     1019.2         40 type R 2
+region     5          0         40     1019.2         40 type C
+region     6          0         40     1019.2         60 type R 3
+region     7          0         60     1019.2         60 type C
+region     8          0         60     1019.2         80 type R 4
+region     9          0         80     1019.2         80 type C
+region    10          0         80     1019.2        100 type R 5
+region    11          0        100     1019.2        100 type C
+region    12          0        100     1019.2        120 type R 6
+region    13          0        120     1019.2        120 type C
+region    14          0        120     1019.2        140 type R 7
+region    15          0        140     1019.2        140 type C
+region    16          0        140     1019.2        160 type R 8
+region    17          0        160     1019.2        160 type C
+region    18          0        160     1019.2        180 type R 9
+region    19          0        180     1019.2        180 type C
+region    20          0        180     1019.2        200 type R 10
+region    21          0        200     1019.2        200 type C
+region    22          0        200     1019.2        220 type R 11
+region    23          0        220     1019.2        220 type C
+region    24          0        220     1019.2        240 type R 12
+region    25          0        240     1019.2        240 type C
+region    26          0        240     1019.2        260 type R 13
+region    27          0        260     1019.2        260 type C
+region    28          0        260     1019.2        280 type R 14
+region    29          0        280     1019.2        280 type C
+region    30          0        280     1019.2        300 type R 15
+region    31          0        300     1019.2        300 type C
+region    32          0        300     1019.2        320 type R 16
+region    33          0        320     1019.2        320 type C
+region    34          0        320     1019.2        340 type R 17
+region    35          0        340     1019.2        340 type C
+region    36          0        340     1019.2        360 type R 18
+region    37          0        360     1019.2        360 type C
+region    38          0        360     1019.2        380 type R 19
+region    39          0        380     1019.2        380 type C
+region    40          0        380     1019.2        400 type R 20
+region    41          0        400     1019.2        400 type C
+region    42          0        400     1019.2        420 type R 21
+region    43          0        420     1019.2        420 type C
+region    44          0        420     1019.2        440 type R 22
+region    45          0        440     1019.2        440 type C
+region    46          0        440     1019.2        460 type R 23
+region    47          0        460     1019.2        460 type C
+region    48          0        460     1019.2        480 type R 24
+region    49          0        480     1019.2        480 type C
+region    50          0        480     1019.2        500 type R 25
+region    51          0        500     1019.2        500 type C
+region    52          0        500     1019.2        520 type R 26
+region    53          0        520     1019.2        520 type C
+region    54          0        520     1019.2        540 type R 27
+region    55          0        540     1019.2        540 type C
+region    56          0        540     1019.2        560 type R 28
+region    57          0        560     1019.2        560 type C
+region    58          0        560     1019.2        580 type R 29
+region    59          0        580     1019.2        580 type C
+region    60          0        580     1019.2        600 type R 30
+region    61          0        600     1019.2        600 type C
+region    62          0        600     1019.2        620 type R 31
+region    63          0        620     1019.2        620 type C
+region    64          0        620     1019.2        640 type R 32
+region    65          0        640     1019.2        640 type C
+region    66          0        640     1019.2        660 type R 33
+region    67          0        660     1019.2        660 type C
+region    68          0        660     1019.2        680 type R 34
+region    69          0        680     1019.2        680 type C
+region    70          0        680     1019.2        700 type R 35
+region    71          0        700     1019.2        700 type C
+region    72          0        700     1019.2        720 type R 36
+region    73          0        720     1019.2        720 type C
+region    74          0        720     1019.2        740 type R 37
+region    75          0        740     1019.2        740 type C
+region    76          0        740     1019.2        760 type R 38
+region    77          0        760     1019.2        760 type C
+region    78          0        760     1019.2        780 type R 39
+region    79          0        780     1019.2        780 type C
+region    80          0        780     1019.2        800 type R 40
+region    81          0        800     1019.2        800 type C
+region    82          0        800     1019.2        820 type R 41
+region    83          0        820     1019.2        820 type C
+region    84          0        820     1019.2        840 type R 42
+region    85          0        840     1019.2        840 type C
+region    86          0        840     1019.2        860 type R 43
+region    87          0        860     1019.2        860 type C
+region    88          0        860     1019.2        880 type R 44
+region    89          0        880     1019.2        880 type C
+region    90          0        880     1019.2        900 type R 45
+region    91          0        900     1019.2        920 type C
+region    92       -8.7        920     1021.2        922 type P ICPADT
+region    93       -8.7        -22     1021.2        -20 type P ICPADB
+region    94      -21.3        -22       -8.7        922 type P ICPADL
+region    95     1021.2        -22     1041.2        922 type P ICPADR
+region    96     1019.2        -20     1021.2        920 type I
+region    97          0          0          0        900 type I
+region    98       -8.7        -20          0        920 type I

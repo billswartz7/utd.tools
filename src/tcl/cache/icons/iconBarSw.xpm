@@ -1,0 +1,39 @@
+/* XPM */
+static char *iconBarSw[] = {
+/* width height num_colors chars_per_pixel */
+"    21    27        5            1",
+/* colors */
+". c #000000",
+"# c #bfbf00",
+"a c #c0c0c0",
+"b c #ffff00",
+"c c #c0c0c0",
+/* pixels */
+"ccccccccccccccccccccc",
+"ccccccccccccccccccccc",
+"ccccccccccccccccccccc",
+"ccccccccccccccccccccc",
+"ccc................cc",
+"ccc.b############..cc",
+"ccc.bb###########..cc",
+"ccc.bbbbbbbbbbb##..cc",
+"ccc.bbbbbbbbbbb##..cc",
+"ccc.bbbb...bbbb##..cc",
+"ccc.bbbb.a.bbb###..cc",
+"ccc.bbbb.a..b####..cc",
+"ccc.bbbb.a..#####..cc",
+"ccc.bbbbb.a.##b##..cc",
+"ccc.bbbbb.a.#bb##..cc",
+"ccc.bbbbb.a.#bb##..cc",
+"ccc.bbbbb.a.bbb##..cc",
+"ccc.bbbbb.a.bbb##..cc",
+"ccc.bbbbbbbbbbb##..cc",
+"ccc.bbbbbb..bbb##..cc",
+"ccc.bbbbb...bbb##..cc",
+"ccc.bbbbbbbbbbb##..cc",
+"ccc.bbbbbbbbbbb##..cc",
+"ccc.bbbb#########..cc",
+"ccc.bbbbbbbbbbbb#..cc",
+"ccc................cc",
+"ccccccccccccccccccccc"
+};

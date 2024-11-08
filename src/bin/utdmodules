@@ -1,0 +1,63 @@
+#!/bin/sh
+
+#
+#  "$RCSfile$ $Revision$ $Date$"
+
+if [ $# -lt 1 ]
+then
+    echo "Syntax: utdmodules [yes | no]"
+    echo "        utdmodules yes : programs accessed thru lmod modules"
+    echo "                         which need to be installed in the OS."
+    echo "        utdmodules no  : programs accessed using soft links in bin"
+    echo "                         directory."
+    echo " "
+    exit 1  ;
+fi
+
+option=$1 ;
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+utdversion=${UTDTOOLSVERSION}
+if [ ! "${utdversion}" ] ; then
+  echo "ERROR: UTDTOOLSVERSION environment variable not set." 
+  echo "Please set it using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+utdroot=${utdtools}/${utdversion}
+
+if [ "${option}" = "yes" -o "${option}" = "YES" -o "${option}" = "on" ] ; then
+   echo "Module system invoked."
+else 
+   bin_dir=${utdroot}/bin
+   echo "Creating links in ${bin_dir} directory."
+   if [ ! -e ${bin_dir} ] ; then
+     echo " "
+     echo "ERROR:${bin_dir} does not exist."
+     echo " "
+   fi
+   \rm -rf ${bin_dir}/cachepractice
+   \rm -rf ${bin_dir}/membanks
+   \rm -rf ${bin_dir}/mempractice
+   orig_dir=`pwd`
+   cd $bin_dir
+   ln -s ../tcl/cache/cachepractice
+   ln -s ../tcl/banks/membanks
+   ln -s ../tcl/memory/mempractice
+   cd $orig_dir
+fi
+

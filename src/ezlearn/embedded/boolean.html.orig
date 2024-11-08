@@ -1,0 +1,34 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN"> 
+ 
+<HTML>
+ 
+<HEAD>
+<TITLE>Programming Memory-Mapped Registers</TITLE>
+</HEAD>
+ 
+<BODY TEXT="#000010" BGCOLOR="#FFFFFF" LINK="#0000EE" VLINK="#551A8B"
+ ALINK="#FF0000" ONLOAD="parent.loadframe2()">
+<SCRIPT SRC="utdinclude.js"></SCRIPT>
+<SCRIPT>UTDsection("Lesson") ;</SCRIPT>
+<H1><I>Memory-Mapped Registers</I></H1>
+
+
+<H3>Definition</H3>
+<P>A computer system has two general choices when communicating with peripheral or I/O devices: specialized command access or unified command access. </P>
+
+<P>In specialized or port-mapped IO, the CPU has specialized instructions which communicate through a group of addresses organized as a port.   An example of such an instruction is the Intel x86 ISA instruction <B>outb</B> which outputs a byte to a given port address.  This addresss space is separate from the address space used to access main memory (random-access memory or RAM).</P>  
+
+<P>Alternatively, the computer system may use its address space to communicate with both random-access memory (RAM also known as main memory) and peripheral (I/O) devices such as sensors and actuators.   The address space is unified and the same address space is used to access both I/O devices and main memory.  Thus a single type of CPU instruction such as the ARM ISA <B>STR</B> can access all memory addresses.   Each peripheral device is assigned a unique address in the address space by the computer architect and the device simply responds to the CPU when its address is presented on the address bus.  In essence, the desired device's hardware register is <I>mapped</I> to an address within the CPU's address space.</P>
+
+
+<H3>Programming Memory-Mapped Registers</H3>
+<P>The advantage of memory-mapped peripheral registers is the ease of programming them using a high-level language such as C, C++, or Python.   The address of each hardware register can be renamed as a symbolic name in the high level language.   For example
+
+<HR>
+
+<HR>
+<P><SCRIPT>JS_TK(procedure="ez_nextpage", tkwindow=".eznextpage", args="problems", altwidth="220", altheight="50") ; </SCRIPT>
+</P>
+</BODY>
+</HTML>
+ 

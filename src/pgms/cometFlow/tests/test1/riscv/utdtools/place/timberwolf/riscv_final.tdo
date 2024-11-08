@@ -1,0 +1,3 @@
+icread_itools::state place
+icwrite_def [file join ../ output riscv.def] -placed  -sections {rows nocoresites vias components pins nets}
+exit

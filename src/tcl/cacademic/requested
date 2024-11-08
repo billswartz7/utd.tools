@@ -1,0 +1,2 @@
+#!/bin/sh
+cometTix -n -v requested.tcl -- students.db

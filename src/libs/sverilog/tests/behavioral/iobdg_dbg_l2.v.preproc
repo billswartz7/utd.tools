@@ -1,0 +1,291 @@
+
+	 			        
+
+
+
+module iobdg_dbg_l2 (
+      l2_dbg_vld, l2_dbg_tstamp, l2_dbg_data, iob_clk_l2_tr, 
+   l2_vis_buf_wr_lo_l, l2_vis_buf_wr_hi_l, l2_vis_buf_rd_lo_l, 
+   l2_vis_buf_rd_hi_l, l2_vis_buf_tail_ptr, l2_vis_buf_head_ptr, 
+   l2_vis_buf_din_lo, l2_vis_buf_din_hi, 
+      cpu_rst_l, rst_l, cpu_clk, clk, tx_sync, rx_sync, l2_dbgbus_01, 
+   l2_dbgbus_23, dbg_en_01, dbg_en_23, creg_dbg_l2_vis_ctrl, 
+   creg_dbg_l2_vis_maska_s, creg_dbg_l2_vis_cmpa_s, 
+   creg_dbg_l2_vis_maskb_s, creg_dbg_l2_vis_cmpb_s, 
+   creg_dbg_l2_vis_trig_delay_s, l2_vis_buf_dout_lo, 
+   l2_vis_buf_dout_hi
+   );
+
+      input                                    cpu_rst_l;
+   input                                    rst_l;
+   input 				    cpu_clk;
+   input 				    clk;
+   input 				    tx_sync;
+   input 				    rx_sync;
+
+   
+      input [39:0] 			    l2_dbgbus_01;
+   input [39:0] 			    l2_dbgbus_23;
+   input 				    dbg_en_01;
+   input 				    dbg_en_23;
+
+   
+      output 				    l2_dbg_vld;
+   output [7:0] 			    l2_dbg_tstamp;
+   output [39:0] 			    l2_dbg_data;
+
+   
+      output 				    iob_clk_l2_tr;
+
+   
+      input [63:0] 			    creg_dbg_l2_vis_ctrl;
+   input [63:0]				    creg_dbg_l2_vis_maska_s;
+   input [63:0]				    creg_dbg_l2_vis_cmpa_s;
+   input [63:0]				    creg_dbg_l2_vis_maskb_s;
+   input [63:0]				    creg_dbg_l2_vis_cmpb_s;
+   input [63:0] 			    creg_dbg_l2_vis_trig_delay_s;
+   
+   
+      output 				    l2_vis_buf_wr_lo_l;
+   output 				    l2_vis_buf_wr_hi_l;
+   output 				    l2_vis_buf_rd_lo_l;
+   output 				    l2_vis_buf_rd_hi_l;
+   
+   output [-1:0] 	    l2_vis_buf_tail_ptr;
+   output [-1:0] 	    l2_vis_buf_head_ptr;
+   
+   wire [-1:0] 	    ;
+   wire [`IOB_L2_VIS_BUF_WIDTH-1:0] 	    l2_vis_buf_dout;
+   
+   output [64:0] 			    l2_vis_buf_din_lo;
+   output [64:0] 			    l2_vis_buf_din_hi;
+   input [64:0] 			    l2_vis_buf_dout_lo;
+   input [64:0] 			    l2_vis_buf_dout_hi;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_d1;
+   
+   assign 	l2_vis_buf_din_lo = {{(65-`IOB_L2_VIS_BUF_WIDTH){1'b0}},l2_vis_buf_din};
+   assign 	l2_vis_buf_din_hi = {{(65-`IOB_L2_VIS_BUF_WIDTH){1'b0}},l2_vis_buf_din};
+   assign 	l2_vis_buf_dout = l2_vis_buf_head_d1[`IOB_L2_VIS_BUF_INDEX-1] ?
+		                  l2_vis_buf_dout_hi[`IOB_L2_VIS_BUF_WIDTH-1:0] :
+		                  l2_vis_buf_dout_lo[`IOB_L2_VIS_BUF_WIDTH-1:0];
+   
+   
+   // Internal signals
+   wire 	                            creg_dbg_l2_vis_ctrl_en;
+   wire [63:0]				    creg_dbg_l2_vis_maska;
+   wire [63:0]				    creg_dbg_l2_vis_cmpa;
+   wire [63:0]				    creg_dbg_l2_vis_maskb;
+   wire [63:0]				    creg_dbg_l2_vis_cmpb;
+   wire [63:0] 				    creg_dbg_l2_vis_trig_delay;
+   
+   wire [7:0] 				    l2_timestamp;
+   wire [7:0] 				    l2_timestamp_plus1;
+   wire [39:0] 				    l2_dbgbus_01_d1;
+   wire [39:0] 				    l2_dbgbus_23_d1;
+   wire 				    dbg_en_01_d1;
+   wire 				    dbg_en_23_d1;
+   wire [39:0]				    l2_dbgbus;
+   wire [38:0]				    l2_dbgbus_d1;
+   wire 				    l2_dbgbus_vld;
+   wire 				    l2_dbgbus_vld_d1;
+   wire [38:0] 				    l2_vis_maska;
+   wire [38:0] 				    l2_vis_cmpa;
+   wire 				    l2_trig_a;
+   wire [38:0] 				    l2_vis_maskb;
+   wire [38:0] 				    l2_vis_cmpb;
+   wire 				    l2_trig_b;
+   wire 				    l2_vis_buf_wr;
+   wire 				    l2_vis_buf_wr_lo;
+   wire 				    l2_vis_buf_wr_hi;
+   wire 				    l2_vis_buf_tail_inc;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail_plus1;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail_f;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_cpu;
+   wire 				    l2_vis_buf_hwm;
+   wire 				    l2_vis_buf_drop;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_plus1;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_s;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail_jbus;
+   wire 				    l2_vis_buf_empty;
+   wire 				    l2_vis_buf_rd;
+   wire 				    l2_vis_buf_rd_lo;
+   wire 				    l2_vis_buf_rd_hi;
+   wire 				    l2_vis_buf_empty_d1;
+   wire 				    l2_vis_buf_head_inc;
+   wire 				    l2_dbg_vld_a1;
+   wire [`IOB_L2_VIS_BUF_WIDTH-1:0] 	    l2_vis_buf_dout_d1;
+   
+   wire 				    l2_trig_pulse;
+   wire [31:0] 				    l2_trig_counter_next;
+   wire [31:0] 				    l2_trig_counter;
+   wire 				    l2_trig_counter_on;
+   wire 				    l2_trig_step_next;
+   wire 				    l2_trig_step;
+   wire 				    l2_trig;
+   wire 				    l2_trig_f;
+   wire 				    l2_trig_s;
+   wire 				    iob_clk_l2_tr_a1;
+
+ 
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * Convert frequency for control registers that need to be used
+    * in the CPU clk domain
+    *****************************************************************/
+   dffe_ns #(1) creg_dbg_l2_vis_ctrl_en_ff (.din(creg_dbg_l2_vis_ctrl[3]),
+					    .en(rx_sync),
+					    .clk(cpu_clk),
+					    .q(creg_dbg_l2_vis_ctrl_en));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_maska_ff (.din(creg_dbg_l2_vis_maska_s),
+					   .en(rx_sync),
+					   .clk(cpu_clk),
+					   .q(creg_dbg_l2_vis_maska));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_maskb_ff (.din(creg_dbg_l2_vis_maskb_s),
+					   .en(rx_sync),
+					   .clk(cpu_clk),
+					   .q(creg_dbg_l2_vis_maskb));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_cmpa_ff (.din(creg_dbg_l2_vis_cmpa_s),
+					  .en(rx_sync),
+					  .clk(cpu_clk),
+					  .q(creg_dbg_l2_vis_cmpa));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_cmpb_ff (.din(creg_dbg_l2_vis_cmpb_s),
+					  .en(rx_sync),
+					  .clk(cpu_clk),
+					  .q(creg_dbg_l2_vis_cmpb));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_trig_delay_ff (.din(creg_dbg_l2_vis_trig_delay_s),
+						.en(rx_sync),
+						.clk(cpu_clk),
+						.q(creg_dbg_l2_vis_trig_delay));
+
+   
+   /*****************************************************************
+    * L2 v;
+   wire [-1:0] 	    ;
+   
+   output [64:0] 			    l2_vis_buf_din_lo;
+   output [64:0] 			    l2_vis_buf_din_hi;
+   input [64:0] 			    l2_vis_buf_dout_lo;
+   input [64:0] 			    l2_vis_buf_dout_hi;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_d1;
+   
+   assign 	l2_vis_buf_din_lo = {{(65-`IOB_L2_VIS_BUF_WIDTH){1'b0}},l2_vis_buf_din};
+   assign 	l2_vis_buf_din_hi = {{(65-`IOB_L2_VIS_BUF_WIDTH){1'b0}},l2_vis_buf_din};
+   assign 	l2_vis_buf_dout = l2_vis_buf_head_d1[`IOB_L2_VIS_BUF_INDEX-1] ?
+		                  l2_vis_buf_dout_hi[`IOB_L2_VIS_BUF_WIDTH-1:0] :
+		                  l2_vis_buf_dout_lo[`IOB_L2_VIS_BUF_WIDTH-1:0];
+   
+   
+   // Internal signals
+   wire 	                            creg_dbg_l2_vis_ctrl_en;
+   wire [63:0]				    creg_dbg_l2_vis_maska;
+   wire [63:0]				    creg_dbg_l2_vis_cmpa;
+   wire [63:0]				    creg_dbg_l2_vis_maskb;
+   wire [63:0]				    creg_dbg_l2_vis_cmpb;
+   wire [63:0] 				    creg_dbg_l2_vis_trig_delay;
+   
+   wire [7:0] 				    l2_timestamp;
+   wire [7:0] 				    l2_timestamp_plus1;
+   wire [39:0] 				    l2_dbgbus_01_d1;
+   wire [39:0] 				    l2_dbgbus_23_d1;
+   wire 				    dbg_en_01_d1;
+   wire 				    dbg_en_23_d1;
+   wire [39:0]				    l2_dbgbus;
+   wire [38:0]				    l2_dbgbus_d1;
+   wire 				    l2_dbgbus_vld;
+   wire 				    l2_dbgbus_vld_d1;
+   wire [38:0] 				    l2_vis_maska;
+   wire [38:0] 				    l2_vis_cmpa;
+   wire 				    l2_trig_a;
+   wire [38:0] 				    l2_vis_maskb;
+   wire [38:0] 				    l2_vis_cmpb;
+   wire 				    l2_trig_b;
+   wire 				    l2_vis_buf_wr;
+   wire 				    l2_vis_buf_wr_lo;
+   wire 				    l2_vis_buf_wr_hi;
+   wire 				    l2_vis_buf_tail_inc;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail_plus1;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail_f;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_cpu;
+   wire 				    l2_vis_buf_hwm;
+   wire 				    l2_vis_buf_drop;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_plus1;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_head_s;
+   wire [`IOB_L2_VIS_BUF_INDEX:0] 	    l2_vis_buf_tail_jbus;
+   wire 				    l2_vis_buf_empty;
+   wire 				    l2_vis_buf_rd;
+   wire 				    l2_vis_buf_rd_lo;
+   wire 				    l2_vis_buf_rd_hi;
+   wire 				    l2_vis_buf_empty_d1;
+   wire 				    l2_vis_buf_head_inc;
+   wire 				    l2_dbg_vld_a1;
+   wire [`IOB_L2_VIS_BUF_WIDTH-1:0] 	    l2_vis_buf_dout_d1;
+   
+   wire 				    l2_trig_pulse;
+   wire [31:0] 				    l2_trig_counter_next;
+   wire [31:0] 				    l2_trig_counter;
+   wire 				    l2_trig_counter_on;
+   wire 				    l2_trig_step_next;
+   wire 				    l2_trig_step;
+   wire 				    l2_trig;
+   wire 				    l2_trig_f;
+   wire 				    l2_trig_s;
+   wire 				    iob_clk_l2_tr_a1;
+
+ 
+////////////////////////////////////////////////////////////////////////
+// Code starts here
+////////////////////////////////////////////////////////////////////////
+   /*****************************************************************
+    * Convert frequency for control registers that need to be used
+    * in the CPU clk domain
+    *****************************************************************/
+   dffe_ns #(1) creg_dbg_l2_vis_ctrl_en_ff (.din(creg_dbg_l2_vis_ctrl[3]),
+					    .en(rx_sync),
+					    .clk(cpu_clk),
+					    .q(creg_dbg_l2_vis_ctrl_en));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_maska_ff (.din(creg_dbg_l2_vis_maska_s),
+					   .en(rx_sync),
+					   .clk(cpu_clk),
+					   .q(creg_dbg_l2_vis_maska));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_maskb_ff (.din(creg_dbg_l2_vis_maskb_s),
+					   .en(rx_sync),
+					   .clk(cpu_clk),
+					   .q(creg_dbg_l2_vis_maskb));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_cmpa_ff (.din(creg_dbg_l2_vis_cmpa_s),
+					  .en(rx_sync),
+					  .clk(cpu_clk),
+					  .q(creg_dbg_l2_vis_cmpa));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_cmpb_ff (.din(creg_dbg_l2_vis_cmpb_s),
+					  .en(rx_sync),
+					  .clk(cpu_clk),
+					  .q(creg_dbg_l2_vis_cmpb));
+   
+   dffe_ns #(64) creg_dbg_l2_vis_trig_delay_ff (.din(creg_dbg_l2_vis_trig_delay_s),
+						.en(rx_sync),
+						.clk(cpu_clk),
+						.q(creg_dbg_l2_vis_trig_delay));
+
+   
+   /*****************************************************************
+    * L2 v;
+   
+   output [64:0] 			    l2_vis_buf_din_lo;
+   output [64:0] 			    l2_vis_buf_din_hi;
+   input [64:0] 			    l2_vis_buf_dout_lo;
+   input [64:0] 			    l2_vis_buf_dout_hi;
+   wire [:

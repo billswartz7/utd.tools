@@ -1,0 +1,62 @@
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 16:42:10 2019
+# Selected file:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef...
+icread_lef /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef read.
+icread_synopsys new_lib6.lib
+# [icread_synopsys]:reading new_lib6.lib...
+# WARNING[syn_init_model]:Could not find model:NAND4_1x
+# WARNING[syn_init_model]:Could not find model:NAND4_2x
+# WARNING[syn_init_model]:Could not find model:NAND4_3x
+# WARNING[syn_init_model]:Could not find model:NAND4_5x
+# WARNING[syn_init_model]:Could not find model:NAND4_7x
+# WARNING[syn_init_model]:Could not find model:NOR4_1x
+# WARNING[syn_init_model]:Could not find model:NOR4_2x
+# WARNING[syn_init_model]:Could not find model:NOR4_3x
+# WARNING[syn_init_model]:Could not find model:NOR4_5x
+# WARNING[syn_init_model]:Could not find model:NOR4_7x
+exit
+
+# itranslate terminated normally at Tue Oct 22 16:43:27 2019
+# with no errors and 10 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 16:44:51 2019
+# Selected file:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef...
+icread_lef /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef read.
+icgraphics_context model AOAI211_1x
+# model AOAI211_1x
+icdraw port border
+# border
+icdraw keepouts solid
+# solid
+icdraw labels 1
+# 1
+iczoom -0.24161 -0.16690 0.26179 0.16509
+icreorigin translate AOAI211_1x left bottom
+iczoom 0.41492 0.27652 0.44071 0.29326
+
+exit
+
+# itranslate terminated normally at Tue Oct 22 16:49:10 2019
+# with no errors and 0 warning[s]
+
+
+# #################################################
+# itranslate v2.0.0pre46 executed on Tue Oct 22 16:50:26 2019
+# Selected file:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef...
+icread_lef /Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef
+# [icread_lef]:Options: -model_obs keepout -scale
+# [icread_lef]:/Users/bill/version1/utdtools/pgms/cometFlow/tests/test2/ASAP7.lef read.
+icread_synopsys new_lib6.lib
+# [icread_synopsys]:reading new_lib6.lib...
+exit
+
+# itranslate terminated normally at Tue Oct 22 16:51:02 2019
+# with no errors and 0 warning[s]
+

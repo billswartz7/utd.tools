@@ -1,0 +1,69 @@
+
+	 			
+ 
+
+
+
+module pcx_data_px2(
+      pcx_data_px2, pcx_data_rdy_px2, pcx_stall_pq_buf, so, 
+      pcx_data_px_l, pcx_data_rdy_px, pcx_stall_pq, rclk, si, se
+   );
+   
+
+   output [-1:0]		pcx_data_px2;	
+   output 		pcx_data_rdy_px2;	
+   output 		pcx_stall_pq_buf;	
+   output 		so;
+   
+   input [-1:0]		pcx_data_px_l;	
+   input 		pcx_data_rdy_px;	
+   input 		pcx_stall_pq;	
+
+   input 		rclk;
+   input 		si;
+   input 		se;
+   
+
+   wire [-1:0]		;	
+   
+   
+   dff_s #(`PCX_WIDTH) dff_cpx_data(
+            .din           (pcx_data_px_l[`PCX_WIDTH-1:0]),
+	    .q             (pcx_data_px2_l[`PCX_WIDTH-1:0]),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (`PCX_WIDTH'd0),
+	    .so            ());
+
+assign pcx_data_px2 = ~pcx_data_px2_l; 
+
+
+
+      dff_s #(1) dff_cpx_datardy(
+            .din           (pcx_data_rdy_px),
+	    .q             (pcx_data_rdy_px2),
+	    .clk           (rclk),
+	    .se            (1'b0),
+	    .si            (1'd0),
+	    .so            ());
+
+
+assign pcx_stall_pq_buf  =  pcx_stall_pq ;
+
+endmodule // pcx_data_px2
+
+
+
+
+
+
+
+
+
+
+
+ 
+;	
+   
+   
+   dff_s #()

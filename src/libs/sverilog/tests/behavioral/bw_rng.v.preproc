@@ -1,0 +1,14 @@
+module bw_rng (
+		rng_data, rng_clk, 
+	 	vsup_rng_hv18, sel_bg_l, vctrl, clk_jbus, rst_l 
+   	);
+
+ 	input	vsup_rng_hv18;
+	input	sel_bg_l;
+	input [2:0] vctrl;
+	input 	clk_jbus;
+	input 	rst_l ;
+   	output rng_data;
+   	output rng_clk;
+
+   	   	integer

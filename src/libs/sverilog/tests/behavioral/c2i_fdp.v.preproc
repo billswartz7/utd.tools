@@ -1,0 +1,32 @@
+
+	 			        
+
+
+
+module c2i_fdp (
+      pcx_iob_vld, pcx_iob_req, pcx_iob_addr, pcx_iob_cputhr, 
+   int_buf_din_raw, tap_mondo_dout_d2_f, mondo_data0_din_lo, 
+   mondo_data0_din_hi, mondo_data1_din_lo, mondo_data1_din_hi, 
+   mondo_source_din, mondo_busy_din_p1, mondo_busy_din_p2, 
+   cpu_buf_din_lo, cpu_buf_din_hi, 
+      cpu_clk, tx_sync, rx_sync, pcx_iob_data_px2, io_mondo_data_wr, 
+   mondo_data_bypass_d1, mondo_addr_creg_mdata0_dec_d1, 
+   mondo_addr_creg_mdata1_dec_d1, mondo_addr_creg_mbusy_dec_d1, 
+   cpu_mondo_rd_d1, tap_mondo_rd_d1, cpu_mondo_rd_d2, 
+   cpu_mondo_addr_invld_d2, mondo_data_addr_p0_d1, 
+   io_mondo_data0_din_s, io_mondo_data1_din_s, io_mondo_source_din_s, 
+   tap_mondo_din_s, mondo_data0_dout_lo, mondo_data0_dout_hi, 
+   mondo_data1_dout_lo, mondo_data1_dout_hi, mondo_source_dout, 
+   mondo_busy_dout
+   );
+   
+      input 			      cpu_clk;
+   input 			      tx_sync;
+   input 			      rx_sync;
+   
+   
+      input [-1:0] 	      pcx_iob_data_px2;
+
+
+      output 		              pcx_iob_vld;
+   output [-:

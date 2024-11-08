@@ -1,0 +1,10 @@
+module bw_io_dtl_vref (
+      vref_impctl, vddo
+   );
+
+   
+      output        vref_impctl;
+   input         vddo;              assign  = 1'b1;
+endmodule
+ = 1bb;
+endmodule

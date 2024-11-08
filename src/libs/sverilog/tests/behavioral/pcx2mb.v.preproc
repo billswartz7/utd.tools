@@ -1,0 +1,29 @@
+
+
+
+
+
+ 
+
+
+module pcx2mb (
+		pcx_spc_grant_px,
+	pcx_fsl_m_control,
+	pcx_fsl_m_data,
+	pcx_fsl_m_write,
+
+		rclk,
+	reset_l,
+
+	spc_pcx_data_pa,
+	spc_pcx_atom_pq,
+	spc_pcx_req_pq,
+
+	fsl_pcx_m_full
+	);
+
+ 
+    parameter PCX_REQ_WIDTH = 2;
+
+
+    parameter PCX_GEAR_RATIO = (((+PCX_REQ_WIDTH

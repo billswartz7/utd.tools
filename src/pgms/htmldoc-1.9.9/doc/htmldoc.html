@@ -1,0 +1,2738 @@
+<!DOCTYPE html>
+<HTML>
+<HEAD>
+<TITLE>HTMLDOC Users Manual</TITLE>
+<META NAME="author" CONTENT="Michael R Sweet">
+<META NAME="copyright" CONTENT="Copyright © 1997-2019, All Rights Reserved.">
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; CHARSET=iso-8859-1">
+<STYLE TYPE="text/css"><!--
+BODY { font-family: serif; }
+H1 { font-family: sans-serif; }
+H2 { font-family: sans-serif; }
+H3 { font-family: sans-serif; }
+H4 { font-family: sans-serif; }
+H5 { font-family: sans-serif; }
+H6 { font-family: sans-serif; }
+SUB { font-size: smaller; }
+SUP { font-size: smaller; }
+PRE { font-family: monospace; margin-left: 36pt; }
+--></STYLE>
+</HEAD>
+<BODY>
+<CENTER><A HREF="#CONTENTS"><H1>HTMLDOC Users Manual</H1></A><BR>
+Michael R Sweet<BR>
+Copyright © 1997-2019, All Rights Reserved.<BR>
+</CENTER>
+<HR NOSHADE>
+<h1 ALIGN="CENTER"><a NAME="CONTENTS">Table of Contents</a></h1>
+<br>
+<br><b><a HREF="#INTRO">Chapter 1 - Introduction</a></b>
+<ul>
+<li><a HREF="#1_1">History</a></li>
+<li><a HREF="#1_2">Organization of This Manual</a></li>
+<li><a HREF="#1_3">Encryption Support</a></li>
+<li><a HREF="#1_4">Legal Stuff</a></li>
+</ul>
+<b><a HREF="#USING">Chapter 2 - Using HTMLDOC</a></b>
+<ul>
+<li><a HREF="#2_1">Using the HTMLDOC GUI</a>
+<ul>
+<li><a HREF="#2_1_1">Generating Books</a></li>
+</ul>
+</li>
+<li><a HREF="#2_2">Using the HTMLDOC Command</a></li>
+<li><a HREF="#2_3">Generating Books</a>
+<ul>
+<li><a HREF="#2_3_1">Setting the Title File</a></li>
+</ul>
+</li>
+<li><a HREF="#CGI">Using HTMLDOC on a Web Server</a>
+<ul>
+<li><a HREF="#2_4_1">CGI Mode</a></li>
+<li><a HREF="#2_4_2">Using HTMLDOC From Server-Side Scripts and Programs</a>
+</li>
+</ul>
+</li>
+</ul>
+<b><a HREF="#CMDREF">Chapter 3 - Command-Line Reference</a></b>
+<ul>
+<li><a HREF="#3_1">Basic Usage</a></li>
+<li><a HREF="#3_2">Options</a>
+<ul>
+<li><a HREF="#3_2_1">-d directory</a></li>
+<li><a HREF="#3_2_2">-f filename</a></li>
+<li><a HREF="#3_2_3">-t format</a></li>
+<li><a HREF="#3_2_4">-v</a></li>
+<li><a HREF="#3_2_5">--batch filename.book</a></li>
+<li><a HREF="#3_2_6">--bodycolor color</a></li>
+<li><a HREF="#3_2_7">--bodyfont typeface</a></li>
+<li><a HREF="#3_2_8">--bodyimage filename</a></li>
+<li><a HREF="#3_2_9">--book</a></li>
+<li><a HREF="#3_2_10">--bottom margin</a></li>
+<li><a HREF="#3_2_11">--browserwidth pixels</a></li>
+<li><a HREF="#3_2_12">--charset charset</a></li>
+<li><a HREF="#3_2_13">--color</a></li>
+<li><a HREF="#3_2_14">--compression[=level]</a></li>
+<li><a HREF="#3_2_15">--continuous</a></li>
+<li><a HREF="#3_2_16">--cookies 'name=\&quot;value with space\&quot;; name=value'</a>
+</li>
+<li><a HREF="#3_2_17">--datadir directory</a></li>
+<li><a HREF="#3_2_18">--duplex</a></li>
+<li><a HREF="#3_2_19">--effectduration seconds</a></li>
+<li><a HREF="#3_2_20">--embedfonts</a></li>
+<li><a HREF="#3_2_21">--encryption</a></li>
+<li><a HREF="#3_2_22">--firstpage page</a></li>
+<li><a HREF="#3_2_23">--fontsize size</a></li>
+<li><a HREF="#3_2_24">--fontspacing spacing</a></li>
+<li><a HREF="#footer">--footer lcr</a></li>
+<li><a HREF="#3_2_26">--format format</a></li>
+<li><a HREF="#3_2_27">--gray</a></li>
+<li><a HREF="#3_2_28">--header lcr</a></li>
+<li><a HREF="#3_2_29">--header1 lcr</a></li>
+<li><a HREF="#3_2_30">--headfootfont font</a></li>
+<li><a HREF="#3_2_31">--headfootsize size</a></li>
+<li><a HREF="#3_2_32">--headingfont typeface</a></li>
+<li><a HREF="#3_2_33">--help</a></li>
+<li><a HREF="#3_2_34">--helpdir directory</a></li>
+<li><a HREF="#3_2_35">--hfimageN filename</a></li>
+<li><a HREF="#3_2_36">--jpeg[=quality]</a></li>
+<li><a HREF="#3_2_37">--landscape</a></li>
+<li><a HREF="#3_2_38">--left margin</a></li>
+<li><a HREF="#3_2_39">--letterhead filename</a></li>
+<li><a HREF="#3_2_40">--linkcolor color</a></li>
+<li><a HREF="#3_2_41">--links</a></li>
+<li><a HREF="#3_2_42">--linkstyle style</a></li>
+<li><a HREF="#3_2_43">--logoimage filename</a></li>
+<li><a HREF="#3_2_44">--no-compression</a></li>
+<li><a HREF="#3_2_45">--no-duplex</a></li>
+<li><a HREF="#3_2_46">--no-embedfonts</a></li>
+<li><a HREF="#3_2_47">--no-encryption</a></li>
+<li><a HREF="#3_2_48">--no-jpeg</a></li>
+<li><a HREF="#3_2_49">--no-links</a></li>
+<li><a HREF="#3_2_50">--no-localfiles</a></li>
+<li><a HREF="#3_2_51">--no-numbered</a></li>
+<li><a HREF="#3_2_52">--no-pscommands</a></li>
+<li><a HREF="#3_2_53">--no-strict</a></li>
+<li><a HREF="#3_2_54">--no-title</a></li>
+<li><a HREF="#3_2_55">--no-toc</a></li>
+<li><a HREF="#3_2_56">--no-xrxcomments</a></li>
+<li><a HREF="#3_2_57">--numbered</a></li>
+<li><a HREF="#3_2_58">--nup pages</a></li>
+<li><a HREF="#3_2_59">--outdir directory</a></li>
+<li><a HREF="#3_2_60">--outfile filename</a></li>
+<li><a HREF="#3_2_61">--owner-password password</a></li>
+<li><a HREF="#3_2_62">--pageduration seconds</a></li>
+<li><a HREF="#3_2_63">--pageeffect effect</a></li>
+<li><a HREF="#3_2_64">--pagelayout layout</a></li>
+<li><a HREF="#3_2_65">--pagemode mode</a></li>
+<li><a HREF="#3_2_66">--path dir1;dir2;dir3;...;dirN</a></li>
+<li><a HREF="#3_2_67">--permissions permission[,permission,...]</a></li>
+<li><a HREF="#3_2_68">--portrait</a></li>
+<li><a HREF="#3_2_69">--pscommands</a></li>
+<li><a HREF="#3_2_70">--quiet</a></li>
+<li><a HREF="#3_2_71">--referer url</a></li>
+<li><a HREF="#3_2_72">--right margin</a></li>
+<li><a HREF="#3_2_73">--size size</a></li>
+<li><a HREF="#3_2_74">--strict</a></li>
+<li><a HREF="#3_2_75">--textcolor color</a></li>
+<li><a HREF="#3_2_76">--textfont typeface</a></li>
+<li><a HREF="#3_2_77">--title</a></li>
+<li><a HREF="#3_2_78">--titlefile filename</a></li>
+<li><a HREF="#3_2_79">--titleimage filename</a></li>
+<li><a HREF="#3_2_80">--tocfooter lcr</a></li>
+<li><a HREF="#3_2_81">--tocheader lcr</a></li>
+<li><a HREF="#3_2_82">--toclevels levels</a></li>
+<li><a HREF="#3_2_83">--toctitle string</a></li>
+<li><a HREF="#3_2_84">--top margin</a></li>
+<li><a HREF="#3_2_85">--user-password password</a></li>
+<li><a HREF="#3_2_86">--verbose</a></li>
+<li><a HREF="#3_2_87">--version</a></li>
+<li><a HREF="#3_2_88">--webpage</a></li>
+<li><a HREF="#3_2_89">--xrxcomments</a></li>
+</ul>
+</li>
+<li><a HREF="#3_3">Environment Variables</a>
+<ul>
+<li><a HREF="#3_3_1">HTMLDOC_DATA</a></li>
+<li><a HREF="#3_3_2">HTMLDOC_DEBUG</a></li>
+<li><a HREF="#3_3_3">HTMLDOC_HELP</a></li>
+<li><a HREF="#3_3_4">HTMLDOC_NOCGI</a></li>
+</ul>
+</li>
+<li><a HREF="#3_4">Messages</a>
+<ul>
+<li><a HREF="#3_4_1">BYTES: Message</a></li>
+<li><a HREF="#3_4_2">DEBUG: Messages</a></li>
+<li><a HREF="#3_4_3">ERRnnn: Messages</a></li>
+<li><a HREF="#3_4_4">INFO: Messages</a></li>
+<li><a HREF="#3_4_5">PAGES: Message</a></li>
+<li><a HREF="#3_4_6">REMOTEBYTES: Message</a></li>
+<li><a HREF="#3_4_7">TIMING: Message</a></li>
+</ul>
+</li>
+</ul>
+<b><a HREF="#HTMLREF">Chapter 4 - HTML Reference</a></b>
+<ul>
+<li><a HREF="#4_1">General Usage</a></li>
+<li><a HREF="#4_2">Elements</a></li>
+<li><a HREF="#COMMENTS">Comments</a>
+<ul>
+<li><a HREF="#4_3_1">Header/Footer Strings</a></li>
+</ul>
+</li>
+<li><a HREF="#FONT">FONT Attributes</a></li>
+<li><a HREF="#HEADING">Headings</a>
+<ul>
+<li><a HREF="#4_5_1">Numbered Headings</a></li>
+</ul>
+</li>
+<li><a HREF="#IMAGES">Images</a></li>
+<li><a HREF="#LINKS">Links</a></li>
+<li><a HREF="#META">META Attributes</a></li>
+<li><a HREF="#TABLE">Tables</a></li>
+</ul>
+<b><a HREF="#MDREF">Chapter 5 - Markdown Reference</a></b>
+<ul>
+<li><a HREF="#5_1">General Syntax</a></li>
+<li><a HREF="#5_2">Metadata Syntax</a></li>
+<li><a HREF="#5_3">Link Targets and @ Links</a></li>
+<li><a HREF="#5_4">Table Syntax</a></li>
+</ul>
+<b><a HREF="#LICENSE">Appendix A - License Agreement</a></b>
+<br>
+<br><b><a HREF="#BOOKFORMAT">Appendix B - Book File Format</a></b>
+<ul>
+<li><a HREF="#7_1">Introduction</a></li>
+<li><a HREF="#7_2">The Header</a></li>
+<li><a HREF="#7_3">The Options</a></li>
+<li><a HREF="#7_4">The Files</a></li>
+<li><a HREF="#7_5">Putting It All Together</a></li>
+</ul>
+<HR NOSHADE>
+
+<!-- FOOTER RIGHT &quot;1-$CHAPTERPAGE&quot; -->
+<div align="justify">
+<h1 align="right"><a name="INTRO">Chapter 1 - Introduction</a></h1>
+<p>This document describes how to use the HTMLDOC software. HTMLDOC
+ reads HTML and Markdown source files or web pages and generates
+ corresponding EPUB, HTML, PostScript, or PDF files with an optional
+ table of contents. HTMLDOC can be used as a standalone application, in
+ a batch document processing environment, or as a web-based report
+ generation application.</p>
+<p>HTMLDOC is open source software under the terms of version 2 of the
+ GNU General Public License. No restrictions are placed upon the output
+ produced by HTMLDOC.</p>
+<h2><a NAME="1_1">History</a></h2>
+<p>Like many programs, I developed HTMLDOC in response to a need my
+ company had for generating high-quality documentation in printed and
+ electronic forms. For a while I used FrameMaker&reg; and a package from <code>
+sgi</code> that generated &quot;compiled&quot; Standard Generalized Markup
+ Language (&quot;SGML&quot;) files that could be used by the Electronic Book
+ Technologies (&quot;EBT&quot;) documentation products; EBT was bought by INSO who
+ was bought by Stellent<sup>TM</sup> who apparently has dropped the
+ whole product line. When <code>sgi</code> stopped supporting these
+ tools I turned to INSO, but the cost of their tools was prohibitive to
+ my small business.</p>
+<p>In the end I decided to write my own program to generate the
+ documentation. HTML seemed to be the source format of choice since
+ WYSIWYG HTML editors are widely (and freely) available and at worst you
+ can use a plain text editor. I needed HTML output for documentation on
+ my web server, PDF for customers to read and/or print from their
+ computers, and PostScript for printing needs.</p>
+<p>The result of my efforts is the HTMLDOC software which runs on
+ Linux&reg;, macOS&reg;, Microsoft&reg; Windows&reg;, and most UNIX&reg; operating systems.
+ Among other things, this software users manual is produced using
+ HTMLDOC.</p>
+<p>HTMLDOC used to be available under a commercial end-user license
+ agreement from my former company, Easy Software Products. While that
+ company is no longer in business, I continue to maintain HTMLDOC in my
+ spare time.</p>
+<h2><a NAME="1_2">Organization of This Manual</a></h2>
+<p>This manual is organized into tutorial and reference chapters and
+ appendices:</p>
+<ul>
+<li><a href="#INTRO">Chapter 1</a> - Introduction</li>
+<li><a href="#USING">Chapter 2</a> - Using HTMLDOC</li>
+<li><a href="#CMDREF">Chapter 3</a> - Command-Line Reference</li>
+<li><a href="#HTMLREF">Chapter 4</a> - HTML Reference</li>
+<li><a href="#MDREF">Chapter 5</a> - Markdown Reference</li>
+<li><a href="#LICENSE">Appendix A</a> - License Agreement</li>
+<li><a href="#BOOKFORMAT">Appendix B</a> - Book File Format</li>
+</ul>
+<h2><a NAME="1_3">Encryption Support</a></h2>
+<p>HTMLDOC includes code to encrypt PDF document files using the RC4
+ algorithm with up to a 128-bit key. While this software and code may be
+ freely used and exported under current US laws, other countries may
+ restrict your use and possession of this code and software.</p>
+<h2><a NAME="1_4">Legal Stuff</a></h2>
+<p>HTMLDOC is copyright &copy; 1997-2020 by Michael R Sweet. See <a href="#LICENSE">
+Appendix A - License Agreement</a> for the terms of use. This software
+ is based in part on the work of the Independent JPEG Group and FLTK
+ project.</p>
+</div><HR NOSHADE>
+
+<!-- FOOTER RIGHT &quot;2-$CHAPTERPAGE&quot; -->
+<div align="justify">
+<h1 align="right"><a name="USING">Chapter 2 - Using HTMLDOC</a></h1>
+<p>This chapter describes the basics of how to use HTMLDOC to convert
+ HTML and Markdown files into PostScript and PDF files.</p>
+<blockquote><b>Note:</b> HTMLDOC currently does not support HTML 4.0
+ features such as stylesheets or the <code>STYLE</code> element. For
+ more information, please consult <a href="#HTMLREF">Chapter 4 - HTML
+ Reference</a>.</blockquote>
+<h2><a NAME="2_1">Using the HTMLDOC GUI</a></h2>
+<p>After opening the HTMLDOC application, the HTMLDOC window will appear
+ with the<var> Input</var> tab selected. Click on the<var> Web Page</var>
+ radio button to specify that you will be converting a web page file.
+ Then choose a file for conversion by clicking on the<var> Add Files...</var>
+ button.</p>
+<p>Now that you've chosen a file to be converted, click on the<var>
+ Output</var> tab to set the output file and format. Finally, click on
+ the<var> Generate</var> button at the bottom of the HTMLDOC window to
+ convert the HTML file.</p>
+<h3><a NAME="2_1_1">Generating Books</a></h3>
+<p>While HTMLDOC can convert web pages into PostScript and PDF files,
+ its real strength is generating EPUB, indexed HTML, PostScript, or PDF
+ books. HTMLDOC uses heading elements to delineate chapters and headings
+ in a book. The <code>H1</code> element is used for chapters:</p>
+<pre>
+&lt;HTML&gt;
+&lt;HEAD&gt;
+    &lt;TITLE&gt;The Little Computer that Could&lt;/TITLE&gt;
+&lt;/HEAD&gt;
+&lt;BODY&gt;
+&lt;H1&gt;Chapter 1 - The Little Computer is Born&lt;/H1&gt;
+...
+&lt;H1&gt;Chapter 2 - Little Computer's First Task&lt;/H1&gt;
+...
+&lt;/BODY&gt;
+&lt;/HTML&gt;
+</pre>
+<p>Sub-headings are marked using the <code>H2</code> through <code>H6</code>
+ elements.</p>
+
+<!-- NEED 2in -->
+<blockquote><b>Note:</b> When using book mode, HTMLDOC starts rendering
+ with the first <code>H1</code> element. Any text, images, tables, and
+ other viewable elements that precede the first <code>H1</code> element
+ are silently ignored. Because of this, make sure you have an <code>H1</code>
+ element in your HTML file, otherwise HTMLDOC will not convert anything.</blockquote>
+<p>Start by clicking on the<var> Book</var> radio button to specify
+ you'll be converting one or more files into a book. Then add one or
+ more HTML or Markdown files by clicking on the<var> Add Files...</var>
+ button.</p>
+<p>HTMLDOC will automatically create a title page for you unless you
+ specify a<var> Title File/Image</var>. When the title file is HTML or
+ Markdown, the contents are formatted to produce title page(s). When the
+ title file is an image, the image is centered on the title page with
+ automatically generate content based on the title and other metadata.</p>
+<p>After providing all of the input files, click on the<var> Output</var>
+ tab to select the output format and file. Finally, click on the<var>
+ Generate</var> button to generate the book.</p>
+<h2><a NAME="2_2">Using the HTMLDOC Command</a></h2>
+<p>To convert a single web page type:</p>
+<pre>
+<kbd>htmldoc --webpage -f output.pdf filename.html ENTER</kbd>
+</pre>
+<p><tt>htmldoc</tt> is the name of the software.</p>
+<p>The <tt>--webpage</tt> option specifies unstructured files with page
+ breaks between each file.</p>
+<p>The <tt>-f</tt> option specifies the output file name (<tt>output.pdf</tt>
+). In this example it is a PDF file.</p>
+<p><tt>Filename.html</tt> is the name of the file that you want to be
+ converted.</p>
+<p>To convert more than one web page with page breaks between each file,
+ list each of the files on the end:</p>
+<pre>
+<kbd>htmldoc --webpage -f output.pdf file1.html file2.html ENTER</kbd>
+</pre>
+<p>We've been using HTML files, but you can also use URLs. For example:</p>
+<pre>
+<kbd>htmldoc --webpage -f output.pdf http://slashdot.org/ ENTER</kbd>
+</pre>
+
+<!-- NEED 4in -->
+<h2><a NAME="2_3">Generating Books</a></h2>
+<p>Type one of the following commands to generate a book from one or
+ more files:</p>
+<pre>
+<kbd>htmldoc --book -f output.html file1.html file2.html ENTER</kbd>
+<kbd>htmldoc --book -f output.pdf file1.html file2.html ENTER</kbd>
+<kbd>htmldoc --book -f output.ps file1.html file2.html ENTER</kbd>
+</pre>
+<p>The <tt>--book</tt> option specifies that the input files are
+ structured with headings.</p>
+<p>The <tt>-f</tt> option specifies the output filename.</p>
+<p><tt>File1.html</tt> and <tt>file2.html</tt> are the files you want to
+ convert.</p>
+<p>HTMLDOC will build a table of contents for the book using the heading
+ elements (<code>H1</code>, <code>H2</code>, etc.) in your input files.
+ It will also add a title page using the document <code>TITLE</code>
+ text and other <code>META</code> information you supply in your files.
+ See <a HREF="#HTMLREF">Chapter 4 - HTML Reference</a> for more
+ information on the <code>META</code> variables that are supported.</p>
+<blockquote><b>Note:</b> When using book mode, HTMLDOC starts rendering
+ with the first <code>H1</code> element. Any text, images, tables, and
+ other viewable elements that precede the first <code>H1</code> element
+ are silently ignored. Because of this, make sure you have an <code>H1</code>
+ element in your HTML file, otherwise HTMLDOC will not convert anything.</blockquote>
+<h3><a NAME="2_3_1">Setting the Title File</a></h3>
+<p>The <tt>--titlefile</tt> option sets the HTML, Markdown, or image
+ file to use on the title page:</p>
+<pre>
+<kbd>htmldoc --titlefile filename.bmp ... ENTER</kbd>
+<kbd>htmldoc --titlefile filename.gif ... ENTER</kbd>
+<kbd>htmldoc --titlefile filename.jpg ... ENTER</kbd>
+<kbd>htmldoc --titlefile filename.png ... ENTER</kbd>
+<kbd>htmldoc --titlefile filename.html ... ENTER</kbd>
+</pre>
+<p>HTMLDOC supports BMP, GIF, JPEG, and PNG images, as well as generic
+ HTML or Markdown text you supply for the title page(s).</p>
+<h2><a name="CGI">Using HTMLDOC on a Web Server</a></h2>
+<p>HTMLDOC can be used in a variety of ways to generate formatted
+ reports on a web server. The most common way is to use HTMLDOC as a CGI
+ program with your web server to provide PDF-formatted output of a web
+ page. Examples are provided for Microsoft IIS and the Apache web
+ servers.</p>
+<p>HTMLDOC can also be called from your own server-side scripts and
+ programs. Examples are provided for PHP and Java.</p>
+<blockquote><b>Warning:</b> Passing information directly from the web
+ browser to HTMLDOC can potentially expose your system to security
+ risks. Always be sure to &quot;sanitize&quot; any input from the web browser so
+ that filenames, URLs, and options passed to HTMLDOC are not acted on by
+ the shell program or other processes. Filenames with spaces must
+ usually be enclosed with quotes.</blockquote>
+<h3><a NAME="2_4_1">CGI Mode</a></h3>
+<p>HTMLDOC supports operation as a CGI program. You can copy or symlink
+ the<var> htmldoc</var> (all but Windows) or<var> htmldoc.exe</var>
+ (Windows) executable to your web server's<var> cgi-bin</var> directory
+ and then use it to produce PDF versions of your web pages.</p>
+<p>The CGI converts a page on your local server to PDF and sends it to
+ the client's web browser. For example, to convert a page called<var>
+ superproducts.html</var> at the following URL:</p>
+<pre>
+http://servername/superproducts.html
+</pre>
+<p>and if you installed HTMLDOC in your server's<var> cgi-bin</var>
+ directory, you would direct your clients to the following URL:</p>
+<pre>
+http://servername<b>/cgi-bin/htmldoc</b>/superproducts.html
+</pre>
+<p>The boldface portion represents the location of the HTMLDOC
+ executable on the web server. You simply place that path before the
+ page you want to convert.</p>
+<p>Form data using the <code>GET</code> method can be passed at the end
+ of the URL, for example:</p>
+<pre>
+http://servername/cgi-bin/htmldoc/superproducts.html<b>?name=value</b>
+</pre>
+<h4>Server-Side Preferences</h4>
+<p>When run as a CGI program, HTMLDOC will try to read a book file to
+ set any preferences for the conversion to PDF. For the<var>
+ superproducts.html</var> file described previously, HTMLDOC will look
+ at the following URLs for a book file:</p>
+<pre>
+http://servername/superproducts.html.book
+http://servername/.book
+http://servername/cgi-bin/.book
+</pre>
+<p>The first book file that is found will be used.</p>
+<h4>Configuring HTMLDOC with Apache</h4>
+<p>The Apache web server is easily configured to use HTMLDOC. The
+ simplest way is to copy or symlink the<var> htmldoc</var> executable to
+ the configured<var> cgi-bin</var> directory. For example, if your
+ Apache installation is configured to look for CGI programs in the<var>
+ /var/www/cgi-bin</var> directory, the default for Apache on Red Hat
+ Linux, then the command to install HTMLDOC on your web server would be:</p>
+<pre>
+<kbd>ln -s /usr/bin/htmldoc /var/www/cgi-bin ENTER</kbd>
+</pre>
+<p>If you are using Apache 2.0.30 or higher, you will also need to
+ enable <tt>PATH_INFO</tt> support by adding the following line to your<var>
+ httpd.conf</var> file:</p>
+<pre>
+AcceptPathInfo On
+</pre>
+<p>Apache also allows you to associate CGI programs with a specific
+ extension. If you add the following line to your<var> httpd.conf</var>
+ file:</p>
+<pre>
+AddHandler cgi-script .cgi
+</pre>
+<p>and enable CGI execution with the <tt>Options</tt> directive for a
+ directory:</p>
+<pre>
+Options +ExecCGI
+</pre>
+<p>then you can copy or symlink the<var> htmldoc</var> executable to an
+ alternate location. For example, if you have a web directory called<var>
+ /var/www/htdocs/products</var>, you can install HTMLDOC in this
+ directory with the following command:</p>
+<pre>
+<kbd>ln -s /usr/bin/htmldoc /var/www/htdocs/products/htmldoc.cgi ENTER</kbd>
+</pre>
+<h4>Configuring HTMLDOC with Microsoft IIS</h4>
+<p>The IIS web server is configured to run CGI programs by either
+ modifying the permissions of an existing directory or by creating a new
+ virtual directory that allows for execution of programs. Start by
+ running the<var> Internet Services Manager</var> program:</p>
+<ol>
+<li>Click on<var> Start</var></li>
+<li>Click on<var> Settings</var></li>
+<li>Click on<var> Control Panel</var></li>
+<li>Double-click on<var> Administrative Tools</var></li>
+<li>Double-click on<var> Internet Services Manager</var></li>
+</ol>
+<p>After the<var> Internet Services Manager</var> window appears,
+ perform the following steps to add a virtual folder for HTMLDOC:</p>
+<ol>
+<li>Click on your server in the list to show the default web site
+ service in the list</li>
+<li>Choose<var> New-&gt;Virtual Directory</var> from the<var> Action</var>
+ menu</li>
+<li>Click<var> Next</var> when the<var> Virtual Directory Creation
+ Wizard</var> window appears</li>
+<li>Enter the name <tt>htmldoc</tt> in the<var> Alias</var> field and
+ click<var> Next</var></li>
+<li>Enter the HTMLDOC program folder in the<var> Directory</var> field
+ and click<var> Next</var></li>
+<li>Check the<var> Execute (such as ISAPI applications or CGI)</var> box
+ and click<var> Next</var></li>
+<li>Click<var> Finish</var> to dismiss the wizard</li>
+<li>Click on<var> Web Service Extensions</var></li>
+<li>Click<var> Add a new Web Service Extension</var></li>
+<li>Enter the name &quot;HTMLDOC&quot; when the<var> Web Service Extension</var>
+ window appears</li>
+<li>Click<var> Add...</var> and choose the<var> htmldoc.exe</var> file
+ from the program folder, typically<var>
+ C:\Program&nbsp;Files\msweet.org\HTMLDOC</var></li>
+<li>Check the<var> Set extension status to Allowed</var> box</li>
+<li>Click<var> OK</var> to add the extension and dismiss the window</li>
+</ol>
+<p>Finally, double-click the<var> My Computer</var> icon on the desktop
+ or start the<var> Windows Explorer</var>. When the explorer window
+ appears, perform the following steps to provide write access to the
+ Windows temporary folder:</p>
+<ol>
+<li>Open the windows temporary file folder, typically<var>
+ C:\WINDOWS\TEMP</var></li>
+<li>Choose<var> Properties</var> from the<var> File</var> menu</li>
+<li>Click on the<var> Security</var> tab</li>
+<li>Click<var> Add...</var>, enter the username for the web server,
+ typically &quot;SERVER\IUSR_SERVER&quot; where &quot;SERVER&quot; is the name you gave your
+ server, and click<var> OK</var></li>
+<li>Click on the username you just added in the list</li>
+<li>Check the<var> Read</var> and<var> Write</var> permissions</li>
+<li>Click<var> OK</var> to save the changes</li>
+</ol>
+<p>Once configured, the<var> htmldoc.exe</var> program will be available
+ in the web server directory. For example, for a virtual directory
+ called<var> cgi-bin</var>, the PDF converted URL for the<var>
+ superproducts.html</var> page would be as follows:</p>
+<pre>
+http://servername<b>/cgi-bin/htmldoc.exe</b>/superproducts.html
+</pre>
+<p>The boldface portion represents the location of the HTMLDOC program
+ on the web server.</p>
+<h3><a NAME="2_4_2">Using HTMLDOC From Server-Side Scripts and Programs</a>
+</h3>
+<p>To make this work the CGI script or program must send the appropriate
+ HTTP attributes, the required empty line to signify the beginning of
+ the document, and then execute the HTMLDOC program to generate the
+ HTML, PostScript, or PDF file as needed. Since HTMLDOC looks for CGI
+ environment variables when it is run, you must also set the <tt>
+HTMLDOC_NOCGI</tt> environment variable to a value of 1 before running
+ HTMLDOC from your CGI script or program.</p>
+<p>Another way to generate PDF files from your reports is to use HTMLDOC
+ as a &quot;portal&quot; application. When used as a portal, HTMLDOC automatically
+ retrieves the named document or report from your server and passes a
+ PDF version to the web browser. See the next sections for more
+ information.</p>
+
+<!-- NEED 6in -->
+<h4>Calling HTMLDOC from a Shell Script</h4>
+<p>Shell scripts are probably the easiest to work with, but are normally
+ limited to GET type requests. Here is a script called<var> topdf</var>
+ that acts as a portal, converting the named file to PDF:</p>
+<pre>
+#!/bin/sh
+#
+# Sample &quot;portal&quot; script to convert the named HTML file to PDF on-the-fly.
+#
+# Usage: http://www.example.com/path/topdf/path/filename.html
+#
+
+#
+# Tell HTMLDOC not to run in CGI mode...
+#
+
+HTMLDOC_NOCGI=1; export HTMLDOC_NOCGI
+
+#
+# The &quot;options&quot; variable contains any options you want to pass to HTMLDOC.
+#
+
+options='-t pdf --webpage --header ... --footer ...&quot;
+
+#
+# Tell the browser to expect a PDF file...
+#
+
+echo &quot;Content-Type: application/pdf&quot;
+echo &quot;&quot;
+
+#
+# Run HTMLDOC to generate the PDF file...
+#
+
+htmldoc $options http://${SERVER_NAME}:${SERVER_PORT}$PATH_INFO
+</pre>
+<p>Users of this CGI would reference the URL
+ &quot;http://www.example.com/topdf.cgi/index.html&quot; to generate a PDF file of
+ the site's home page.</p>
+<p>The<var> options</var> variable in the script can be set to use any
+ supported command-line option for HTMLDOC; for a complete list see <a href="#CMDREF">
+Chapter 3 - Command-Line Reference</a>.</p>
+
+<!-- NEED 5in -->
+<h4>Calling HTMLDOC from Perl</h4>
+<p>Perl scripts offer the ability to generate more complex reports, pull
+ data from databases, etc. The easiest way to interface Perl scripts
+ with HTMLDOC is to write a report to a temporary file and then execute
+ HTMLDOC to generate the PDF file.</p>
+<p>Here is a simple Perl subroutine that can be used to write a PDF
+ report to the HTTP client:</p>
+<pre>
+sub topdf {
+    # Get the filename argument...
+    my $filename = shift;
+
+    # Make stdout unbuffered...
+    select(STDOUT); $| = 1;
+
+    # Tell HTMLDOC not to run in CGI mode...
+    $ENV{HTMLDOC_NOCGI} = 1;
+
+    # Write the content type to the client...
+    print &quot;Content-Type: application/pdf\n\n&quot;;
+
+    # Run HTMLDOC to provide the PDF file to the user...
+    system &quot;htmldoc -t pdf --quiet --webpage $filename&quot;;
+}
+</pre>
+<h4>Calling HTMLDOC from PHP</h4>
+<p>PHP provides a <code>passthru()</code> function that can be used to
+ run HTMLDOC. This combined with the <code>header()</code> function can
+ be used to provide on-the-fly reports in PDF format.</p>
+<p>Here is a simple PHP function that can be used to convert a HTML
+ report to PDF and send it to the HTTP client:</p>
+<pre>
+function topdf($filename, $options = &quot;&quot;) {
+    # Tell HTMLDOC not to run in CGI mode...
+    putenv(&quot;HTMLDOC_NOCGI=1&quot;);
+
+    # Write the content type to the client...
+    header(&quot;Content-Type: application/pdf&quot;);
+    flush();
+
+    # Run HTMLDOC to provide the PDF file to the user...
+    passthru(&quot;htmldoc -t pdf --quiet --jpeg --webpage $options &quot; . escapeshellarg($filename));
+}
+</pre>
+<p>The function accepts a filename and an optional &quot;options&quot; string for
+ specifying the header, footer, fonts, etc.</p>
+<p>To make a &quot;portal&quot; script, add the following code to complete the
+ example:</p>
+<pre>
+global $SERVER_NAME;
+global $SERVER_PORT;
+global $PATH_INFO;
+global $QUERY_STRING;
+
+if ($QUERY_STRING != &quot;&quot;) {
+    $url = &quot;http://${SERVER_NAME}:${SERVER_PORT}${PATH_INFO}?${QUERY_STRING}&quot;;
+} else {
+    $url = &quot;http://${SERVER_NAME}:${SERVER_PORT}$PATH_INFO&quot;;
+}
+
+topdf($url);
+</pre>
+
+<!-- NEED 5in -->
+<h4>Calling HTMLDOC from C</h4>
+<p>C programs offer the best flexibility and easily supports on-the-fly
+ report generation without the need for temporary files.</p>
+<p>Here are some simple C functions that can be used to generate a PDF
+ report to the HTTP client from a temporary file or pipe:</p>
+<pre>
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+
+/* topdf() - convert a HTML file to PDF */
+FILE *topdf(const char *filename)       /* I - HTML file to convert */
+{
+  char	command[1024];			/* Command to execute */
+
+
+ /*
+  * Tell HTMLDOC not to run in CGI mode...
+  */
+
+  putenv(&quot;HTMLDOC_NOCGI=1&quot;);
+
+ /*
+  * Write the content type to the client...
+  */
+
+  puts(&quot;Content-Type: application/pdf\n&quot;);
+
+ /*
+  * Run HTMLDOC to provide the PDF file to the user...
+  */
+
+  sprintf(command, &quot;htmldoc --quiet -t pdf --webpage %s&quot;, filename);
+
+  return (popen(command, &quot;w&quot;));
+}
+
+
+/* topdf2() - pipe HTML output to HTMLDOC for conversion to PDF */
+FILE *topdf2(void)
+{
+ /*
+  * Tell HTMLDOC not to run in CGI mode...
+  */
+
+  putenv(&quot;HTMLDOC_NOCGI=1&quot;);
+
+ /*
+  * Write the content type to the client...
+  */
+
+  puts(&quot;Content-Type: application/pdf\n&quot;);
+
+ /*
+  * Open a pipe to HTMLDOC...
+  */
+
+  return (popen(&quot;htmldoc --quiet -t pdf --webpage -&quot;, &quot;w&quot;));
+}
+</pre>
+
+<!-- NEED 5in -->
+<h4>Calling HTMLDOC from Java</h4>
+<p>Java programs are a portable way to add PDF support to your web
+ server. Here is a class called<var> htmldoc</var> that acts as a
+ portal, converting the named file to PDF. It can also be called by your
+ Java servlets to process an HTML file and send the result to the client
+ in PDF format:</p>
+<pre>
+class htmldoc
+{
+  // Convert named file to PDF on stdout...
+  public static int topdf(String filename)// I - Name of file to convert
+  {
+    String              command;          // Command string
+    Process             process;          // Process for HTMLDOC
+    Runtime             runtime;          // Local runtime object
+    java.io.InputStream input;            // Output from HTMLDOC
+    byte                buffer [];        // Buffer for output data
+    int                 bytes;            // Number of bytes
+
+
+    // First tell the client that we will be sending PDF...
+    System.out.print(&quot;Content-type: application/pdf\n\n&quot;);
+
+    // Construct the command string
+    command = &quot;htmldoc --quiet --jpeg --webpage -t pdf --left 36 &quot; +
+              &quot;--header .t. --footer .1. &quot; + filename;
+
+    // Run the process and wait for it to complete...
+    runtime = Runtime.getRuntime();
+
+    try
+    {
+      // Create a new HTMLDOC process...
+      process = runtime.exec(command);
+
+      // Get stdout from the process and a buffer for the data...
+      input  = process.getInputStream();
+      buffer = new byte[8192];
+
+      // Read output from HTMLDOC until we have it all...
+      while ((bytes = input.read(buffer)) &gt; 0)
+        System.out.write(buffer, 0, bytes);
+
+      // Return the exit status from HTMLDOC...
+      return (process.waitFor());
+    }
+    catch (Exception e)
+    {
+      // An error occurred - send it to stderr for the web server...
+      System.err.print(e.toString() + &quot; caught while running:\n\n&quot;);
+      System.err.print(&quot;    &quot; + command + &quot;\n&quot;);
+      return (1);
+    }
+  }
+
+  // Main entry for htmldoc class
+  public static void main(String[] args)// I - Command-line args
+  {
+    String server_name,                 // SERVER_NAME env var
+           server_port,                 // SERVER_PORT env var
+           path_info,                   // PATH_INFO env var
+           query_string,                // QUERY_STRING env var
+           filename;                    // File to convert
+
+
+    if ((server_name = System.getProperty(&quot;SERVER_NAME&quot;)) != null &amp;&amp;
+        (server_port = System.getProperty(&quot;SERVER_PORT&quot;)) != null &amp;&amp;
+        (path_info = System.getProperty(&quot;PATH_INFO&quot;)) != null)
+    {
+      // Construct a URL for the resource specified...
+      filename = &quot;http://&quot; + server_name + &quot;:&quot; + server_port + path_info;
+
+      if ((query_string = System.getProperty(&quot;QUERY_STRING&quot;)) != null)
+      {
+        filename = filename + &quot;?&quot; + query_string;
+      }
+    }
+    else if (args.length == 1)
+    {
+      // Pull the filename from the command-line...
+      filename = args[0];
+    }
+    else
+    {
+      // Error - no args or env variables!
+      System.err.print(&quot;Usage: htmldoc.class filename\n&quot;);
+      return;
+    }
+
+    // Convert the file to PDF and send to the web client...
+    topdf(filename);
+  }
+}
+</pre>
+</div><HR NOSHADE>
+
+<!-- FOOTER RIGHT &quot;3-$CHAPTERPAGE&quot; -->
+<div ALIGN="justify">
+<h1 ALIGN="RIGHT"><a NAME="CMDREF">Chapter 3 - Command-Line Reference</a>
+</h1>
+<p>This chapter describes all of the command-line options supported by
+ HTMLDOC.</p>
+<h2><a NAME="3_1">Basic Usage</a></h2>
+<p>The basic command-line usage for HTMLDOC is:</p>
+<pre>
+% <kbd>htmldoc <i>options</i> filename1.html ... filenameN.md <i>ENTER</i></kbd>
+% <kbd>htmldoc <i>options</i> filename.book <i>ENTER</i></kbd>
+</pre>
+<p>The first form converts the named HTML or Markdown files to the
+ specified output format immediately. The second form loads the
+ specified <code>.book</code> file and displays the HTMLDOC window,
+ allowing a user to make changes and/or generate the document
+ interactively.</p>
+<p>If no output file or directory is specified, then all output is sent
+ to the standard output file.</p>
+<p>On return, HTMLDOC returns an exit code of 0 if it was successful and
+ non-zero if there were errors.</p>
+<h2><a NAME="3_2">Options</a></h2>
+<p>The following command-line options are recognized by HTMLDOC.</p>
+<h3><a NAME="3_2_1">-d directory</a></h3>
+<p>The <code>-d</code> option specifies an output directory for the
+ document files.</p>
+<p>This option is not compatible with the EPUB or PDF output formats.</p>
+<h3><a NAME="3_2_2">-f filename</a></h3>
+<p>The <code>-f</code> option specifies an output file for the document.</p>
+<h3><a NAME="3_2_3">-t format</a></h3>
+<p>The <code>-t</code> option specifies the output format for the
+ document and can be one of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>Format</th><th>Description</th></tr>
+<tr><td>epub</td><td>Generate an EPUB file.</td></tr>
+<tr><td>html</td><td>Generate one or more indexed HTML files.</td></tr>
+<tr><td>htmlsep</td><td>Generate separate HTML files for each heading in
+ the table-of-contents.</td></tr>
+<tr><td>pdf</td><td>Generate a PDF file (default version - 1.4).</td></tr>
+<tr><td>pdf11</td><td>Generate a PDF 1.1 file for Acrobat Reader 2.0 and
+ later.</td></tr>
+<tr><td>pdf12</td><td>Generate a PDF 1.2 file for Acrobat Reader 3.0 and
+ later.</td></tr>
+<tr><td>pdf13</td><td>Generate a PDF 1.3 file for Acrobat Reader 4.0 and
+ later.</td></tr>
+<tr><td>pdf14</td><td>Generate a PDF 1.4 file for Acrobat Reader 5.0 and
+ later.</td></tr>
+<tr><td>ps</td><td>Generate one or more PostScript files (default level
+ - 2).</td></tr>
+<tr><td>ps1</td><td>Generate one or more Level 1 PostScript files.</td></tr>
+<tr><td>ps2</td><td>Generate one or more Level 2 PostScript files.</td></tr>
+<tr><td>ps3</td><td>Generate one or more Level 3 PostScript files.</td></tr>
+</table>
+</center>
+<h3><a NAME="3_2_4">-v</a></h3>
+<p>The <code>-v</code> option specifies that progress information should
+ be sent/displayed to the standard error file.</p>
+<h3><a NAME="3_2_5">--batch filename.book</a></h3>
+<p>The <code>--batch</code> option specifies a book file that you would
+ like to generate without the GUI popping up. This option can be
+ combined with other options to generate the same book in different
+ formats and sizes:</p>
+<pre>
+% <kbd>htmldoc --batch filename.book -f filename.ps <i>ENTER</i></kbd>
+% <kbd>htmldoc --batch filename.book -f filename.pdf <i>ENTER</i></kbd>
+</pre>
+<h3><a NAME="3_2_6">--bodycolor color</a></h3>
+<p>The <code>--bodycolor</code> option specifies the background color
+ for all pages in the document. The color can be specified by a standard
+ HTML color name or as a 6-digit hexadecimal number of the form <code>
+#RRGGBB</code>.
+<!-- NEED 6in -->
+</p>
+<h3><a NAME="3_2_7">--bodyfont typeface</a></h3>
+<p>The <code>--bodyfont</code> option specifies the default text font
+ used for text in the document body. The <code>typeface</code> parameter
+ can be one of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>typeface</th><th>Actual Font</th></tr>
+<tr><td>Arial</td><td>Helvetica</td></tr>
+<tr><td>Courier</td><td>Courier</td></tr>
+<tr><td>Helvetica</td><td>Helvetica</td></tr>
+<tr><td>Monospace</td><td>DejaVu Sans Mono</td></tr>
+<tr><td>Sans</td><td>DevaVu Sans</td></tr>
+<tr><td>Serif</td><td>DejaVu Serif</td></tr>
+<tr><td>Times</td><td>Times</td></tr>
+</table>
+</center>
+<h3><a NAME="3_2_8">--bodyimage filename</a></h3>
+<p>The <code>--bodyimage</code> option specifies the background image
+ for all pages in the document. The supported formats are BMP, GIF,
+ JPEG, and PNG.</p>
+<h3><a NAME="3_2_9">--book</a></h3>
+<p>The <code>--book</code> option specifies that the input files
+ comprise a book with chapters and headings.</p>
+<h3><a NAME="3_2_10">--bottom margin</a></h3>
+<p>The <code>--bottom</code> option specifies the bottom margin. The
+ default units are points (1 point = 1/72nd inch); the suffixes &quot;in&quot;,
+ &quot;cm&quot;, and &quot;mm&quot; specify inches, centimeters, and millimeters,
+ respectively.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_11">--browserwidth pixels</a></h3>
+<p>The <code>--browserwidth</code> option specifies the browser width in
+ pixels. The browser width is used to scale images and pixel
+ measurements when generating PostScript and PDF files. It does not
+ affect the font size of text.</p>
+<p>The default browser width is 680 pixels which corresponds roughly to
+ a 96 DPI display. Please note that your images and table sizes are
+ equal to or smaller than the browser width, or your output will overlap
+ or truncate in places.
+<!-- NEED 6in -->
+</p>
+<h3><a NAME="3_2_12">--charset charset</a></h3>
+<p>The <code>--charset</code> option specifies the 8-bit character set
+ encoding to use for the entire document. HTMLDOC comes with the
+ following character set files:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>charset</th><th>Character Set</th></tr>
+<tr><td>cp-874</td><td>Windows code page 874</td></tr>
+<tr><td>cp-1250</td><td>Windows code page 1250</td></tr>
+<tr><td>cp-1251</td><td>Windows code page 1251</td></tr>
+<tr><td>cp-1252</td><td>Windows code page 1252</td></tr>
+<tr><td>cp-1253</td><td>Windows code page 1253</td></tr>
+<tr><td>cp-1254</td><td>Windows code page 1254</td></tr>
+<tr><td>cp-1255</td><td>Windows code page 1255</td></tr>
+<tr><td>cp-1256</td><td>Windows code page 1256</td></tr>
+<tr><td>cp-1257</td><td>Windows code page 1257</td></tr>
+<tr><td>cp-1258</td><td>Windows code page 1258</td></tr>
+<tr><td>iso-8859-1</td><td>ISO-8859-1</td></tr>
+<tr><td>iso-8859-2</td><td>ISO-8859-2</td></tr>
+<tr><td>iso-8859-3</td><td>ISO-8859-3</td></tr>
+<tr><td>iso-8859-4</td><td>ISO-8859-4</td></tr>
+<tr><td>iso-8859-5</td><td>ISO-8859-5</td></tr>
+<tr><td>iso-8859-6</td><td>ISO-8859-6</td></tr>
+<tr><td>iso-8859-7</td><td>ISO-8859-7</td></tr>
+<tr><td>iso-8859-8</td><td>ISO-8859-8</td></tr>
+<tr><td>iso-8859-9</td><td>ISO-8859-9</td></tr>
+<tr><td>iso-8859-14</td><td>ISO-8859-14</td></tr>
+<tr><td>iso-8859-15</td><td>ISO-8859-15</td></tr>
+<tr><td>koi8-r</td><td>KOI8-R</td></tr>
+<tr><td>utf-8</td><td>UTF-8</td></tr>
+</table>
+</center>
+<blockquote><b>Note:</b> UTF-8 support is limited to the first 128
+ Unicode characters found in the input.</blockquote>
+<h3><a NAME="3_2_13">--color</a></h3>
+<p>The <code>--color</code> option specifies that color output is
+ desired.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_14">--compression[=level]</a></h3>
+<p>The <code>--compression</code> option specifies that Flate
+ compression should be performed on the output file(s). The optional <code>
+level</code> parameter is a number from 1 (fastest and least amount of
+ compression) to 9 (slowest and most amount of compression).</p>
+<p>This option is only available when generating PDF or Level 3
+ PostScript files.</p>
+<h3><a NAME="3_2_15">--continuous</a></h3>
+<p>The <code>--continuous</code> option specifies that the input files
+ comprise a web page (or site) and that no title page or
+ table-of-contents should be generated. Unlike the <code>--webpage</code>
+ option described later in this chapter, page breaks are not inserted
+ between each input file.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_16">--cookies 'name=\&quot;value with space\&quot;; name=value'</a>
+</h3>
+<p>The <code>--cookies</code> option specifies one or more HTTP cookies
+ that should be sent when converting remote URLs. Each cookie must be
+ separated from the others by a semicolon and a space, and values
+ containing whitespace or the semicolon must be placed inside
+ double-quotes. When specifying multiple cookies, the entire cookie
+ string must be surrounded by single quotes in order for the string to
+ be processed correctly.</p>
+<h3><a NAME="3_2_17">--datadir directory</a></h3>
+<p>The <code>--datadir</code> option specifies the location of data
+ files used by HTMLDOC.</p>
+<h3><a NAME="3_2_18">--duplex</a></h3>
+<p>The <code>--duplex</code> option specifies that the output should be
+ formatted for two sided printing.</p>
+<p>This option is only available when generating PostScript or PDF
+ files. Use the <code>--pscommands</code> option to generate PostScript
+ duplex mode commands.</p>
+<h3><a NAME="3_2_19">--effectduration seconds</a></h3>
+<p>The <code>--effectduration</code> option specifies the duration of a
+ page transition effect in seconds.</p>
+<p>This option is only available when generating PDF files.</p>
+<h3><a NAME="3_2_20">--embedfonts</a></h3>
+<p>The <code>--embedfonts</code> option specifies that fonts should be
+ embedded in PostScript and PDF output. This is especially useful when
+ generating documents in character sets other than ISO-8859-1.</p>
+<h3><a NAME="3_2_21">--encryption</a></h3>
+<p>The <code>--encryption</code> option enables encryption and security
+ features for PDF output.</p>
+<p>This option is only available when generating PDF files.
+<!-- NEED 4in -->
+</p>
+<h3><a NAME="3_2_22">--firstpage page</a></h3>
+<p>The <code>--firstpage</code> option specifies the first page that
+ will be displayed in a PDF file. The <code>page</code> parameter can be
+ one of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>page</th><th>Description</th></tr>
+<tr><td>p1</td><td>The first page of the document.</td></tr>
+<tr><td>toc</td><td>The first page of the table-of-contents.</td></tr>
+<tr><td>c1</td><td>The first page of chapter 1.</td></tr>
+</table>
+</center>
+<p>This option is only available when generating PDF files.</p>
+<h3><a NAME="3_2_23">--fontsize size</a></h3>
+<p>The <code>--fontsize</code> option specifies the base font size for
+ the entire document in points (1 point = 1/72nd inch).</p>
+<h3><a NAME="3_2_24">--fontspacing spacing</a></h3>
+<p>The <code>--fontspacing</code> option specifies the line spacing for
+ the entire document as a multiplier of the base font size. A <code>
+spacing</code> value of 1 makes each line of text the same height as the
+ font.
+<!-- NEED 6in -->
+</p>
+<h3><a NAME="footer">--footer lcr</a></h3>
+<p>The <code>--footer</code> option specifies the contents of the page
+ footer. The <code>lcr</code> parameter is a three-character string
+ representing the left, center, and right footer fields. Each character
+ can be one of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5" WIDTH="80%">
+<tr><th>lcr</th><th>Description</th></tr>
+<tr><td ALIGN="CENTER">.</td><td>A period indicates that the field
+ should be blank.</td></tr>
+<tr><td ALIGN="CENTER">:</td><td>A colon indicates that the field should
+ contain the current and total number of pages in the chapter (n/N).</td>
+</tr>
+<tr><td ALIGN="CENTER">/</td><td>A slash indicates that the field should
+ contain the current and total number of pages (n/N).</td></tr>
+<tr><td ALIGN="CENTER">1</td><td>The number 1 indicates that the field
+ should contain the current page number in decimal format (1, 2, 3, ...)</td>
+</tr>
+<tr><td ALIGN="CENTER">a</td><td>A lowercase &quot;a&quot; indicates that the
+ field should contain the current page number using lowercase letters.</td>
+</tr>
+<tr><td ALIGN="CENTER">A</td><td>An uppercase &quot;A&quot; indicates that the
+ field should contain the current page number using UPPERCASE letters.</td>
+</tr>
+<tr><td ALIGN="CENTER">c</td><td>A lowercase &quot;c&quot; indicates that the
+ field should contain the current chapter title.</td></tr>
+<tr><td ALIGN="CENTER">C</td><td>An uppercase &quot;C&quot; indicates that the
+ field should contain the current chapter page number.</td></tr>
+<tr><td ALIGN="CENTER">d</td><td>A lowercase &quot;d&quot; indicates that the
+ field should contain the current date.</td></tr>
+<tr><td ALIGN="CENTER">D</td><td>An uppercase &quot;D&quot; indicates that the
+ field should contain the current date and time.</td></tr>
+<tr><td ALIGN="CENTER">h</td><td>An &quot;h&quot; indicates that the field should
+ contain the current heading.</td></tr>
+<tr><td ALIGN="CENTER">i</td><td>A lowercase &quot;i&quot; indicates that the
+ field should contain the current page number in lowercase roman
+ numerals (i, ii, iii, ...)</td></tr>
+<tr><td ALIGN="CENTER">I</td><td>An uppercase &quot;I&quot; indicates that the
+ field should contain the current page number in uppercase roman
+ numerals (I, II, III, ...)</td></tr>
+<tr><td ALIGN="CENTER">l</td><td>A lowercase &quot;l&quot; indicates that the
+ field should contain the logo image.</td></tr>
+<tr><td ALIGN="CENTER">l</td><td>An uppercase &quot;L&quot; indicates that the
+ field should contain the logo image as a letterhead (shown at full
+ size).</td></tr>
+<tr><td ALIGN="CENTER">t</td><td>A lowercase &quot;t&quot; indicates that the
+ field should contain the document title.</td></tr>
+<tr><td ALIGN="CENTER">T</td><td>An uppercase &quot;T&quot; indicates that the
+ field should contain the current time.</td></tr>
+<tr><td ALIGN="CENTER">u</td><td>A lowercase &quot;u&quot; indicates that the
+ field should contain the current filename or URL.</td></tr>
+</table>
+</center>
+<p>Setting the footer to &quot;<code>...</code>&quot; disables the footer
+ entirely.
+<!-- NEED 4in -->
+</p>
+<h3><a NAME="3_2_26">--format format</a></h3>
+<p>The <code>--format</code> option specifies the output format for the
+ document and can be one of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>Format</th><th>Description</th></tr>
+<tr><td>epub</td><td>Generate an EPUB file.</td></tr>
+<tr><td>html</td><td>Generate one or more indexed HTML files.</td></tr>
+<tr><td>htmlsep</td><td>Generate separate HTML files for each heading in
+ the table-of-contents.</td></tr>
+<tr><td>pdf</td><td>Generate a PDF file (default version - 1.4).</td></tr>
+<tr><td>pdf11</td><td>Generate a PDF 1.1 file for Acrobat Reader 2.0 and
+ later.</td></tr>
+<tr><td>pdf12</td><td>Generate a PDF 1.2 file for Acrobat Reader 3.0 and
+ later.</td></tr>
+<tr><td>pdf13</td><td>Generate a PDF 1.3 file for Acrobat Reader 4.0 and
+ later.</td></tr>
+<tr><td>pdf14</td><td>Generate a PDF 1.4 file for Acrobat Reader 5.0 and
+ later.</td></tr>
+<tr><td>ps</td><td>Generate one or more PostScript files (default level
+ - 2).</td></tr>
+<tr><td>ps1</td><td>Generate one or more Level 1 PostScript files.</td></tr>
+<tr><td>ps2</td><td>Generate one or more Level 2 PostScript files.</td></tr>
+<tr><td>ps3</td><td>Generate one or more Level 3 PostScript files.</td></tr>
+</table>
+</center>
+<h3><a NAME="3_2_27">--gray</a></h3>
+<p>The <code>--gray</code> option specifies that grayscale output is
+ desired.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_28">--header lcr</a></h3>
+<p>The <code>--header</code> option specifies the contents of the page
+ header. The <code>lcr</code> parameter is a three-character string
+ representing the left, center, and right header fields. See the <a HREF="#footer">
+<code>--footer</code></a> option for the list of formatting characters.</p>
+<p>Setting the header to &quot;<code>...</code>&quot; disables the header
+ entirely.</p>
+<h3><a NAME="3_2_29">--header1 lcr</a></h3>
+<p>The <code>--header1</code> option specifies the contents of the page
+ header for the first body/chapter page. The <code>lcr</code> parameter
+ is a three-character string representing the left, center, and right
+ header fields. See the <a HREF="#footer"><code>--footer</code></a>
+ option for the list of formatting characters.</p>
+<p>Setting the header to &quot;<code>...</code>&quot; disables the first page
+ header entirely.
+<!-- NEED 4in -->
+</p>
+<h3><a NAME="3_2_30">--headfootfont font</a></h3>
+<p>The <code>--headfootfont</code> option specifies the font that is
+ used for the header and footer text. The <code>font</code> parameter
+ can be one of the following:</p>
+<ul>
+<li>Courier</li>
+<li>Courier-Bold</li>
+<li>Courier-Oblique</li>
+<li>Courier-BoldOblique</li>
+<li>Helvetica</li>
+<li>Helvetica-Bold</li>
+<li>Helvetica-Oblique</li>
+<li>Helvetica-BoldOblique</li>
+<li>Monospace</li>
+<li>Monospace-Bold</li>
+<li>Monospace-Oblique</li>
+<li>Monospace-BoldOblique</li>
+<li>Sans</li>
+<li>Sans-Bold</li>
+<li>Sans-Oblique</li>
+<li>Sans-BoldOblique</li>
+<li>Serif</li>
+<li>Serif-Roman</li>
+<li>Serif-Bold</li>
+<li>Serif-Italic</li>
+<li>Serif-BoldItalic</li>
+<li>Times</li>
+<li>Times-Roman</li>
+<li>Times-Bold</li>
+<li>Times-Italic</li>
+<li>Times-BoldItalic</li>
+</ul>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_31">--headfootsize size</a></h3>
+<p>The <code>--headfootsize</code> option sets the size of the header
+ and footer text in points (1 point = 1/72nd inch).</p>
+<p>This option is only available when generating PostScript or PDF
+ files.
+<!-- NEED 4in -->
+</p>
+<h3><a NAME="3_2_32">--headingfont typeface</a></h3>
+<p>The <code>--headingfont</code> options sets the typeface that is used
+ for headings in the document. The <code>typeface</code> parameter can
+ be one of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>typeface</th><th>Actual Font</th></tr>
+<tr><td>Arial</td><td>Helvetica</td></tr>
+<tr><td>Courier</td><td>Courier</td></tr>
+<tr><td>Helvetica</td><td>Helvetica</td></tr>
+<tr><td>Monospace</td><td>DejaVu Sans Mono</td></tr>
+<tr><td>Sans</td><td>DevaVu Sans</td></tr>
+<tr><td>Serif</td><td>DejaVu Serif</td></tr>
+<tr><td>Times</td><td>Times</td></tr>
+</table>
+</center>
+<h3><a NAME="3_2_33">--help</a></h3>
+<p>The <code>--help</code> option displays all of the available options
+ to the standard output file.</p>
+<h3><a NAME="3_2_34">--helpdir directory</a></h3>
+<p>The <code>--helpdir</code> option specifies the location of the
+ on-line help files.</p>
+<h3><a NAME="3_2_35">--hfimage<i>N</i> filename</a></h3>
+<p>The <code>--hfimage<i>N</i></code> option specifies an image to use
+ in the header and/or footer, where N is a number from 1 to 10. The
+ supported formats are BMP, GIF, JPEG, and PNG.</p>
+<h3><a NAME="3_2_36">--jpeg[=quality]</a></h3>
+<p>The <code>--jpeg</code> option enables JPEG compression of
+ continuous-tone images. The optional <code>quality</code> parameter
+ specifies the output quality from 0 (worst) to 100 (best).</p>
+<p>This option is only available when generating PDF or Level 2 and
+ Level 3 PostScript files.</p>
+<h3><a NAME="3_2_37">--landscape</a></h3>
+<p>The <code>--landscape</code> option specifies that the output should
+ be in landscape orientation (long edge on top).</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_38">--left margin</a></h3>
+<p>The <code>--left</code> option specifies the left margin. The default
+ units are points (1 point = 1/72nd inch); the suffixes &quot;in&quot;, &quot;cm&quot;, and
+ &quot;mm&quot; specify inches, centimeters, and millimeters, respectively.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.
+<!-- NEED 5in -->
+</p>
+<h3><a NAME="3_2_39">--letterhead filename</a></h3>
+<p>The <code>--letterhead</code> option specifies the letterhead image
+ for the page headers and footers for PostScript and PDF files. The
+ supported formats are BMP, GIF, JPEG, and PNG.</p>
+<blockquote><b>Note:</b> You need to use the <code>--header</code>
+ and/or <code>--footer</code> options with the <code>L</code> parameter
+ or use the corresponding HTML page comments to display the logo image
+ in the header or footer.</blockquote>
+<h3><a NAME="3_2_40">--linkcolor color</a></h3>
+<p>The <code>--linkcolor</code> option specifies the color of links in
+ EPUB, HTML. and PDF output. The color can be specified by name or as a
+ 6-digit hexadecimal number of the form <code>#RRGGBB</code>.</p>
+<h3><a NAME="3_2_41">--links</a></h3>
+<p>The <code>--links</code> option specifies that PDF output should
+ contain hyperlinks.</p>
+<h3><a NAME="3_2_42">--linkstyle style</a></h3>
+<p>The <code>--linkstyle</code> option specifies the style of links in
+ EPUB, HTML, and PDF output. The style can be &quot;plain&quot; for no decoration
+ or &quot;underline&quot; to underline links.
+<!-- NEED 5in -->
+</p>
+<h3><a NAME="3_2_43">--logoimage filename</a></h3>
+<p>The <code>--logoimage</code> option specifies the logo image for the
+ HTML navigation bar and page headers and footers for PostScript and PDF
+ files. The supported formats are BMP, GIF, JPEG, and PNG.</p>
+<blockquote><b>Note:</b> You need to use the <code>--header</code>
+ and/or <code>--footer</code> options with the <code>l</code> parameter
+ or use the corresponding HTML page comments to display the logo image
+ in the header or footer.</blockquote>
+<h3><a NAME="3_2_44">--no-compression</a></h3>
+<p>The <code>--no-compression</code> option specifies that Flate
+ compression should not be performed on the output files.</p>
+<h3><a NAME="3_2_45">--no-duplex</a></h3>
+<p>The <code>--no-duplex</code> option specifies that the output should
+ be formatted for one sided printing.</p>
+<p>This option is only available when generating PostScript or PDF
+ files. Use the <code>--pscommands</code> option to generate PostScript
+ duplex mode commands.</p>
+<h3><a NAME="3_2_46">--no-embedfonts</a></h3>
+<p>The <code>--no-embedfonts</code> option specifies that fonts should
+ not be embedded in PostScript and PDF output.</p>
+<h3><a NAME="3_2_47">--no-encryption</a></h3>
+<p>The <code>--no-encryption</code> option specifies that no
+ encryption/security features should be enabled in PDF output.</p>
+<p>This option is only available when generating PDF files.</p>
+<h3><a NAME="3_2_48">--no-jpeg</a></h3>
+<p>The <code>--no-jpeg</code> option specifies that JPEG compression
+ should not be performed on large images.</p>
+<h3><a NAME="3_2_49">--no-links</a></h3>
+<p>The <code>--no-links</code> option specifies that PDF output should
+ not contain hyperlinks.</p>
+<h3><a NAME="3_2_50">--no-localfiles</a></h3>
+<p>The <code>--no-localfiles</code> option disables access to local
+ files on the system. This option should be used when providing remote
+ document conversion services.</p>
+<h3><a NAME="3_2_51">--no-numbered</a></h3>
+<p>The <code>--no-numbered</code> option specifies that headings should
+ not be numbered.</p>
+<h3><a NAME="3_2_52">--no-pscommands</a></h3>
+<p>The <code>--no-pscommands</code> option specifies that PostScript
+ device commands should not be written to the output files.</p>
+<h3><a NAME="3_2_53">--no-strict</a></h3>
+<p>The <code>--no-strict</code> option turns off strict HTML conformance
+ checking.</p>
+<h3><a NAME="3_2_54">--no-title</a></h3>
+<p>The <code>--no-title</code> option specifies that the title page
+ should not be generated.</p>
+<h3><a NAME="3_2_55">--no-toc</a></h3>
+<p>The <code>--no-toc</code> option specifies that the table-of-contents
+ pages should not be generated.</p>
+<h3><a NAME="3_2_56">--no-xrxcomments</a></h3>
+<p>The <code>--no-xrxcomments</code> option specifies that Xerox
+ PostScript job comments should not be written to the output files.</p>
+<p>This option is only available when generating PostScript files.</p>
+<h3><a NAME="3_2_57">--numbered</a></h3>
+<p>The <code>--numbered</code> option specifies that headings should be
+ numbered.</p>
+<h3><a NAME="3_2_58">--nup pages</a></h3>
+<p>The <code>--nup</code> option sets the number of pages that are
+ placed on each output page. Valid values for the <code>pages</code>
+ parameter are 1, 2, 4, 6, 9, and 16.</p>
+<h3><a NAME="3_2_59">--outdir directory</a></h3>
+<p>The <code>--outdir</code> option specifies an output directory for
+ the document files.</p>
+<p>This option is not compatible with the PDF output format.</p>
+<h3><a NAME="3_2_60">--outfile filename</a></h3>
+<p>The <code>--outfile</code> option specifies an output file for the
+ document.</p>
+<h3><a NAME="3_2_61">--owner-password password</a></h3>
+<p>The <code>--owner-password</code> option specifies the owner password
+ for a PDF file. If not specified or the empty string (&quot;&quot;), a random
+ password is generated.</p>
+<p>This option is only available when generating PDF files.</p>
+<h3><a NAME="3_2_62">--pageduration seconds</a></h3>
+<p>The <code>--pageduration</code> option specifies the number of
+ seconds that each page will be displayed in the document.</p>
+<p>This option is only available when generating PDF files.
+<!-- NEED 8in -->
+</p>
+<h3><a NAME="3_2_63">--pageeffect effect</a></h3>
+<p>The <code>--pageeffect</code> option specifies the page effect to use
+ in PDF files. The <code>effect</code> parameter can be one of the
+ following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>effect</th><th>Description</th></tr>
+<tr><td>none</td><td>No effect is generated.</td></tr>
+<tr><td>bi</td><td>Box Inward</td></tr>
+<tr><td>bo</td><td>Box Outward</td></tr>
+<tr><td>d</td><td>Dissolve</td></tr>
+<tr><td>gd</td><td>Glitter Down</td></tr>
+<tr><td>gdr</td><td>Glitter Down and Right</td></tr>
+<tr><td>gr</td><td>Glitter Right</td></tr>
+<tr><td>hb</td><td>Horizontal Blinds</td></tr>
+<tr><td>hsi</td><td>Horizontal Sweet Inward</td></tr>
+<tr><td>hso</td><td>Horizontal Sweep Outward</td></tr>
+<tr><td>vb</td><td>Vertical Blinds</td></tr>
+<tr><td>vsi</td><td>Vertical Sweep Inward</td></tr>
+<tr><td>vso</td><td>Vertical Sweep Outward</td></tr>
+<tr><td>wd</td><td>Wipe Down</td></tr>
+<tr><td>wl</td><td>Wipe Left</td></tr>
+<tr><td>wr</td><td>Wipe Right</td></tr>
+<tr><td>wu</td><td>Wipe Up</td></tr>
+</table>
+</center>
+<p>This option is only available when generating PDF files.
+<!-- NEED 4in -->
+</p>
+<h3><a NAME="3_2_64">--pagelayout layout</a></h3>
+<p>The <code>--pagelayout</code> option specifies the initial page
+ layout in the PDF viewer. The <code>layout</code> parameter can be one
+ of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>layout</th><th>Description</th></tr>
+<tr><td>single</td><td>A single page is displayed.</td></tr>
+<tr><td>one</td><td>A single column is displayed.</td></tr>
+<tr><td>twoleft</td><td>Two columns are displayed with the first page on
+ the left.</td></tr>
+<tr><td>tworight</td><td>Two columns are displayed with the first page
+ on the right.</td></tr>
+</table>
+</center>
+<p>This option is only available when generating PDF files.
+<!-- NEED 4in -->
+</p>
+<h3><a NAME="3_2_65">--pagemode mode</a></h3>
+<p>The <code>--pagemode</code> option specifies the initial viewing mode
+ in the PDF viewer. The <code>mode</code> parameter can be one of the
+ following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>mode</th><th>Description</th></tr>
+<tr><td>document</td><td>The document pages are displayed in a normal
+ window.</td></tr>
+<tr><td>outline</td><td>The document outline and pages are displayed.</td>
+</tr>
+<tr><td>fullscreen</td><td>The document pages are displayed on the
+ entire screen in &quot;slideshow&quot; mode.</td></tr>
+</table>
+</center>
+<p>This option is only available when generating PDF files.</p>
+<h3><a NAME="3_2_66">--path dir1;dir2;dir3;...;dirN</a></h3>
+<p>The <code>--path</code> option specifies a search path for files that
+ are loaded by HTMLDOC. It is usually used to get images that use
+ absolute server paths to load.</p>
+<p>Directories are separated by the semicolon (;) so that drive letters
+ and URLs can be specified. Quotes around the directory parameter are
+ optional. They are usually used when the directory string contains
+ spaces.</p>
+<pre>
+<kbd>--path &quot;dir1;dir2;dir3;...;dirN&quot;</kbd>
+</pre>
+
+<!-- NEED 5in -->
+<h3><a NAME="3_2_67">--permissions permission[,permission,...]</a></h3>
+<p>The <code>--permissions</code> option specifies the document
+ permissions. The available permission parameters are listed below:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>Permission</th><th>Description</th></tr>
+<tr><td>all</td><td>All permissions</td></tr>
+<tr><td>annotate</td><td>User can annotate document</td></tr>
+<tr><td>copy</td><td>User can copy text and images from document</td></tr>
+<tr><td>modify</td><td>User can modify document</td></tr>
+<tr><td>print</td><td>User can print document</td></tr>
+<tr><td>no-annotate</td><td>User cannot annotate document</td></tr>
+<tr><td>no-copy</td><td>User cannot copy text and images from document</td>
+</tr>
+<tr><td>no-modify</td><td>User cannot modify document</td></tr>
+<tr><td>no-print</td><td>User cannot print document</td></tr>
+<tr><td>none</td><td>No permissions</td></tr>
+</table>
+</center>
+<p>The <code>--encryption</code> option must be used in conjunction with
+ the <code>--permissions</code> parameter.</p>
+<pre>
+<kbd>--permissions no-print --encryption</kbd>
+</pre>
+<p>Multiple options can be specified by separating them with commas:</p>
+<pre>
+<kbd>--permissions no-print,no-copy --encryption</kbd>
+</pre>
+<p>This option is only available when generating PDF files.</p>
+<h3><a NAME="3_2_68">--portrait</a></h3>
+<p>The <code>--portrait</code> option specifies that the output should
+ be in portrait orientation (short edge on top).</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_69">--pscommands</a></h3>
+<p>The <code>--pscommands</code> option specifies that PostScript device
+ commands should be written to the output files.</p>
+<p>This option is only available when generating Level 2 and Level 3
+ PostScript files.</p>
+<h3><a NAME="3_2_70">--quiet</a></h3>
+<p>The <code>--quiet</code> option prevents error messages from being
+ sent to stderr.</p>
+<h3><a NAME="3_2_71">--referer url</a></h3>
+<p>The <code>--referer</code> option sets the URL that is passed in the <code>
+Referer:</code> field of HTTP requests.</p>
+<h3><a NAME="3_2_72">--right margin</a></h3>
+<p>The <code>--right</code> option specifies the right margin. The
+ default units are points (1 point = 1/72nd inch); the suffixes &quot;in&quot;,
+ &quot;cm&quot;, and &quot;mm&quot; specify inches, centimeters, and millimeters,
+ respectively.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_73">--size size</a></h3>
+<p>The <code>--size</code> option specifies the page size. The <code>
+size</code> parameter can be one of the following standard sizes:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>size</th><th>Description</th></tr>
+<tr><td>Letter</td><td>8.5x11in (216x279mm)</td></tr>
+<tr><td>A4</td><td>8.27x11.69in (210x297mm)</td></tr>
+<tr><td>Universal</td><td>8.27x11in (210x279mm)</td></tr>
+</table>
+</center>
+<p>Custom sizes are specified by the page width and length separated by
+ the letter &quot;x&quot; to select a custom page size. Append the letters &quot;in&quot;
+ for inches, &quot;mm&quot; for millimeters, or &quot;cm&quot; for centimeters.</p>
+<p>This option is only available when generating PostScript or PDF
+ files. Use the <code>--pscommands</code> option to generate PostScript
+ page size commands.</p>
+<h3><a NAME="3_2_74">--strict</a></h3>
+<p>The <code>--strict</code> option turns on strict HTML conformance
+ checking. When enabled, HTML elements that are improperly nested and
+ dangling close elements will produce error messages.</p>
+<h3><a NAME="3_2_75">--textcolor color</a></h3>
+<p>The <code>--textcolor</code> option specifies the default text color
+ for all pages in the document. The color can be specified by a standard
+ HTML color name or as a 6-digit hexadecimal number of the form <code>
+#RRGGBB</code>.
+<!-- NEED 4in -->
+</p>
+<h3><a NAME="3_2_76">--textfont typeface</a></h3>
+<p>The <code>--textfont</code> options sets the typeface that is used
+ for text in the document. The <code>typeface</code> parameter can be
+ one of the following:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>typeface</th><th>Actual Font</th></tr>
+<tr><td>Arial</td><td>Helvetica</td></tr>
+<tr><td>Courier</td><td>Courier</td></tr>
+<tr><td>Helvetica</td><td>Helvetica</td></tr>
+<tr><td>Monospace</td><td>DejaVu Sans Mono</td></tr>
+<tr><td>Sans</td><td>DevaVu Sans</td></tr>
+<tr><td>Serif</td><td>DejaVu Serif</td></tr>
+<tr><td>Times</td><td>Times</td></tr>
+</table>
+</center>
+<h3><a NAME="3_2_77">--title</a></h3>
+<p>The <code>--title</code> option specifies that a title page should be
+ generated.</p>
+<h3><a NAME="3_2_78">--titlefile filename</a></h3>
+<p>The <code>--titlefile</code> option specifies a HTML or Markdown file
+ to use for the title page.</p>
+<h3><a NAME="3_2_79">--titleimage filename</a></h3>
+<p>The <code>--titleimage</code> option specifies the title image for
+ the title page. The supported formats are BMP, GIF, JPEG, and PNG.</p>
+<h3><a NAME="3_2_80">--tocfooter lcr</a></h3>
+<p>The <code>--tocfooter</code> option specifies the contents of the
+ table-of-contents footer. The <code>lcr</code> parameter is a
+ three-character string representing the left, center, and right footer
+ fields. See the <a HREF="#footer"><code>--footer</code></a> option for
+ the list of formatting characters.</p>
+<p>Setting the TOC footer to &quot;<code>...</code>&quot; disables the TOC footer
+ entirely.</p>
+<h3><a NAME="3_2_81">--tocheader lcr</a></h3>
+<p>The <code>--tocheader</code> option specifies the contents of the
+ table-of-contents header. The <code>lcr</code> parameter is a
+ three-character string representing the left, center, and right header
+ fields. See the <a HREF="#footer"><code>--footer</code></a> option for
+ the list of formatting characters.</p>
+<p>Setting the TOC header to &quot;<code>...</code>&quot; disables the TOC header
+ entirely.</p>
+<h3><a NAME="3_2_82">--toclevels levels</a></h3>
+<p>The <code>--toclevels</code> options specifies the number of heading
+ levels to include in the table-of-contents pages. The <code>levels</code>
+ parameter is a number from 1 to 6.</p>
+<h3><a NAME="3_2_83">--toctitle string</a></h3>
+<p>The <code>--toctitle</code> options specifies the string to display
+ at the top of the table-of-contents; the default string is &quot;Table of
+ Contents&quot;.</p>
+<h3><a NAME="3_2_84">--top margin</a></h3>
+<p>The <code>--top</code> option specifies the top margin. The default
+ units are points (1 point = 1/72nd inch); the suffixes &quot;in&quot;, &quot;cm&quot;, and
+ &quot;mm&quot; specify inches, centimeters, and millimeters, respectively.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_85">--user-password password</a></h3>
+<p>The <code>--user-password</code> option specifies the user password
+ for a PDF file. If not specified or the empty string (&quot;&quot;), no password
+ will be required to view the document.</p>
+<p>This option is only available when generating PDF files.</p>
+<h3><a NAME="3_2_86">--verbose</a></h3>
+<p>The <code>--verbose</code> option specifies that progress information
+ should be sent/displayed to the standard error file.</p>
+<h3><a NAME="3_2_87">--version</a></h3>
+<p>The <code>--version</code> option displays the HTMLDOC version
+ number.</p>
+<h3><a NAME="3_2_88">--webpage</a></h3>
+<p>The <code>--webpage</code> option specifies that the input files
+ comprise a web page (or site) and that no title page or
+ table-of-contents should be generated. HTMLDOC will insert a page break
+ between each input file.</p>
+<p>This option is only available when generating PostScript or PDF
+ files.</p>
+<h3><a NAME="3_2_89">--xrxcomments</a></h3>
+<p>The <code>--xrxcomments</code> option specifies that Xerox PostScript
+ job comments should be written to the output files.</p>
+<p>This option is only available when generating PostScript files.
+<!-- NEW PAGE -->
+</p>
+<h2><a NAME="3_3">Environment Variables</a></h2>
+<p>HTMLDOC looks for several environment variables which can override
+ the default directories, display additional debugging information, and
+ disable CGI mode.</p>
+<h3><a NAME="3_3_1">HTMLDOC_DATA</a></h3>
+<p>This environment variable specifies the location of HTMLDOC's<var>
+ data</var> and<var> fonts</var> directories, normally<var>
+ /usr/share/htmldoc</var> or<var> C:\Program Files\HTMLDOC</var>.</p>
+<h3><a NAME="3_3_2">HTMLDOC_DEBUG</a></h3>
+<p>This environment variable enables debugging information that is sent
+ to stderr. The value is a list of keywords separated by spaces:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>keyword</th><th>Information Shown</th></tr>
+<tr><td><code>links</code></td><td>Shows all of the links in a document</td>
+</tr>
+<tr><td><code>memory</code></td><td>Shows memory usage statistics</td></tr>
+<tr><td><code>remotebytes</code></td><td>Shows the number of bytes that
+ were transferred via HTTP</td></tr>
+<tr><td><code>table</code></td><td>Puts a box around each table, row,
+ and cell</td></tr>
+<tr><td><code>tempfiles</code></td><td>Shows the temporary files that
+ were created, and preserves them for debugging</td></tr>
+<tr><td><code>timing</code></td><td>Shows the load and render times</td></tr>
+<tr><td><code>all</code></td><td>All of the above</td></tr>
+</table>
+</center>
+<h3><a NAME="3_3_3">HTMLDOC_HELP</a></h3>
+<p>This environment variable specifies the location of HTMLDOC's
+ documentation directory, normally<var> /usr/share/doc/htmldoc</var> or<var>
+ C:\Program Files\HTMLDOC\doc</var>.</p>
+<h3><a NAME="3_3_4">HTMLDOC_NOCGI</a></h3>
+<p>This environment variable, when set (the value doesn't matter),
+ disables CGI mode. It is most useful for using HTMLDOC on a web server
+ from a scripting language or invocation from a program.</p>
+
+<!-- NEW PAGE -->
+<h2><a NAME="3_4">Messages</a></h2>
+<p>HTMLDOC sends error and status messages to stderr unless the <code>
+--quiet</code> option is provided on the command-line. Applications can
+ capture these messages to relay errors or statistics to the user.</p>
+<h3><a NAME="3_4_1">BYTES: Message</a></h3>
+<p>The <code>BYTES:</code> message specifies the number of bytes that
+ were written to an output file. If the output is directed at a
+ directory then multiple <code>BYTES:</code> messages will be sent.</p>
+<h3><a NAME="3_4_2">DEBUG: Messages</a></h3>
+<p>The <code>DEBUG:</code> messages contain debugging information based
+ on the value of the <code>HTMLDOC_DEBUG</code> environment variable.
+ Normally, no <code>DEBUG:</code> messages are sent by HTMLDOC.</p>
+<h3><a NAME="3_4_3">ERRnnn: Messages</a></h3>
+<p>The <code>ERRnnn:</code> messages specify an error condition. Error
+ numbers 1 to 14 map to the following errors:</p>
+<ol>
+<li>No files were found or loadable.</li>
+<li>No pages were generated.</li>
+<li>The document contains too many files or chapters.</li>
+<li>HTMLDOC ran out of memory.</li>
+<li>The specified file could not be found.</li>
+<li>The comment contains a bad HTMLDOC formatting command.</li>
+<li>The image file is not in a known format.</li>
+<li>HTMLDOC was unable to remove a temporary file.</li>
+<li>HTMLDOC had an unspecified internal error.</li>
+<li>HTMLDOC encountered a networking error when retrieving a file via a
+ URL.</li>
+<li>HTMLDOC was unable to read a file.</li>
+<li>HTMLDOC was unable to write a file.</li>
+<li>A HTML error was found in a source file.</li>
+<li>A table, image, or text fragment was too large to fit in the space
+ provided.</li>
+<li>A hyperlink in the source files was unresolved.</li>
+<li>A header/footer string in the document contains a bad $ command.</li>
+</ol>
+<p>Error numbers 100 to 505 correspond directly to a HTTP status code.</p>
+<h3><a NAME="3_4_4">INFO: Messages</a></h3>
+<p>The <code>INFO:</code> messages contain general information that is
+ logged when HTMLDOC is running in CGI mode or when you use the <code>
+--verbose</code> option.</p>
+<h3><a NAME="3_4_5">PAGES: Message</a></h3>
+<p>The <code>PAGES:</code> message specifies the number of pages that
+ were written to an output file. If the output is directed at a
+ directory then multiple <code>PAGES:</code> messages will be sent. No <code>
+PAGES:</code> messages are sent when generating HTML or EPUB output.</p>
+<h3><a NAME="3_4_6">REMOTEBYTES: Message</a></h3>
+<p>The <code>REMOTEBYTES:</code> message specifies the number of bytes
+ that were transferred using HTTP. This message is only displayed if the
+ <code>HTMLDOC_DEBUG</code> environment variable has the keyword <code>
+remotebytes</code> or <code>all</code>.</p>
+<h3><a NAME="3_4_7">TIMING: Message</a></h3>
+<p>The <code>TIMING:</code> message specifies the load, render, and
+ total time in seconds for the current command. This message is only
+ displayed if the <code>HTMLDOC_DEBUG</code> environment variable has
+ the keyword <code>timing</code> or <code>all</code>.</p>
+</div><HR NOSHADE>
+
+<!-- FOOTER RIGHT &quot;4-$CHAPTERPAGE&quot; -->
+<div ALIGN="justify">
+<h1 ALIGN="RIGHT"><a NAME="HTMLREF">Chapter 4 - HTML Reference</a></h1>
+ This chapter defines all of the HTML elements and attributes that are
+ recognized and supported by HTMLDOC.
+<h2><a NAME="4_1">General Usage</a></h2>
+<p>There are two types of HTML files - structured documents using
+ headings (H1, H2, etc.) which HTMLDOC calls &quot;books&quot;, and unstructured
+ documents that do not use headings which HTMLDOC calls &quot;web pages&quot;.</p>
+<p>A very common mistake is to try converting a web page using:</p>
+<pre>
+htmldoc -f filename.pdf filename.html
+</pre>
+<p>which will likely produce a PDF file with no pages. To convert web
+ page files you<b> must</b> use the <code>--webpage</code> option at the
+ command-line or choose<var> Web Page</var> in the input tab of the GUI.</p>
+<blockquote><b>Note:</b> HTMLDOC does not support HTML 4.0 elements,
+ attributes, stylesheets, or scripting.</blockquote>
+<!-- NEED 5in -->
+<h2><a NAME="4_2">Elements</a></h2>
+<p>The following HTML elements are recognized by HTMLDOC:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>Element</th><th>Version</th><th>Supported?</th><th>Notes</th></tr>
+<tr><td>!DOCTYPE</td><td ALIGN="CENTER">3.0</td><td ALIGN="CENTER">Yes</td><td>
+DTD is ignored</td></tr>
+<tr><td>A</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td><a
+HREF="#LINKS">See Below</a></td></tr>
+<tr><td>ACRONYM</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+No font change</td></tr>
+<tr><td>ADDRESS</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>AREA</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>B</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>BASE</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>BASEFONT</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>BIG</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>BLINK</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>BLOCKQUOTE</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>BODY</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>BR</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>CAPTION</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>CENTER</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>CITE</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Italic/Oblique</td></tr>
+<tr><td>CODE</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Courier</td></tr>
+<tr><td>DD</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>DEL</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Strikethrough</td></tr>
+<tr><td>DFN</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Helvetica</td></tr>
+<tr><td>DIR</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>DIV</td><td ALIGN="CENTER">3.2</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>DL</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>DT</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Italic/Oblique</td></tr>
+<tr><td>EM</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Italic/Oblique</td></tr>
+<tr><td>EMBED</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+HTML Only</td></tr>
+<tr><td>FONT</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+<a HREF="#FONT">See Below</a></td></tr>
+<tr><td>FORM</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>FRAME</td><td ALIGN="CENTER">3.2</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>FRAMESET</td><td ALIGN="CENTER">3.2</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>H1</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface, <a HREF="#HEADING">See Below</a></td></tr>
+<tr><td>H2</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface, <a HREF="#HEADING">See Below</a></td></tr>
+<tr><td>H3</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface, <a HREF="#HEADING">See Below</a></td></tr>
+<tr><td>H4</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface, <a HREF="#HEADING">See Below</a></td></tr>
+<tr><td>H5</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface, <a HREF="#HEADING">See Below</a></td></tr>
+<tr><td>H6</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface, <a HREF="#HEADING">See Below</a></td></tr>
+<tr><td>HEAD</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>HR</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>HTML</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>I</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>IMG</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+<a HREF="#IMAGES">See Below</a></td></tr>
+<tr><td>INPUT</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>INS</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Underline</td></tr>
+<tr><td>ISINDEX</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>KBD</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Courier Bold</td></tr>
+<tr><td>LI</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>LINK</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>MAP</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>MENU</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>META</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+<a HREF="#META">See Below</a></td></tr>
+<tr><td>MULTICOL</td><td ALIGN="CENTER">N3.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>NOBR</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>NOFRAMES</td><td ALIGN="CENTER">3.2</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>OL</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>OPTION</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>P</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>PRE</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>S</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Strikethrough</td></tr>
+<tr><td>SAMP</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Courier</td></tr>
+<tr><td>SCRIPT</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>SELECT</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>SMALL</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>SPACER</td><td ALIGN="CENTER">N3.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>STRIKE</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>STRONG</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface Italic/Oblique</td></tr>
+<tr><td>SUB</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Reduced Fontsize</td></tr>
+<tr><td>SUP</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Reduced Fontsize</td></tr>
+<tr><td>TABLE</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+<a HREF="#TABLE">See Below</a></td></tr>
+<tr><td>TD</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>TEXTAREA</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+<tr><td>TH</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Boldface Center</td></tr>
+<tr><td>TITLE</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>TR</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>TT</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Courier</td></tr>
+<tr><td>U</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>UL</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+&nbsp;</td></tr>
+<tr><td>VAR</td><td ALIGN="CENTER">2.0</td><td ALIGN="CENTER">Yes</td><td>
+Helvetica Oblique</td></tr>
+<tr><td>WBR</td><td ALIGN="CENTER">1.0</td><td ALIGN="CENTER">No</td><td>
+&nbsp;</td></tr>
+</table>
+</center>
+<h2><a NAME="COMMENTS">Comments</a></h2>
+<p>HTMLDOC supports many special HTML comments to initiate page breaks,
+ set the header and footer text, and control the current media options:</p>
+<dl>
+<!-- NEED 1in -->
+<dt><code>&lt;!-- FOOTER LEFT &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the left footer text; the test is applied to the current page
+ if empty, or the next page otherwise.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- FOOTER CENTER &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the center footer text; the test is applied to the current page
+ if empty, or the next page otherwise.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- FOOTER RIGHT &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the right footer text; the test is applied to the current page
+ if empty, or the next page otherwise.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- HALF PAGE --&gt;</code></dt>
+<dd>Break to the next half page.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- HEADER LEFT &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the left header text; the test is applied to the current page
+ if empty, or the next page otherwise.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- HEADER CENTER &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the center header text; the test is applied to the current page
+ if empty, or the next page otherwise.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- HEADER RIGHT &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the right header text; the test is applied to the current page
+ if empty, or the next page otherwise.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA BOTTOM nnn --&gt;</code></dt>
+<dd>Sets the bottom margin of the page. The &quot;nnn&quot; string can be any
+ standard measurement value, e.g. 0.5in, 36, 12mm, etc. Breaks to a new
+ page if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA COLOR &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the media color attribute for the page. The &quot;foo&quot; string is any
+ color name that is supported by the printer, e.g. &quot;Blue&quot;, &quot;White&quot;, etc.
+ Breaks to a new page or sheet if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA DUPLEX NO --&gt;</code></dt>
+<dd>Chooses single-sided printing for the page; breaks to a new page or
+ sheet if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA DUPLEX YES --&gt;</code></dt>
+<dd>Chooses double-sided printing for the page; breaks to a new sheet if
+ the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA LANDSCAPE NO --&gt;</code></dt>
+<dd>Chooses portrait orientation for the page; breaks to a new page if
+ the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA LANDSCAPE YES --&gt;</code></dt>
+<dd>Chooses landscape orientation for the page; breaks to a new page if
+ the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA LEFT nnn --&gt;</code></dt>
+<dd>Sets the left margin of the page. The &quot;nnn&quot; string can be any
+ standard measurement value, e.g. 0.5in, 36, 12mm, etc. Breaks to a new
+ page if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA POSITION nnn --&gt;</code></dt>
+<dd>Sets the media position attribute (input tray) for the page. The
+ &quot;nnn&quot; string is an integer that usually specifies the tray number.
+ Breaks to a new page or sheet if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA RIGHT nnn --&gt;</code></dt>
+<dd>Sets the right margin of the page. The &quot;nnn&quot; string can be any
+ standard measurement value, e.g. 0.5in, 36, 12mm, etc. Breaks to a new
+ page if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA SIZE foo --&gt;</code></dt>
+<dd>Sets the media size to the specified size. The &quot;foo&quot; string can be
+ &quot;Letter&quot;, &quot;Legal&quot;, &quot;Universal&quot;, or &quot;A4&quot; for standard sizes or
+ &quot;WIDTHxHEIGHTunits&quot; for custom sizes, e.g. &quot;8.5x11in&quot;; breaks to a new
+ page or sheet if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA TOP nnn --&gt;</code></dt>
+<dd>Sets the top margin of the page. The &quot;nnn&quot; string can be any
+ standard measurement value, e.g. 0.5in, 36, 12mm, etc. Breaks to a new
+ page if the current page is already marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- MEDIA TYPE &quot;foo&quot; --&gt;</code></dt>
+<dd>Sets the media type attribute for the page. The &quot;foo&quot; string is any
+ type name that is supported by the printer, e.g. &quot;Plain&quot;, &quot;Glossy&quot;,
+ etc. Breaks to a new page or sheet if the current page is already
+ marked.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- NEED length --&gt;</code></dt>
+<dd>Break if there is less than <code>length</code> units left on the
+ current page. The <code>length</code> value defaults to lines of text
+ but can be suffixed by <code>in</code>, <code>mm</code>, or <code>cm</code>
+ to convert from the corresponding units.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- NEW PAGE --&gt;</code></dt>
+<dd>Break to the next page.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- NEW SHEET --&gt;</code></dt>
+<dd>Break to the next sheet.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- NUMBER-UP nn --&gt;</code></dt>
+<dd>Sets the number of pages that are placed on each output page. Valid
+ values are 1, 2, 4, 6, 9, and 16.
+<!-- NEED 1in -->
+</dd>
+<dt><code>&lt;!-- PAGE BREAK --&gt;</code></dt>
+<dd>Break to the next page.</dd>
+</dl>
+
+<!-- NEED 2in -->
+<h3><a NAME="4_3_1">Header/Footer Strings</a></h3>
+<p>The <code>HEADER</code> and <code>FOOTER</code> comments allow you to
+ set an arbitrary string of text for the left, center, and right headers
+ and footers. Each string consists of plain text; special values or
+ strings can be inserted using the dollar sign (<code>$</code>):</p>
+<dl>
+<!-- NEED 1in -->
+<dt><code>$$</code></dt>
+<dd>Inserts a single dollar sign in the header.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$CHAPTER</code></dt>
+<dd>Inserts the current chapter heading.
+<!-- NEED 1.5in -->
+</dd>
+<dt><code>$CHAPTERPAGE</code></dt>
+<dt><code>$CHAPTERPAGE(format)</code></dt>
+<dd>Inserts the current page number within a chapter or file. When a
+ format is specified, uses that numeric format (1 = decimal, i =
+ lowercase roman numerals, I = uppercase roman numerals, a = lowercase
+ ascii, A = uppercase ascii) for the page numbers.
+<!-- NEED 1.5in -->
+</dd>
+<dt><code>$CHAPTERPAGES</code></dt>
+<dt><code>$CHAPTERPAGES(format)</code></dt>
+<dd>Inserts the total page count within a chapter or file. When a format
+ is specified, uses that numeric format (1 = decimal, i = lowercase
+ roman numerals, I = uppercase roman numerals, a = lowercase ascii, A =
+ uppercase ascii) for the page count.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$DATE</code></dt>
+<dd>Inserts the current date.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$HEADING</code></dt>
+<dd>Inserts the current heading.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$HFIMAGE1</code></dt>
+<dt><code>$HFIMAGE2</code></dt>
+<dt><code>$HFIMAGE3</code></dt>
+<dt><code>$HFIMAGE4</code></dt>
+<dt><code>$HFIMAGE5</code></dt>
+<dt><code>$HFIMAGE6</code></dt>
+<dt><code>$HFIMAGE7</code></dt>
+<dt><code>$HFIMAGE8</code></dt>
+<dt><code>$HFIMAGE9</code></dt>
+<dt><code>$HFIMAGE10</code></dt>
+<dd>Inserts the specified header/footer image; all other text in the
+ string will be ignored.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$LETTERHEAD</code></dt>
+<dd>Inserts the logo image as a letterhead with no down-scaling; all
+ other text in the string will be ignored.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$LOGOIMAGE</code></dt>
+<dd>Inserts the logo image; all other text in the string will be
+ ignored.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$PAGE</code></dt>
+<dt><code>$PAGE(format)</code></dt>
+<dd>Inserts the current page number. When a format is specified, uses
+ that numeric format (1 = decimal, i = lowercase roman numerals, I =
+ uppercase roman numerals, a = lowercase ascii, A = uppercase ascii) for
+ the page numbers.
+<!-- NEED 1.5in -->
+</dd>
+<dt><code>$PAGES</code></dt>
+<dt><code>$PAGES(format)</code></dt>
+<dd>Inserts the total page count. When a format is specified, uses that
+ numeric format (1 = decimal, i = lowercase roman numerals, I =
+ uppercase roman numerals, a = lowercase ascii, A = uppercase ascii) for
+ the page count.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$TIME</code></dt>
+<dd>Inserts the current time.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$TITLE</code></dt>
+<dd>Inserts the document title.
+<!-- NEED 1in -->
+</dd>
+<dt><code>$URL</code></dt>
+<dd>Inserts the document filename or URL.</dd>
+</dl>
+
+<!-- NEED 5in -->
+<h2><a NAME="FONT">FONT Attributes</a></h2>
+<p>Limited typeface specification is currently supported to ensure
+ portability across platforms and for older PostScript printers:</p>
+<center>
+<table BORDER="1" CELLPADDING="5">
+<tr><th>Requested Font</th><th>Actual Font</th></tr>
+<tr><td>Arial</td><td>Helvetica</td></tr>
+<tr><td>Courier</td><td>Courier</td></tr>
+<tr><td>Dingbats</td><td>Dingbats</td></tr>
+<tr><td>Helvetica</td><td>Helvetica</td></tr>
+<tr><td>Monospace</td><td>DejaVu Sans Mono</td></tr>
+<tr><td>Sans</td><td>DejaVu Sans</td></tr>
+<tr><td>Serif</td><td>DejaVu Serif</td></tr>
+<tr><td>Symbol</td><td>Symbol</td></tr>
+<tr><td>Times</td><td>Times</td></tr>
+</table>
+</center>
+<p>All other unrecognized typefaces are silently ignored.</p>
+<h2><a NAME="HEADING">Headings</a></h2>
+<p>Currently HTMLDOC supports a maximum of 1000 chapters (H1 headings).
+ This limit can be increased by changing the <code>MAX_CHAPTERS</code>
+ constant in the<var> config.h</var> file included with the source code.</p>
+<p>All chapters start with a top-level heading (H1) markup. Any headings
+ within a chapter must be of a lower level (H2 to H15). Each chapter
+ starts a new page or the next odd-numbered page if duplexing is
+ selected.</p>
+<blockquote><b>Note:</b> Heading levels 7 to 15 are not standard HTML
+ and will not likely be recognized by most web browsers.</blockquote>
+<p>The headings you use within a chapter must start at level 2 (H2). If
+ you skip levels the heading will be shown under the last level that was
+ known. For example, if you use the following hierarchy of headings:</p>
+<pre>
+&lt;H1&gt;Chapter Heading&lt;/H1&gt;
+...
+&lt;H2&gt;Section Heading 1&lt;/H2&gt;
+...
+&lt;H2&gt;Section Heading 2&lt;/H2&gt;
+...
+&lt;H3&gt;Sub-Section Heading 1&lt;/H3&gt;
+...
+&lt;H4&gt;Sub-Sub-Section Heading 1&lt;/H4&gt;
+...
+&lt;H4&gt;Sub-Sub-Section Heading 2&lt;/H4&gt;
+...
+&lt;H3&gt;Sub-Section Heading 2&lt;/H3&gt;
+...
+&lt;H2&gt;Section Heading 3&lt;/H2&gt;
+...
+&lt;H4&gt;Sub-Sub-Section Heading 3&lt;/H4&gt;
+...
+</pre>
+ the table-of-contents that is generated will show:
+<ul>
+<li><b>Chapter Heading</b>
+<ul>
+<li>Section Heading 1</li>
+<li>Section Heading 2
+<ul>
+<li>Sub-Section Heading 1
+<ul>
+<li>Sub-Sub-Section Heading 1</li>
+<li>Sub-Sub-Section Heading 2</li>
+</ul>
+</li>
+<li>Sub-Section Heading 2
+<ul>
+<li>Sub-Sub-Section Heading 3</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Section Heading 3</li>
+</ul>
+</li>
+</ul>
+
+<!-- NEED 4in -->
+<h3><a NAME="4_5_1">Numbered Headings</a></h3>
+ When the numbered headings option is enabled, HTMLDOC recognizes the
+ following additional attributes for all heading elements:
+<dl>
+<dt><code>VALUE=&quot;#&quot;</code></dt>
+<dd>Specifies the starting value for this heading level (default is &quot;1&quot;
+ for all new levels).</dd>
+<dt><code>TYPE=&quot;1&quot;</code></dt>
+<dd>Specifies that decimal numbers should be generated for this heading
+ level.</dd>
+<dt><code>TYPE=&quot;a&quot;</code></dt>
+<dd>Specifies that lowercase letters should be generated for this
+ heading level.</dd>
+<dt><code>TYPE=&quot;A&quot;</code></dt>
+<dd>Specifies that uppercase letters should be generated for this
+ heading level.</dd>
+<dt><code>TYPE=&quot;i&quot;</code></dt>
+<dd>Specifies that lowercase roman numerals should be generated for this
+ heading level.</dd>
+<dt><code>TYPE=&quot;I&quot;</code></dt>
+<dd>Specifies that uppercase roman numerals should be generated for this
+ heading level.</dd>
+</dl>
+
+<!-- NEED 2in -->
+<h2><a NAME="IMAGES">Images</a></h2>
+ HTMLDOC supports loading of BMP, GIF, JPEG, and PNG image files. EPS
+ and other types of image files are not supported at this time.
+<!-- NEED 2in -->
+<h2><a NAME="LINKS">Links</a></h2>
+<p>External URL and internal (<code>#target</code> and <code>
+filename.html</code>) links are fully supported for HTML and PDF output.</p>
+<p>When generating PDF files, local PDF file links will be converted to
+ external file links for the PDF viewer instead of URL links. That is,
+ you can directly link to another local PDF file from your HTML document
+ with:</p>
+<pre>
+&lt;A HREF=&quot;filename.pdf&quot;&gt;...&lt;/A&gt;
+</pre>
+
+<!-- NEED 5in -->
+<h2><a NAME="META">META Attributes</a></h2>
+<p>HTMLDOC supports the following <code>META</code> attributes for the
+ title page and document information:</p>
+<dl>
+<dt><code>&lt;META NAME=&quot;AUTHOR&quot; CONTENT=&quot;...&quot;</code></dt>
+<dd>Specifies the document author.</dd>
+<dt><code>&lt;META NAME=&quot;COPYRIGHT&quot; CONTENT=&quot;...&quot;</code></dt>
+<dd>Specifies the document copyright.</dd>
+<dt><code>&lt;META NAME=&quot;DOCNUMBER&quot; CONTENT=&quot;...&quot;</code></dt>
+<dd>Specifies the document number.</dd>
+<dt><code>&lt;META NAME=&quot;GENERATOR&quot; CONTENT=&quot;...&quot;</code></dt>
+<dd>Specifies the application that generated the HTML file.</dd>
+<dt><code>&lt;META NAME=&quot;HTMLDOC.filename&quot; CONTENT=&quot;...&quot;</code></dt>
+<dd>Specifies the filename that is reported in CGI mode.</dd>
+<dt><code>&lt;META NAME=&quot;KEYWORDS&quot; CONTENT=&quot;...&quot;</code></dt>
+<dd>Specifies document search keywords.</dd>
+<dt><code>&lt;META NAME=&quot;SUBJECT&quot; CONTENT=&quot;...&quot;</code></dt>
+<dd>Specifies document subject.</dd>
+</dl>
+<h2><a NAME="TABLE">Tables</a></h2>
+ Currently HTMLDOC supports a maximum of 200 columns within a single
+ table. This limit can be increased by changing the <code>MAX_COLUMNS</code>
+ constant in the<var> config.h</var> file included with the source code.
+<p><b>HTMLDOC does not support HTML 4.0 table elements or attributes,
+ such as <code>TBODY</code>, <code>THEAD</code>, <code>TFOOT</code>, or <code>
+RULES</code>.</b></p>
+</div><HR NOSHADE>
+
+<!-- FOOTER RIGHT &quot;5-$CHAPTERPAGE&quot; -->
+<div align="justify">
+<h1 align="right"><a name="MDREF">Chapter 5 - Markdown Reference</a></h1>
+<p>This chapter describes the markdown syntax that is recognized and
+ supported by HTMLDOC.</p>
+<h2><a NAME="5_1">General Syntax</a></h2>
+<p>Markdown is a simple plain-text format that uses formatting
+ conventions that are commonly used in email and other text-based
+ communications. Markdown is used by most of the major blogging, web
+ site, and project hosting platforms and is supported by many standalone
+ text editors.</p>
+<p>HTMLDOC supports the <a href="http://spec.commonmark.org/">CommonMark</a>
+ version of markdown syntax with the following exceptions:</p>
+<ul>
+<li>Metadata as used by Jekyll and other web markdown solutions can be
+ placed at the beginning of the file;</li>
+<li>&quot;@&quot; links can be used which resolve to headings within the file;</li>
+<li>Tables can be embedded using the &quot;|&quot; separator;</li>
+<li>Embedded HTML markup and entities are explicitly not supported or
+ allowed;</li>
+<li>Tabs are silently expanded to the markdown standard of four spaces
+ since HTML uses eight spaces per tab; and</li>
+<li>Some pathological nested link and inline style features supported by
+ CommonMark (<code>******Really Strong Text******</code>) are not
+ supported by <code>mmd</code>.</li>
+</ul>
+<blockquote><b>Note:</b> HTMLDOC does not support embedded HTML in
+ markdown documents because the version of HTML (or XHTML) cannot be
+ reliably determined, making support of certain character entities and
+ language elements problematic.</blockquote>
+<h2><a NAME="5_2">Metadata Syntax</a></h2>
+<p>Metadata is specified at the top of a markdown file between two lines
+ containing three hyphens, for example:</p>
+<pre>
+---
+title: My Great Novel
+author: John Doe
+copyright: Copyright &copy; 2018 by John Doe
+version: 1.0
+language: en-US
+subject: Fiction
+---
+
+# Preamble
+
+...
+</pre>
+<p>HTMLDOC supports the &quot;author&quot;, &quot;copyright&quot;, &quot;language&quot;, &quot;subject&quot;,
+ &quot;title&quot;, and &quot;version&quot; metadata and silently ignores everything else.</p>
+<h2><a NAME="5_3">Link Targets and @ Links</a></h2>
+<p>CommonMark defines no standard for how implementations generate
+ anchors or identifiers for headings in a markdown file - this makes
+ hyperlinking to a named section within a document basically impossible.
+ Jekyll and other markdown implementations allow the special link &quot;@&quot; to
+ be used, which HTMLDOC supports:</p>
+<pre>
+See [Screwing in a Light Bulb](@) for instructions on installing a
+light bulb.
+
+...
+
+# Screwing in a Light Bulb
+
+...
+</pre>
+<p>To reference a markdown heading from a HTML file, convert the heading
+ to lowercase, replace spaces with the hyphen (&quot;-&quot;), and remove any
+ special characters. Thus, a HTML file would reference the previous
+ heading using the following HTML:</p>
+<pre>
+&lt;a href=&quot;#screwing-in-a-light-bulb&quot;&gt; ... &lt;/a&gt;
+</pre>
+
+<!-- NEED 5in -->
+<h2><a NAME="5_4">Table Syntax</a></h2>
+<p>CommonMark does not define a syntax for plain-text tables, instead
+ relying on embedded HTML which HTMLDOC does not support. Both Github
+ and Jekyll support a common markdown extension for plain text tables
+ that uses the vertical pipe (&quot;|&quot;) character to specify column
+ separations. The first line contains the table header, the second line
+ is a horizontal separator, and the remaining lines contain the table
+ body. For example:</p>
+<pre>
+| Heading 1 | Heading 2 | Heading 3 |
+| --------- | --------- | --------- |
+| Cell 1,1  | Cell 1,2  | Cell 1,3  |
+| Cell 2,1  | Cell 2,2  | Cell 2,3  |
+| Cell 3,1  | Cell 3,2  | Cell 3,3  |
+</pre>
+<p>will produce:</p>
+<table border="1" cellpadding="2"><thead>
+<tr><th bgcolor="#cccccc">Heading 1</th><th bgcolor="#cccccc">Heading 2</th><th
+bgcolor="#cccccc">Heading 3</th></tr>
+</thead><tbody>
+<tr><td>Cell 1,1</td><td>Cell 1,2</td><td>Cell 1,3</td></tr>
+<tr><td>Cell 2,1</td><td>Cell 2,2</td><td>Cell 2,3</td></tr>
+<tr><td>Cell 3,1</td><td>Cell 3,2</td><td>Cell 3,3</td></tr>
+</tbody></table>
+<p>The outer pipes can be omitted, for example:</p>
+<pre>
+Heading 1 | Heading 2 | Heading 3
+--------- | --------- | ---------
+Cell 1,1  | Cell 1,2  | Cell 1,3
+Cell 2,1  | Cell 2,2  | Cell 2,3
+Cell 3,1  | Cell 3,2  | Cell 3,3
+</pre>
+<p>While table headings are always centered, you can control the
+ alignment of the body cells by using the colon (&quot;:&quot;) character in the
+ separator line. Put a leading colon to specify left alignment (the
+ default), a trailing colon for right alignment, or both to specify
+ centering. For example:</p>
+<p></p>
+<pre>
+Left Alignment | Center Alignment | Right Alignment
+:------------- | :--------------: | --------------:
+Cell 1,1       |     Cell 1,2     |               1
+Cell 2,1       |     Cell 2,2     |              12
+Cell 3,1       |     Cell 3,2     |             123
+</pre>
+<p>will produce:</p>
+<table border="1" cellpadding="2"><thead>
+<tr><th bgcolor="#cccccc">Left Alignment</th><th bgcolor="#cccccc">
+Center Alignment</th><th bgcolor="#cccccc">Right Alignment</th></tr>
+</thead><tbody>
+<tr><td>Cell 1,1</td><td align="center">Cell 1,2</td><td align="right">1</td>
+</tr>
+<tr><td>Cell 2,1</td><td align="center">Cell 2,2</td><td align="right">
+12</td></tr>
+<tr><td>Cell 3,1</td><td align="center">Cell 3,2</td><td align="right">
+123</td></tr>
+</tbody></table>
+<p>Table columns do not need to be padded so that they line up - the
+ following (less readable) example is perfectly valid:</p>
+<pre>
+Left Alignment|Center Alignment|Right Alignment
+:--|:--:|--:
+Cell 1,1|Cell 1,2|1
+Cell 2,1|Cell 2,2|12
+Cell 3,1|Cell 3,2|123
+</pre>
+</div><HR NOSHADE>
+
+<!-- FOOTER RIGHT &quot;A-$CHAPTERPAGE&quot; -->
+<div align="justify">
+<h1 align="right"><a name="LICENSE">Appendix A - License Agreement</a></h1>
+<p><b><a NAME="GPL">GNU GENERAL PUBLIC LICENSE</a></b></p>
+<p>Version 2, June 1991</p>
+<pre>
+Copyright 1989, 1991 Free Software Foundation, Inc.
+59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+
+Everyone is permitted to copy and distribute verbatim
+copies of this license document, but changing it is not allowed.
+</pre>
+<p><b>Preamble</b></p>
+<p>The licenses for most software are designed to take away your freedom
+ to share and change it. By contrast, the GNU General Public License is
+ intended to guarantee your freedom to share and change free
+ software--to make sure the software is free for all its users. This
+ General Public License applies to most of the Free Software
+ Foundation's software and to any other program whose authors commit to
+ using it. (Some other Free Software Foundation software is covered by
+ the GNU Library General Public License instead.) You can apply it to
+ your programs, too.</p>
+<p>When we speak of free software, we are referring to freedom, not
+ price. Our General Public Licenses are designed to make sure that you
+ have the freedom to distribute copies of free software (and charge for
+ this service if you wish), that you receive source code or can get it
+ if you want it, that you can change the software or use pieces of it in
+ new free programs; and that you know you can do these things.</p>
+<p>To protect your rights, we need to make restrictions that forbid
+ anyone to deny you these rights or to ask you to surrender the rights.
+ These restrictions translate to certain responsibilities for you if you
+ distribute copies of the software, or if you modify it.</p>
+<p>For example, if you distribute copies of such a program, whether
+ gratis or for a fee, you must give the recipients all the rights that
+ you have. You must make sure that they, too, receive or can get the
+ source code. And you must show them these terms so they know their
+ rights.</p>
+<p>We protect your rights with two steps: (1) copyright the software,
+ and (2) offer you this license which gives you legal permission to
+ copy, distribute and/or modify the software.</p>
+<p>Also, for each author's protection and ours, we want to make certain
+ that everyone understands that there is no warranty for this free
+ software. If the software is modified by someone else and passed on, we
+ want its recipients to know that what they have is not the original, so
+ that any problems introduced by others will not reflect on the original
+ authors' reputations.</p>
+<p>Finally, any free program is threatened constantly by software
+ patents. We wish to avoid the danger that redistributors of a free
+ program will individually obtain patent licenses, in effect making the
+ program proprietary. To prevent this, we have made it clear that any
+ patent must be licensed for everyone's free use or not licensed at all.</p>
+<p>The precise terms and conditions for copying, distribution and
+ modification follow.</p>
+<p><b>GNU GENERAL PUBLIC LICENSE
+<br> TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION</b></p>
+<ol START="0">
+<li>This License applies to any program or other work which contains a
+ notice placed by the copyright holder saying it may be distributed
+ under the terms of this General Public License. The &quot;Program&quot;, below,
+ refers to any such program or work, and a &quot;work based on the Program&quot;
+ means either the Program or any derivative work under copyright law:
+ that is to say, a work containing the Program or a portion of it,
+ either verbatim or with modifications and/or translated into another
+ language. (Hereinafter, translation is included without limitation in
+ the term &quot;modification&quot;.) Each licensee is addressed as &quot;you&quot;.
+<p>Activities other than copying, distribution and modification are not
+ covered by this License; they are outside its scope. The act of running
+ the Program is not restricted, and the output from the Program is
+ covered only if its contents constitute a work based on the Program
+ (independent of having been made by running the Program). Whether that
+ is true depends on what the Program does.</p>
+</li>
+<li>You may copy and distribute verbatim copies of the Program's source
+ code as you receive it, in any medium, provided that you conspicuously
+ and appropriately publish on each copy an appropriate copyright notice
+ and disclaimer of warranty; keep intact all the notices that refer to
+ this License and to the absence of any warranty; and give any other
+ recipients of the Program a copy of this License along with the
+ Program.
+<p>You may charge a fee for the physical act of transferring a copy, and
+ you may at your option offer warranty protection in exchange for a fee.</p>
+</li>
+<li>You may modify your copy or copies of the Program or any portion of
+ it, thus forming a work based on the Program, and copy and distribute
+ such modifications or work under the terms of Section 1 above, provided
+ that you also meet all of these conditions:
+<ol TYPE="a">
+<li>You must cause the modified files to carry prominent notices stating
+ that you changed the files and the date of any change.</li>
+<li>You must cause any work that you distribute or publish, that in
+ whole or in part contains or is derived from the Program or any part
+ thereof, to be licensed as a whole at no charge to all third parties
+ under the terms of this License.</li>
+<li>if the modified program normally reads commands interactively when
+ run, you must cause it, when started running for such interactive use
+ in the most ordinary way, to print or display an announcement including
+ an appropriate copyright notice and a notice that there is no warranty
+ (or else, saying that you provide a warranty) and that users may
+ redistribute the program under these conditions, and telling the user
+ how to view a copy of this License. (Exception: if the Program itself
+ is interactive but does not normally print such an announcement, your
+ work based on the Program is not required to print an announcement.)</li>
+</ol>
+<p>These requirements apply to the modified work as a whole. If
+ identifiable sections of that work are not derived from the Program,
+ and can be reasonably considered independent and separate works in
+ themselves, then this License, and its terms, do not apply to those
+ sections when you distribute them as separate works. But when you
+ distribute the same sections as part of a whole which is a work based
+ on the Program, the distribution of the whole must be on the terms of
+ this License, whose permissions for other licensees extend to the
+ entire whole, and thus to each and every part regardless of who wrote
+ it.</p>
+<p>Thus, it is not the intent of this section to claim rights or contest
+ your rights to work written entirely by you; rather, the intent is to
+ exercise the right to control the distribution of derivative or
+ collective works based on the Program.</p>
+<p>In addition, mere aggregation of another work not based on the
+ Program with the Program (or with a work based on the Program) on a
+ volume of a storage or distribution medium does not bring the other
+ work under the scope of this License.</p>
+</li>
+<li>You may copy and distribute the Program (or a work based on it,
+ under Section 2) in object code or executable form under the terms of
+ Sections 1 and 2 above provided that you also do one of the following:
+<ol TYPE="a">
+<li>Accompany it with the complete corresponding machine-readable source
+ code, which must be distributed under the terms of Sections 1 and 2
+ above on a medium customarily used for software interchange; or,</li>
+<li>Accompany it with a written offer, valid for at least three years,
+ to give any third party, for a charge no more than your cost of
+ physically performing source distribution, a complete machine-readable
+ copy of the corresponding source code, to be distributed under the
+ terms of Sections 1 and 2 above on a medium customarily used for
+ software interchange; or,</li>
+<li>Accompany it with the information you received as to the offer to
+ distribute corresponding source code. (This alternative is allowed only
+ for noncommercial distribution and only if you received the program in
+ object code or executable form with such an offer, in accord with
+ Subsection b above.)</li>
+</ol>
+<p>The source code for a work means the preferred form of the work for
+ making modifications to it. For an executable work, complete source
+ code means all the source code for all modules it contains, plus any
+ associated interface definition files, plus the scripts used to control
+ compilation and installation of the executable. However, as a special
+ exception, the source code distributed need not include anything that
+ is normally distributed (in either source or binary form) with the
+ major components (compiler, kernel, and so on) of the operating system
+ on which the executable runs, unless that component itself accompanies
+ the executable.</p>
+<p>If distribution of executable or object code is made by offering
+ access to copy from a designated place, then offering equivalent access
+ to copy the source code from the same place counts as distribution of
+ the source code, even though third parties are not compelled to copy
+ the source along with the object code.</p>
+</li>
+<li>You may not copy, modify, sublicense, or distribute the Program
+ except as expressly provided under this License. Any attempt otherwise
+ to copy, modify, sublicense or distribute the Program is void, and will
+ automatically terminate your rights under this License. However,
+ parties who have received copies, or rights, from you under this
+ License will not have their licenses terminated so long as such parties
+ remain in full compliance.</li>
+<li>You are not required to accept this License, since you have not
+ signed it. However, nothing else grants you permission to modify or
+ distribute the Program or its derivative works. These actions are
+ prohibited by law if you do not accept this License. Therefore, by
+ modifying or distributing the Program (or any work based on the
+ Program), you indicate your acceptance of this License to do so, and
+ all its terms and conditions for copying, distributing or modifying the
+ Program or works based on it.</li>
+<li>Each time you redistribute the Program (or any work based on the
+ Program), the recipient automatically receives a license from the
+ original licensor to copy, distribute or modify the Program subject to
+ these terms and conditions. You may not impose any further restrictions
+ on the recipients' exercise of the rights granted herein. You are not
+ responsible for enforcing compliance by third parties to this License.</li>
+<li>If, as a consequence of a court judgment or allegation of patent
+ infringement or for any other reason (not limited to patent issues),
+ conditions are imposed on you (whether by court order, agreement or
+ otherwise) that contradict the conditions of this License, they do not
+ excuse you from the conditions of this License. If you cannot
+ distribute so as to satisfy simultaneously your obligations under this
+ License and any other pertinent obligations, then as a consequence you
+ may not distribute the Program at all. For example, if a patent license
+ would not permit royalty-free redistribution of the Program by all
+ those who receive copies directly or indirectly through you, then the
+ only way you could satisfy both it and this License would be to refrain
+ entirely from distribution of the Program.
+<p>If any portion of this section is held invalid or unenforceable under
+ any particular circumstance, the balance of the section is intended to
+ apply and the section as a whole is intended to apply in other
+ circumstances.</p>
+<p>It is not the purpose of this section to induce you to infringe any
+ patents or other property right claims or to contest validity of any
+ such claims; this section has the sole purpose of protecting the
+ integrity of the free software distribution system, which is
+ implemented by public license practices. Many people have made generous
+ contributions to the wide range of software distributed through that
+ system in reliance on consistent application of that system; it is up
+ to the author/donor to decide if he or she is willing to distribute
+ software through any other system and a licensee cannot impose that
+ choice.</p>
+<p>This section is intended to make thoroughly clear what is believed to
+ be a consequence of the rest of this License.</p>
+</li>
+<li>If the distribution and/or use of the Program is restricted in
+ certain countries either by patents or by copyrighted interfaces, the
+ original copyright holder who places the Program under this License may
+ add an explicit geographical distribution limitation excluding those
+ countries, so that distribution is permitted only in or among countries
+ not thus excluded. In such case, this License incorporates the
+ limitation as if written in the body of this License.</li>
+<li>The Free Software Foundation may publish revised and/or new versions
+ of the General Public License from time to time. Such new versions will
+ be similar in spirit to the present version, but may differ in detail
+ to address new problems or concerns.
+<p>Each version is given a distinguishing version number. If the Program
+ specifies a version number of this License which applies to it and &quot;any
+ later version&quot;, you have the option of following the terms and
+ conditions either of that version or of any later version published by
+ the Free Software Foundation. If the Program does not specify a version
+ number of this License, you may choose any version ever published by
+ the Free Software Foundation.</p>
+</li>
+<li>If you wish to incorporate parts of the Program into other free
+ programs whose distribution conditions are different, write to the
+ author to ask for permission. For software which is copyrighted by the
+ Free Software Foundation, write to the Free Software Foundation; we
+ sometimes make exceptions for this. Our decision will be guided by the
+ two goals of preserving the free status of all derivatives of our free
+ software and of promoting the sharing and reuse of software generally.</li>
+</ol>
+<p><b>NO WARRANTY</b></p>
+<ol START="11">
+<li>BECAUSE THE PROGRAM IS LICENSED FREE OF CHARGE, THERE IS NO WARRANTY
+ FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW. EXCEPT WHEN
+ OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES
+ PROVIDE THE PROGRAM &quot;AS IS&quot; WITHOUT WARRANTY OF ANY KIND, EITHER
+ EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE. THE
+ ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF THE PROGRAM IS WITH
+ YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME THE COST OF ALL
+ NECESSARY SERVICING, REPAIR OR CORRECTION.</li>
+<li>IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO IN
+ WRITING WILL ANY COPYRIGHT HOLDER, OR ANY OTHER PARTY WHO MAY MODIFY
+ AND/OR REDISTRIBUTE THE PROGRAM AS PERMITTED ABOVE, BE LIABLE TO YOU
+ FOR DAMAGES, INCLUDING ANY GENERAL, SPECIAL, INCIDENTAL OR
+ CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OR INABILITY TO USE THE
+ PROGRAM (INCLUDING BUT NOT LIMITED TO LOSS OF DATA OR DATA BEING
+ RENDERED INACCURATE OR LOSSES SUSTAINED BY YOU OR THIRD PARTIES OR A
+ FAILURE OF THE PROGRAM TO OPERATE WITH ANY OTHER PROGRAMS), EVEN IF
+ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
+ DAMAGES.</li>
+</ol>
+<p><b>END OF TERMS AND CONDITIONS</b></p>
+<p><b>How to Apply These Terms to Your New Programs</b></p>
+<p>If you develop a new program, and you want it to be of the greatest
+ possible use to the public, the best way to achieve this is to make it
+ free software which everyone can redistribute and change under these
+ terms.</p>
+<p>To do so, attach the following notices to the program. It is safest
+ to attach them to the start of each source file to most effectively
+ convey the exclusion of warranty; and each file should have at least
+ the &quot;copyright&quot; line and a pointer to where the full notice is found.</p>
+<pre>
+<var>one line to give the program's name and an idea of what it does.</var>
+Copyright (C) <var>yyyy</var>  <var>name of author</var>
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+</pre>
+<p>Also add information on how to contact you by electronic and paper
+ mail.</p>
+<p>If the program is interactive, make it output a short notice like
+ this when it starts in an interactive mode:</p>
+<pre>
+Gnomovision version 69, Copyright (C) <var>year</var> <var>name of author</var>
+Gnomovision comes with ABSOLUTELY NO WARRANTY; for details
+type `show w'.  This is free software, and you are welcome
+to redistribute it under certain conditions; type `show c'
+for details.
+</pre>
+<p>The hypothetical commands <samp>`show w'</samp> and <samp>`show c'</samp>
+ should show the appropriate parts of the General Public License. Of
+ course, the commands you use may be called something other than <samp>
+`show w'</samp> and <samp>`show c'</samp>; they could even be
+ mouse-clicks or menu items--whatever suits your program.</p>
+<p>You should also get your employer (if you work as a programmer) or
+ your school, if any, to sign a &quot;copyright disclaimer&quot; for the program,
+ if necessary. Here is a sample; alter the names:</p>
+<pre>
+Yoyodyne, Inc., hereby disclaims all copyright
+interest in the program `Gnomovision'
+(which makes passes at compilers) written
+by James Hacker.
+
+<var>signature of Ty Coon</var>, 1 April 1989
+Ty Coon, President of Vice
+</pre>
+</div><HR NOSHADE>
+
+<!-- FOOTER RIGHT &quot;B-$CHAPTERPAGE&quot; -->
+<div ALIGN="justify">
+<h1 ALIGN="RIGHT"><a NAME="BOOKFORMAT">Appendix B - Book File Format</a></h1>
+<p>This appendix describes the HTMLDOC<var> .book</var> file format.</p>
+<h2><a NAME="7_1">Introduction</a></h2>
+<p>The HTMLDOC<var> .book</var> file format is a simple text format that
+ provides the command-line options and files that are part of the
+ document. These files can be used from the GUI interface or from the
+ command-line using the <code>--batch</code> option:</p>
+<pre>
+htmldoc filename.book
+htmldoc --batch filename.book
+</pre>
+<p>The first form will load the book and display the GUI interface, if
+ configured. Windows users should use<var> ghtmldoc.exe</var> executable
+ to show the GUI and<var> htmldoc.exe</var> for the batch mode:</p>
+<pre>
+ghtmldoc.exe filename.book
+htmldoc.exe --batch filename.book
+</pre>
+<h2><a NAME="7_2">The Header</a></h2>
+<p>Each<var> .book</var> file starts with a line reading:</p>
+<pre>
+#HTMLDOC 1.9
+</pre>
+<p>The version number (1.9) is optional.</p>
+<h2><a NAME="7_3">The Options</a></h2>
+<p>Following the header is a line containing the options for the book.
+ You can use any valid command-line option on this line:</p>
+<pre>
+-f htmldoc.pdf --titleimage htmldoc.png --duplex --compression=9 --jpeg=90
+</pre>
+<p>Long option lines can be broken using a trailing backslash (<tt>\</tt>
+) on the end of each continuation line:</p>
+<pre>
+-f htmldoc.pdf --titleimage htmldoc.png --duplex \
+--compression=9 --jpeg=90
+</pre>
+<h2><a NAME="7_4">The Files</a></h2>
+<p>Following the options are a list of files or URLs to include in the
+ document:</p>
+<pre>
+1-intro.html
+2-using.html
+3-cmdref.html
+4-htmlref.html
+5-mdref.html
+a-license.html
+b-book.html
+</pre>
+<h2><a NAME="7_5">Putting It All Together</a></h2>
+<p>The following is the complete book file needed to generate this
+ documentation:</p>
+<pre>
+#HTMLDOC 1.9
+-f htmldoc.pdf --titleimage htmldoc.png --duplex --compression=9 --jpeg=90
+1-intro.html
+2-using.html
+3-cmdref.html
+4-htmlref.html
+5-mdref.html
+a-license.html
+b-book.html
+</pre>
+</div></BODY>
+</HTML>

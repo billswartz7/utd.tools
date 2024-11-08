@@ -1,0 +1,13 @@
+
+
+module sparc_tlu_penc64 (
+      out, 
+      in
+   );
+
+   input [63:0] in;
+
+   output [5:0] out;
+
+
+   reg
