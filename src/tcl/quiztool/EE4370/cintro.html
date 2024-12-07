@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EE/CE 4370 Online Quiz #2</title>
+    <style>
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>EE/CE 4370 Online Quiz #2</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password</p>
+        <input type="password" name="password" required/>
+      </div>
+    <div>
+    <button class="button" type="submit" href="/quizdata">Submit</button>
+    </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>The C Language is</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">imperative</option>
+	  <option value="2">procedural</option>
+	  <option value="3">hierarchical</option>
+	  <option value="4">all of the above</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>C programming is difficult because the number of states 
+	triple when we add an <B>if</B> statement to the program.</P>  
+        <select id="q2" name="q2" required>
+          <option value="1">True</option>
+          <option value="2">False</option>
+          <option value="3">only in some cases</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <p></P>
+      <P>What did you find confusing in this video?  
+         What would like to know more about the C language?
+     <br>
+       <textarea rows = "5" cols = "60" name = "f1">
+        Enter details here...
+     </textarea><br>
+      <p></P>
+      <h3>Lab Poll</h3>
+      <div class="item">
+	<p>I need to distribute our lab materials to you.  Would
+	you be able to physically pick up lab equipment from the
+	TA at school?
+        <select id="p1" name="p1" required>
+          <option value="1">Yes</option>
+          <option value="2">No</option>
+          <option selected value="3">I don't know</option>
+        </select>
+      </div>
+    </form>
+    </div>
+  </body>
+</html>

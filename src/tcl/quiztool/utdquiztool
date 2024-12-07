@@ -1,0 +1,26 @@
+#!/bin/sh
+
+if [ $# -lt 2 ]
+then
+echo " "
+echo "Syntax: utdquiztool <exam_name> <SQLdatabase>"
+echo "For example:"
+echo "            utdquiztool test.html students.db [debug] [password] [port <integer>] [maxtries <integer>]\n"
+echo " "
+exit 1  ;
+fi
+
+utdtools=${UTDTOOLS}
+
+if [ ! "${utdtools}" ] ; then
+  echo " "
+  echo "ERROR[utdquiztool]:UTDTOOLS is not set."
+  echo "Please set UTDTOOLS to the UTD Tools root directory."
+  echo " "
+  exit 1
+fi
+
+
+
+cometTix -n -v -do utd_server.tcl -- ${1+"$@"}
+

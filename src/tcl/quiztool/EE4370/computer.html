@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EE/CE 4370 Online Quiz #1</title>
+    <style>
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>EE/CE 4370 Online Quiz #1</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password</p>
+        <input type="password" name="password" required/>
+      </div>
+    <div>
+    <button class="button" type="submit" href="/quizdata">Submit</button>
+    </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>
+	Name two modes of transportation shown in the video:
+	</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">train and submarine</option>
+	  <option value="2">train and Saturn V</option>
+	  <option value="3">plane and submarine</option>
+	  <option value="4">city bus and plane</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>
+	What is the problem with computers that is proposed in the video?
+	</P>  
+        <select id="q2" name="q2" required>
+	  <option value="1">Too much advertizing</option>
+	  <option value="2">Not enough memory</option>
+	  <option value="3">Memory to Processor Datapath Bottleneck</option>
+	  <option value="4">Programming Computer is too Hard</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <p></P>
+      <P>
+      What do you want to learn in this class?  
+      How is your knowledge of C/C++ and Unix?
+     <br>
+       <textarea rows = "5" cols = "60" name = "f1">
+        Enter details here...
+     </textarea><br>
+      <p></P>
+    </form>
+    </div>
+  </body>
+</html>

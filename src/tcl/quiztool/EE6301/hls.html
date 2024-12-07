@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EEDG 6301 Quiz</title>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>EEDG6301 Quiz</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password</p>
+        <input type="password" name="password" required/>
+      </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>In scheduling, we are worried about a node's <B>nobility</B> when 
+	building the dependency graph?</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">TRUE</option>
+	  <option value="2">FALSE</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>The algorithms ASAP and ALAP were explain in the HLS videos?</P>
+        <select id="q2" name="q2" required>
+          <option value="1">TRUE</option>
+          <option value="2">FALSE</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <h3>Question 3:</h3>
+      <div class="item">
+	<p>The list scheduling algorithm is?</P>
+        <select id="q3" name="q3" required>
+	  <option value="1">a heuristic</option>
+	  <option value="2">always optimum</option>
+	  <option value="3">the slowest algorithm possible</option>
+	  <option value="4">outdated</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <h3>Question 4:</h3>
+      <div class="item">
+	<p>As presented in this video, ILP stands for:</P>
+        <select id="q4" name="q4" required>
+	  <option value="1">Instruction Level Parallelism</option>
+	  <option value="2">Inductive Logic Programming</option>
+	  <option value="3">Integer Linear Programming</option>
+	  <option value="4">Intelligent Linear Programming</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <p></P>
+      <p></P>
+        <div class="btn-block">
+          <button type="submit" href="/quizdata">Submit</button>
+        </div>
+    </form>
+    </div>
+  </body>
+</html>

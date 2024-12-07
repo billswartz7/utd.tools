@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CE/EE 4304 Quiz</title>
+    <style>
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>CE/4304 Quiz</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password (case sensitive)</p>
+        <input type="password" name="password" required/>
+      </div>
+    <div>
+    <button class="button" type="submit" href="/quizdata">Submit</button>
+    </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>Memory caching is like the software hashing algorithm in that it
+	tries to speed up the process of accessing data?</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">TRUE</option>
+	  <option value="2">FALSE</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>The Apple II design in 1977 had memory that was faster than the CPU and
+	therefore caching was not necessary?</P>
+        <select id="q2" name="q2" required>
+          <option value="1">TRUE</option>
+          <option value="2">FALSE</option>
+          <option value="3">Only in certain cases</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+
+      <h3>Question 3:</h3>
+      <div class="item">
+      <p> </P>
+      <P>
+      What is confusing in this video?  
+      What would you like to know more about?
+     <br>
+       <textarea rows = "5" cols = "60" name = "f1">
+        Enter details here...
+       </textarea><br>
+      </P>
+      <p> </P>
+      </div>
+      <p></P>
+      <p></P>
+    </form>
+    </div>
+  </body>
+</html>

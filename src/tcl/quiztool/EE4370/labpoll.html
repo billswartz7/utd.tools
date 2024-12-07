@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EE/CE 4370 Lab Poll</title>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>EE/CE 4370 Lab Poll</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password</p>
+        <input type="password" name="password" required/>
+      </div>
+      <h3>Poll</h3>
+      <div class="item">
+	<p>
+	Are you able to visit UTD room ECSN 3.110 to pickup lab materials?
+	</P>
+
+        <select id="p1" name="p1" required>
+	  <option value="1">yes</option>
+	  <option value="2">no (need shipping)</option>
+        </select>
+      </div>
+
+      <p></P>
+      <P>If you need shipping, please enter your address in the space below
+     <br>
+       <textarea rows = "5" cols = "60" name = "f1">
+        Address  here...
+     </textarea><br>
+      <p></P>
+
+        <div class="btn-block">
+          <button type="submit" href="/quizdata">Submit</button>
+        </div>
+
+
+
+    </form>
+    </div>
+  </body>
+</html>

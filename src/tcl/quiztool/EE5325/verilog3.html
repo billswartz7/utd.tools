@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CE/EEDG 5325 Online Quiz #3</title>
+    <style>
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>CE/EEDG 5325 Online Quiz #2</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password</p>
+        <input type="password" name="password" required/>
+      </div>
+    <div>
+    <button class="button" type="submit" href="/quizdata">Submit</button>
+    </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>
+	Which keyword is a clue that we are processing a Verilog behavioral block?
+	</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">when</option>
+	  <option value="2">process</option>
+	  <option value="3">always</option>
+	  <option value="4">assign</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>
+	Verilog has almost all of the C operators.   Which of the following 
+	doesn't it have?
+	</P>  
+        <select id="q2" name="q2" required>
+          <option value="1">and</option>
+          <option value="2">or</option>
+          <option value="3">increment</option>
+          <option value="4">complement</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <p></P>
+      <P>Do you find any aspect of this video to be confusing?  What would
+	you like to learn more about?
+     <br>
+       <textarea rows = "5" cols = "60" name = "f1">
+        Enter details here...
+     </textarea><br>
+      <p></P>
+
+    </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CE/EEDG 6301 Online Quiz #2</title>
+    <style>
+    .btn-block {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    .form-popup {
+      background-color: #FF0000;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body onload="closeForm()">
+    <div class="testbox">
+    <script>
+      function openForm() {
+	document.getElementById("submitForm").style.display = "block";
+      }
+
+      function closeForm() {
+	document.getElementById("submitForm").style.display = "none";
+      }
+    </script>
+    <form action="/quizdata">
+      <div class="banner">
+	<h1>CE/EEDG 6301 Online Quiz #2</h1>
+
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password</p>
+        <input type="password" name="password" required/>
+      </div>
+
+      <div class="form-popup" id="submitForm">
+      <h1>Submit</h1>
+
+      <label for="submit"><b>Submit</b></label>
+      <button type="submit" href="/quizdata">Really Submit</button>
+      <button type="button" class="btn cancel" onclick="closeForm()">Cancel</button>
+      </form>
+      </div>
+
+      <P>The Submit Button is here</P>
+      <BR>
+
+        <div class="btn-block">
+          <button type="button" onclick="openForm()">Submit</button>
+        </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>
+	The Structural Video gave a step by step process on how to build a schematic
+	to Verilog code?
+	</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">True</option>
+	  <option value="2">False</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>
+	The Structural Video discusses Endianness?
+	</P>  
+        <select id="q2" name="q2" required>
+	  <option value="1">True</option>
+	  <option value="2">False</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <p></P>
+      <P>
+	What if anything was confusing about this video?  What would you like to know more about?
+     <br>
+       <textarea rows = "5" cols = "60" name = "f1">
+        Enter details here...
+     </textarea><br>
+      <p></P>
+    </form>
+    </div>
+  </body>
+</html>

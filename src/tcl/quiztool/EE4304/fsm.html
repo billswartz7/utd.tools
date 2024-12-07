@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>CE/EE 4304 Quiz</title>
+    <style>
+    .button {
+      background-color: #4CAF50;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>CE/EE 4304 Quiz</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password (case sensitive)</p>
+        <input type="password" name="password" required/>
+      </div>
+    <div>
+    <button class="button" type="submit" href="/quizdata">Submit</button>
+    </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>
+	The two types of finite machines that were discussed were:
+	</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">Finite and Infinite</option>
+	  <option value="2">Mealy and Moore</option>
+	  <option value="3">Go and NoGo</option>
+	  <option value="4">Asynchronous and Synchronous</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>
+	The video discusses how you might test a finite state machine?
+	</P>  
+        <select id="q2" name="q2" required>
+          <option value="1">true</option>
+          <option value="2">false</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+
+      <h3>Question 3:</h3>
+      <div class="item">
+      <p> </P>
+      <P>
+      What is confusing in this video?  
+      What would you like to know more about?
+     <br>
+       <textarea rows = "5" cols = "60" name = "f1">
+        Enter details here...
+       </textarea><br>
+      </P>
+      <p> </P>
+      </div>
+      <p></P>
+      <p></P>
+    </form>
+    </div>
+  </body>
+</html>

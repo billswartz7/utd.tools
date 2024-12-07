@@ -1,0 +1,81 @@
+#!/bin/sh
+
+#
+#  "$RCSfile: icuname.m64,v $ $Revision: 1.2 $ $Date: 2004/11/04 15:10:09 $"
+
+# Here is where the user can customize the name of the OS
+# Normally we will call the systems uname here.
+# NCR and SCO are exceptions.
+if [ -f /etc/ildconfig ] ; then
+	echo "NCR"
+	exit 0 ;
+fi
+
+if [ -f /etc/scologin ] ; then
+	echo "SCO"
+	exit 0 ;
+fi
+# First we need to call uname quietly to see if it exists
+ok=1 ;
+uname > /dev/null || {
+  echo " " ;
+  echo "WARNING: 'uname' system command does not exist in search path." ;
+  echo "If multiple operating systems are desired," ;
+  echo "please edit the './bin/twuname' shell script." ;
+  echo "Defaulting to unix..." ;
+  echo " " ;
+  ok=0 ;
+} 
+
+
+if [ "$ok" = "1" ] ; then
+# The system command uname exists.  Use it.
+    os=`uname`
+    if [ "$os" = "SunOS" ] ; then
+      os2=`uname -r | cut -c1`
+      machtype=`uname -m`
+      if [ "$machtype" = "i86pc" ] ; then
+	os="$os""$os2""-""$machtype"
+      else
+	arch=`isainfo`
+	if [ "$arch" = "sparcv9 sparc" ] ; then
+	  itools_bits=${ITOOLS_32BITS}
+	  if [ ! "${itools_bits}" ] ; then
+	    os2="$os2""-m64"
+	  fi
+	fi
+	os="$os""$os2"
+      fi
+    elif [ "$os" = "Linux" ] ; then
+      machtype=`uname -m`
+      if [ "$machtype" = "i686" -o "$machtype" = "i586" \
+           -o "$machtype" = "i486" -o "$machtype" = "i386" ] ; then
+	os="$os"
+      else
+	os="$os""-""$machtype"
+      fi
+    fi
+    echo $os
+else 
+
+# If uname is not available, users may write their own here.
+# First, try this is one known mechanism for getting machine information.
+# However, it is by no means a standard. 
+    if [-f /etc/machtype] ; then
+	echo `/etc/machtype`
+    else
+#       Try looking at the hostname.  If this is your case,
+#       you will need to customize for your node and machine type.
+#       For example, if hostname is equal to 'twolfx', this script will
+#       return 'Sun386i'.  Change according to your need if all else fails. 
+	node=`hostname`  
+	if [ "$node" = "twolfx" ] ; then
+	    echo "Sun386i"
+	else 
+#           If only one operating system is desired, and uname does
+#           not exist, unix will suffice.
+	    echo "unix"
+	fi
+    fi
+
+fi

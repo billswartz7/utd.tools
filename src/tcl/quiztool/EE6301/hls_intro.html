@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>EEDG 6301 Quiz</title>
+  </head>
+  <body>
+    <div class="testbox">
+    <form action="/quizdata">
+      <div class="banner">
+        <h1>EEDG6301 Quiz</h1>
+      </div>
+      <div class="item">
+        <p>Student name</p>
+        <div class="name-item">
+          <input type="text" name="fname" placeholder="First" required/>
+          <input type="text" name="lname" placeholder="Last" required/>
+        </div>
+      </div>
+      <div class="item">
+        <p>Netid (lower case only)</p>
+        <input type="netid" name="netid" required/>
+      </div>
+      <div class="item">
+        <p>Password</p>
+        <input type="password" name="password" required/>
+      </div>
+      <h3>Question 1:</h3>
+      <div class="item">
+	<p>Resource-dominated and non resource-dominated circuits are concepts
+	used in high level synthesis?</P>
+        <select id="q1" name="q1" required>
+	  <option value="1">TRUE</option>
+	  <option value="2">FALSE</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <h3>Question 2:</h3>
+      <div class="item">
+	<p>The example of a second order differential solver was shown in the 
+	  high level sythesis video.</P>
+        <select id="q2" name="q2" required>
+          <option value="1">TRUE</option>
+          <option value="2">FALSE</option>
+          <option selected value="">I don't know</option>
+        </select>
+      </div>
+      <p></P>
+      <p></P>
+        <div class="btn-block">
+          <button type="submit" href="/quizdata">Submit</button>
+        </div>
+    </form>
+    </div>
+  </body>
+</html>
