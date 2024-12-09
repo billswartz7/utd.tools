@@ -18,73 +18,98 @@
     </style>
   </head>
   <body>
-    <div class="testbox">
-    <form action="/quizdata">
-      <div class="banner">
-        <h1>EE/CE 4370 Online Quiz #1</h1>
-      </div>
-      <div class="item">
-        <p>Student name</p>
-        <div class="name-item">
-          <input type="text" name="fname" placeholder="First" required/>
-          <input type="text" name="lname" placeholder="Last" required/>
-        </div>
-      </div>
-      <div class="item">
-        <p>Netid (lower case only)</p>
-        <input type="netid" name="netid" required/>
-      </div>
-      <div class="item">
-        <p>Password</p>
-        <input type="password" name="password" required/>
-      </div>
-    <div>
-    <button class="button" type="submit" href="/quizdata">Submit</button>
-    </div>
-      <h3>Question 1:</h3>
-      <div class="item">
-	<p>
-	Name two modes of transportation shown in the video:
-	</P>
-        <select id="q1" name="q1" required>
-	  <option value="1">train and submarine</option>
-	  <option value="2">train and Saturn V</option>
-	  <option value="3">plane and submarine</option>
-	  <option value="4">city bus and plane</option>
-          <option selected value="">I don't know</option>
-        </select>
-      </div>
 
-      <h3>Question 2:</h3>
-      <div class="item">
-	<p>
-	What is the problem with computers that is proposed in the video?
-	</P>  
-        <select id="q2" name="q2" required>
-	  <option value="1">Too much advertizing</option>
-	  <option value="2">Not enough memory</option>
-	  <option value="3">Memory to Processor Datapath Bottleneck</option>
-	  <option value="4">Programming Computer is too Hard</option>
-          <option selected value="">I don't know</option>
-        </select>
+
+    <h1>EE/CE 4370 Online Autograder Problem #4</h1>
+    <P>After writing your solution to the data processing question, you
+    may check your answer by uploading your program and Makefile.</P>
+
+    <div class="code_upload">
+    <form id="code-form" action="/code_upload" method="post" enctype="multipart/form-data">
+    <div class="item">
+      <p><B>First:</B> Your netid (lower case only)</p>
+      <input id="netid" type="text" name="netid" required/>
+    </div>
+    <label for="file"><BR><B>Second:</B>Select your C/C++ file to upload:</label>
+    <input type="file" id="file" name="file" required>
+    <button type="submit">Upload Code</button>
+    </form>
+    </div>
+
+    <BR>
+    <BR>
+    <div class="makefile_upload">
+    <form id="makefile-form" action="/makefile_upload" method="post" enctype="multipart/form-data">
+    <input type="hidden" name="netid" required/>
+      <label for="file"><B>Third:</B>Select your Makefile to upload:</label>
+    <input type="file" id="file" name="file" required>
+    <button type="submit">Upload Makefile</button>
+    </form>
+    </div>
+
+
+    <H1><B>Fourth:</B>Click the Submit Button to check your work</H1>
+    <form id="check-form" action="/check">
+      <input type="hidden" name="netid" required/>
+      <div>
+	<button class="button" type="submit" href="/check">Submit</button>
       </div>
-      <p></P>
-      <P>
-      What do you want to learn in this class?  
-      How is your knowledge of C/C++ and Unix?
-     <br>
-       <textarea rows = "5" cols = "60" name = "f1">
-        Enter details here...
-     </textarea><br>
-      <p></P>
     </form>
     </div>
-    <div class="testbox">
-    <form action="/upload" method="post" enctype="multipart/form-data">
-    <label for="file">Select a file to upload:</label>
-    <input type="file" id="file" name="file">
-    <button type="submit">Upload</button>
-    </form>
-    </div>
+
+    <script>
+    var sourceForm = document.getElementById("code-form");
+    var targetForm = document.getElementById("makefile-form");
+    var targetForm2 = document.getElementById("check-form");
+
+    function findTargetNode(formName, nodeName, name) {
+      var targetElems = formName.elements;
+      for (var i = 0; i < targetElems.length; i++) {
+	var elem = targetElems.item(i);
+	if (elem.nodeName.toLowerCase() === nodeName && elem.name === name) {
+	  return elem;
+	}
+      }
+    }
+
+    function setNodeValue(node, type, value) {
+	if (type === 'select') {
+	  for (var i = 0, options = node.options; i < options.length; i++) {
+	    if (options[i].value === value) {
+		    options[i].setAttribute('selected', 'true');
+	    } else {
+		    options[i].removeAttribute('selected');
+	    }
+	  }
+	} else {
+	  // else if (type === 'checkbox' || type === 'radio') { /* ... */ }
+	  node.value = value;
+	}
+    }
+
+    sourceForm.addEventListener("submit", function(e) {
+	for (var i = 0, elems = sourceForm.elements; i < elems.length; i++) {
+	  var elem = elems.item(i);
+	  if (!elem.name) {
+	    continue;
+	  }
+	  var type = elem.nodeName.toLowerCase();
+	  var targetNode = findTargetNode(targetForm, type, elem.name);
+
+	  if (targetNode) {
+	    setNodeValue(targetNode, type, elem.value);
+	  }
+	  var targetNode2 = findTargetNode(targetForm2, type, elem.name);
+	  if (targetNode2) {
+	    setNodeValue(targetNode2, type, elem.value);
+	  }
+	}
+
+	e.preventDefault();
+	sourceForm.submit();
+    }, false);
+
+    </script>
+
   </body>
 </html>

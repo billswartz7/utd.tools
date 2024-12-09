@@ -119,9 +119,12 @@
     proc post_handler {sock ip url} {
       variable header_boundaryS
       variable header_filenameS
+      global debugG
+set debugG true
       # checkauth $sock $ip $auth
       puts stderr "sock:$sock ip:$ip url:$url"
       set linecnt 0
+      set net_id ""
       set header_boundaryS "-invalid-"
       set header_filenameS ""
       while {[gets $sock line] >= 0} {
@@ -129,7 +132,7 @@
 	if {[parse_http_header $line]} {
 	  continue
 	}
-	# puts stderr "line($linecnt):$line len:[string length $line]"
+	puts stderr "line($linecnt):$line len:[string length $line]"
 	set bidx [string first $header_boundaryS $line]
 	if {$bidx >= 0} {
 	  # puts stderr "boundary found"
@@ -137,37 +140,70 @@
 	}
       }
 
+      set upload_filename ""
       if {$header_boundaryS != "-invalid-"} {
 	set fp ""
+	set look_for_netid false
 	while {[gets $sock line] >= 0} {
 	  incr linecnt
-	  # puts stderr "line($linecnt):$line len:[string length $line]"
-	  if {[parse_header_disposition $line]} {
+	  if {$debugG} {
+	    puts stderr "line($linecnt):$line len:[string length $line]"
+	  }
+	  set ret_code [parse_header_disposition $line]
+	  if {$ret_code == 1} {
 	    if {$header_filenameS != ""} {
-	      set fp [open $header_filenameS w]
+	      if {($net_id != "")} {
+		set upload_filename ${net_id}_${header_filenameS}
+	      } else {
+		set upload_filename ${header_filenameS}
+	      }
+	      set fp [open ${upload_filename} w]
 	      if {$fp != ""} {
 		# Through away blank line
 		gets $sock line
 		continue
 	      }
 	    }
+	  } elseif {$ret_code == 2} {
+	    set look_for_netid true
+	    continue ;
 	  }
 	  set bidx [string first $header_boundaryS $line]
 	  if {$bidx >= 0} {
-	    # puts stderr "ending boundary found"
+	    set boundary_set true
+	    set amt [chan pending input $sock]
+	    if {$debugG} {
+	      puts stderr "boundary detected:$amt"
+	    }
 	    if {$fp != ""} {
 	      close $fp
 	      set fp ""
 	    }
-	    break ;
+	    if {$amt == 0} {
+	      break ;
+	    }
+	  } else {
+	    set boundary_set false
 	  }
 	  if {$fp != ""} {
 	    # puts $fp [base64::decode $line]
 	    puts $fp $line
+	  } elseif {$look_for_netid} {
+	    if {$line != ""} {
+	      set net_id $line
+	      if {$debugG} {
+		puts stderr "netid is $net_id"
+	      }
+	      set look_for_netid false
+	    }
 	  }
 	}
       }
-      respond $sock 200 "File uploaded<BR><BR>Thank you!"
+      if {$upload_filename != ""} {
+	respond $sock 200 "File $upload_filename uploaded<BR><BR>Thank you!"
+      } else {
+	respond $sock 200 "File was not uploaded<BR><BR>"
+      }
     }
 
     proc parse_http_header { line } {
@@ -215,32 +251,55 @@
 
     proc parse_header_disposition { line } {
       variable header_filenameS
+      global debugG
       set parsed_line [split $line :]
       set argc [llength $parsed_line]
       if {$argc >= 2} {
 	set header_field [lindex $parsed_line 0]
 	# puts stderr "header_field: $header_field"
 	if {$header_field == "Content-Type"} {
-	  return true
+	  return 1
 	} elseif {$header_field == "Content-Disposition"} {
 	  set type_info [lindex $parsed_line 1]
 	  # puts stderr "type:$type_info"
 	  set sub_line [::utdstring::strparser $type_info {;}]
-	  foreach f $sub_line {
-	    # puts stderr " f:$f"
-	    set disposition_line [::utdstring::strparser $f {=}]
-	    set fname [lindex $disposition_line 0]
-	    set fname [::utdstring::remove_whitespace $fname]
-	    # puts stderr "fname:'$fname'"
-	    if {$fname == "filename"} {
-	      set header_filenameS [lindex $disposition_line 1]
-	      set header_filenameS [::utdstring::remove_dquotes $header_filenameS]
-	      # puts stderr "fname:$header_filenameS"
+	  # puts stderr "sub:$sub_line"
+	  set form_data [lindex $sub_line 0]
+	  set form_data [::utdstring::remove_whitespace $form_data]
+	  # puts stderr " f:$form_data"
+	  if {$form_data == "form-data"} {
+	    set name_type [lindex $sub_line 1]
+	    set data_info [::utdstring::strparser $name_type {= }]
+	    # puts stderr "da:'$data_info'"
+	    set fname [lindex $data_info 0]
+	    if {$fname == "name"} {
+	      set data_type [lindex $data_info 1]
+	      set data_type [::utdstring::remove_dquotes $data_type]
+	      if {$debugG} {
+		puts stderr "name found:'$data_type'"
+	      }
+	      if {$data_type == "netid"} {
+		return 2
+	      } elseif {($data_type == "file") || ($data_type == "file2")} {
+		set name_type [lindex $sub_line 2]
+		set data_info [::utdstring::strparser $name_type {= }]
+		set fname [lindex $data_info 0]
+		if {$fname == "filename"} {
+		  set fname [lindex $data_info 0]
+		  set filename [lindex $data_info 1]
+		  if {$header_filenameS == ""} {
+		    set header_filenameS [::utdstring::remove_dquotes $filename]
+		  }
+		  if {$debugG} {
+		    puts stderr "$header_filenameS"
+		  }
+		}
+	      }
 	    }
 	  }
 	}
       }
-      return false
+      return 0
     }
 
     proc open_db {filename} {
