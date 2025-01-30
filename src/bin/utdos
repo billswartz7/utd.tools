@@ -166,20 +166,6 @@ else
   fi ;
 fi
 
-utdos=${UTDTOOLSOS}
-if [ ! "${utdos}" ]
-then
-  utdos=`${utdtools}/bin/utduname`
-fi
-
-if [ ! "${utdos}" ]
-then
-  echo "ERROR[utdos]:UTDTOOLSOS is not set."
-  echo "Change directory to the root directory and source"
-  echo "appropriate startup file or add to the shell startup file."
-  exit 1 ;
-fi
-
 if [ "${command}" = "utdversion" ]
 then
   if [ $ARGC -lt 2 ]
@@ -215,7 +201,6 @@ then
 	  echo "WARNING[utdos]:utdtoolsversion given:${utdtoolsversiongiven} != UTDTOOLSVERSION:${utdtoolsversion}"
 	  echo "Using environment variable value:${utdtoolsversion}"
 	fi
-
     fi
   fi
 else
@@ -226,11 +211,26 @@ else
     echo "Please modify the appropriate shell script startup files."
     exit 1 ;
   else
-    utdtools=${utdtoolsversiongiven} ;
+    utdtoolsversion=${utdtoolsversiongiven} ;
     UTDTOOLSVERSION=${utdtoolsversion} ;
     export UTDTOOLSVERSION
   fi ;
 fi
+
+utdos=${UTDTOOLSOS}
+if [ ! "${utdos}" ]
+then
+  utdos=`${utdtools}/${UTDTOOLSVERSION}/bin/utduname`
+fi
+
+if [ ! "${utdos}" ]
+then
+  echo "ERROR[utdos]:UTDTOOLSOS is not set."
+  echo "Change directory to the root directory and source"
+  echo "appropriate startup file or add to the shell startup file."
+  exit 1 ;
+fi
+
 
 
 # if the first argument is cd, then change directory first.
