@@ -169,7 +169,7 @@ fi
 utdos=${UTDTOOLSOS}
 if [ ! "${utdos}" ]
 then
-  utdos=`${utdtools}/bin/oruname`
+  utdos=`${utdtools}/bin/utduname`
 fi
 
 if [ ! "${utdos}" ]
