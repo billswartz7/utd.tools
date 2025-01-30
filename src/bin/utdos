@@ -187,7 +187,7 @@ then
     echo "ERROR:Not enough arguments for utdversion command" ;
     exit 1 ;
   fi
-  utdtoolsversion=$2 ;
+  utdtoolsversiongiven=$2 ;
   shift ;
   shift ;
   command=$1
