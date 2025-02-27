@@ -66,14 +66,7 @@ dep
 /parse.output
 /syn-rules.output
 
-/vpi/sdf_lexor.c
-/vpi/sdf_parse.c
-/vpi/sdf_parse.h
 /vpi/sdf_parse.output
-/vpi/sys_readmem_lex.c
-/vpi/table_mod_lexor.c
-/vpi/table_mod_parse.c
-/vpi/table_mod_parse.h
 /vpi/table_mod_parse.output
 
 /vvp/dump.*
