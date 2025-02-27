@@ -51,9 +51,6 @@ dep
 /tgt-blif/Makefile
 
 # lex, yacc and gperf output
-/driver/cflexor.c
-/driver/cfparse.c
-/driver/cfparse.h
 /driver/cfparse.output
 
 /vhdlpp/parse.output
