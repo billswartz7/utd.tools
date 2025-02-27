@@ -47,6 +47,14 @@ if [ "$ok" = "1" ] ; then
       else
 	os="$os""-""$machtype"
       fi
+    elif [ "$os" = "Darwin" ] ; then
+      machtype=`uname -m`
+      if [ "$machtype" = "i686" -o "$machtype" = "i586" \
+           -o "$machtype" = "i486" -o "$machtype" = "i386" -o "$machtype" = "x86_64" ] ; then
+	os="$os"
+      else
+	os="$os""-""$machtype"
+      fi
     fi
     echo $os
 else 
