@@ -77,9 +77,6 @@ dep
 /vpi/table_mod_parse.output
 
 /vvp/dump.*
-/vvp/lexor.cc
-/vvp/parse.cc
-/vvp/parse.h
 /vvp/parse.output
 
 # Program created files
