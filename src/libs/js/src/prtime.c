@@ -20,6 +20,7 @@
  * PR time code.
  * XXXbe PR_DSTOffset uses PR_basetime, should use A.D.Olson code instead
  */
+#include "config.h"
 #ifdef SOLARIS
 #define _REENTRANT 1
 #endif
@@ -34,6 +35,10 @@
 
 #ifdef XP_PC
 #include <sys/timeb.h>
+#endif
+
+#ifdef HAVE_SYS_TIME_H
+#include <sys/time.h>
 #endif
 
 #ifdef XP_MAC
