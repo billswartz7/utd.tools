@@ -476,11 +476,15 @@
 #elif __x86_64__
 #define IS_LITTLE_ENDIAN 1
 #undef  IS_BIG_ENDIAN
+#elif  __aarch64__
+#define IS_LITTLE_ENDIAN 1
+#undef  IS_BIG_ENDIAN
 #else
 #error "linux cpu architecture not supported by prcpucfg.h"
 #endif
 
-#ifdef __x86_64__
+#if defined(__x86_64__) || defined(__aarch64__)
+
 
 #define PR_BYTES_PER_BYTE   1L
 #define PR_BYTES_PER_SHORT  2L
