@@ -40,13 +40,8 @@ Copyright (C) 1994 Steen Lumholt.
    Tcl are empty.  */
 #define TCL_THREADS
 
-#ifdef TK_FRAMEWORK
-#include <Tcl/tcl.h>
-#include <Tk/tk.h>
-#else
-#include <tcl.h>
-#include <tk.h>
-#endif
+#include <tcl/tcl.h>
+#include <tk/tk.h>
 
 #include "tkinter.h"
 
@@ -57,7 +52,7 @@ Copyright (C) 1994 Steen Lumholt.
 #if TK_HEX_VERSION >= 0x08050208 && TK_HEX_VERSION < 0x08060000 || \
     TK_HEX_VERSION >= 0x08060200
 #define HAVE_LIBTOMMAMTH
-#include <tclTomMath.h>
+#include <tcl/tclTomMath.h>
 #endif
 
 #if !(defined(MS_WINDOWS) || defined(__CYGWIN__))
