@@ -626,8 +626,6 @@ ifneq ($(filter yosys-filterlib,$(TARGETS)),)
 endif
 	$(INSTALL_SUDO) mkdir -p $(DESTDIR)$(DATDIR)
 	$(INSTALL_SUDO) cp -r share/. $(DESTDIR)$(DATDIR)/.
-	$(INSTALL_SUDO) mkdir -p $(DESTDIR)$(TCLDIR)
-	$(INSTALL_SUDO) cp -r $(TCL_SRC)/. $(DESTDIR)$(TCLDIR)/.
 ifeq ($(ENABLE_LIBYOSYS),1)
 	$(INSTALL_SUDO) cp libyosys.so $(DESTDIR)$(LIBDIR)
 	$(INSTALL_SUDO) $(STRIP) -S $(DESTDIR)$(LIBDIR)/libyosys.so
