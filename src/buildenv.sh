@@ -85,7 +85,7 @@ elif [ $UTDTOOLSOS = "AIX" ] ; then
   NEWLD=`echo $LIBPATH | awk -F: 'BEGIN { first = 1 } { for( i = 1 ; i <= NF ; i++ ){ if( $i !~ /utdtools/ ){ if( first ){ first = 0 ; } else { printf( ":" ) ; } printf( "%s", $i ) ; } } printf( "\n" ) ; }'`
   LIBPATH="${UTDTOOLS}/libs:${UTDPYTHONHOME}/lib/${UTDTOOLSOS}:$NEWLD"
   unset NEWLD
-elif [ $UTDTOOLSOS = "Darwin" ] ; then
+elif [ $UTDTOOLSOS = "Darwin" -o $UTDTOOLSOS = "Darwin-arm64" ] ; then
   NEWLD=`echo $DYLD_LIBRARY_PATH | awk -F: 'BEGIN { first = 1 } { for( i = 1 ; i <= NF ; i++ ){ if( $i !~ /utdtools/ ){ if( first ){ first = 0 ; } else { printf( ":" ) ; } printf( "%s", $i ) ; } } printf( "\n" ) ; }'`
   DYLD_LIBRARY_PATH="${UTDTOOLS}/libs:${UTDPYTHONHOME}/lib/${UTDTOOLSOS}:$NEWLD"
   unset NEWLD
@@ -111,7 +111,7 @@ elif [ $UTDTOOLSOS = "AIX" ] ; then
   echo "LIBPATH has been set to:"
   echo "    $LIBPATH"
   export LIBPATH
-elif [ $UTDTOOLSOS = "Darwin" ] ; then
+elif [ $UTDTOOLSOS = "Darwin" -o $UTDTOOLSOS = "Darwin-arm64" ] ; then
   echo "DYLD_LIBRARY_PATH has been set to:"
   echo "    $DYLD_LIBRARY_PATH"
   export DYLD_LIBRARY_PATH

@@ -95,7 +95,7 @@ else if( $UTDTOOLSOS == "AIX" ) then
     unset newld
   endif
 
-else if( $UTDTOOLSOS == "Darwin" ) then
+else if( $UTDTOOLSOS == "Darwin" || $UTDTOOLSOS == "Darwin-arm64" ) then
   # Now we can set the DYLD_LIBRARY_PATH.
   set test = ${?DYLD_LIBRARY_PATH}
   if $test != 1 then
@@ -147,7 +147,7 @@ if( $UTDTOOLSOS == "HP-UX" ) then
 else if( $UTDTOOLSOS == "AIX" ) then
   echo "LIBPATH has been set to:"
   echo "    $LIBPATH"
-else if( $UTDTOOLSOS == "Darwin" ) then
+else if( $UTDTOOLSOS == "Darwin" || $UTDTOOLSOS == "Darwin-arm64" ) then
   echo "DYLD_LIBRARY_PATH has been set to:"
   echo "    $DYLD_LIBRARY_PATH"
 else
