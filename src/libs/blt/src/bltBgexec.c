@@ -52,6 +52,7 @@
 typedef long Tcl_File;
 #endif
 
+typedef void (*SIGNAL_FUNC_T)(int) ;
 
 #ifdef WIN32
 typedef struct {
@@ -338,6 +339,10 @@ typedef struct {
 				 * to update variable and update proc on
 				 * a line-by-line basis. */
 
+    int ignoreSigInt;		/* If non-zero, indicates that sigint may
+				 * be called in child and should be ignore
+				 * temporarily in the parent. */
+
     int interval;		/* Interval to poll for the exiting
 				 * processes */
     char *outputEncodingName;	/* Name of decoding scheme to use when
@@ -410,6 +415,8 @@ static Blt_SwitchSpec switchSpecs[] =
 	Blt_Offset(BackgroundInfo, signalNum), 0, &killSignalSwitch},
     {BLT_SWITCH_BOOLEAN, "-linebuffered", 
 	Blt_Offset(BackgroundInfo, lineBuffered), 0},
+    {BLT_SWITCH_BOOLEAN, "-ignoresigint", 
+	Blt_Offset(BackgroundInfo, ignoreSigInt), 0},
     {BLT_SWITCH_END, NULL, 0, 0}
 };
 
@@ -1808,7 +1815,9 @@ BgexecCmd(clientData, interp, argc, argv)
     BackgroundInfo *bgPtr;
     int i;
     int detached;
+    int restore_old_signal ;
     Tcl_Encoding encoding;
+    SIGNAL_FUNC_T old_signal ;
 
     if (argc < 3) {
 	Tcl_AppendResult(interp, "wrong # args: should be \"", argv[0],
@@ -1838,6 +1847,7 @@ BgexecCmd(clientData, interp, argc, argv)
     bgPtr->statVar = strdup(argv[1]);
     bgPtr->timerTokens = NULL;
     bgPtr->nTimers = 0;
+    bgPtr->ignoreSigInt = 0;
 
     /* Try to clean up any detached processes */
     Tcl_ReapDetachedProcs();
@@ -1855,6 +1865,9 @@ BgexecCmd(clientData, interp, argc, argv)
 	    argv[0], " varName ?options? command ?arg...?\"", (char *)NULL);
 	FreeBackgroundInfo(bgPtr);
 	return TCL_ERROR;
+    }
+    if( bgPtr->ignoreSigInt ){
+      old_signal = signal( SIGINT, SIG_IGN) ;
     }
 
     /* Put a trace on the exit status variable.  The will also allow
@@ -1972,7 +1985,11 @@ BgexecCmd(clientData, interp, argc, argv)
 #endif
 	}
 	/* Clean up resources used. */
+	restore_old_signal = bgPtr->ignoreSigInt ; /* going to disappear */
 	DestroyBackgroundInfo(bgPtr);
+	if( restore_old_signal ){
+	  signal( SIGINT, old_signal ) ;
+	}
 	if (exitCode != 0) {
 	    Tcl_AppendResult(interp, "child process exited abnormally",
 		(char *)NULL);
@@ -1981,6 +1998,9 @@ BgexecCmd(clientData, interp, argc, argv)
     }
     return TCL_OK;
   error:
+    if( bgPtr->ignoreSigInt ){
+      signal( SIGINT, old_signal ) ;
+    }
     DisableTriggers(bgPtr);
     DestroyBackgroundInfo(bgPtr);
     return TCL_ERROR;
