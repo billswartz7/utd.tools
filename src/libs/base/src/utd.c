@@ -201,3 +201,76 @@ BOOL utDhelp_requested( INT objc, Tcl_Obj * const objv[] )
     }
     return(FALSE) ;
 } /* end utDhelp_requested() */
+
+INT utDversion_objfunc(ClientData d_p,Tcl_Interp *i_p,INT objc, Tcl_Obj * CONST objv[])
+{
+    INT c, j ;				/* character counters */
+    INT dotcount ;			/* count dots */
+    char *argv_1 ;			/* current argument vector 1 */
+    char *uname ;			/* machine uname */
+    char *version ;			/* version name */
+    char buffer[LRECL] ;		/* temp buffer */
+    char buffer2[LRECL] ;		/* temp buffer */
+    char name_buffer[256] ;		/* buffer for output */
+    Tcl_Obj *strObj ;			/* string Tcl object */
+    Tcl_Obj *resultPtr ;		/* result information */
+    FUNC_NAME("utdversion") ;
+
+    if( utDhelp_requested( objc,objv ) ){
+      utDmsgf(IMSG,MSG_AT,routine,"%s : returns the current version of the program.\n" );
+      utDmsgf(IMSG,MSG_AT,routine,"%s major : returns the current major version of the program.\n" );
+      utDmsgf(IMSG,MSG_AT,routine,"%s minor : returns the current minor version of the program.\n" );
+      utDmsgf(IMSG,MSG_AT,routine,"%s uname : returns the OS system name.\n" );
+      return( TCL_OK ) ;
+    }
+    resultPtr = Tcl_GetObjResult(i_p) ;
+
+    version = utDprogram_getVersion() ;
+    if( objc >= 2 ){
+      argv_1 = Tcl_GetString(objv[1]) ;
+      if( utDstricmp( argv_1, "major" ) == STRINGEQ ){
+	strcpy( buffer, version ) ;
+	dotcount = 0 ;
+	for( c = 0 ; c < LRECL && buffer[c] ; c++ ){
+	  if( buffer[c] == '.' ){
+	    if( ++dotcount > 1 ){
+	      buffer[c] = EOS ;
+	      break ;
+	    }
+	  }
+	}
+	strObj = Tcl_NewStringObj( buffer, -1 ) ;
+	Tcl_ListObjAppendElement(NULL,resultPtr, strObj ) ;
+	return(TCL_OK) ;
+      } else if( utDstricmp( argv_1, "minor" ) == STRINGEQ ){
+	strcpy( buffer, version ) ;
+	dotcount = 0 ;
+	for( c = 0 ; c < LRECL && buffer[c] ; c++ ){
+	  if( buffer[c] == '.' ){
+	    if( ++dotcount > 1 ){
+	      for( j = 0, c++ ; c < LRECL && buffer[c] ; c++,j++ ){
+		buffer2[j] = buffer[c] ;
+	      }
+	      strObj = Tcl_NewStringObj( buffer2, -1 ) ;
+	      Tcl_ListObjAppendElement(NULL,resultPtr, strObj ) ;
+	      return(TCL_OK) ;
+	    }
+	  }
+	}
+      } else if( utDstricmp( argv_1, "uname" ) == STRINGEQ ){
+	uname = utDuname() ;
+	if( uname ){
+	  strObj = Tcl_NewStringObj( uname, -1 ) ;
+	  Tcl_ListObjAppendElement(NULL,resultPtr, strObj ) ;
+	  return( TCL_OK ) ;
+	}
+	strObj = Tcl_NewStringObj( "failed to get uname", -1 ) ;
+	Tcl_ListObjAppendElement(NULL,resultPtr, strObj ) ;
+	return( TCL_ERROR ) ;
+      }
+    }
+    strObj = Tcl_NewStringObj( version, -1 ) ;
+    Tcl_ListObjAppendElement(NULL,resultPtr, strObj ) ;
+    return(TCL_OK) ;
+
+} /* end utDversion_objfunc() */

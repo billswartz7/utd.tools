@@ -57,6 +57,10 @@ extern char *utDbase_cmdname(Tcl_Obj * CONST obj_p ) ;
  * ----------------------------------------------------------------- */
 extern BOOL utDhelp_requested( INT objc, Tcl_Obj * const objv[] ) ;
 
+/* -----------------------------------------------------------------
+ * Return version of the program.
+ * ----------------------------------------------------------------- */
+extern INT utDversion_objfunc(ClientData d_p,Tcl_Interp *i_p,INT objc, Tcl_Obj * CONST objv[]) ;
 
 #ifdef __cplusplus
 } ;
