@@ -80,6 +80,18 @@ Function:
     Set the name of the program.
 */
 
+extern char *utDprogram_getVersion(void) ;
+/* 
+Function:
+    Returns the program version given in YinitProgram.
+*/
+
+extern char *utDprogram_getDate(void) ;
+/* 
+Function:
+    Returns the program date given in YinitProgram.
+*/
+
 extern char *utDprogram_simplify_name( char *fullname, char *buffer ) ;
 /* 
 Function:

@@ -195,6 +195,24 @@ char *utDprogram_setName(char *name)
     return( programNameS ) ;
 } /* end utDprogram_setName() */
 
+char *utDprogram_getVersion(void)
+{
+    if( progVersionS[0] ){
+	return(progVersionS);
+    } else {
+	return( NULL ) ;
+    }
+} /* end utDprogram_getVersion() */
+
+char *utDprogram_getDate(void)
+{
+    if( progDateS[0] ){
+	return(progDateS);
+    } else {
+	return( NULL ) ;
+    }
+} /* end utDprogram_getDate() */
+
 char *utDprogram_simplify_name( char *fullname, char *buffer )
 {
     strcpy( buffer, fullname ) ;
