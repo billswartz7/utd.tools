@@ -298,7 +298,7 @@ namespace eval twez {
       menubutton $w.tools -menu $w.tools.m -text Tools -underline 0 \
 	-takefocus 0
       menu $w.tools.m
-      $w.tools.m add command   -label "Create PDF Documentation" -command "::twez::display" -underline 1
+      $w.tools.m add command   -label "Create PDF Documentation" -command "::twez::display_pdf" -underline 1
       $w.tools.m add command   -label "Screen Capture" -command "::iccapture::display" -underline 1
       if {$configS(E_developer) == 1} {
 	$w.tools.m add separator
