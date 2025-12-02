@@ -1,13 +1,11 @@
 
 namespace eval utdtools {
   namespace eval program {
-    proc compile_solution {ansdir pgm} {
+    proc compile_solution {ansdir pgm_file pgm_name extra_args} {
       set cwd [pwd]
       cd $ansdir
       #######################################
-      set pgm_file [file tail $pgm]
-      set pgm_name [file root $pgm_file]
-      set cmd "gcc -o $pgm_name $pgm_file -lm"
+      set cmd "gcc -o $pgm_name $pgm_file $extra_args"
       if {[catch {eval exec $cmd} result_msg]} {
 	puts stderr "ERROR: $result_msg\n"
 	puts stderr "cmd: $cmd\n"
@@ -26,7 +24,7 @@ namespace eval utdtools {
 
     }
 
-    proc prepare_solution { db filename exam_dir output_dir db_idx args } {
+    proc prepare_solution { db table filename template_dir output_dir userid db_idx args } {
       variable questionS
 
       set debug_flag false
@@ -35,7 +33,7 @@ namespace eval utdtools {
 	utdmsg errmsg $routine "No file name specified.\n"
 	return ;
       }
-      set full_path [file join $exam_dir $filename]
+      set full_path [file join $template_dir $filename]
       set f [open $full_path "r"]
       if {$f == ""} {
 	utdmsg errmsg $routine "Could not open file:$filename\n"
@@ -46,7 +44,7 @@ namespace eval utdtools {
 
       set master_full [file tail $filename]
       set master [file root $master_full]
-      set fname [file join $output_dir ${master}.c]
+      set fname [file join $output_dir ${master}.${userid}.c]
       utdmsg imsg $routine "Creating file:$fname\n"
       set fout [open $fname "w"]
       if {$fout == ""} {
@@ -94,7 +92,7 @@ namespace eval utdtools {
 	      if {$debug_flag} {
 		puts stderr "utd_var: $utd_var"
 	      }
-	      set val [utdtools::db::query_db_cmd $db instances $utd_var $db_idx]
+	      set val [utdtools::db::query_db_cmd $db $table $utd_var $db_idx]
 	      # set val [query_db $utd_var $db_idx]
 	      if {($utd_var == "Doperation")||($utd_var == "Fibop")} {
 		set old_val $val
@@ -107,9 +105,6 @@ namespace eval utdtools {
 		} elseif {$old_val == {{an $x^3$ on it}} } {
 		  set val "my_x3"
 		} elseif {$old_val == {{rounding down using the floor function}} } {
-		  set val "my_floor"
-		} else {
-		  puts stderr "ERROR : val : $val\n"
 		  set val "my_floor"
 		}
 	      } elseif {$utd_var == "UTDID"} {
@@ -139,7 +134,7 @@ namespace eval utdtools {
 	}
       }
       close $fout
-      return $fname
+      return [file tail $fname]
     }
 
     proc reduce_answer {answer} {
@@ -166,20 +161,28 @@ namespace eval utdtools {
       return $status
     }
 
-    proc compile_check {makefile_name cfile_name output_name} {
+    proc compile_check {userid makefile_name cfile_name output_name} {
       set status 0
-      set cmd "make -f $makefile_name"
+      set make_path "${userid}_${makefile_name}"
+      set cfile_path "${userid}_${cfile_name}"
+
+      # Temporarily make a link to real name of c file.
+      if {[catch {file link -symbolic $cfile_name $cfile_path} result_msg]} {
+	puts stderr "ERROR: $result_msg\n"
+	return 1 ;
+      }
+      set cmd "make -f $make_path"
 
       if {[catch {eval exec $cmd} result_msg]} {
-	puts stderr "ERROR\[compile_check]: $result_msg\n\n"
 	if {!([file exists $output_name])} {
 	  set status 1
+	  puts stderr "ERROR\[compile_check]: after running:$cmd\n$result_msg\n\n"
 	}
       }
       return $status
     }
 
-    proc answer_makefile {answerdir should_make makefile_name} {
+    proc answer_makefile {userid answerdir should_make makefile_name} {
       set make_path [file join $answerdir $makefile_name]
 
       set cmd "make -f $make_path"
@@ -195,6 +198,24 @@ namespace eval utdtools {
       }
 
     }
+    proc answer_makefile {userid answerdir depth should_make makefile_name user_response} {
+      upvar $user_response response
+      set make_path [file join $depth $answerdir $makefile_name]
+
+      set cmd "make -f $make_path"
+
+      if {[catch {eval exec $cmd} response]} {
+	puts stderr "ERROR: $response\n"
+      }
+
+      if {[file exists $should_make]} {
+	return 0
+      } else {
+	return 1
+      }
+
+    }
+
 
     proc reduced_match {students answer reduced_idx} {
       upvar $reduced_idx reduced_i
