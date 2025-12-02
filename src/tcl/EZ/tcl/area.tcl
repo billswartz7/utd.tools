@@ -25,6 +25,7 @@ namespace eval twez {
       $w.area insert end {Digital Logic Design}
       $w.area insert end {Embedded Systems}
       $w.area insert end {Hardware Description Languages}
+      $w.area insert end {Programming}
       $w.area insert end {Unix}
 
       # Now lets set it to the current user mode.
@@ -50,6 +51,8 @@ namespace eval twez {
       set configS(S_study) {Embedded Systems}
     } elseif {($topic == "unix") || ($topic == {Unix})} {
       set configS(S_study) {Unix}
+    } elseif {($topic == "programming") || ($topic == {Programming})} {
+      set configS(S_study) {Programming}
     } else {
       utdmsg error "::twez::set_area" "Unknown area of study: $topic\n" 
     }
