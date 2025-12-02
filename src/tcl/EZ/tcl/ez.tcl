@@ -189,7 +189,6 @@ puts stderr "setting autosave to 1"
       -design_win P_design_win
       -user S_user
       -lesson S_lesson
-      -mode S_mode
       -locator P_locator
       -notebook E_notebook
       -page P_page
