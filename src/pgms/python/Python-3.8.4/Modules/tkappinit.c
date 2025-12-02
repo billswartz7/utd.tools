@@ -13,8 +13,8 @@
  */
 
 #include <string.h>
-#include <tcl.h>
-#include <tk.h>
+#include <tcl/tcl.h>
+#include <tk/tk.h>
 
 #include "tkinter.h"
 
