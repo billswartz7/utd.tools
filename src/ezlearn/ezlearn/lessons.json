@@ -103,6 +103,30 @@
 	  }
 	}
     },
+    "Programming": {
+        "lessons": {
+	  "lesson1": {
+	    "name": "Computation",
+	    "problem": 1,
+	    "project": "compute",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/compute.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/compute_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/compute_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/compute_resources.html",
+	    "description": "learn what it mean to compute."
+	  },
+	  "lesson2": {
+	    "name": "State",
+	    "problem": 2,
+	    "project": "state",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  }
+      } 
+    },
     "Unix": {
         "lessons": {
 	  "lesson1": {
