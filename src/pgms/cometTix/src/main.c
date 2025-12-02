@@ -273,8 +273,9 @@ int main(int argc, char *argv[] ) {
     utdtools_tcl_init( inter_p, tcl_dir_name ) ;
 
     // Add common Tcl commands here.
-    Tcl_CreateObjCommand( inter_p, "utdscript_args",args_objfunc, argv, NULL ) ;
-    Tcl_CreateObjCommand( inter_p, "utdinterpreter_mode",utDinterpreter_mode_objfunc, NULL, NULL);
+    utDbase_create_objcmd( inter_p, "utdscript_args",args_objfunc, argv, NULL ) ;
+    utDbase_create_objcmd( inter_p, "utdinterpreter_mode",utDinterpreter_mode_objfunc, NULL, NULL);
+    utDbase_create_objcmd( inter_p, "utdversion", utDversion_objfunc, NULL, NULL);
 
     /* -----------------------------------------------------------------
      * Setup the input channel.
@@ -323,9 +324,9 @@ int main(int argc, char *argv[] ) {
     }
 #else 
     utDGUI_Tcl_init( argc, argv, inter_p, did_file) ;
-    Tcl_CreateObjCommand( inter_p, "utdcontinue",utDGUI_Tcl_continue_objfunc, NULL, NULL ) ;
-    Tcl_CreateObjCommand( inter_p, "utdwait",utDGUI_Tcl_wait_objfunc, NULL, NULL ) ;
-    Tcl_CreateObjCommand( inter_p, "utdmsg",utDGUI_Tcl_msg_objfunc, NULL, NULL ) ;
+    utDbase_create_objcmd( inter_p, "utdcontinue",utDGUI_Tcl_continue_objfunc, NULL, NULL ) ;
+    utDbase_create_objcmd( inter_p, "utdwait",utDGUI_Tcl_wait_objfunc, NULL, NULL ) ;
+    utDbase_create_objcmd( inter_p, "utdmsg",utDGUI_Tcl_msg_objfunc, NULL, NULL ) ;
 #endif /* UTDTOOLS_GRAPHICS */
 
     if( do_filename ){
@@ -551,7 +552,7 @@ static void ez_init(void *inter_ptr)
       /* add_tcl_commands(interp,do_argS) ; */
       jsenvS = TWJS_Init(interp) ;		
       if( jsenvS ){
-	Tcl_CreateObjCommand(interp, "twjavascript", js_func, jsenvS, NULL);
+	utDbase_create_objcmd(interp, "twjavascript", js_func, jsenvS, NULL);
 	Tcl_CreateCommand(interp, "twhtml_xfont", html_xfont, NULL, NULL);
 	/* Initialize variables - both lower and upper case */
 	utDdstring_init( &command_buf ) ;
@@ -571,7 +572,7 @@ static void ez_init(void *inter_ptr)
 	utDdstring_printf( &command_buf, "html=\"\";HTML=\"\";" ) ;
 	command = utDdstring_printf( &command_buf, "tkplacement=\"\";TKPLACEMENT=\"\";" ) ;
 	TWJS_process_script(jsenvS, command ) ;
-	Tcl_CreateObjCommand(interp, "twparse_html", parse_func, NULL, NULL);
+	utDbase_create_objcmd(interp, "twparse_html", parse_func, NULL, NULL);
 	html_parse_init() ;
 	utDdstring_free( &command_buf ) ;
       }
