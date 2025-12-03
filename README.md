@@ -93,7 +93,22 @@ to be created at $(UTDTOOLS)/$(UTDOOLSVERSION)
 
 If everything is correct, you should see after the build<BR>
 
+#### Building under WSL
+Now utdtools compiles and build under Windows Subsystem for Linux (WSL).
+In order to compile and build under WSL, assuming your are using the
+default Ubuntu distribution, you will need the following packages:
 
+gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev
+
+and if you want reasonable fonts these two packages
+xfonts-100dpi xfonts-base
+
+You should use the command 
+sudo apt install gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev
+
+After these packages are installed, you should be able to following
+the steps under "Building as an ADVANCED USER" to successfully build
+all of the tools.
 
 #### Building as a DEVELOPER
 
