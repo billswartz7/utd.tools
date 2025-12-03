@@ -33,13 +33,17 @@ is to be as conservative as possible. Usability and correctness are traded
 off against maximum optimization.
 
 ### Advanced users
+Advanced users are expected to build the entire project resulting in
+the creation of a new version directory such as v1.0.0.  Advanced users
+need a minimal amount of installed compilation and linking tools.  
+Advanced users will compile the source natively and optimize for
+the hardware that the tools will be executed.
 
 ### Developers
+End-users and advanced users do not need to focus on developer issues.  
+Developer issues should be highlighted with the DEVELOPER keyword.  
+Developers can change and modify the source code.
 
-a, and developers.
-End-users do not need to focus on developer issues.  Developer issues 
-should be highlighted with the DEVELOPER keyword.  This project is 
-exclusively built using GNU automake.
 
 ## Prerequisites
 
@@ -106,7 +110,7 @@ xfonts-100dpi xfonts-base
 You should use the command 
 sudo apt install gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev
 
-After these packages are installed, you should be able to following
+After these packages are installed, you should be able to follow
 the steps under "Building as an ADVANCED USER" to successfully build
 all of the tools.
 
