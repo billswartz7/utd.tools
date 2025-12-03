@@ -102,13 +102,18 @@ Now utdtools compiles and build under Windows Subsystem for Linux (WSL).
 In order to compile and build under WSL, assuming your are using the
 default Ubuntu distribution, you will need the following packages:
 
-gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev
+gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev libbz2-dev libffi-dev
 
-and if you want reasonable fonts these two packages
-xfonts-100dpi xfonts-base
+and if you want reasonable fonts these two packages:
+
+xfonts-base xfonts-100dpi 
 
 You should use the command 
-sudo apt install gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev
+sudo apt install gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev libbz2-dev libffi-dev
+
+Optionally, you may want to install the readline package for use in Python:
+
+libreadline-dev
 
 After these packages are installed, you should be able to follow
 the steps under "Building as an ADVANCED USER" to successfully build
