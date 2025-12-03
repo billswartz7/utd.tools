@@ -33,6 +33,11 @@ def read_the_graph( filename ):
 
     nx.set_node_attributes(our_graph,position,'position')
 
+    try:
+        labels = graph_data["labels"]
+    except Exception:
+        print(f'labels don\'t exist in {filename}' )
+
     num_edges = graph_data["num_edges"]
     edges = graph_data["edges"]
     for e in edges:
