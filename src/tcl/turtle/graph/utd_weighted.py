@@ -18,7 +18,6 @@ from collections import deque
 from heapq import heappush, heappop
 from itertools import count
 import networkx as nx
-from networkx.utils import generate_unique_node
 from utd_graph import utd_draw_node
 
 
@@ -1915,8 +1914,9 @@ def negative_edge_cycle(G, weight='weight'):
     every node, and starting bellman_ford_predecessor_and_distance on that
     node.  It then removes that extra node.
     """
-    newnode = generate_unique_node()
+    """newnode = generate_unique_node()
     G.add_edges_from([(newnode, n) for n in G])
+    """
 
     try:
         bellman_ford_predecessor_and_distance(G, newnode, weight)
