@@ -109,6 +109,7 @@ and if you want reasonable fonts these two packages:
 xfonts-base xfonts-100dpi 
 
 You should use the command 
+
 sudo apt install gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev libbz2-dev libffi-dev
 
 Optionally, you may want to install the readline package for use in Python:
