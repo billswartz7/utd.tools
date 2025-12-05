@@ -2292,13 +2292,11 @@ closedir(d);
 #--------------------------------------------------------------------
 
 AC_DEFUN([TEA_PATH_X], [
-    if test "${TEA_WINDOWINGSYSTEM}" = "x11" ; then
-	TEA_PATH_UNIX_X
-    fi
+    TEA_PATH_UNIX_X
 ])
 
 AC_DEFUN([TEA_PATH_UNIX_X], [
-    AC_PATH_X
+    UTD_AC_PATH_X
     not_really_there=""
     if test "$no_x" = ""; then
 	if test "$x_includes" = ""; then
@@ -2315,6 +2313,10 @@ AC_DEFUN([TEA_PATH_UNIX_X], [
 	AC_TRY_CPP([#include <X11/Intrinsic.h>], found_xincludes="yes", found_xincludes="no")
 	if test "$found_xincludes" = "no"; then
 	    dirs="/usr/unsupported/include /usr/local/include /usr/X386/include /usr/X11R6/include /usr/X11R5/include /usr/include/X11R5 /usr/include/X11R4 /usr/openwin/include /usr/X11/include /usr/sww/include"
+	    if test "x$HOMEBREW" = "xbrew"; then
+	      brew_dir=`brew --prefix libx11`
+	      dirs="$brew_dir/include $dirs"
+	    fi
 	    for i in $dirs ; do
 		if test -r $i/X11/Intrinsic.h; then
 		    AC_MSG_RESULT([$i])
@@ -2338,6 +2340,10 @@ AC_DEFUN([TEA_PATH_UNIX_X], [
 	AC_MSG_CHECKING([for X11 libraries])
 	XLIBSW=nope
 	dirs="/usr/unsupported/lib /usr/local/lib /usr/X386/lib /usr/X11R6/lib /usr/X11R5/lib /usr/lib/X11R5 /usr/lib/X11R4 /usr/openwin/lib /usr/X11/lib /usr/sww/X11/lib"
+	if test "x$HOMEBREW" = "xbrew"; then
+	  brew_dir=`brew --prefix libx11`
+	  dirs="$brew_dir/lib $dirs"
+	fi
 	for i in $dirs ; do
 	    if test -r $i/libX11.a -o -r $i/libX11.so -o -r $i/libX11.sl; then
 		AC_MSG_RESULT([$i])
