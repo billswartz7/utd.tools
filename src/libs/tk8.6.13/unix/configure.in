@@ -5,6 +5,7 @@ dnl	to configure the system for the local environment.
 
 AC_INIT([tk],[8.6])
 AC_PREREQ(2.59)
+TEA_INIT([3.6])
 
 dnl This is only used when included from macosx/configure.ac
 m4_ifdef([SC_USE_CONFIG_HEADERS], [
@@ -23,6 +24,8 @@ m4_ifdef([SC_USE_CONFIG_HEADERS], [
     #endif /* _TKCONFIG */])
 ])
 
+AC_CONFIG_MACRO_DIRS([m4])
+
 TK_VERSION=8.6
 TK_MAJOR_VERSION=8
 TK_MINOR_VERSION=6
@@ -31,11 +34,10 @@ VERSION=${TK_VERSION}
 LOCALES="cs da de el en en_gb eo es fr hu it nl pl pt ru sv"
 
 #--------------------------------------------------------------------
-# Find and load the tclConfig.sh file
+# Load the tclConfig.sh file
 #--------------------------------------------------------------------
-
-SC_PATH_TCLCONFIG
-SC_LOAD_TCLCONFIG
+TEA_PATH_TCLCONFIG
+TEA_LOAD_TCLCONFIG
 
 if test "${TCL_MAJOR_VERSION}" -ne 8 ; then
     AC_MSG_ERROR([${PACKAGE_NAME} ${PACKAGE_VERSION} requires Tcl 8.6+
@@ -87,6 +89,7 @@ fi
 
 AC_PROG_CC
 AC_C_INLINE
+AC_CHECK_PROG([HOMEBREW], [brew], [brew], [no])
 
 #--------------------------------------------------------------------
 # Supply a substitute for stdlib.h if it doesn't define strtol,
@@ -121,6 +124,7 @@ fi
 # Threads support - this auto-enables if Tcl was compiled threaded
 #------------------------------------------------------------------------
 
+# See if threads are enabled
 SC_ENABLE_THREADS
 
 # Add the threads support libraries
@@ -376,7 +380,7 @@ else
     #	no include files, so double-check its result just to be safe.
     #--------------------------------------------------------------------
 
-    SC_PATH_X
+    TEA_PATH_X
     TK_WINDOWINGSYSTEM=X11
 fi
 

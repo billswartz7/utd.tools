@@ -49,7 +49,7 @@ TEA_PREFIX
 TEA_SETUP_COMPILER
 
 # Checks for X libraries.
-AC_PATH_XTRA
+UTD_AC_PATH_XTRA
 
 #--------------------------------------------------------------------
 # Determine the build environment.

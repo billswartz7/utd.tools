@@ -31,7 +31,7 @@ TEA_LOAD_TKCONFIG
 TEA_PREFIX
 
 # Checks for libraries.
-AC_PATH_XTRA
+UTD_AC_PATH_XTRA
 
 # See if threads are enabled
 UTD_ROOT_ENV

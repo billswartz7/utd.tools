@@ -3,7 +3,7 @@ AUTOMAKE_OPTIONS = foreign subdir-objects
 ACLOCAL_AMFLAGS = -I m4
 
 noinst_LTLIBRARIES = libtix_funcs.la
-lib_LTLIBRARIES = lib@UTD_BUILD_ENV_SUFFIX@tix.la lib@UTD_BUILD_ENV_SUFFIX@tix-static.la
+lib_LTLIBRARIES = lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix.la lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix-static.la
 
 libtix_funcs_la_SOURCES = \
       generic/tixClass.c \
@@ -49,16 +49,16 @@ libtix_funcs_la_SOURCES = \
       unix/tixUnixWm.c
 
 # Build the shared library with extra libraries
-lib@UTD_BUILD_ENV_SUFFIX@tix_la_SOURCES =
-lib@UTD_BUILD_ENV_SUFFIX@tix_la_LDFLAGES = -shared -version-info 8:4:3
-lib@UTD_BUILD_ENV_SUFFIX@tix_la_LIBADD = \
+lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix_la_SOURCES =
+lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix_la_LDFLAGES = -shared -version-info 8:4:3
+lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix_la_LIBADD = \
 		libtix_funcs.la \
-		../tk/unix/lib@UTD_BUILD_ENV_SUFFIX@tkstub8.6.a \
-		../tcl/unix/lib@UTD_BUILD_ENV_SUFFIX@tclstub8.6.a
+		../tk/unix/lib@UTDTOOLS_BUILD_ENV_SUFFIX@tkstub8.6.a \
+		../tcl/unix/lib@UTDTOOLS_BUILD_ENV_SUFFIX@tclstub8.6.a
 
-lib@UTD_BUILD_ENV_SUFFIX@tix_static_la_SOURCES = 
-lib@UTD_BUILD_ENV_SUFFIX@tix_static_la_LDFLAGS = -static -version-info 8:4:3
-lib@UTD_BUILD_ENV_SUFFIX@tix_static_la_LIBADD = libtix_funcs.la
+lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix_static_la_SOURCES = 
+lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix_static_la_LDFLAGS = -static -version-info 8:4:3
+lib@UTDTOOLS_BUILD_ENV_SUFFIX@tix_static_la_LIBADD = libtix_funcs.la
 
 #========================================================================
 # PKG_TCL_SOURCES identifies Tcl runtime files that are associated with
