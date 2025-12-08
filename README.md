@@ -60,6 +60,7 @@ Developers can change and modify the source code.
 * OpenSSL
 * bz2-dev libraries for Python
 * libz-dev libraries for Python
+* pkg-config for Python
 
 ### DEVELOPER
 * Working C and C++ compiler
@@ -102,7 +103,7 @@ Now utdtools compiles and build under Windows Subsystem for Linux (WSL).
 In order to compile and build under WSL, assuming your are using the
 default Ubuntu distribution, you will need the following packages:
 
-gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev libbz2-dev libffi-dev
+gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev libbz2-dev libffi-dev pkg-config
 
 and if you want reasonable fonts these two packages:
 
@@ -110,7 +111,7 @@ xfonts-base xfonts-100dpi
 
 You should use the command 
 
-sudo apt install gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev libbz2-dev libffi-dev
+sudo apt install gcc g++ make openssl libssl-dev zlib1g-dev libx11-dev libbz2-dev libffi-dev pkg-config
 
 Optionally, you may want to install the readline package for use in Python:
 
