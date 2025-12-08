@@ -1,1 +1,1 @@
-lt~obsolete.m4
+../m4/lt~obsolete.m4

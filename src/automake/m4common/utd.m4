@@ -421,3 +421,32 @@ AC_DEFUN([UTD_CONFIG_COPY], [
 
       cp src/utdconfig.h ${UTDTOOLS_INCLUDE_PATH}/utd
 ])
+
+#------------------------------------------------------------------------
+# UTD_CHECK_BREW_LIB --
+#
+#	Allows us to conditionally check if we need to add a library to LDFLAGS
+#
+# Arguments:
+#	brew library
+#
+# Results:
+#
+#
+#	Sets the following vars:
+#		$LDFLAGS=${brew_path}/lib $LDFLAGS"
+#------------------------------------------------------------------------
+AC_DEFUN([UTD_CHECK_BREW_LIB], [
+    AC_MSG_CHECKING([whether to update LDFLAGS for $1])
+    utd_brew_result="no"
+    if test "x$HOMEBREW" = "xbrew"; then
+      brew_dir=`brew --prefix $1`
+      if [[ "$brew_dir" != "Error"* ]]; then
+        utd_brew_result="-L$brew_dir/lib"
+	LDFLAGS="$utd_brew_result $LDFLAGS"
+	CPPFLAGS="-I$brew_dir/include $CPPFLAGS"
+      fi
+    fi
+    AC_MSG_RESULT([$utd_brew_result])
+
+])

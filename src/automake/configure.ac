@@ -1,4 +1,4 @@
-AC_PREREQ([2.69])
+AC_PREREQ([2.72])
 AC_INIT([utdtools], [1.00], [bill-swartz@utdallas.edu])
 AM_INIT_AUTOMAKE([foreign])
 AC_CONFIG_MACRO_DIRS([m4])

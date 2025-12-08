@@ -56,6 +56,9 @@ AC_CANONICAL_HOST
 AC_SUBST(build)
 AC_SUBST(host)
 
+UTD_ROOT_ENV
+UTD_BUILD_ENV
+
 # pybuilddir.txt will be created by --generate-posix-vars in the Makefile
 rm -f pybuilddir.txt
 
@@ -1152,6 +1155,10 @@ if test $enable_shared = "yes"; then
 	  RUNSHARED=SHLIB_PATH=`pwd`${SHLIB_PATH:+:${SHLIB_PATH}}
 	  ;;
     Darwin*)
+        AC_CHECK_PROG([HOMEBREW], [brew], [brew], [no])
+	UTD_CHECK_BREW_LIB([zlib])
+	UTD_CHECK_BREW_LIB([bzip2])
+	UTD_CHECK_BREW_LIB([readline])
     	LDLIBRARY='lib$(LIB_BASENAME)$(LDVERSION).dylib'
 	LDLIBSHORTNAME='lib$(LIB_BASENAME).dylib'
 	BLDLIBRARY='-L. -l$(LIB_BASENAME)$(LDVERSION)'
