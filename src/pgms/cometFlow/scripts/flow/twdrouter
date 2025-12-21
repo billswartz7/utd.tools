@@ -20,12 +20,12 @@ set args $argv
 set num_args [llength $args]
 for {set i 0} {$i < $num_args} {incr i} {
   set arg_el [lindex $args $i]
-  icmessage imsg null "argv\[$i]: $arg_el\n"
+  twmessage imsg null "argv\[$i]: $arg_el\n"
 }
 incr i -1
 set dsn [lindex $args $i]
 
-icbackup_directory droute
+twbackup_directory droute
 cd droute
 
 # Now source any necessary do files.
@@ -33,8 +33,8 @@ set do_file [::utdtools::source_flow_do_files $dsn d -nosource]
 
 set num_parts $::utdtools::numPartitionS
 set dsn $::utdtools::designNameS
-icmessage imsg null "Welcome to the TimberWolf Detailer Router Program...\n"
-icmessage imsg null "We are going to process $num_parts...\n"
+twmessage imsg null "Welcome to the TimberWolf Detailer Router Program...\n"
+twmessage imsg null "We are going to process $num_parts...\n"
 
 # Now do some functionality
 # We should be in the floorplan directory as we created a directory here.
@@ -42,8 +42,8 @@ icmessage imsg null "We are going to process $num_parts...\n"
 set dirname [pwd]
 set folder [file tail $dirname]
 if {$folder != "droute"} {
-  icmessage errmg $routine "we are not in the proper directory:$folder\n"
-  icwait
+  twmessage errmg $routine "we are not in the proper directory:$folder\n"
+  twwait
   exit 1
 }
 
@@ -53,18 +53,18 @@ if {$input_name != ""} {
   # change this to multiple files if needed
   set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
   if {$fpath == ""} {
-    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
-    icwait
+    twmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    twwait
     exit 1
   }
 }
-icmessage imsg $routine "reading LEF file:$fpath\n"
-iccheck_ports off
-icread_lef $fpath -scale -model_obs keepout
+twmessage imsg $routine "reading LEF file:$fpath\n"
+twcheck_ports off
+twread_lef $fpath -scale -model_obs keepout
 
 # We need to do this for TimberWolf
 if {([info exists ::utdtools::feednameS]) && ($::utdtools::feednameS != "")} {
-  icmake_default_feedthru -exists $::utdtools::feednameS
+  twmake_default_feedthru -exists $::utdtools::feednameS
 }
 
 # ######################## TIMING ############################
@@ -73,13 +73,13 @@ if {$input_name != ""} {
   # change this to multiple files if needed
   set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
   if {$fpath == ""} {
-    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
-    icwait
+    twmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    twwait
     exit 1
   }
 }
-icmessage imsg $routine "reading Synopsys Library file:$fpath\n"
-icread_synopsys -new $fpath
+twmessage imsg $routine "reading Synopsys Library file:$fpath\n"
+twread_synopsys -new $fpath
 
 # ######################## DEF ############################
 set input_name $::utdtools::def_fileS
@@ -87,13 +87,13 @@ if {$input_name != ""} {
   # change this to multiple files if needed
   set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
   if {$fpath == ""} {
-    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
-    icwait
+    twmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    twwait
     exit 1
   }
 }
-icmessage imsg $routine "reading DEF file:$fpath\n"
-icread_def $fpath -convert_to_exact_pads
+twmessage imsg $routine "reading DEF file:$fpath\n"
+twread_def $fpath -convert_to_exact_pads
 
 # ######################## GUIDE FILE ############################
 set input_name ${dsn}.guide
@@ -101,30 +101,30 @@ if {$input_name != ""} {
   # change this to multiple files if needed
   set fpath [::utdtools::search_input $input_name [list . ../${previous}/output ../ ../../] true]
   if {$fpath == ""} {
-    icmessage errmsg $routine "No input file named $input_name found. Aborting\n"
-    icwait
+    twmessage errmsg $routine "No input file named $input_name found. Aborting\n"
+    twwait
     exit 1
   }
 }
-icmessage imsg $routine "creating guide file link:$fpath\n"
+twmessage imsg $routine "creating guide file link:$fpath\n"
 
 
 # Now output the TimberWolf files
-icbackup_directory timberwolf
-icbackup_directory output
+twbackup_directory timberwolf
+twbackup_directory output
 cd timberwolf
 
 # For TimberWolf global router abstract ports
 set models [twinstance used -include_required]
-icabstract $models
+twabstract $models
 
 # Don't want to confuse things use TimberWolf default script.
-icpar_option TWDR autodetect_script off
+twpar_option TWDR autodetect_script off
 if {[file exists ../${do_file}]} {
-  icpar_option TWDR route_script ../${do_file}
+  twpar_option TWDR route_script ../${do_file}
 }
-icwrite_ic -placed -writerows
-icwrite_placement ${dsn}.pl1
+twwrite_ic -placed -writerows
+twwrite_placement ${dsn}.pl1
 
 set icos [file join $icdirG bin icos]
 
@@ -151,8 +151,8 @@ if {[catch {eval bgexec statusG -output outputG -keepnewline false -onoutput [li
 
 # Create the ${dsn}_final.tdo script.
 set f [open ${dsn}_final.tdo w]
-puts $f "icread_itools::state route"
-puts $f "icwrite_def \[file join ../ output ${dsn}.def] -version 5.8 \
+puts $f "twread_itools::state route"
+puts $f "twwrite_def \[file join ../ output ${dsn}.def] -version 5.8 \
 -placed -routed -sections {rows nocoresites vias components pins nets}"
 puts $f "exit"
 puts $f ""
@@ -165,5 +165,5 @@ if {[catch {bgexec statusTG -output outputG $icos icdir $icdirG itranslate -v -d
   close $fp
 }
 
-icmessage imsg $routine "detailed routing completed.\n"
+twmessage imsg $routine "detailed routing completed.\n"
 exit 0

@@ -10,7 +10,11 @@ if {!([info exists env(UTDTOOLS)])} {
   puts stderr "ERROR:cannot get UTD Tools environment variable:UTDTOOLS"
   exit 1
 }
-source [file join $env(UTDTOOLS) tcl logic init.tcl]
+if {!([info exists env(UTDTOOLSVERSION)])} {
+  puts stderr "ERROR:cannot get UTD Tools environment variable:UTDTOOLSVERSION"
+  exit 1
+}
+source [file join $env(UTDTOOLS) $env(UTDTOOLSVERSION) tcl logic init.tcl]
 source ./grand.init
 
 set dsn $::utdtools::designNameS

@@ -23,7 +23,9 @@ namespace eval utdtools {
       # Set up environment variables to enable execution.
       ###################################################################
       global env
-      set utdtools $env(UTDTOOLS)
+      set utdtools_root $env(UTDTOOLS)
+      set utdtools_version $env(UTDTOOLSVERSION)
+      set utdtools [file join $utdtools_root $utdtools_version]
       set routine "::utdtools::init"
 
       package require struct::graph 2.4
@@ -101,6 +103,7 @@ namespace eval utdtools {
 	} else {
 	  ::utdtools::create_softlink ${dsn}.v ../
 	}
+	puts stderr "full flow var = $full_flowS"
 	return ;
       }
       set directory [$graph node get $node directory]

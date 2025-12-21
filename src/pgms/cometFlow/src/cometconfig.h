@@ -9,10 +9,10 @@
 #include <utd/conf_undef.h>
 #include <config.h>
 
-#ifdef UTDGUI_GRAPHICS
+#ifdef UTDTOOLS_GRAPHICS
 #define UTD_G(x_xz)	x_xz
-#else  /* ! UTDGUI_GRAPHICS */
+#else  /* ! UTDTOOLS_GRAPHICS */
 #define UTD_G(x_xz)	
-#endif /* UTDGUI_GRAPHICS */
+#endif /* UTDTOOLS_GRAPHICS */
 
 #endif /* COMETCONFIG_H */

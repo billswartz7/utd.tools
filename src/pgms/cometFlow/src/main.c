@@ -16,6 +16,8 @@ REVISIONS:
 #endif /* HAVE_STDLIB_H */
 #include <utd/base.h>
 #include <utd/baseobj.h>
+#include <utd/cleanup.h>
+#include <utd/debug.h>
 #include <utd/file.h>
 #include <utd/msg.h>
 #include <utd/log.h>
@@ -24,16 +26,20 @@ REVISIONS:
 #include <utd/program.h>
 #include <utd/system.h>
 #include <utd/tcllog.h>
-#ifdef UTDGUI_GRAPHICS
+#ifdef UTDTOOLS_GRAPHICS
 #include <gui/gui.h>
-#endif /* UTDGUI_GRAPHICS */
+#endif /* UTDTOOLS_GRAPHICS */
 #include <gui/utils.h>
 #include <base/utd.h>
+#include <base/interp.h>
+#include <base/tclstdin.h>
 #include "timestamp.h"
 
 
 /* ***************** STATIC FUNCTION DEFINITIONS ******************* */
 static void utdtools_tcl_init( Tcl_Interp *inter_p, const char *tcl_dir ) ;
+static INT closegraphics(INT status) ;
+static INT args_objfunc(ClientData d_p,Tcl_Interp *i_p,INT objc, Tcl_Obj * CONST objv[]) ;
 UTD_G( static void calc_full_screen_coordinate( void ) ) ;
 UTD_G( static void draw_the_data( UTDTILERECTPTR area, void *clientData ) ) ;
 
@@ -50,22 +56,28 @@ int main(int argc, char *argv[] ) {
     char **copy_argv ;			/* copy of argv */
     char *do_filename ;			// name of do file
     char *suffix ;			/* get the suffix from user */
+    char *pgm_name ;			/* program name */
     char *directory ;			/* directory name */
     char *script_cmds ;			/* script commands */
     char *full_script_name ;		/* full path of script */
     char *fullName ;			/* full name of path */
     char **line_buffer ;		/* for parsing */
     char **line_data ;			/* returned parsed data */
+    char *utdtools ;                    /* utd tools root directory */
+    char *utdversion ;                  /* utd tools version */
     const char *rootdir ;		/* open directory */
     const char *script ;		/* script name */
     const char *log_path ;		/* path for log */
     const char *tcl_dir_name ;		/* Tcl directory for all programs */
     char working_dir[LRECL] ;		/* buffer for directory path */
     FILE *did_file ;			/* did file pointer */
-    BOOL log_local ;			/* use local directory for logs */
+    BOOL tty_mode ;                     /* exit on a close */
+    BOOL echo_mode ;                    /* echo commands */
     BOOL flow_flag ;			/* flow program behaviour invoked */
     BOOL verbose_flag ;			/* verbose output */
     BOOL graphics_flag ;		/* graphics are requested */
+    BOOL help_flag ;			/* output some help messages */
+    BOOL prompt_flag ;                  /* output an initial prompt */
     INT i ;				/* counter */
     INT len ;				/* length of commands */
     INT line ;				/* line counter */
@@ -74,6 +86,7 @@ int main(int argc, char *argv[] ) {
     INT status ;			/* return status */
     INT num_cuts ;			/* number of cuts */
     INT copy_argc ;			/* copy of argc */
+    INT parasite_win ;			/* parasite window id */
     UTDDSTRING script_buf ;		/* build a script name overkill */
     UTDDSTRING command_buf ;		/* build a command */
     UTDDSTRING did_filename ;		/* did filename */
@@ -84,6 +97,7 @@ int main(int argc, char *argv[] ) {
 
     copy_argc = argc ; // don't destroy original.
     copy_argv = argv ;
+    pgm_name = argv[0] ;
 
     utDmsg_mode( M_VERBOSE ) ;
 
@@ -100,10 +114,14 @@ int main(int argc, char *argv[] ) {
     begin_pgm = NULL ;
     end_pgm = NULL ;
     do_filename = NULL ;
-    log_local = FALSE ;
+    tty_mode = FALSE ;
+    echo_mode = FALSE ;
     flow_flag = FALSE ;
     verbose_flag = FALSE ;
     graphics_flag = TRUE ;
+    help_flag = FALSE ;
+    prompt_flag = TRUE ;
+    parasite_win = 0 ;
     while(copy_argc--){
       if( strcmp( *copy_argv, "-do") == STRINGEQ ){
 	copy_argv++;
@@ -115,8 +133,18 @@ int main(int argc, char *argv[] ) {
 	verbose_flag = TRUE ;
       } else if (strcmp(*copy_argv, "-f") == STRINGEQ ){
 	flow_flag = TRUE ;
-      } else if (strcmp(*copy_argv, "-l") == STRINGEQ ){
-	log_local = TRUE ;
+      } else if (strcmp(*copy_argv, "-i") == STRINGEQ ){
+        tty_mode = TRUE ;
+      } else if (strcmp(*copy_argv, "-E") == STRINGEQ ){
+        echo_mode = TRUE ;
+      } else if (strcmp(*copy_argv, "-p") == STRINGEQ ){
+        prompt_flag = FALSE ;
+      } else if (strncmp(*copy_argv, "-h",2) == STRINGEQ ){
+	help_flag = TRUE ;
+      } else if (strcmp(*copy_argv, "-w") == STRINGEQ ){
+	copy_argv++;
+	copy_argc--;
+	parasite_win = atoi(*copy_argv) ;
       } else if (strcmp(*copy_argv, "-s") == STRINGEQ ){
 	copy_argv++;
 	copy_argc--;
@@ -151,11 +179,29 @@ int main(int argc, char *argv[] ) {
     } else {
       utDmsg_mode( M_NORMAL ) ;
     }
-    if( log_local ){
-      log_path = utDgetwd(working_dir,LRECL) ;
-    } else {
-      log_path = NULL ;
+    if( help_flag ){
+      utDmsgf( IMSG,MSG_AT,NULL, "\nThe cometFlow program supports Tcl/Tk/Tix and Python.\n" );
+      utDmsgf( IMSG,MSG_AT,NULL, "\nsyntax:\n" );
+      utDmsgf( IMSG,MSG_AT,NULL, "         cometFlow [-do <scriptFile>] [-d] [-e] [-i] [-l] [-n] [-q] [-s] [-v] <designName>\n" );
+      utDmsgf( IMSG,MSG_AT,NULL, "Options:\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -d : turn on debug mode\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -do <scriptFile> : execute the given file\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -E : echo command mode on\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -h[elp] : help command\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -i : interactive tty mode on\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -n : turn off graphics\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -N : graphics but withdrawn toplevel window\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -p : turn off initial prompt\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -q : enable quiet output modes\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -s : suppress output of runtime stats\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -v : verbose output mode\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        -w <windowId> : parasite window mode X window id\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "Required:\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "        designName : base name of the design.\n" ) ;
+      utDmsgf( IMSG,MSG_AT,NULL, "\n\n" ) ;
+      exit(0) ;
     }
+    log_path = utDgetwd(working_dir,LRECL) ;
     rootdir = utDInit( argc, argv, dsn, "1.0", UTD_COMPILE_DATE, 
 	         "\nWelcome to the CometFlow program\n", log_path );
     utDmsgf( IMSG,MSG_AT,NULL, "UTDTOOLS=%s\n", rootdir ) ;
@@ -190,31 +236,68 @@ int main(int argc, char *argv[] ) {
 
 
     inter_p = Tcl_CreateInterp() ;
-
+    utDsetInterpreter(inter_p) ;
 
     // Start up the Tcl log system.
-    utDdstring_init( &did_filename ) ;
-    if (suffix ){
-      did_p = utDdstring_printf( &did_filename, "%s.%sdid", dsn, suffix ) ;
+    if( log_path ){
+      utDdstring_init( &did_filename ) ;
+      did_p = utDdstring_printf( &did_filename, "%s.did", pgm_name ) ;
+      did_file = utDtcllog_init( did_p, NULL, NULL ) ;
+      utDdstring_free( &did_filename ) ;
     } else {
-      did_p = utDdstring_printf( &did_filename, "%s.did", dsn ) ;
+      did_file = NULL ;
     }
-    did_file = utDtcllog_init( did_p, NULL, NULL ) ;
-    utDdstring_free( &did_filename ) ;
+
 
     // Build the Tcl directory path.
     utDdstring_init( &tcl_dir_buf ) ;
-#ifdef DEBUG
-    tcl_dir_name = utDdstring_append( &tcl_dir_buf, "../../tcl", -1 ) ;
-#else 
-    tcl_dir_name = utDdstring_printf( &tcl_dir_buf, "%s/tcl", rootdir ) ;
-#endif /* DEBUG */
-    if(!(utDdirectoryExists( tcl_dir_name))){
-      utDmsgf(ERRMSG,"cometFlow/main:5", routine, 
-	  "could not file Tcl directory:%s.  Fatal.\n", tcl_dir_name ) ;
+    utdtools = utDgetenv("UTDTOOLS") ;
+    if(!(utdtools)){
+      utDmsgf(ERRMSG, MSG_AT, routine, 
+	  "UTDTOOLS environment variable not defined.\n" ) ;
+      utDprogram_exit(PGMFAIL) ;
+    }
+    utdversion = utDgetenv("UTDTOOLSVERSION") ;
+    if(!(utdversion)){
+      utDmsgf(ERRMSG, MSG_AT, routine, 
+	  "UTDTOOLSVERSION environment variable not defined.\n" ) ;
       utDprogram_exit(PGMFAIL) ;
     }
 
+    tcl_dir_name = utDdstring_printf( &tcl_dir_buf, "%s/%s/tcl", 
+	utdtools, utdversion ) ;
+
+
+    if(!(utDdirectoryExists( tcl_dir_name))){
+      utDmsgf(ERRMSG,MSG_AT, routine, 
+	  "could not file Tcl directory:%s.  Fatal.\n", tcl_dir_name ) ;
+      utDprogram_exit(PGMFAIL) ;
+    }
+    utdtools_tcl_init( inter_p, tcl_dir_name ) ;
+
+    // Add common Tcl commands here.
+    utDbase_create_objcmd( inter_p, "utdscript_args",args_objfunc, argv, NULL ) ;
+    utDbase_create_objcmd( inter_p, "utdinterpreter_mode",utDinterpreter_mode_objfunc, NULL, NULL);
+    utDbase_create_objcmd( inter_p, "utdversion", utDversion_objfunc, NULL, NULL);
+
+    /* -----------------------------------------------------------------
+     * Setup the input channel.
+    ----------------------------------------------------------------- */
+    UTDSTDIN_OPT_T opts = (UTDSTDIN_OPT_T) ((echo_mode ? UTDSTDIN_OPT_ECHO_CMDS_T : UTDSTDIN_OPT_NONE_T) |
+                          (tty_mode ? UTDSTDIN_OPT_EXIT_ON_CLOSE_T : UTDSTDIN_OPT_NONE_T)) ;
+    utDtcl_stdin(inter_p,NULL,did_file,NULL,opts ) ;
+    if( prompt_flag ){
+      utDtcl_stdinPrompt( inter_p, 0) ;
+    }
+
+#ifdef UTDTOOLS_STATIC_BUILD
+    /* Static compile debug 
+     *
+     * */
+    if( Utdpython_Init(inter_p) == TCL_ERROR ){
+      utDmsgf(ERRMSG,MSG_AT,routine, "Couldn't start utdpython package.\n" ) ;
+    }
+#endif /* UTDTOOLS_STATIC_BUILD */
 
     // Show how a dstring works
     utDdstring_init( &script_buf ) ;
@@ -225,25 +308,29 @@ int main(int argc, char *argv[] ) {
     }
     full_script_name = utDdstring_printf( &script_buf, "%s/gui/%s", tcl_dir_name, script ) ;
 
-#ifdef UTDGUI_GRAPHICS
+#ifdef UTDTOOLS_GRAPHICS
+
     if( graphics_flag ){
+      // A Tix/Tk/Tcl Gui
       UTDGUI_OPTS_T gui_opts = (UTDGUI_OPTS_T) (UTDGUI_OPT_GRAPHICS_T|UTDGUI_OPT_NO_STDIN_HANDLER_T) ;
       UTD_G( utDGUI_init( argc, argv, full_script_name, inter_p, gui_opts, 
-	        draw_the_data, NULL, did_file, 0 ) ) ;
+	        draw_the_data, NULL, did_file, NULL, parasite_win ) ) ;
       UTD_G( calc_full_screen_coordinate() ) ;
+
+      utDcleanup_graphics( closegraphics ) ;
+      utDprogram_exitFunction( closegraphics ) ;
 
     } else {
       // A Tcl only Gui
       utDGUI_init( argc, argv, full_script_name, inter_p, UTDGUI_OPT_NO_STDIN_HANDLER_T, 
-	           NULL, NULL, did_file, 0 ) ;
+	           NULL, NULL, did_file, NULL, 0 ) ;
     }
 #else 
     utDGUI_Tcl_init( argc, argv, inter_p, did_file) ;
-    utdtools_tcl_init( inter_p, tcl_dir_name ) ;
-    Tcl_CreateObjCommand( inter_p, "utdcontinue",utDGUI_Tcl_continue_objfunc, NULL, NULL ) ;
-    Tcl_CreateObjCommand( inter_p, "utdwait",utDGUI_Tcl_wait_objfunc, NULL, NULL ) ;
-    Tcl_CreateObjCommand( inter_p, "utdmsg",utDGUI_Tcl_msg_objfunc, NULL, NULL ) ;
-#endif /* UTDGUI_GRAPHICS */
+    utDbase_create_objcmd( inter_p, "utdcontinue",utDGUI_Tcl_continue_objfunc, NULL, NULL ) ;
+    utDbase_create_objcmd( inter_p, "utdwait",utDGUI_Tcl_wait_objfunc, NULL, NULL ) ;
+    utDbase_create_objcmd( inter_p, "utdmsg",utDGUI_Tcl_msg_objfunc, NULL, NULL ) ;
+#endif /* UTDTOOLS_GRAPHICS */
 
     // Put the dsn name in the name space.
     if (dsn) {
@@ -315,7 +402,7 @@ int main(int argc, char *argv[] ) {
       }
     }
 
-#ifdef UTDGUI_GRAPHICS
+#ifdef UTDTOOLS_GRAPHICS
     utDGUI_run() ;
 #else
     utDGUI_Tcl_run( inter_p ) ;
@@ -337,6 +424,9 @@ static void utdtools_tcl_init( Tcl_Interp *inter_p,const char *tcl_dir_name )
     FUNC_NAME("utdtools_tcl_init") ;
 
     UTDDSTRING tcl_autopath_buf ;	/* Tcl groute directory */
+UTDDSTRING command_buf ;	/* Tcl groute directory */
+char *dsn_cmd ;
+char *cmd ;
     // Now set the groute path for useful Tcl related to global router
     utDdstring_init( &tcl_autopath_buf ) ;
     tcl_autopath_name = utDdstring_printf( &tcl_autopath_buf, "%s/utdtools", tcl_dir_name ) ;
@@ -347,11 +437,29 @@ static void utdtools_tcl_init( Tcl_Interp *inter_p,const char *tcl_dir_name )
     }
 
     // Set the autopath
+    utDdstring_init( &command_buf ) ;
+    cmd = utDdstring_printf( &command_buf, "lappend auto_path %s;\n", tcl_autopath_name ) ;
+    status = Tcl_RecordAndEval(inter_p, cmd, TCL_EVAL_GLOBAL) ;
+    if( status != TCL_OK ){
+      utDGUIcheck_tcl_code( inter_p, status, MSG_AT, routine) ;
+    }
+    utDdstring_free( &command_buf ) ;
+
+    utDdstring_init( &command_buf ) ;
+    cmd = utDdstring_printf( &command_buf, "source %s/init.tcl;\n", tcl_autopath_name ) ;
+    status = Tcl_RecordAndEval(inter_p, cmd, TCL_EVAL_GLOBAL) ;
+    if( status != TCL_OK ){
+      utDGUIcheck_tcl_code( inter_p, status, MSG_AT, routine) ;
+    }
+    utDdstring_free( &command_buf ) ;
+
+    /* 
     tmp_objv[0] = Tcl_NewStringObj( "lappend", -1 ) ;
     tmp_objv[1] = Tcl_NewStringObj( "auto_path", -1 ) ;
     tmp_objv[2] = Tcl_NewStringObj( tcl_autopath_name, -1 ) ;
     tmp_objv[3] = NULL ;
     status = Tcl_EvalObjv( inter_p, 3, tmp_objv, TCL_EVAL_GLOBAL | TCL_EVAL_INVOKE ) ;
+    */
     utDmsgf( IMSG,MSG_AT,NULL, "TCL Directory=%s\n", tcl_autopath_name ) ;
 
     tmp_objv[0] = Tcl_NewStringObj( "::utdtools::init", -1 ) ;
@@ -362,10 +470,52 @@ static void utdtools_tcl_init( Tcl_Interp *inter_p,const char *tcl_dir_name )
       if( error_p ){
 	utDmsgf( ERRMSG, MSG_AT, routine, "%s\n", error_p ) ;
       }
+    } else {
+      utDmsgf( IMSG,MSG_AT,NULL, "UTD tools initialized properly\n" ) ;
     }
 } /* end utdtools_tcl_init() */
 
-#ifdef UTDGUI_GRAPHICS
+static INT args_objfunc(ClientData d_p,Tcl_Interp *i_p,INT objc,
+                    Tcl_Obj * CONST objv[])
+{
+    INT i ;			/* counter */
+    char *argv_i ;		/* the ith argument */
+    char **argv ;		/* arg vector */
+    Tcl_Obj *strObj ;		/* new string object */
+    Tcl_Obj *resultPtr ;	/* the output result */
+    FUNC_NAME( "utdscript_args" ) ;
+
+    if( utDhelp_requested( objc, objv ) ){
+      utDmsgf( IMSG, MSG_AT, NULL, "%s : returns arguments which follow the double hyphen on command line", routine ) ;
+      return(TCL_OK) ;
+    }
+
+    argv = (char **) d_p ;
+
+    for( i = 0 ; i < LRECL ; i++ ){
+      argv_i = argv[i] ;
+      if(!(argv_i)){
+	break ;
+      }
+      if( strcmp( argv_i, "--" ) == STRINGEQ ){
+	resultPtr = Tcl_GetObjResult(i_p) ;
+	for( i++ ; i < LRECL ; i++ ){
+	  argv_i = argv[i] ;
+	  if(!(argv_i)){
+	    break ;
+	  }
+	  strObj = Tcl_NewStringObj( argv_i, -1 ) ;
+	  Tcl_ListObjAppendElement(NULL,resultPtr, strObj) ;
+	}
+	return(TCL_OK) ;
+      }
+
+    }
+    return(TCL_OK) ;
+
+} /* end args_objfunc() */
+
+#ifdef UTDTOOLS_GRAPHICS
 
 static void calc_full_screen_coordinate( void )
 {
@@ -390,4 +540,20 @@ static void draw_the_data( UTDTILERECTPTR area, void *clientData )
   utDGUIflushFrame() ;
 } /* end draw_the_data() */
 
-#endif /* UTDGUI_GRAPHICS */
+static INT closegraphics(INT status)
+{
+    DBG( fprintf( stderr, "closegraphics called with %d status.\n", status ) ; ) ;
+    if( utDGUIstate() ){ 
+      DBG( fprintf(stderr,"calling utDGUIabort_graphics...\n" ) ; )
+      status = utDGUIabort_graphics(status) ;
+      if( status == PGMGCANCEL ){
+	return(PGMGCANCEL) ;
+      }
+      if( status == PGMGABORTALL ){
+	return(PGMGABORTALL) ;
+      }
+    } 
+    return(PGMOK) ;
+} /* end closegraphics() */
+
+#endif /* UTDTOOLS_GRAPHICS */

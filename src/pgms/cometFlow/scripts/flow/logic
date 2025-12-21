@@ -1,6 +1,6 @@
 #!/bin/sh
 # This comment make this script an executable.  Do *NOT* delete \
-eval exec ${UTDTOOLS}/bin/${UTDTOOLSOS}/cometFlow -s l -dir logic -n -v -f -do ${UTDTOOLS}/scripts/flow/logic ${1+"$@"}
+eval exec ${UTDTOOLS}/${UTDTOOLSVERSION}/bin/${UTDTOOLSOS}/cometFlow -s l -dir logic -n -v -f -do ${UTDTOOLS}/${UTDTOOLSVERSION}/scripts/flow/logic ${1+"$@"}
 
 set routine logic
 
@@ -10,7 +10,11 @@ global argv
 # The defaults settings.
 
 if {!([info exists env(UTDTOOLS)])} {
-  puts stderr "ERROR:cannot get OpenRoad environment variable:UTDTOOLS"
+  puts stderr "ERROR:cannot get UTD Tools environment variable:UTDTOOLS"
+  exit 1
+}
+if {!([info exists env(UTDTOOLSVERSION)])} {
+  puts stderr "ERROR:cannot get UTD Tools version environment variable:UTDTOOLSVERSION"
   exit 1
 }
 
@@ -79,7 +83,7 @@ if {$input_name != ""} {
 utdmsg imsg $routine "reading Synopsys Library file:$fpath\n"
 
 # ######################## YOSYS_SCRIPT.TCL ############################
-set yosys_script [file join $env(UTDTOOLS) tcl logic yosys_script.tcl]
+set yosys_script [file join $env(UTDTOOLS) $env(UTDTOOLSVERSION) tcl logic yosys_script.tcl]
 
 ::utdtools::backup_directory output
 ::utdtools::backup_directory rpt

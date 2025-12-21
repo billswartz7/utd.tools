@@ -15,12 +15,12 @@ proc utdshow_window {program_name args} {
   if {[catch {set hname [exec hostname]} msg]} {
     # Try a more specific command.
     if {[catch {set hname [exec /bin/hostname]} msg]} {
-      ormessage errmsg $program_name "$msg\n"
+      utdmessage errmsg $program_name "$msg\n"
       set hname "unknown"
     }
   }
-  set ortitle [format "${program_name}@%s" $hname]
-  wm title . $ortitle
+  set utdtitle [format "${program_name}@%s" $hname]
+  wm title . $utdtitle
 
   # bindings
   frame .utdtools -relief flat
@@ -41,17 +41,21 @@ proc utdshow_window {program_name args} {
     -command "::utdtoolsgui::color_display" \
     -label {Colors}
   .utdtools.fmenu.menubutton4.m add command \
-    -command {orfullframe} \
+    -command {utdfullframe} \
     -label {Full Frame}
   .utdtools.fmenu.menubutton4.m add command \
-    -command {orredraw} \
+    -command {utdredraw} \
     -label {Redraw}
   .utdtools.fmenu.menubutton4.m add command \
-    -command {ortranslate} \
+    -command {utdtranslate} \
     -label {Translate}
   .utdtools.fmenu.menubutton4.m add command \
-    -command {orzoom} \
+    -command {utdzoom} \
     -label {Zoom}
+  .utdtools.fmenu.menubutton4.m add separator
+  .utdtools.fmenu.menubutton4.m add command \
+    -command {utdcontinue} \
+    -label {Continue}
 
 
   # pack widget .frame0

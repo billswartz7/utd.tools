@@ -23,9 +23,15 @@ namespace eval utdtools {
     global auto_path
     variable rootdirS
     if {[info exists env(UTDTOOLS)]} {
-      set rootdirS $env(UTDTOOLS)
+      set basedir $env(UTDTOOLS)
     } {
       puts stderr "ERROR:cannot get UTD tools environment variable:UTDTOOLS"
+      exit
+    }
+    if {[info exists env(UTDTOOLSVERSION)]} {
+      set rootdirS [file join $basedir $env(UTDTOOLSVERSION)]
+    } {
+      puts stderr "ERROR:cannot get UTD tools environment variable:UTDTOOLSVERSION"
       exit
     }
     if {[info exists rootdirS]} {
