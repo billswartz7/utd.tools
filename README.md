@@ -82,10 +82,15 @@ First set the UTDTOOLS build environment variables using either
 "source buildenv.sh"
 
 Next change directory to the "automake" directory<br>
+
 "cd automake"
+
 Make a directory to compile and link all of the programs
+
 "mkdir build"
+
 Change the current directory to the build directory
+
 "cd build"
 
 Next run the top level configure script by entering<br> 
