@@ -19999,7 +19999,7 @@ fi
 
             # no such luck; use some default ssldirs
             if ! $found; then
-                ssldirs="/usr/local/ssl /usr/lib/ssl /usr/ssl /usr/pkg /usr/local /usr /usr/local/src/openssl-1.1.0l /usr/local/opt/openssl@1.1"
+                ssldirs="/usr/local/ssl /usr/lib/ssl /usr/ssl /usr/pkg /usr/local /usr /usr/local/src/openssl-1.1.0l /usr/local/opt/openssl@1.1 /opt/homebrew"
             fi
 	    UTDTOOLS_OPENSSL_DIR=""
 
