@@ -149,6 +149,27 @@ save_arch:
 	cd ../; \
 	tar cvf - $${VERSION}/bin/$${ARCH} $${VERSION}/lib/$${ARCH} | gzip -9 -c >${prefix}/../arch/$${VERSION}.$${ARCH}.tgz ; 
 
+
+save_data:
+	cd ${prefix}; \
+	ARCH=`utduname` ; \
+	VERSION=`basename ${prefix}` ; \
+	echo "VERSION : $${VERSION}" ; \
+	cd ../; \
+	tar cvf - $${VERSION} | bzip2 -9 -c >${prefix}/../arch/$${VERSION}.data.temp.bz2 ; \
+	cd ${prefix}/../arch ; \
+	OUTPUT_DIR=`pwd` ; \
+	mkdir tmp ; \
+	cd tmp ; \
+	bzip2 -d -c ../$${VERSION}.data.temp.bz2 | tar xvf - ; \
+	rm -rf  bin/$${ARCH} lib/$${ARCH} ; \
+	find . -name '__pycache__' -exec \rm -rf {} \; -print ; \
+	tar cvf - $${VERSION} | gzip -9 -c >$${OUTPUT_DIR}/$${VERSION}.data.tgz ; \
+	cd $${OUTPUT_DIR} ; \
+	rm -f  $${VERSION}.data.temp.bz2 ; \
+	rm -rf tmp
+
+
 link_automake_scripts:
 	@for subdir in $(AUTOMAKE_DIRS) ; do \
 	  echo "Linking automake scripts in $$subdir"; \
