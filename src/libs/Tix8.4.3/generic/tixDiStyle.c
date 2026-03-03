@@ -31,7 +31,7 @@ typedef struct StyleInfo {
 static int   		DItemStyleParseProc _ANSI_ARGS_((ClientData clientData,
 			    Tcl_Interp *interp, Tk_Window tkwin,
 			    CONST84 char *value,char *widRec, int offset));
-static char *		DItemStylePrintProc _ANSI_ARGS_((
+static const char *	DItemStylePrintProc _ANSI_ARGS_((
 			    ClientData clientData, Tk_Window tkwin, 
 			    char *widRec, int offset,
 			    Tcl_FreeProc **freeProcPtr));
@@ -998,7 +998,7 @@ not_found:
     return TCL_ERROR;
 }
 
-static char *DItemStylePrintProc(clientData, tkwin, widRec,offset, freeProcPtr)
+static const char *DItemStylePrintProc(clientData, tkwin, widRec,offset, freeProcPtr)
     ClientData clientData;
     Tk_Window tkwin;
     char *widRec;

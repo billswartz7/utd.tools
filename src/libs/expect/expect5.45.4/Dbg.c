@@ -126,11 +126,7 @@ breakpoint_new()
 	return(b);
 }
 
-static
-void
-breakpoint_print(interp,b)
-Tcl_Interp *interp;
-struct breakpoint *b;
+static void breakpoint_print(Tcl_Interp *interp, struct breakpoint *b)
 {
     print(interp,"breakpoint %d: ",b->id);
 
@@ -154,11 +150,7 @@ struct breakpoint *b;
     print(interp,"\n");
 }
 
-static void
-save_re_matches(interp, re, objPtr)
-Tcl_Interp *interp;
-Tcl_RegExp re;
-Tcl_Obj *objPtr;
+static void save_re_matches(Tcl_Interp *interp, Tcl_RegExp re, Tcl_Obj *objPtr)
 {
     Tcl_RegExpInfo info;
     int i, start;
@@ -178,11 +170,7 @@ Tcl_Obj *objPtr;
 }
 
 /* return 1 to break, 0 to continue */
-static int
-breakpoint_test(interp,cmd,bp)
-Tcl_Interp *interp;
-char *cmd;		/* command about to be executed */
-struct breakpoint *bp;	/* breakpoint to test */
+static int breakpoint_test(Tcl_Interp *interp,char *cmd,struct breakpoint *bp)
 {
     if (bp->re) {
         int found = 0;
@@ -230,16 +218,15 @@ static char *already_at_top_level = "already at top level";
 If direction is up,   search up stack from curFrame
 If direction is down, simulate searching down stack by
 		      seaching up stack from origFrame
-*/
-static
-int
-TclGetFrame2(interp, origFramePtr, string, framePtrPtr, dir)
+Args:
     Tcl_Interp *interp;
-    CallFrame *origFramePtr;	/* frame that is true top-of-stack */
-    char *string;		/* String describing frame. */
-    CallFrame **framePtrPtr;	/* Store pointer to frame here (or NULL
-				 * if global frame indicated). */
-    enum debug_cmd dir;	/* look up or down the stack */
+    CallFrame *origFramePtr;	frame that is true top-of-stack
+    char *string;		String describing frame. 
+    CallFrame **framePtrPtr;	Store pointer to frame here (or NULL
+				if global frame indicated).
+    enum debug_cmd dir;	        look up or down the stack
+*/
+static int TclGetFrame2(Tcl_Interp *interp, CallFrame *origFramePtr, char *string, CallFrame **framePtrPtr, enum debug_cmd dir)
 {
     Interp *iPtr = (Interp *) interp;
     int level, result;
@@ -307,8 +294,7 @@ TclGetFrame2(interp, origFramePtr, string, framePtrPtr, dir)
 }
 
 
-static char *printify(s)
-char *s;
+static char *printify(char *s)
 {
     static int destlen = 0;
     char *d;		/* ptr into dest */
@@ -355,12 +341,7 @@ char *s;
     return(dest);
 }
 
-static
-char *
-print_argv(interp,argc,argv)
-Tcl_Interp *interp;
-int argc;
-char *argv[];
+static char * print_argv( Tcl_Interp *interp,int argc,char *argv[])
 {
 	static int buf_width_max = DEFAULT_WIDTH;
 	static char buf_basic[DEFAULT_WIDTH+1];	/* basic buffer */
@@ -438,12 +419,7 @@ char *argv[];
 }
 
 #if TCL_MAJOR_VERSION >= 8
-static
-char *
-print_objv(interp,objc,objv)
-Tcl_Interp *interp;
-int objc;
-Tcl_Obj *objv[];
+static char * print_objv(Tcl_Interp *interp,int objc,Tcl_Obj *objv[])
 {
     char **argv;
     int argc;
@@ -457,12 +433,7 @@ Tcl_Obj *objv[];
 }
 #endif
 
-static
-void
-PrintStackBelow(interp,curf,viewf)
-Tcl_Interp *interp;
-CallFrame *curf;	/* current FramePtr */
-CallFrame *viewf;	/* view FramePtr */
+static void PrintStackBelow(Tcl_Interp *interp,CallFrame *curf,CallFrame *viewf)
 {
 	char ptr;	/* graphically indicate where we are in the stack */
 
@@ -476,7 +447,7 @@ CallFrame *viewf;	/* view FramePtr */
 		PrintStackBelow(interp,curf->callerVarPtr,viewf);
 		print(interp,"%c%d: %s\n",ptr,curf->level,
 #if TCL_MAJOR_VERSION >= 8
-	      print_objv(interp,curf->objc,curf->objv)
+	      print_objv(interp,curf->objc,(Tcl_Obj **) curf->objv)
 #else
 	      print_argv(interp,curf->argc,curf->argv)
 #endif
@@ -484,18 +455,10 @@ CallFrame *viewf;	/* view FramePtr */
 	}
 }
 
-static
-void
-PrintStack(interp,curf,viewf,objc,objv,level)
-Tcl_Interp *interp;
-CallFrame *curf;	/* current FramePtr */
-CallFrame *viewf;	/* view FramePtr */
-     int objc;
-     Tcl_Obj *CONST objv[];		/* Argument objects. */
-char *level;
+static void PrintStack(Tcl_Interp *interp,CallFrame *curf,CallFrame *viewf,int objc,Tcl_Obj *CONST objv[],char *level)
 {
 	PrintStackBelow(interp,curf,viewf);
-    print(interp," %s: %s\n",level,print_objv(interp,objc,objv));
+    print(interp," %s: %s\n",level,print_objv(interp,objc,(Tcl_Obj **)objv));
 }
 
 /* return 0 if goal matches current frame or goal can't be found */
@@ -506,10 +469,7 @@ char *level;
 /* or Tcl_Eval.  These builtin calls to Tcl_Eval lose any knowledge */
 /* the FramePtr from the proc, so we have to search the entire */
 /* stack frame to see if it's still there. */
-static int
-GoalFrame(goal,iptr)
-CallFrame *goal;
-Interp *iptr;
+static int GoalFrame(CallFrame *goal,Interp *iptr)
 {
 	CallFrame *cf = iptr->varFramePtr;
 
@@ -559,17 +519,7 @@ debugger_trap _ANSI_ARGS_ ((
 
 
 /*ARGSUSED*/
-static int
-debugger_trap(clientData,interp,level,command,commandInfo,objc,objv)
-     ClientData clientData;		/* not used */
-     Tcl_Interp *interp;
-     int level;			/* positive number if called by Tcl, -1 if */
-				/* called by Dbg_On in which case we don't */
-				/* know the level */
-     CONST char *command;
-     Tcl_Command commandInfo; /* Unused */
-     int objc;
-     struct Tcl_Obj * CONST * objv;
+static int debugger_trap(ClientData clientData,Tcl_Interp *interp,int level,CONST char *command,Tcl_Command commandInfo,int objc,struct Tcl_Obj * CONST * objv)
 {
 	char level_text[6];	/* textual representation of level */
 
@@ -620,7 +570,7 @@ debugger_trap(clientData,interp,level,command,commandInfo,objc,objv)
 	debug_new_action = FALSE;	/* reset strobe */
 	break_status = FALSE;		/* no successful breakpoints yet */
 	for (b = break_base;b;b=b->next) {
-		break_status |= breakpoint_test(interp,command,b);
+		break_status |= breakpoint_test(interp,(char *)command,b);
 	}
 	if (break_status) {
 		if (!debug_new_action) {
@@ -662,12 +612,12 @@ debugger_trap(clientData,interp,level,command,commandInfo,objc,objv)
 		if (goalFramePtr != iPtr->varFramePtr) goto finish;
 		goto start_interact;
     /* DANGER: unhandled cases! none, up, down, where */
+	default : ;
 	}
 
 start_interact:
 	if (print_command_first_time) {
-		print(interp,"%s: %s\n",
-				level_text,print_argv(interp,1,&command));
+		print(interp,"%s: %s\n", level_text, print_argv(interp,1,(char **) &command));
 		print_command_first_time = FALSE;
 	}
 	/* since user is typing a command, don't interrupt it immediately */
@@ -720,6 +670,7 @@ end_interact:
 	case where:
 	PrintStack(interp,iPtr->varFramePtr,viewFramePtr,objc,objv,level_text);
 		break;
+	default: ;
 	}
 
 	/* restore view and restart interactor */
@@ -732,13 +683,7 @@ end_interact:
 }
 
 /*ARGSUSED*/
-static
-int
-cmdNext(clientData, interp, objc, objv)
-ClientData clientData;
-Tcl_Interp *interp;
-     int objc;
-     Tcl_Obj *CONST objv[];		/* Argument objects. */
+static int cmdNext(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
 {
 	debug_new_action = TRUE;
 	debug_cmd = *(enum debug_cmd *)clientData;
@@ -756,13 +701,7 @@ Tcl_Interp *interp;
 }
 
 /*ARGSUSED*/
-static
-int
-cmdDir(clientData, interp, objc, objv)
-ClientData clientData;
-Tcl_Interp *interp;
-     int objc;
-     Tcl_Obj *CONST objv[];		/* Argument objects. */
+static int cmdDir(ClientData clientData,Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
 {
     char* frame;
     debug_cmd = *(enum debug_cmd *)clientData;
@@ -779,12 +718,7 @@ Tcl_Interp *interp;
 
 /*ARGSUSED*/
 static
-int
-cmdSimple(clientData, interp, objc, objv)
-ClientData clientData;
-Tcl_Interp *interp;
-     int objc;
-     Tcl_Obj *CONST objv[];		/* Argument objects. */
+int cmdSimple(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
 {
 	debug_new_action = TRUE;
 	debug_cmd = *(enum debug_cmd *)clientData;
@@ -793,10 +727,7 @@ Tcl_Interp *interp;
 	return TCL_RETURN;
 }
 
-static
-void
-breakpoint_destroy(b)
-struct breakpoint *b;
+static void breakpoint_destroy(struct breakpoint *b)
 {
 	if (b->file) Tcl_DecrRefCount(b->file);
 	if (b->pat) Tcl_DecrRefCount(b->pat);
@@ -819,23 +750,14 @@ struct breakpoint *b;
 	ckfree((char *)b);
 }
 
-static void
-savestr(objPtr,str)
-Tcl_Obj **objPtr;
-char *str;
+static void savestr(Tcl_Obj **objPtr,char *str)
 {
     *objPtr = Tcl_NewStringObj(str, -1);
     Tcl_IncrRefCount(*objPtr);
 }
 
 /*ARGSUSED*/
-static
-int
-cmdWhere(clientData, interp, objc, objv)
-ClientData clientData;
-Tcl_Interp *interp;
-     int objc;
-     Tcl_Obj *CONST objv[];		/* Argument objects. */
+static int cmdWhere(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
 {
     static char* options [] = {
 	"-compress",
@@ -901,13 +823,7 @@ Tcl_Interp *interp;
 #define breakpoint_fail(msg) {error_msg = msg; goto break_fail;}
 
 /*ARGSUSED*/
-static
-int
-cmdBreak(clientData, interp, objc, objv)
-ClientData clientData;
-Tcl_Interp *interp;
-     int objc;
-     Tcl_Obj *CONST objv[];		/* Argument objects. */
+static int cmdBreak(ClientData clientData, Tcl_Interp *interp, int objc, Tcl_Obj *CONST objv[])
 {
 	struct breakpoint *b;
 	char *error_msg;
@@ -994,13 +910,13 @@ Tcl_Interp *interp;
 	    break;
 	case BREAK_IF:   break;
 	case BREAK_THEN: break;
-		}
-		} else {
+	    }
+	      } else {
 		/* look for [file:]line */
 		char *colon;
 		char *linep;	/* pointer to beginning of line number */
-	char* ref = Tcl_GetString (objv[i]);
-	colon = strchr(ref,':');
+		char* ref = Tcl_GetString (objv[i]);
+		colon = strchr(ref,':');
 		if (colon) {
 			*colon = '\0';
 	    savestr(&b->file,ref);
@@ -1435,9 +1351,7 @@ int immediate;		/* if true, stop immediately */
 	}
 }
 
-void
-Dbg_Off(interp)
-Tcl_Interp *interp;
+void Dbg_Off(Tcl_Interp *interp)
 {
 	struct cmd_list *c;
 
@@ -1459,8 +1373,7 @@ Tcl_Interp *interp;
 /* allows any other part of the application to tell the debugger where the Tcl channel for stdin is. */
 /*ARGSUSED*/
 void
-Dbg_StdinMode(mode)
-     int mode;
+Dbg_StdinMode(int mode)
 {
   stdinmode = mode;
 }

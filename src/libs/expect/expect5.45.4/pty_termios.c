@@ -16,6 +16,9 @@ would appreciate credit if you use this file or parts of it.
 #endif
 
 #include "expect_cf.h"
+#ifdef HAVE_PTY_H
+#include <pty.h>
+#endif /* HAVE_PTY_H */
 
 /*
    The following functions are linked from the Tcl library.  They

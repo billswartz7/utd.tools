@@ -31,6 +31,10 @@
 
 #include "string.h"
 
+#ifdef HAVE_PTY_H
+#include <pty.h>
+#endif /* HAVE_PTY_H */
+
 #include "exp_rename.h"
 #include "exp_prog.h"
 #include "exp_command.h"
@@ -59,7 +63,7 @@ static int		ExpGetHandleProc _ANSI_ARGS_((ClientData instanceData,
 
 Tcl_ChannelType expChannelType = {
     "exp",				/* Type name. */
-    ExpBlockModeProc,			/* Set blocking/nonblocking mode.*/
+    NULL, /* ExpBlockModeProc */	/* Set blocking/nonblocking mode.*/
     ExpCloseProc,			/* Close proc. */
     ExpInputProc,			/* Input proc. */
     ExpOutputProc,			/* Output proc. */

@@ -116,6 +116,7 @@
 #undef HAVE_PTMX
 #undef HAVE_PTMX_BSD
 #undef HAVE_SCO_CLIST_PTYS
+#undef HAVE_PTY_H
 
 /*
  * Special hacks

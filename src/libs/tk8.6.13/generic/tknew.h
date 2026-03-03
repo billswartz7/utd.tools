@@ -61,7 +61,7 @@ EXTERN void Tk_ParasiteRestore(Tk_Window tkwin) ;
 EXTERN Tk_Window *Tk_WindowChildren(Tk_Window tkwin, int *num_children) ;
 EXTERN void Tk_UnmapParasite(Tk_Window tkwin) ;
 EXTERN void *Tk_CanvasDispFunc( void (*func)(void *) ) ;
-EXTERN void *Tk_CanvasScrollbarFunc(void (*sbar_func)(struct TkCanvas *canvas)) ;
+EXTERN void *Tk_CanvasScrollbarFunc( void (*func)(void *) ) ;
 EXTERN void Tk_CanvasDispUpdate( void ) ;
 EXTERN void Tk_DisplayButton(ClientData clientData) ;
 EXTERN void Tk_DisplayButtonText(ClientData clientData,char *text) ;

@@ -29,7 +29,7 @@ UTD_ENABLE_AUTOTOOLS
 AM_CONDITIONAL([UTD_STATIC_BUILD], [test x$utdlib_ok != xyes])
 
 # Checks for header files.
-AC_CHECK_HEADERS([fcntl.h limits.h memory.h stdlib.h string.h sys/param.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h limits.h memory.h stdlib.h string.h sys/param.h unistd.h sys/wait.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_TYPE_PID_T

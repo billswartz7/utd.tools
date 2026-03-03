@@ -13,9 +13,9 @@
  *
  */
 
-#include <tixPort.h>
-#include <tixInt.h>
-#include <tixDef.h>
+#include <tix/tixPort.h>
+#include <tix/tixInt.h>
+#include <tix/tixDef.h>
 
 /*
  * ToDo: 
@@ -142,8 +142,8 @@ typedef union CmpItemPtr {
  * The type record for bitmap images:
  */
 static int		ImgCmpCreate _ANSI_ARGS_((Tcl_Interp *interp,
-			    char *name, int argc, Tcl_Obj *CONST objv[],
-			    Tk_ImageType *typePtr, Tk_ImageMaster master,
+			    const char *name, int argc, Tcl_Obj *CONST objv[],
+			    const Tk_ImageType *typePtr, Tk_ImageMaster master,
 			    ClientData *clientDataPtr));
 static ClientData	ImgCmpGet _ANSI_ARGS_((Tk_Window tkwin,
 			    ClientData clientData));

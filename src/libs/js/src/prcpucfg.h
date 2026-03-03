@@ -142,7 +142,7 @@
 #ifdef XP_UNIX
 
 #if defined(__APPLE__)
-#ifdef __x86_64__
+#if defined(__x86_64__) || defined(__arm64__)
 
 #define IS_LITTLE_ENDIAN 1
 #undef  IS_BIG_ENDIAN

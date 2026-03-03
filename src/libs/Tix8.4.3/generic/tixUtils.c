@@ -10,10 +10,10 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * $Id: tixUtils.c,v 1.13 2008/02/28 04:29:17 hobbs Exp $
+ * $Id: tixUtils.c,v 1.1 2026/02/26 19:35:13 bills Exp bills $
  */
 
-#include <tcl.h>
+#include <tcl/tcl.h>
 #include <tixPort.h>
 #include <tixInt.h>
 
@@ -24,7 +24,7 @@
 static int	ReliefParseProc(ClientData clientData,
 	Tcl_Interp *interp, Tk_Window tkwin, CONST84 char *value,
 	char *widRec, int offset);
-static char *	ReliefPrintProc(ClientData clientData,
+static const char *	ReliefPrintProc(ClientData clientData,
 	Tk_Window tkwin, char *widRec, int offset,
 	Tix_FreeProc **freeProcPtr);
 
@@ -637,7 +637,7 @@ ReliefParseProc(clientData, interp, tkwin, value, widRec,offset)
     return TCL_ERROR;
 }
 
-static char *
+static const char *
 ReliefPrintProc(clientData, tkwin, widRec,offset, freeProcPtr)
     ClientData clientData;
     Tk_Window tkwin;

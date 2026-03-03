@@ -27,6 +27,7 @@
  *	The "bgexec" command was created by George Howlett.
  */
 
+#include "config.h"
 #include <utd/base.h>
 #include <utd/string.h>
 #include "bltInt.h"
@@ -421,7 +422,7 @@ static Blt_SwitchSpec switchSpecs[] =
 };
 
 static char *VariableProc _ANSI_ARGS_((ClientData clientData,
-	Tcl_Interp *interp, char *part1, char *part2, int flags));
+	Tcl_Interp *interp, const char *part1, const char *part2, int flags));
 static void TimerProc _ANSI_ARGS_((ClientData clientData));
 static void StdoutProc _ANSI_ARGS_((ClientData clientData, int mask));
 static void StderrProc _ANSI_ARGS_((ClientData clientData, int mask));
@@ -444,18 +445,20 @@ char *Blt_Itoa(INT value,char *buffer)
  * Results:
  *	The return value is a standard Tcl result.
  *
+ * Args:
+ *
+ *   ClientData clientData;	Contains a pointer to the tabset containing
+ *				this image. 
+ *    Tcl_Interp *interp;	Interpreter to send results back to
+ *    char *switchName;		Not used.
+ *    char *string;		String representation
+ *    char *record;		Structure record
+ *    int offset;		Offset to field in structure
+ *
  *----------------------------------------------------------------------
  */
 /*ARGSUSED*/
-static int
-StringToSignal(clientData, interp, switchName, string, record, offset)
-    ClientData clientData;	/* Contains a pointer to the tabset containing
-				 * this image. */
-    Tcl_Interp *interp;		/* Interpreter to send results back to */
-    char *switchName;		/* Not used. */
-    char *string;		/* String representation */
-    char *record;		/* Structure record */
-    int offset;			/* Offset to field in structure */
+static int StringToSignal(ClientData clientData, Tcl_Interp *interp, char *switchName, char *string, char *record, int offset)
 {
     int *signalPtr = (int *)(record + offset);
     int signalNum;
@@ -1238,12 +1241,7 @@ NotifyOnUpdate(Tcl_Interp *interp,Sink *sinkPtr,unsigned char *data,int nBytes)
 
 #else 
 
-static void
-NotifyOnUpdate(interp, sinkPtr, data, nBytes)
-    Tcl_Interp *interp;
-    Sink *sinkPtr;
-    unsigned char *data;
-    int nBytes;
+static void NotifyOnUpdate(Tcl_Interp *interp, Sink *sinkPtr, unsigned char *data, int nBytes)
 {
     Tcl_Obj *objPtr;
 
@@ -1469,7 +1467,7 @@ DestroyBackgroundInfo(BackgroundInfo *bgPtr)	/* Background info record. */
 #if (TCL_MAJOR_VERSION == 7)
 	    Tcl_DetachPids(1, &bgPtr->procArr[i]);
 #else
-	    Tcl_DetachPids(1, (Tcl_Pid *)bgPtr->procArr[i]);
+	    Tcl_DetachPids(1, (Tcl_Pid *)(long) bgPtr->procArr[i]);
 #endif /* TCL_MAJOR_VERSION == 7 */
 #endif /* WIN32 */
 	}
@@ -1498,13 +1496,8 @@ DestroyBackgroundInfo(BackgroundInfo *bgPtr)	/* Background info record. */
  * ----------------------------------------------------------------------
  */
 /* ARGSUSED */
-static char *
-VariableProc(
-    ClientData clientData,	/* File output information. */
-    Tcl_Interp *interp,
-    char *part1,
-    char *part2,		/* Not Used. */
-    int flags)
+static char * VariableProc( ClientData clientData, Tcl_Interp *interp,
+			    const char *part1, const char *part2, int flags)
 {
     if (flags & TRACE_FLAGS) {
 	BackgroundInfo *bgPtr = clientData;
@@ -1548,9 +1541,7 @@ VariableProc(
  *
  *----------------------------------------------------------------------
  */
-static void
-TimerProc(clientData)
-    ClientData clientData;
+static void TimerProc(ClientData clientData)
 {
     BackgroundInfo *bgPtr = clientData;
     register int i;
@@ -1656,7 +1647,7 @@ TimerProc(clientData)
 	*bgPtr->exitCodePtr = code;
     }
     DisableTriggers(bgPtr);
-    result = Tcl_SetVar(bgPtr->interp, bgPtr->statVar, 
+    result = (char *) Tcl_SetVar(bgPtr->interp, bgPtr->statVar, 
 	Tcl_DStringValue(&dString), TCL_GLOBAL_ONLY);
     Tcl_DStringFree(&dString);
     if (result == NULL) {
@@ -1688,9 +1679,7 @@ TimerProc(clientData)
  */
 /* ARGSUSED */
 static void
-StdoutProc(clientData, mask)
-    ClientData clientData;	/* File output information. */
-    int mask;			/* Not used. */
+StdoutProc( ClientData clientData, int mask)
 {
     BackgroundInfo *bgPtr = clientData;
 
@@ -1736,9 +1725,7 @@ StdoutProc(clientData, mask)
  */
 /* ARGSUSED */
 static void
-StderrProc(clientData, mask)
-    ClientData clientData;	/* File output information. */
-    int mask;			/* Not used. */
+StderrProc(ClientData clientData, int mask)
 {
     BackgroundInfo *bgPtr = clientData;
 
@@ -1764,9 +1751,7 @@ StderrProc(clientData, mask)
 }
 
 static void
-AddTimerHandler( bgPtr, interval )
-    BackgroundInfo *bgPtr;
-    int interval;
+AddTimerHandler( BackgroundInfo *bgPtr, int interval )
 {
     if(!(bgPtr->timerTokens)){
       bgPtr->timerTokens = 
@@ -1802,11 +1787,7 @@ AddTimerHandler( bgPtr, interval )
  */
 /* ARGSUSED */
 static int
-BgexecCmd(clientData, interp, argc, argv)
-    ClientData clientData;	/* Thread-specific data. */
-    Tcl_Interp *interp;		/* Current interpreter. */
-    int argc;			/* Number of arguments. */
-    char **argv;		/* Argument strings. */
+BgexecCmd(ClientData clientData, Tcl_Interp *interp, int argc, char **argv)
 {
     int *outFdPtr, *errFdPtr;
     int nProcs;
@@ -2091,7 +2072,7 @@ static Tcl_Command Blt_InitCmd(Tcl_Interp *interp,char *nsName,
 int
 Blt_BgExecInit(Tcl_Interp *interp)
 {
-    static Blt_CmdSpec cmdSpec = {"bgexec", BgexecCmd, };
+    static Blt_CmdSpec cmdSpec = {"bgexec",(Tcl_CmdProc *) BgexecCmd, };
 
     if (Blt_InitCmd(interp, "blt", &cmdSpec) == NULL) {
 	return TCL_ERROR;

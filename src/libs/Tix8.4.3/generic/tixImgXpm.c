@@ -1,5 +1,5 @@
 
-/*	$Id: tixImgXpm.c,v 1.2 2019/11/14 06:15:00 bills Exp $	*/
+/*	$Id: tixImgXpm.c,v 1.1 2026/02/26 19:53:43 bills Exp bills $	*/
 
 /*
  * tixImgXpm.c --
@@ -13,8 +13,8 @@
  *
  */
 
-#include <tixPort.h>
-#include <tixInt.h>
+#include <tix/tixPort.h>
+#include <tix/tixInt.h>
 #include <tixImgXpm.h>
 #include <utd/base.h>
 #include <ctype.h>
@@ -24,8 +24,8 @@
  */
 
 static int		ImgXpmCreate _ANSI_ARGS_((Tcl_Interp *interp,
-			    char *name, int argc, Tcl_Obj *CONST objv[],
-			    Tk_ImageType *typePtr, Tk_ImageMaster master,
+			    const char *name, int argc, Tcl_Obj *CONST objv[],
+			    const Tk_ImageType *typePtr, Tk_ImageMaster master,
 			    ClientData *clientDataPtr));
 static ClientData	ImgXpmGet _ANSI_ARGS_((Tk_Window tkwin,
 			    ClientData clientData));
@@ -496,7 +496,7 @@ static char ** ImgXpmGetDataFromString(interp, string, numLines_return)
      *		list[0] = "\"1\""
      *		list[1] = "\"2\""
      */
-    if (Tcl_SplitList(interp, list, &numLines, &data) != TCL_OK) {
+    if (Tcl_SplitList(interp, list, &numLines, (const char ***) &data) != TCL_OK) {
 	goto error;
     } else {
 	if (numLines == 0) {

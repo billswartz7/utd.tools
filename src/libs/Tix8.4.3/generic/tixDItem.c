@@ -30,7 +30,7 @@ static int   DItemParseProc _ANSI_ARGS_((ClientData clientData,
 		Tcl_Interp *interp, Tk_Window tkwin, CONST84 char *value,
 		char *widRec, int offset));
 
-static char *DItemPrintProc _ANSI_ARGS_((
+static const char *DItemPrintProc _ANSI_ARGS_((
 		ClientData clientData, Tk_Window tkwin, char *widRec,
 		int offset, Tcl_FreeProc **freeProcPtr));
 
@@ -548,7 +548,7 @@ static int DItemParseProc(clientData, interp, tkwin, value, widRec,offset)
     return TCL_OK;
 }
 
-static char *DItemPrintProc(clientData, tkwin, widRec,offset, freeProcPtr)
+static const char *DItemPrintProc(clientData, tkwin, widRec,offset, freeProcPtr)
     ClientData clientData;
     Tk_Window tkwin;
     char *widRec;

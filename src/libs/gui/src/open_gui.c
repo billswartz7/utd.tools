@@ -44,7 +44,7 @@ static void check_main_reconfig( ClientData clientData, XEvent *xevent ) ;
 static void graphics_exit_func(void) ;
 static void update_events(INT flags) ;
 static void graphics_exit(ClientData data) ;
-static void scrollbar_update( struct TkCanvas *canvasData ) ;
+static void scrollbar_update( void *canvasData ) ;
 static void init_parasite( GraphicsContextPtr gc_p ) ;
 static void wait_for_main( GraphicsContextPtr gc_p ) ;
 static void free_gc( GraphicsContextPtr gc_p ) ;
@@ -1091,7 +1091,7 @@ static void utd_refresh_func(VOIDPTR data) {
 
 } /* end utd_refresh_func() */
 
-static void scrollbar_update( struct TkCanvas *canvasData )
+static void scrollbar_update( void *canvasData )
 {
     int result;
     char buffer[200];

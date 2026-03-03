@@ -114,7 +114,7 @@ TEA_ENABLE_SYMBOLS
 #-------------------------------------------------------------------------
 # Check for system header files.
 #-------------------------------------------------------------------------
-AC_CHECK_HEADERS(strings.h termios.h sys/ioctl.h util.h libutil.h)
+AC_CHECK_HEADERS(strings.h string.h termios.h sys/ioctl.h util.h libutil.h)
 AC_CHECK_HEADER(sys/select.h,    AC_DEFINE(HAVE_SYS_SELECT_H))
 AC_CHECK_HEADER(sys/sysmacros.h, AC_DEFINE(HAVE_SYSMACROS_H))
 
@@ -135,6 +135,7 @@ AC_CHECK_HEADER(sys/ptem.h,      AC_DEFINE(HAVE_SYS_PTEM_H))
 AC_CHECK_HEADER(sys/strredir.h,  AC_DEFINE(HAVE_STRREDIR_H))
 AC_CHECK_HEADER(sys/strpty.h,    AC_DEFINE(HAVE_STRPTY_H))
 AC_CHECK_HEADER(sys/pty.h,    AC_DEFINE(HAVE_SYS_PTY_H_H))
+AC_CHECK_HEADER(pty.h,    AC_DEFINE(HAVE_PTY_H))
 
 AC_MSG_CHECKING([for sys/bsdtypes.h])
 if test "ISC_${ISC}" = "ISC_1"   ;    then
@@ -471,7 +472,7 @@ memcpy(s1,s2,0);
 AC_MSG_CHECKING([if WNOHANG requires _POSIX_SOURCE])
 AC_TRY_RUN([
 #include <sys/wait.h>
-main() {
+int main() {
 #ifndef WNOHANG
 	return 0;
 #else
@@ -491,7 +492,7 @@ rm -rf wnohang
 AC_TRY_RUN([
 #include <stdio.h>
 #include <sys/wait.h>
-main() {
+int main() {
 #ifdef WNOHANG
 	FILE *fp = fopen("wnohang","w");
 	fprintf(fp,"%d",WNOHANG);
@@ -556,7 +557,7 @@ int n;
 signal_rearms++;
 }
 
-main()
+int main()
 {
 	signal(SIGINT,parent_sigint_handler);
 
@@ -718,7 +719,7 @@ AC_MSG_CHECKING([for struct sgttyb])
 AC_TRY_RUN([
 #include <stdlib.h>
 #include <sgtty.h>
-main()
+int main()
 {
   struct sgttyb tmp;
   exit(0);
@@ -743,7 +744,7 @@ if test $mach -eq 0 ; then
   AC_MSG_CHECKING([for struct termio])
   AC_TRY_RUN([#include <termio.h>
 #include <stdlib.h>
-  main()
+  int main()
   {
     struct termio tmp;
     exit(0);
@@ -766,7 +767,7 @@ if test $mach -eq 0 ; then
 #  endif
 #include <stdlib.h>
 #  include <termios.h>
-  main()
+  int main()
   {
     struct termios tmp;
     exit(0);
@@ -788,7 +789,7 @@ AC_TRY_RUN([
 #include <inttypes.h>
 #endif
 #include <termios.h>
-main() {
+int main() {
 #if defined(TCGETS) || defined(TCGETA)
 	return 0;
 #else
@@ -810,7 +811,7 @@ AC_TRY_RUN([
 #include <inttypes.h>
 #endif
 #include <termios.h>
-main() {
+int main() {
 #ifdef TIOCGWINSZ
 	return 0;
 #else
@@ -829,7 +830,7 @@ main() {
 AC_MSG_CHECKING([for Cray-style ptys])
 SETUID=":"
 AC_TRY_RUN([
-main(){
+innt main(){
 #ifdef CRAY
 	return 0;
 #else
@@ -885,7 +886,7 @@ AC_TRY_RUN([
 extern char *tzname[2];
 extern int daylight;
 #include <stdlib.h>
-main()
+int main()
 {
   int *x = &daylight;
   char **y = tzname;
