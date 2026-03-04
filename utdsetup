@@ -1,0 +1,98 @@
+#!/bin/sh
+# The initialization of the utdtools variables
+# "$RCSfile: setenv.sh,v $ $Revision: 1.1 $ $Date: 2018/06/30 02:10:53 $"
+#
+ 
+ 
+func_echo_line () {
+  my_line="$1"; shift
+  if [ -x /bin/csh -o /usr/bin/csh -o /bin/tcsh -o /usr/bin/tcsh ] ; then
+    csh -c "echo -n '$my_line'"
+  else 
+    echo -n "$my_line"
+  fi
+}
+
+# This code below shouldn't work but seems to work on all Bourne and
+# Bash shells tests.  If you don't give any arguments other than this
+# shell script, then $# is set to 1 and you get garbage arguments from
+# possible previous invocation of some other script. However, if
+# the user did pass extra arguments, then they are correctly passwd to
+# the script.  So to make things work, we specifically look for keywords
+# to enable the code which is why we look for help and utdcd which we
+# hope is distinct enough from previous invocations of the shell so 
+# we don't have conflicts. - WPS.
+# 
+dir_flag=0
+if [ $# -ge 1 ] ; then
+    if [ $1 = "help" -o $1 = "-help" -o $1 = "--help" ] ; then
+      echo ""
+      echo "UTD tools setup help (Bourne/Bash Shells)"
+      echo ""
+      echo "This install the proper binaries for the UTD tool repository."
+      return 0
+    fi
+fi
+
+
+echo " "
+echo "Initializing the UTD tools environment variables..."
+
+
+# determine the operating system name
+# first see if uname command exists
+# uname >& /dev/null || {
+uname > /dev/null || {
+  echo " " ;
+  echo "WARNING: 'uname' system command does not exist in search path." ;
+  echo "Please add uname to the current search path." ;
+  echo " " ;
+}
+
+# Now detect to see if the arch directory exists.
+if [ -d ./arch ] ; then
+  echo "Checking for arch directory...exists (good)" 
+else 
+  echo "Checking for arch directory...does not exists"
+  echo "ERROR: Please check your repository as not all data has been downloaded correctly."
+  echo " "
+  exit 1
+fi
+
+echo "Detecting utdtools version" 
+raw_data=`ls ./arch/*data*.tgz`
+# echo "raw data:$raw_data"
+rd=${raw_data##./arch/}
+# echo "new:$rd"
+version=${rd%%.data.tgz}
+echo "Version detected:$version"
+
+current_os=`./src/bin/utduname`
+echo "Detected current operating system as ${current_os}"
+
+# Look for this OS binary.
+utd_binary="${version}.${current_os}.tgz"
+echo "utd_binary: $utd_binary"
+utd_binary_location="./arch/${version}.${current_os}.tgz"
+echo "utd_binary_location: $utd_binary_location"
+
+if [ ! -e ${utd_binary_location} ] ; then
+  echo "Binary for this OS was not found in the arch directory."
+  exit 1
+fi
+
+func_echo_line "Do you wish to install the binary for this OS? (default yes) "
+read line
+if [ ! "$line" ] || [ $line = "n" ] || [ $line = "N" ] || [ $line = "no" ] || [ $line = "NO" ]
+then
+  if [ "$line" ] ; then 
+    exit 1 ;
+  fi
+fi
+
+echo "Installing binaries for ${current_os}..."
+gzip -d -c ${utd_binary_location} | tar xvf - 
+
+# Install data directory.
+utd_data_location="./arch/${version}.data.tgz"
+gzip -d -c ${utd_data_location} | tar xvf - 
