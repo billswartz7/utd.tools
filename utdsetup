@@ -90,6 +90,18 @@ then
   fi
 fi
 
+if [ -d ${version} ] ; then 
+  func_echo_line "An existing version exists, do you wish to reinstall the utdtools software? (default yes) "
+  read line
+  if [ ! "$line" ] || [ $line = "n" ] || [ $line = "N" ] || [ $line = "no" ] || [ $line = "NO" ]
+  then
+    if [ "$line" ] ; then 
+      exit 1 ;
+    fi
+  fi
+  \rm -rf ${version}
+fi
+
 echo "Installing binaries for ${current_os}..."
 gzip -d -c ${utd_binary_location} | tar xvf - 
 

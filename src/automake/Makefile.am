@@ -162,7 +162,8 @@ save_data:
 	mkdir tmp ; \
 	cd tmp ; \
 	bzip2 -d -c ../$${VERSION}.data.temp.bz2 | tar xvf - ; \
-	rm -rf  bin/$${ARCH} lib/$${ARCH} ; \
+	rm -rf  $${VERSION}/bin/$${ARCH} $${VERSION}/lib/$${ARCH} ; \
+	rm -rf  $${VERSION}/tcl/quiztool ; \
 	find . -name '__pycache__' -exec \rm -rf {} \; -print ; \
 	tar cvf - $${VERSION} | gzip -9 -c >$${OUTPUT_DIR}/$${VERSION}.data.tgz ; \
 	cd $${OUTPUT_DIR} ; \
