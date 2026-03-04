@@ -6,7 +6,7 @@
  
 func_echo_line () {
   my_line="$1"; shift
-  if [ -x /bin/csh -o /usr/bin/csh -o /bin/tcsh -o /usr/bin/tcsh ] ; then
+  if [ -x /bin/csh -o -x /usr/bin/csh -o -x /bin/tcsh -o -x /usr/bin/tcsh ] ; then
     csh -c "echo -n '$my_line'"
   else 
     echo -n "$my_line"
