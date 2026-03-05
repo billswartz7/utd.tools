@@ -14,4 +14,5 @@ if [ ! "${utdtools}" ] ; then
   exit 1;
 fi
 
-cometTix -N -E -v ${utdtools}/${UTDTOOLSVERSION}/tcl/EZ/tcl/ezlearn.tcl
+export DYLD_LIBRARY_PATH="${UTDTOOLS}/${UTDTOOLSVERSION}/lib/${UTDTOOLSOS}"
+DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}" cometTix -N -E -v ${utdtools}/${UTDTOOLSVERSION}/tcl/EZ/tcl/ezlearn.tcl
