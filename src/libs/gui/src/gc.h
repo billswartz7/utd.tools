@@ -68,6 +68,7 @@ extern "C" {
     int draw_print_area ;	/* draw print area */
     BOOL graphics_enabled ;	/* called but not enabled */
     BOOL sync ;			/* if true use X synchronize */
+    BOOL buggy_mac ;		/* if true we need to send internal Exposure events */
     BOOL read_args ;		/* if true we already read the arguments */
     BOOL wait_loop ;		/* if true we iterate around the loop */
     FILE *did_file ;		/* did file for interpreter */

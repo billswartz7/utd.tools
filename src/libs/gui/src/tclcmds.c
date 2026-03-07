@@ -642,8 +642,10 @@ static INT win_objfunc(ClientData d_p,Tcl_Interp *i_p,INT objc,Tcl_Obj * const o
     Display   *display ;	/* the X display */
     Tcl_Obj *windowObj ;	/* window object info */
     Tcl_Obj *resultPtr ;	/* result info */
+    GraphicsContextPtr gc_p ;	/* graphics context */
     char name_buffer[80] ;	/* buffer for new name */
     const char *at ;		/* label position */
+    char *arg_1 ;		/* first argument */
     char *window_name ;		/* name of window */
     char *parasite_keyword ;	/* parasite keyword */
     const char *result_p ;	/* result of command */
@@ -659,6 +661,33 @@ static INT win_objfunc(ClientData d_p,Tcl_Interp *i_p,INT objc,Tcl_Obj * const o
       at = MSG_AT ;
       utDmsgf(ERRMSG,at,routine,"wrong number of arguments\n" );
       return(TCL_ERROR) ;
+    }
+    arg_1 = Tcl_GetString( objv[1] ) ;
+    if( utDstricmp( arg_1, "register" ) == STRINGEQ ){
+      gc_p = (GraphicsContextPtr) d_p ;
+      if(!(gc_p->buggy_mac)){
+	return(TCL_OK) ;
+      }
+      window_name = Tcl_GetString( objv[2] ) ;
+      if( window_name ){
+	if( *window_name == '.' ){
+	  /* TK window path */
+	  mainWindow = Tk_MainWindow(i_p) ;
+	  tk_window = Tk_NameToWindow( i_p, window_name, mainWindow ) ;
+	  if( tk_window ){
+	    utDmsgf(IMSG,at,routine,"toplevel window:%s registered for fixing broken Mac X11 Server.\n", window_name );
+	    Tk_CreateEventHandler( tk_window, 
+	      StructureNotifyMask | SubstructureNotifyMask, utDGUIcheck_reconfig, gc_p ) ;
+	  }
+	} else {
+	  Tcl_AppendResult(i_p, 
+	      "ERROR:numeric window numbers not supported yet.\n",NULL) ;
+	  result_p = Tcl_GetStringResult( i_p ) ;
+	  utDmsgf( ERRMSG,at,NULL,"%s win:%s\n", result_p, window_name ) ;
+	  return(TCL_ERROR) ;
+	}
+      }
+      return( TCL_OK ) ;
     }
     mainWindow = Tk_MainWindow(i_p) ;
     if(!(mainWindow)){

@@ -8,6 +8,9 @@ autom4te.cache
 c
 c2
 *.o
+*.orig
+*.bak
+*.old
 *.lo
 *.deps
 *.dSYM

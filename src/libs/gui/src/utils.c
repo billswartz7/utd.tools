@@ -135,6 +135,7 @@ BOOL utDGUI_Tcl_init( int argc,char *argv[],Tcl_Interp *interp, FILE *did_file)
   Tcl_DStringInit( &(is_p->command) );
   Tcl_DStringInit( &(is_p->line) );
   Tcl_ResetResult(interp);
+  return(FALSE) ;
 
 } /* end utDGUI_Tcl_init() */
 

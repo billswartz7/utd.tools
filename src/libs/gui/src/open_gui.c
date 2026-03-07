@@ -39,7 +39,6 @@ static void utd_refresh_func(VOIDPTR data) ;
 static void stdinProc( ClientData clientData, int mask) ;
 static void prompt( Tcl_Interp *interp,InteractiveState *isPtr) ;
 static int my_x_error( Display *display, XErrorEvent *event) ;
-static void check_reconfig( ClientData clientData, XEvent *xevent ) ;
 static void check_main_reconfig( ClientData clientData, XEvent *xevent ) ;
 static void graphics_exit_func(void) ;
 static void update_events(INT flags) ;
@@ -53,6 +52,7 @@ static void cleanup_x( GraphicsContextPtr gc_p,
                        void (*refresh_func)(UTDTILERECTPTR,void *) ) ;
 static void gsetfont( GraphicsContextPtr gc_p, const char *fname ) ;
 static void _gfont_bound( GraphicsContextPtr gc_p, INT *width_ret, INT *height_ret )  ;
+static INT renameToplevel( Tcl_Interp *i_p, GraphicsContextPtr gc_p ) ;
 static XFontStruct *_gsetFont( GraphicsContextPtr gc_p, const char *fname,Font *font ) ;
 
 /* ***************** STATIC VARIABLE DEFINITIONS ******************* */
@@ -551,6 +551,18 @@ static void setup_X( Tcl_Interp *interp, GraphicsContextPtr gc_p ) {
   }
 
   /* -----------------------------------------------------------------
+   * See if we need to turn on buggy mac processing.
+  ----------------------------------------------------------------- */
+  reply = XGetDefault( gc_p->dpy, GRAPHICS, "fix_buggy_apple_server" ) ;
+  if( reply ){
+    if( (utDstricmp( reply, "on" ) == STRINGEQ) || (utDstricmp( reply, "yes") == STRINGEQ) ){
+      gc_p->buggy_mac = TRUE ; /* dont fix by default */
+      utDmsgf( IMSG, "Gui:setup_X", routine, "fix buggy Apple X11 server mode on\n" ) ;
+      renameToplevel( interp, gc_p ) ;
+    } 
+  }
+
+  /* -----------------------------------------------------------------
    Now set earlier in the flow.
   XSetErrorHandler( my_x_error ) ;
   ----------------------------------------------------------------- */
@@ -724,10 +736,10 @@ static void cleanup_x( GraphicsContextPtr gc_p, void (*refresh_func)(UTDTILERECT
       Tk_Depth( gc_p->drawWindow) ) ;
   gc_p->blit_pixmap = XCreatePixmap( gc_p->dpy, gc_p->draw, gc_p->winwidth, gc_p->winheight, 
       Tk_Depth( gc_p->drawWindow) ) ;
-  // Tk_CreateForcedEventHandler( gc_p->drawWindow, 
-  //  StructureNotifyMask | SubstructureNotifyMask, check_reconfig, gc_p ) ;
+  Tk_CreateEventHandler( gc_p->mainWindow, 
+      StructureNotifyMask | SubstructureNotifyMask, utDGUIcheck_reconfig, gc_p ) ;
   Tk_CreateEventHandler( gc_p->drawWindow, 
-                         StructureNotifyMask | SubstructureNotifyMask, check_reconfig, gc_p ) ;
+                         StructureNotifyMask | SubstructureNotifyMask, utDGUIcheck_reconfig, gc_p ) ;
   /* initialize the pixmap */
   XFillRectangle(gc_p->dpy,DRAWABLE,gc_p->graphicContext[UTDWHITE],0,0,gc_p->winwidth,gc_p->winheight);
 
@@ -1176,10 +1188,43 @@ const char *_utDGUI_exec_tcl( const char *command, INT *status, MSG_TYPE_T mtype
       }
     }
     return( result ) ;
-} /* end g_exec_tcl() */
+} /* end _utDGUI_exec_tcl() */
+
+void utDGUIforceExposureRedraw( GraphicsContextPtr gc_p, Window w )
+{
+    Window    rootW ;		/* X root window ID */
+    Window    child ;		/* Child window of current window */
+    Window    parent ;		/* X parent window ID */
+    Window    *children ;	/* X children array */
+    XWindowAttributes wattr ;  	/* child window attributes */
+    unsigned int num_children ; /* number of children for window */
+    int i ;			/* child counter */
+
+
+    DBG( fprintf( stderr, "entered utDGUIforceExposureRedraw win:%d\n", (int) w ) ; ) ;
+    if(!(gc_p) || !(w) ){
+      return ;
+    }
+
+    if (XQueryTree(gc_p->dpy, w, &rootW, &parent, &children, &num_children) != 0) {
+      DBG( fprintf( stderr, "root:%d parent:%d\n", (int) rootW, (int) parent ) ; ) ;
+      if( children ){
+	for( i = 0 ; i < num_children ; i++ ){
+	  child = children[i] ;
+	  XGetWindowAttributes( gc_p->dpy, child, &wattr ) ;
+	  if( wattr.class == InputOutput ){
+	    XClearArea( gc_p->dpy, child, 0, 0, 0, 0, True ) ;
+	    DBG( fprintf( stderr, "  clearing window:%d\n", (int) child ) ; ) ;
+	  }
+	  utDGUIforceExposureRedraw( gc_p, child ) ;
+	}
+	XFree((char *) children) ;
+      }
+    }
+} /* end utDGUIforceExposureRedraw() */
 
 /* update windows if configuration changes */
-static void check_reconfig( ClientData clientData, XEvent *xevent )
+void utDGUIcheck_reconfig( ClientData clientData, XEvent *xevent )
 {
   GraphicsContextPtr gc_p ;		/* graphics context pointer */
 
@@ -1190,6 +1235,14 @@ static void check_reconfig( ClientData clientData, XEvent *xevent )
   gc_p = (GraphicsContextPtr) clientData ;
   if(!(gc_p)){
     return ;
+  }
+  if( gc_p->buggy_mac ){
+    DBG( fprintf( stderr, "entered utDGUIcheck_reconfig bug window:%d\n", (int) xevent->xconfigure.window ) ; ) ;
+    if( xevent->xconfigure.window == gc_p->draw ){
+      utDGUIforceExposureRedraw( gc_p, gc_p->main ) ;
+    } else {
+      utDGUIforceExposureRedraw( gc_p, xevent->xconfigure.window ) ;
+    }
   }
   if( xevent->xconfigure.window == gc_p->draw ){
     if( xevent->xconfigure.override_redirect ||
@@ -1215,7 +1268,43 @@ static void check_reconfig( ClientData clientData, XEvent *xevent )
 		     gc_p->scale, gc_p->precision ) ;
     }
   }
-} /* end check_reconfig() */
+} /* end utDGUIcheck_reconfig() */
+
+
+static INT renameToplevel( Tcl_Interp *i_p, GraphicsContextPtr gc_p )
+{
+    INT status ;			/* return status */
+    Tcl_Obj *objv[4] ;			/* build a command vector */
+    UTDDSTRING dstring ;		/* dynamic string */
+    const char *error_p ;		/* error message */
+    const char *result_p ;		/* command result */
+    FILE *fp ;				/* file pointer */
+    char *filename ;			/* build filename for script file */
+
+    objv[0] = Tcl_NewStringObj( "rename", -1) ;
+    objv[1] = Tcl_NewStringObj( "toplevel", -1) ;
+    objv[2] = Tcl_NewStringObj( "builtin_toplevel", -1) ;
+    objv[3] = NULL ;
+    status = Tcl_RenameObjCmd( NULL, i_p, 3, objv ) ;
+
+    utDdstring_init( &dstring ) ;
+    filename = utDdstring_printf( &dstring, "%s/%s/tcl/workaround/mac_xquartz.tcl", 
+				  gc_p->utdgui, gc_p->utdversion ) ;
+    if( !(utDfileExists(filename)) ){
+      utDdstring_free( &dstring ) ;
+      return( TCL_ERROR ) ;
+    }
+    status = Tcl_EvalFile(i_p, filename);
+    result_p = Tcl_GetStringResult( i_p ) ;
+    if (status != TCL_OK) {
+      error_p = Tcl_GetVar2( i_p, "errorInfo", NULL, TCL_GLOBAL_ONLY ) ;
+      if( error_p ){
+	utDmsgf(ERRMSG,"renameTopLevel:1", "renameTopLevel", "%s\n", error_p ) ;
+      }
+    }
+    utDdstring_free( &dstring ) ;
+    return( status ) ;
+} /* end renameTopLevel() */
 
 GraphicsContextPtr utDGUI_get_gc(void) {
     GraphicsContextPtr gc_p ;	/* graphics context pointer */

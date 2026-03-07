@@ -72,6 +72,8 @@ extern int TclRenameCommand(
     const char *oldName,	/* Existing command name. */
     const char *newName) ;	/* New command name. */
 
+extern void utDGUIcheck_reconfig( ClientData clientData, XEvent *xevent ) ;
+
 #ifdef __cplusplus
 } ;
 #endif /* __cplusplus */

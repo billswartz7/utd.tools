@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# "$RCSfile: make_lib_dir,v $ $Revision: 1.30 $ $Date: 2012/05/23 16:11:40 $"
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+# ############## shell script to set up directory structure ################
+cd ${utdtools}
+find . -name "*~" -exec \rm -f {} \; -print
+find . -name "*.bak" -exec \rm -f {} \; -print
+find . -name "*.old" -exec \rm -f {} \; -print
+find . -name "*.orig" -exec \rm -f {} \; -print
+find . -name "*.dSYM" -exec \rm -rf {} \; -print
+find . -name ".DS_Store" -exec \rm -f {} \; -print
+
+exit 0 ;
+
