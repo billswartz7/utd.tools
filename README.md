@@ -20,10 +20,21 @@ state-of-the-art.
 
 ### End-users
 End-users should not need to worry about building the tools. In 
-fact, all they should do it go the latest version directory (v1.0.0),
-and type<br> 
+fact, all they need to install the proper binaries and data is to clone the directory, change to the utd.tools directory and then type:<br> 
+
+./utdsetup
+
+This script will detect the current OS configuration and unpack the proper binaries.   The script will ask a few questions and in most cases you should use the default settings.   After this step, you should see a v1.#.# directory such as v1.0.0 in the utd.tools directory.  In order to use utd.tools, you should change directory to this installed version.   For example,
+
+cd v1.0.0
+
+Next, the user should enter the appropriate set environment script which allows execution of utdtools programs from any directory.   Enter:<br>
+
   source setenv.sh<br>
 for Bourne or BASH users <br>
+
+or
+
   source setenv.csh <br>
 for CSH and TCSH users.
 
@@ -129,6 +140,23 @@ libreadline-dev
 After these packages are installed, you should be able to follow
 the steps under "Building as an ADVANCED USER" to successfully build
 all of the tools.
+
+#### Mac Users
+Mac Users need to install XQuartz.   You can find it at https://www.xquartz.org/
+
+Newer versions of the MacOSX operation system have an interoperability problem with the X11 Server and fail to properly redraw the screen often resulting in black areas.
+The utd tools code has a workaround to rectify the problem.   After install XQuartz, if you add the following to the your ~/.Xdefaults file, utdtools will
+turn on extra code which will redraw the internal windows properly.  This mode is off by default.   To enable the workaround put<br>
+
+utdtools*fix_buggy_apple_server : on
+
+in your ~/.Xdefaults file.  Then update the X11 resource database by entering on the command line:<br>
+
+xrdb -nocpp < ~/.Xdefaults
+
+If you have properly enabled the values into the X11 resource database, graphical programs will output the following line:<br>
+
+% [setup_X]:fix buggy Apple X11 server mode on
 
 #### Building as a DEVELOPER
 
