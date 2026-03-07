@@ -19,12 +19,13 @@ state-of-the-art.
 ## Getting Started
 
 ### End-users
-End-users should not need to worry about building the tools. In 
-fact, all they need to install the proper binaries and data is to clone the directory, change to the utd.tools directory and then type:<br> 
+End-users should not need to worry about building the tools. In fact, all one needs to do is to clone the utd.tools repository, and then change to the utd.tools directory and then type:<br> 
 
 ./utdsetup
 
-This script will detect the current OS configuration and unpack the proper binaries.   The script will ask a few questions and in most cases you should use the default settings.   After this step, you should see a v1.#.# directory such as v1.0.0 in the utd.tools directory.  In order to use utd.tools, you should change directory to this installed version.   For example,
+This script will detect the current OS configuration and unpack the proper binaries.   The script will ask a few questions and in most cases you should use the default settings.   After this step, you should see a v1.#.# directory such as v1.0.0 in the utd.tools directory.  If you have previously cloned the repository, then you can update the repository using the **git pull** command.
+
+In order to use utd.tools, you should change directory to this installed version.   For example,
 
 cd v1.0.0
 
@@ -42,6 +43,8 @@ The binaries are carefully built to be as backward compatible as possible,
 allowing use on as many systems as possible.  The focus of these binaries
 is to be as conservative as possible. Usability and correctness are traded
 off against maximum optimization.
+
+You should now be able to run programs such as **mempractice**, **cachepractice**, or  **utdezlearn**.
 
 ### Advanced users
 Advanced users are expected to build the entire project resulting in
@@ -100,6 +103,8 @@ Make a directory to compile and link all of the programs
 
 "mkdir build"
 
+if it doesn't already exist. 
+
 Change the current directory to the build directory
 
 "cd build"
@@ -117,6 +122,13 @@ That is it!  No need to type "make install" as the tools are going
 to be created at $(UTDTOOLS)/$(UTDOOLSVERSION)
 
 If everything is correct, you should see after the build<BR>
+
+####################################<br>
+ Congratulations! Build is complete.<br>
+####################################<br>
+
+There should now be a utd.tools/v.#.# directory which now contains all the compiled and linked programs as well as any scripts.   You now will be able to use the tools from the
+version release directory.
 
 #### Building under WSL
 Now utdtools compiles and build under Windows Subsystem for Linux (WSL).
