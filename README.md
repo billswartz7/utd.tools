@@ -19,7 +19,7 @@ state-of-the-art.
 ## Getting Started
 
 ### End-users
-End-users should not need to worry about building the tools. In fact, all one needs to do is to clone the utd.tools repository, and then change to the utd.tools directory and then type:<br> 
+End-users should not need to worry about building the tools. In fact, all one needs to do is to clone the utd.tools repository using the **git clone https://github.com/billswartz7/utd.tools** command, and then change to the utd.tools directory and then type:<br> 
 
 ./utdsetup
 
