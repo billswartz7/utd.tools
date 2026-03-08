@@ -63,7 +63,7 @@ dist_bin_SCRIPTS = bin/utdos bin/utduname bin/utdcustom_python bin/utdmodules \
 		   bin/utd_run_valgrind \
 		   tcl/EZ/tcl/utdezlearn \
 		   tcl/cache/cachepractice \
-		   tcl/banks/membanks tcl/memory/mempractice
+		   tcl/banks/membanks tcl/memory/mempractice tcl/reg_programming/reg_programming
 
 config.recursive : 
 	make config
