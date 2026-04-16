@@ -1,0 +1,18 @@
+RS Add1 IntegerAdd
+RS Add2 IntegerAdd
+RS Add3 IntegerAdd
+RS Mult1 IntegerMult
+RS Mult2 IntegerMult
+LS Load1 LoadStore
+LS Load2 LoadStore
+LS Load3 LoadStore
+# CMD Name ReserveType EvaluationMethod {IssueCycles ExecCycles CommitCycles}
+CMD add IntegerAdd {Tcl_builtin +} {1 0 1}
+CMD sub IntegerAdd {Tcl_builtin -} {1 0 1}
+CMD mult IntegerMult {Tcl_builtin *} {1 2 1}
+CMD div IntegerMult {Tcl_builtin /} {1 3 1}
+CMD lw LoadStore {ls_parse} {1 1 1}
+CMD sw LoadStore {ls_parse} {1 0 1}
+Registers Integer 0 31
+IssueToExecLatency 0
+Language Mips32

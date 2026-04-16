@@ -1,0 +1,15 @@
+#!/bin/sh
+
+utdtools=${UTDTOOLS}
+if [ ! "${utdtools}" ] ; then
+  echo "ERROR: UTDTOOLS environment variable not set." 
+  echo "Please set it to the UTDTOOLS root directory using either"
+  echo "source setenv.sh"
+  echo "or"
+  echo "source setenv.csh"
+  echo "depending on your shell."
+  exit 1;
+fi
+
+export DYLD_LIBRARY_PATH="${UTDTOOLS}/${UTDTOOLSVERSION}/lib/${UTDTOOLSOS}"
+DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}" cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/tomasulo/tomasulo.tcl -- $1
