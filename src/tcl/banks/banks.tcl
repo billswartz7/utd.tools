@@ -183,7 +183,7 @@ namespace eval utdmbanks {
       } else {
 	set hexval_orig [format %X $addr_orig]
 	set hex_orig "0x${hexval_orig}"
-	$ntable data hex "* $hex_orig $hex"
+	$ntable data hex "* $hex_orig -> $hex"
       }
       set binrep [dec2bin $item]
       $ntable data binrep $binrep
@@ -616,6 +616,7 @@ if {($info == "") || ($info == "help")} {
   ::utdmbanks::test $database
 
 } elseif {($info == "interact")} {
+  wm withdraw .
   while {1} {
     puts stdout "\nMembanks simulator version 2.0\n"
     puts -nonewline stdout "How many memory banks are present? "

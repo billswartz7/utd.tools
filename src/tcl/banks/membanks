@@ -11,4 +11,6 @@ if [ ! "${utdtools}" ] ; then
   exit 1;
 fi
 
-cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/banks/banks.tcl -- interact
+
+export DYLD_LIBRARY_PATH="${UTDTOOLS}/${UTDTOOLSVERSION}/lib/${UTDTOOLSOS}"
+DYLD_LIBRARY_PATH="${DYLD_LIBRARY_PATH}" cometTix -do ${utdtools}/${UTDTOOLSVERSION}/tcl/banks/banks.tcl -- interact
