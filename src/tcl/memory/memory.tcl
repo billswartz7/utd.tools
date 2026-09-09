@@ -201,10 +201,18 @@ namespace eval utdmemory {
       -value {2} \
       -variable ::utdmemory::modeS
 
+    radiobutton $fmode.rlang \
+      -command "::utdmemory::update_mode $w" \
+      -foreground {black} \
+      -text {Rust} \
+      -value {3} \
+      -variable ::utdmemory::modeS
+
     pack $fmode.modelab -side left -fill x -expand true
     pack $fmode.basic -side left
     pack $fmode.pointer -side left
     pack $fmode.clang -side left
+    pack $fmode.rlang -side left
 
     grid $tbl -row 0 -column 0 -columnspan 2 -sticky news
     grid $vsb -row 0 -column 2 -sticky ns
@@ -370,7 +378,43 @@ namespace eval utdmemory {
       set indirectionS 0
     }
 
-    if {$modeS == 2} {
+    if {$modeS == 3} {
+      set var_choices "a b conv argv myarray myaddress buffer edge node"
+      set num_vars [llength $var_choices]
+      incr num_vars -1
+      set var_idx [rand_range 0 $num_vars]
+      set varname [lindex $var_choices $var_idx]
+      set questionS "Question: Given the following Rust definitions: "
+      if {$word_size == 8} {
+	set vsize "i64"
+      } elseif {$word_size == 4} {
+	set vsize "i32"
+      } elseif {$word_size == 3} {
+	utdmsg errmsg "new_question" "Invalid word size for C\n"
+	return ;
+      } elseif {$word_size == 2} {
+	set vsize "i16"
+      } else {
+	set vsize "i8"
+      }
+
+      if {$indirectionS == 2} {
+	append questionS "\nlet ${varname}: $vsize ;\n"
+	append questionS "let ${varname}1: &${vsize} = &${varname} ;\n"
+	append questionS "let ${varname}2: &&${vsize} = &${varname}1 ;\n"
+	append questionS "What is the value of \'${varname}\'"
+	set varsuffix 2
+      } elseif {$indirectionS == 1} {
+	append questionS "\nlet ${varname}: ${vsize} ;\n"
+	append questionS "let ${varname}1: &${vsize} = &${varname} ;\n"
+	append questionS "What is the value of \'*${varname}\'"
+	set varsuffix 1
+      } else {
+	append questionS "\nlet ${varname}: $vsize ;\nWhat is the value of \'${varname}\'"
+	set varsuffix ""
+      }
+      append questionS " if the compiler/linker locates the variable ${varname}${varsuffix} @ $addressS?"
+    } elseif {$modeS == 2} {
       set var_choices "a b conv argv myarray myaddress buffer edge node"
       set num_vars [llength $var_choices]
       incr num_vars -1
