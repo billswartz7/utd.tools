@@ -118,6 +118,7 @@ puts stderr "top_keys: $top_keys"
   proc lesson_description { w } {
     variable configS
     variable lessonS
+    set routine "lesson_description"
     set f [frame $w.f -width 1024 -height 60 -background blue]
     tixLabelFrame $f.descr -label {Lesson Description:} -labelside acrosstop \
        -options {
@@ -149,6 +150,7 @@ puts stderr "top_keys: $top_keys"
       if {[info exists lesson_data(tcl_init)]} {
 	eval "$lesson_data(tcl_init)"
       }
+      puts stderr "$routine:setting lesson HTML"
       if {[info exists lesson_data(lesson_html)]} {
 	eval "set lesson_html $lesson_data(lesson_html)"
 	if {$lesson_html == "null"} {
@@ -158,6 +160,7 @@ puts stderr "top_keys: $top_keys"
       } else {
 	set_page_html lesson ""
       }
+      puts stderr "$routine:setting lesson problem"
       if {[info exists lesson_data(prob_html)]} {
 	eval "set prob_html $lesson_data(prob_html)"
 	if {$prob_html == "null"} {
@@ -168,6 +171,7 @@ puts stderr "top_keys: $top_keys"
       } else {
 	set_page_html problems ""
       }
+      puts stderr "$routine:setting lesson solution"
       if {[info exists lesson_data(sol_html)]} {
 	eval "set sol_html $lesson_data(sol_html)"
 	if {$sol_html == "null"} {
@@ -177,12 +181,14 @@ puts stderr "top_keys: $top_keys"
       } else {
 	set_page_html solutions ""
       }
+      puts stderr "$routine:setting lesson resources"
       if {[info exists lesson_data(res_html)]} {
 	eval "set res_html $lesson_data(res_html)"
 	set_page_html resources $res_html
       } else {
 	set_page_html resources ""
       }
+      puts stderr "$routine:setting lesson project"
       if {[info exists lesson_data(project)]} {
 	eval "set project_name $lesson_data(project)"
 	EZset_state -project $project_name

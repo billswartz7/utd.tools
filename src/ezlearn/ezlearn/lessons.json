@@ -110,19 +110,207 @@
 	    "problem": 1,
 	    "project": "compute",
 	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/compute.html",
-	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/compute_prob.html",
-	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/compute_solutions.html",
-	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/compute_resources.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/compute_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/compute_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/compute_resources.html",
 	    "description": "learn what it mean to compute."
 	  },
 	  "lesson2": {
-	    "name": "State",
+	    "name": "Setup",
 	    "problem": 2,
-	    "project": "state",
+	    "project": "environment",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/environ.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/environ_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/environ_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/environ_resources.html",
+	    "description": "learn about how to install compute environments and use a compiler/linker and editors."
+	  },
+
+	  "lesson3": {
+	    "name": "Language Syntax",
+	    "problem": 3,
+	    "project": "syntax",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/syntax.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/syntax_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/syntax_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/syntax_resources.html",
+	    "description": "learn about the formal syntax for C / C++ / Rust."
+	  },
+
+	  "lesson4": {
+	    "name": "Compiling, Linking, and Running Programs",
+	    "problem": 4,
+	    "project": "build",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/build.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/build_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/build_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/build_resources.html",
+	    "description": "learn about how computer programs are constructed and run."
+	  },
+
+	  "lesson5": {
+	    "name": "Variables",
+	    "problem": 5,
+	    "project": "variables",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/variables.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/variables_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/variables_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/variables_resources.html",
+	    "description": "learn about state variables and how we create and modify them."
+	  },
+	  "lesson6": {
+	    "name": "Debugging",
+	    "problem": 6,
+	    "project": "debug",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/debug.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/debug_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/debug_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/debug_resources.html",
+	    "description": "learn about how to remove errors from a program which is known as debugging."
+	  },
+	  "lesson7": {
+	    "name": "Conditionals",
+	    "problem": 7,
+	    "project": "conditionals",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/cond.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/cond_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/cond_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/cond_resources.html",
+	    "description": "learn about how we use logic to control the execution of a program."
+	  },
+
+	  "lesson8": {
+	    "name": "Loops",
+	    "problem": 8,
+	    "project": "loops",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/loops.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/loops_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/loops_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/loops_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+
+	  "lesson9": {
+	    "name": "Functions",
+	    "problem": 9,
+	    "project": "functions",
 	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
 	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
-	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/state_solutions.html",
-	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/tcl/ezlearn/programming/state_resources.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+
+	  "lesson10": {
+	    "name": "Complexity",
+	    "problem": 10,
+	    "project": "complexity",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/complexity.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/complexity_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/complexity_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/complexity_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+
+	  "lesson11": {
+	    "name": "Arrays",
+	    "problem": 11,
+	    "project": "arrays",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+
+	  "lesson12": {
+	    "name": "Strings",
+	    "problem": 12,
+	    "project": "strings",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+	  "lesson13": {
+	    "name": "Input/Output",
+	    "problem": 13,
+	    "project": "io",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+	  "lesson14": {
+	    "name": "Structs",
+	    "problem": 14,
+	    "project": "structs",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+	  "lesson15": {
+	    "name": "Pointers",
+	    "problem": 15,
+	    "project": "pointers",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+	  "lesson16": {
+	    "name": "Sorting",
+	    "problem": 16,
+	    "project": "sorting",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about searching and sorting data."
+	  },
+	  "lesson17": {
+	    "name": "Queues",
+	    "problem": 17,
+	    "project": "queues",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+	  "lesson18": {
+	    "name": "Stacks",
+	    "problem": 18,
+	    "project": "stacks",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+	  "lesson19": {
+	    "name": "Lists",
+	    "problem": 19,
+	    "project": "lists",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
+	    "description": "learn about state variables and how we create them."
+	  },
+	  "lesson20": {
+	    "name": "Hash Tables",
+	    "problem": 20,
+	    "project": "hashtables",
+	    "lesson_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state.html",
+	    "prob_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programing/state_prob.html",
+	    "sol_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_solutions.html",
+	    "res_html": "${UTDTOOLS}/${UTDTOOLSVERSION}/share/ezlearn/programming/state_resources.html",
 	    "description": "learn about state variables and how we create them."
 	  }
       } 
@@ -142,3 +330,4 @@
 	}
     }
 }
+

@@ -409,6 +409,7 @@ static JSBool
 js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 {
     uintN i ;
+    INT code ;				/* return code from Tcl */
     JSString *str;			/* unicoded argument */
     JSString *answer;			/* unicode Tcl answer */
     char result_buf[BUFSIZ] ;		/* build the reply */
@@ -417,6 +418,7 @@ js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     char *procedure ;			/* procedure name */
     char *expr ;			/* Tcl expression to be evaluated */
     char *text ;			/* HTML to be passed as Text. */
+    char *textonly ;			/* procedure generates text not graphics */
     char *tkwindow ;			/* tk window */
     char *tklogic ;			/* logic associated with variable */
     char *tkplacement ;			/* tk placement before/after html */
@@ -485,6 +487,7 @@ js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     ----------------------------------------------------------------- */
     tklogic = lookup_var( cx, obj, "logic" ) ;
     tkplacement = lookup_var( cx, obj, "tkplacement" ) ;
+    textonly = lookup_var( cx, obj, "textonly" ) ;
    
     /* -----------------------------------------------------------------
      * Set unused options to NULL. Also set reset variables.
@@ -501,6 +504,11 @@ js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
       tkplacement = NULL ;
     } else {
       strcat( reset_vars, "tkplacement=\"\";TKPLACEMENT=\"\";" ) ;
+    }
+    if( !(textonly) || !(*textonly) ){
+      textonly = NULL ;
+    } else {
+      strcat( reset_vars, "textonly=\"\";TEXTONLY=\"\";" ) ;
     }
 
     /* -----------------------------------------------------------------
@@ -521,8 +529,25 @@ js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     procedure = lookup_var( cx, obj, "procedure" ) ;
     if( out_state ){
       if( procedure && (*procedure) ){
-	/* call the JS_Tk function */
-	rcode = js_eval_tk(cx, obj, argc, argv, rval) ;
+	if( textonly ){
+	  /* -----------------------------------------------------------------
+	   * Now it is safe to execute the Tk command to build the widget.
+	   * Set up the return codes.
+	  ----------------------------------------------------------------- */
+	  code = Tcl_Eval( tcl_interpS, procedure ) ;
+	  result = (char *) Tcl_GetStringResult(tcl_interpS) ;
+	  if( result && *result ){
+	    render_proc = html_render_proc( NULL ) ;
+	    html_render(NULL,tcl_interpS,tkwindow,render_proc,result,strlen(result), FALSE ) ;
+	    answer = JS_NewString(cx, result, strlen(result));
+	    if( answer ){
+	      *rval = STRING_TO_JSVAL(answer) ;
+	    }
+	  }
+	} else {
+	  /* call the JS_Tk function */
+	  rcode = js_eval_tk(cx, obj, argc, argv, rval) ;
+	}
       }
       if( needs_html_output ){
 	html_render(NULL,tcl_interpS,tkwindow,render_proc,text,strlen(text), FALSE ) ;
@@ -540,6 +565,7 @@ js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
 	strcat( reset_vars, "padx=\"\";PADX=\"\";" ) ;
 	strcat( reset_vars, "pady=\"\";PADY=\"\";" ) ;
 	strcat( reset_vars, "alt=\"\";ALT=\"\";" ) ;
+	strcat( reset_vars, "textonly=\"\";TEXTONLY=\"\";" ) ;
 	strcat( reset_vars, "placement=\"\";PLACEMENT=\"\";" ) ;
       }
     }
@@ -553,7 +579,7 @@ js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     /* -----------------------------------------------------------------
      * Now set up the return codes.
     ----------------------------------------------------------------- */
-    if( result && *result ){
+    if( result && *result && !(textonly) ){
       answer = JS_NewString(cx, result, strlen(result));
       if( answer ){
 	*rval = STRING_TO_JSVAL(answer) ;
@@ -562,6 +588,7 @@ js_cond(JSContext *cx, JSObject *obj, uintN argc, jsval *argv, jsval *rval)
     return(JS_TRUE) ;
 
 } /* end js_cond() */
+
 
 
 /* -----------------------------------------------------------------
@@ -1800,6 +1827,7 @@ static void reset_all_variables(JSContext *cx, JSObject *obj)
     strcat( reset_vars, "expr=\"\";EXPR=\"\";" ) ;
     strcat( reset_vars, "html=\"\";HTML=\"\";" ) ;
     strcat( reset_vars, "logic=\"\";LOGIC=\"\";" ) ;
+    strcat( reset_vars, "textonly=\"\";TEXTONLY=\"\";" ) ;
 
     /* -----------------------------------------------------------------
      * Now set all the variables back to null.  We do this before evaluating

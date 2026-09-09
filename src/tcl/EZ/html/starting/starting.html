@@ -36,21 +36,24 @@ commands of a particular tool, you may use the
 </FONT> </P>
 
 
-<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="<P>Next, we need to determine the area of study. Among the areas of study are Embedded Systems, Conputer Architecture, Digital Design, and Hardware Description Languages. Use the menu item to select your area of study. Once chosen you will be presented with a set of lessons in the subject.</P>") ;
+<SCRIPT>
+JS_COND(expr="$EZUSER!=Expert", HTML="<P>Next, we need to determine the area of study. Among the areas of study are Programming, Embedded Systems, Conputer Architecture, Digital Design, and Hardware Description Languages. Use the menu item to select your area of study. Once chosen you will be presented with a set of lessons in the subject.</P>") ;
 </SCRIPT>
 <P><SCRIPT>JS_TK(procedure="ez_area", tkwindow=".ezarea", width="400", height="30") ; </SCRIPT>
-</P>
 
 
-<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="<P>Next, we need to determine the desired lesson in") ;
+<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="<P></P><P>Next, we need to determine the desired lesson ") ; </SCRIPT>
+
+<SCRIPT>
+  JS_COND(expr="$EZUSER!=Expert", HTML=" in the study of ", procedure="ez_get_area", textonly="true") ;
 </SCRIPT>
 
-<SCRIPT>JS_TCL(procedure="ez_get_area") ;
-</SCRIPT>
-.</P>
+<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML=".  Please chose a lesson by selecting from the pulldown menu.</P><BR>") ;</SCRIPT>
+<SCRIPT>JS_COND(expr="$EZUSER==Expert", HTML="<BR>") ;</SCRIPT>
 
-<P><SCRIPT>JS_TK(procedure="ez_lesson", tkwindow=".ezlesson", width="800", altheight="30") ; </SCRIPT>
-</P>
+<SCRIPT>JS_TK(procedure="ez_lesson", tkwindow=".ezlesson", width="800", altheight="30") ; </SCRIPT>
+
+<SCRIPT>JS_COND(expr="$EZUSER!=Expert", HTML="<P></P>") ; </SCRIPT>
 
 <SCRIPT>
 JS_COND(expr="$EZUSER!=Expert", HTML="<BR>",

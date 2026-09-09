@@ -570,6 +570,7 @@ static void ez_init(void *inter_ptr)
 	utDdstring_printf( &command_buf, "expr=\"\";EXPR=\"\";" ) ;
 	utDdstring_printf( &command_buf, "logic=\"\";LOGIC=\"\";" ) ;
 	utDdstring_printf( &command_buf, "html=\"\";HTML=\"\";" ) ;
+	utDdstring_printf( &command_buf, "textonly=\"\";TEXTONLY=\"\";" ) ;
 	command = utDdstring_printf( &command_buf, "tkplacement=\"\";TKPLACEMENT=\"\";" ) ;
 	TWJS_process_script(jsenvS, command ) ;
 	utDbase_create_objcmd(interp, "twparse_html", parse_func, NULL, NULL);
